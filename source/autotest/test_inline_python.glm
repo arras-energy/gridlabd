@@ -1,0 +1,3 @@
+#begin python
+assert(version()["major"] == ${version.major})
+#end

@@ -1,0 +1,118 @@
+# http://www.gnu.org/software/automake
+
+Makefile.in
+origin.txt
+*.xml
+build
+*.pyc
+documents/html
+
+# http://www.gnu.org/software/autoconf
+autom4te.cache
+autoscan.log
+autoscan-*.log
+aclocal.m4
+configure.scan
+
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+*.bin
+
+# Object files
+*.ko
+*.elf
+
+# Shared objects (inc. Windows DLLs)
+*.so.*
+
+# Executables
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+*.su
+
+.autotools
+.cproject
+.project
+.settings/
+Makefile
+config.log
+config.cache
+config.status
+configure
+configure~
+conftest.cpp
+conttest.err
+confdefs.h
+conf[0-9]*[a-z]*/
+gridlabd.spec
+libtool
+gridlabd.bin
+*.xcbkptlist
+.*.swp
+.DS_Store
+*.json
+output/
+.bash_profile
+*.tmp
+*-checkpoint.ipynb
+.*
+*.log
+
+# some common autotest output that should be ignored
+validate.txt
+test_*/
+
+# widely found generic output files
+object_profile.txt
+fault_check.txt
+
+# files that should be ignored by git
+*_ignore.*
+
+# requirements files
+requirements.txt
+
+# terraform artifacts
+*.zip
+terraform.*
+
+# specific outputs that should be ignored
+gridlabd.glm
+validate.zip.gz
+validate.tar.gz
+gridlabd-core.*
+openfido.err

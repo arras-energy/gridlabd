@@ -1,0 +1,41 @@
+// test_recorder_flush.glm tests to make sure the recorder flush operation is correct 
+// A. Ivanova Oct 9, 2018
+
+/////////////////////////////////////////////
+// BEGIN
+/////////////////////////////////////////////
+
+#ifexist ../test_recorder_flush_sync.py
+#define DIR=..
+#endif
+
+#set pythonpath=..:.
+module test_recorder_flush_sync;
+
+#set show_progress=FALSE
+
+clock {
+	timezone EST+5EDT;
+	starttime '2000-01-01 0:00:00';
+	stoptime '2000-01-01 1:00:00';
+}
+
+module tape
+{
+	csv_header_type NAME;
+}
+
+class test {
+	randomvar x;
+}
+object test {
+	x "type:normal(0,1); min:-10; max:+10; refresh:1min";
+	object recorder {
+		name "recorder";
+		property x;
+		file test_recorder_flush_0.csv;
+		interval -1;
+		flush 0;
+	};
+	on_commit "python:test_recorder_flush_sync.test_commit";
+}

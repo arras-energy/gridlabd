@@ -1,0 +1,36 @@
+// $Id: billdump.h 4738 2014-07-03 00:55:39Z dchassin $
+//	Copyright (C) 2008 Battelle Memorial Institute
+
+#ifndef _BILLDUMP_H
+#define _BILLDUMP_H
+
+#ifndef _POWERFLOW_H
+#error "this header must be included by powerflow.h"
+#endif
+
+class billdump : public gld_object
+{
+public:
+	TIMESTAMP runtime;
+	char32 group;
+	char256 filename;
+	int32 runcount;
+	typedef enum {
+		METER_TP,		
+		METER_3P,		
+	} METERTYPE;
+	enumeration meter_type;
+public:
+	static CLASS *oclass;
+public:
+	billdump(MODULE *mod);
+	int create(void);
+	int init(OBJECT *parent);
+	TIMESTAMP commit(TIMESTAMP t);
+	int isa(char *classname);
+
+	void dump(TIMESTAMP t);
+};
+
+#endif // _BILLDUMP_H
+

@@ -1,0 +1,3 @@
+name,wind_speed,temperature,phases,nominal_voltage,class
+weather,4 m/s,95 degF,,,climate
+node1,,,AB,120,

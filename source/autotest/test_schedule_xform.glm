@@ -1,0 +1,31 @@
+// test schedule transforms
+// test schedule transforms
+#set randomseed=17
+
+module tape;
+module residential;
+
+clock {
+	timezone PST+8PDT;
+	starttime '2009-01-01 0:00:00 PST';
+	stoptime '2009-01-02 0:00:00 PST';
+}
+
+schedule test_schedule {
+	0-29 * * * * 0;
+	30-59 * * * * 1;
+}
+
+class house {
+	double my_double;
+//	complex my_complex;
+}
+
+object house {
+	my_double test_schedule*2.58+1;
+//	my_complex test_schedule*2.58+1;
+	object recorder {
+		property "my_double";
+		file "test_schedule_xform_output.csv";
+	};
+}

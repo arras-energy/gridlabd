@@ -1,0 +1,22 @@
+#set curl_options=maxsize:10MB;update:newer
+
+#wget ${gitraw}/gridlab-d/master/gldcore/versions.txt
+
+#ifexist versions.txt
+#wget ${gitraw}/gridlab-d/master/gldcore/versions.txt versions1.txt
+#ifexist versions1.txt
+#print versions ok
+#else
+#error second wget failed
+#endif
+#else
+#error first wget failed
+#endif
+
+#wget ${gitraw}/data/master/US/tmy3/WA.zip
+
+#ifexist WA.zip
+#print WA.zip ok
+#else
+#error "Unable to download WA.zip"
+#endif

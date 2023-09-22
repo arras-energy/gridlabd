@@ -1,0 +1,3 @@
+#!/bin/bash
+NFILES=$(git clean -dxf | wc -l)
+echo $NFILES files deleted

@@ -1,0 +1,85 @@
+Summary: GridLAB-D power distribution system simulation and analysis tool.
+Name: gridlabd
+Version: @PACKAGE_VERSION@
+Release: 1%{?dist}
+License: Unknown
+Group: Simulators
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
+Packager: GridLAB-D GISMo SLAC Team <gridlabd@gmail.com>
+URL: https://source.gridlabd.us/
+Source0: %{name}_%{version}.tar.gz
+
+%description
+GridLAB-D™ is a power distribution system simulation and analysis tool
+that provides information to users who design and operate modern
+distribution systems, and to utilities that wish to take advantage of the
+latest energy technologies. It incorporates advanced modeling
+techniques with high-performance algorithms to deliver high resolution end-use
+modeling in moder power systems. GridLAB-D is coupled with distribution 
+automation models and software integration tools for users of many power 
+system analysis tools.
+
+GridLAB-D was developed by the U.S. Department of Energy (DOE) at Pacific
+Northwest National Laboratory (PNNL), in collaboration with industry and
+academia.
+
+This version of GridLAB-D was enhanced at SLAC National Accelerator Laboratory
+by the California Energy Commission under grants EPC-17-043, EPC-17-046, and EPC-17-047.
+SLAC National Accelerator Laboratory, which is operated for the US Department of Energy 
+by Stanford University under Contract DE-AC02-76SF00515.
+
+%prep
+%setup -q -n %{name}_%{version}
+
+%build
+%configure
+make %{?_smp_mflags}
+
+%install
+rm -rf %{buildroot}
+%makeinstall
+rm -f %{buildroot}%{_libdir}/gridlabd/*.la
+
+%clean
+rm -rf %{buildroot}
+
+%post
+
+%postun
+
+%files
+%defattr(-,root,root,-)
+%{_bindir}/gridlabd
+%{_libdir}/gridlabd/*
+%doc %{_docdir}/gridlabd/*
+/usr/bin/gridlabd.bin
+%{_datadir}/gridlabd/*
+
+
+%package devel
+Summary: Development files for GridLAB-D.
+Group: Simulators
+
+%description devel
+GridLAB-D™ is a power distribution system simulation and analysis tool
+that provides information to users who design and operate modern
+distribution systems, and to utilities that wish to take advantage of the
+latest energy technologies. It incorporates advanced modeling
+techniques with high-performance algorithms to deliver high resolution end-use
+modeling in moder power systems. GridLAB-D is coupled with distribution 
+automation models and software integration tools for users of many power 
+system analysis tools.
+
+GridLAB-D was developed by the U.S. Department of Energy (DOE) at Pacific
+Northwest National Laboratory (PNNL), in collaboration with industry and
+academia.
+
+This version of GridLAB-D was enhanced at SLAC National Accelerator Laboratory
+by the California Energy Commission under grants EPC-17-043, EPC-17-046, and EPC-17-047.
+SLAC National Accelerator Laboratory, which is operated for the US Department of Energy 
+by Stanford University under Contract DE-AC02-76SF00515.
+
+%files devel
+%defattr(-,root,root,-)
+%{_includedir}/gridlabd/*.h
+

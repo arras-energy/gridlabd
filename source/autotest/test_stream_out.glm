@@ -1,0 +1,31 @@
+// test checkpoint mechanism
+
+#set suppress_repeat_messages=FALSE
+#set checkpoint_type=SIM
+#set checkpoint_interval=86400
+#set randomseed=1
+
+module tape;
+
+clock {
+	starttime '2000-01-01 0:00:00';
+	stoptime '2000-01-07 0:00:00';
+}
+
+class test {
+	randomvar x[kW];
+	complex y[kVA];
+};
+
+module tape;
+object test:..2 {
+	x "type:uniform(0,1); refresh:1min";
+	object recorder {
+		property x;
+		file "test.csv";
+		interval -1;
+		flush 0;
+	};
+}
+
+#on_exit 0 test -f test_stream_out.4

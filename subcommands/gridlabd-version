@@ -1,0 +1,207 @@
+#!/bin/bash
+# Syntax: version [--dryrun] COMMAND [ARGUMENTS ...]
+
+EXE="$(basename $0)"
+BIN=${0/-version/.bin}
+OPT="$(dirname $GLD_VER)"
+
+function error()
+{
+	RC=$1
+	shift 1
+	echo "ERROR [$EXE] $*" > /dev/stderr
+	exit $RC
+}
+
+function warning()
+{
+	echo "WARNING [$EXE] $*" > /dev/stderr
+}
+
+case "$1" in
+--dryrun)
+	ACTION="echo"
+	shift 1
+	;;
+--*)
+	error 9 "'$1' in an invalid option"
+	;;
+*)
+	ACTION=""
+	;;
+esac
+
+function version-help()
+{
+	cat <<-END
+Syntax: gridlabd version [--dryrun] COMMAND [ARGUMENTS ...]
+Commands:
+  help                    get this list of commands
+  check [-v|-q|-w]        check for a newer version
+    -v                      enable verbose output
+    -q                      disable all output
+    -w                      only output warnings and errors and log check result
+  list [<pattern>]        get a list of available versions
+  show                    show the current active version
+  set [<pattern>]         set the active version
+  source                  open source code of the active version
+  delete [-a|<pattern>]   delete versions
+    -a                      delete all version except current one
+END
+}
+
+function version-check()
+{
+	version=$(${BIN} --version)
+	submitversion=$(echo $version | sed -r 's/.*([0-9]+\.[0-9]+\.[0-9]+\-[0-9]+)/\1/')
+	branch=$(${BIN} --version=git-branch)
+	origin=$(${BIN} --version=git-repo |cut -f4- -d/)
+	remote=$( (curl -sL "https://raw.githubusercontent.com/$origin/$branch/source/version.h" | grep '#define REV_' | cut -f3 -d' ' | tr '\n' . | cut -f-3 -d.) || echo "none" )
+	if [ "$remote" == "none" -o -z "$remote" ]; then
+		[ "$1" != "-q" -a "$1" != "-w" ] && error 2 "$version ($branch) branch not found on github $origin"
+		[ "$1" != "-q" ] && warning "$version ($branch) branch not found on github $origin"
+		exit 0
+	fi
+	[ "$1" == "-v" ] && echo "REMOTE/$branch $remote"
+	${BIN} --version="-ge $remote" 2>/dev/null || ( ( [ "$1" != "-q" -a "$1" != "-w" ] && warning "$version ($branch) is outdated" ) ; exit 0 )
+
+    # Using curl command to check the version
+    version_check_response=$(curl -sL "https://version.gridlabd.us/?v=${submitversion}&b=${branch}")
+    if [[ $version_check_response != '"ok"' ]]; then
+        warning "Your version is behind. The latest version information is: $version_check_response"
+        exit 0
+    fi
+    
+    [ "$1" != "-q" -a "$1" != "-w" ] && echo "$version ($branch) is ok"
+    [ "$1" == "-w" ] && ( curl -sL "http://version.gridlabd.us/?v=${submitversion}&b=${branch}" >/dev/null & )
+    exit 0
+}
+
+function version-source()
+{
+	open $(${BIN} git commit HEAD html_url | sed -e 's:/commit/:/tree/:')
+}
+
+function version-save()
+{
+	if [ -f /usr/local/bin/gridlabd -a ! -L /usr/local/bin/gridlabd ]; then
+		SAVED="$(${BIN} --version | cut -f2 -d' ')-saved_$(date '+%Y%m%d')"
+		N=0
+		TRY="$SAVED"
+		while [ -d $OPT/$TRY ]; do
+			TRY="$SAVED-$N"
+			N=$(($N+1))
+		done
+		SAVED="$TRY"
+		$ACTION mkdir -p $OPT/$SAVED/{bin,lib,share,include}
+		for F in bin lib share include; do
+			[ ! -d $OPT/$SAVED/$F ]; $ACTION mkdir -p $OPT/$SAVED/$F
+			if [ "$F" == "bin" ]; then
+				$ACTION mv $GLD_VER/bin/gridlabd* $OPT/$SAVED/bin
+			else
+				[ -f $GLD_VER/$F/gridlabd -a ! -L $GLD_VER/$F/gridlabd ] && $ACTION mv $GLD_VER/$F/gridlabd $OPT/$SAVED/$F
+			fi
+		done
+	fi
+}
+
+function version-set()
+{
+	version-save
+	L="$1"
+	if [ ! -d "$OPT/$L" ]; then
+		L=$(cd $OPT ; ls -1d *$1* | grep -v current)
+	fi
+	if [ -z "$L" ]; then
+		L="$(${BIN} --version=name)"
+	elif [ "$(echo $L | wc -w)" -gt 1 ]; then
+		error 2 "ambiguous version"
+	fi
+	$ACTION rm -f $OPT/current ; ln -sf $L $OPT/current
+	$ACTION rm -f /usr/local/bin/gridlabd ; ln -sf $OPT/current/bin/gridlabd /usr/local/bin/gridlabd
+	echo "$L"
+}
+
+function version-show()
+{
+	if [ -L $OPT/current ]; then
+		basename $(readlink $OPT/current)
+	else
+		echo "Current version is custom installed"
+	fi
+}
+
+function version-delete()
+{
+	if [ "$1" == "-a" ]; then
+		L="$(ls -1 $OPT | grep -v current)"
+	else
+		L="$1"
+		if [ ! -d "$L" ]; then
+			L=$(cd $OPT ; ls -1d *$1* | grep -v current)
+		fi
+	fi
+	if [ ! -z "$L" ]; then
+		for F in $L; do
+			[ ! "$F" == "current" -a -d "$OPT/$F" -a ! "$(readlink $OPT/current)" == "$OPT/$F" ] && $ACTION rm -rf $OPT/$F
+		done
+	fi
+}
+
+function version-list()
+{
+	if [ $# -eq 0 ]; then
+        for D in $(basename $OPT/*); do
+            if [ "$D" != "current" -a -x "$OPT/$D/bin/gridlabd.bin" ]; then
+                echo $D
+            fi
+        done
+	elif [ "$1" == "-l" ]; then
+        longlist $2
+    else
+        for D in $(basename $OPT/*$1*); do
+            if [ "$D" != "current" -a -x "$OPT/$D/bin/gridlabd.bin" ]; then
+                echo $D
+            fi
+        done
+	fi
+}
+
+function longlist()
+{
+    if [ $# -eq 0 ]; then
+		LIST=$(basename $OPT/* | grep -v '^current$')
+	else
+		LIST=$(basename $OPT/*$1*)
+	fi
+    echo "total$(du -sh $OPT | cut -c1-4)"
+    for D in $LIST; do
+        if [ -x "$OPT/$D/bin/gridlabd.bin" ]; then
+            NAME=$(basename $D)
+            VERSION=$(echo $NAME | cut -f1 -d-)
+            BUILD=$(echo $NAME | cut -f2 -d-)
+            BRANCH=$(echo $NAME | cut -f3 -d-)
+            SIZE=$(du -sh $OPT/$D | cut -c1-4)
+            echo "$VERSION $BUILD $SIZE $BRANCH"
+        fi
+    done
+}
+
+if [ $# -eq 0 ]; then
+	version-show
+	exit 0
+fi
+
+if [ "$(type -t version-$1)" == "function" ]; then
+	version-$*
+else
+	error 9 "'$1' is not a valid command"
+fi
+
+if [ -z "$(which gridlabd)" ]; then
+	warning "gridlabd is not in the current PATH environment"
+fi
+if [ ! -x "$GLD_BIN/python3" ]; then
+	warning "python3 is not linked where gridlabd wants it in $GLD_BIN/python3"
+fi
+
