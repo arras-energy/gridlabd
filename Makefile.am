@@ -95,6 +95,8 @@ BUILT_SOURCES += python-requirements
 
 install-exec-hook: | index docs
 	@cp ${top_srcdir}/{COPYRIGHT,LICENSE} $(prefix)
+	@mkdir -p $(prefix)/src/module
+	@chmod 775 $(prefix)/src/module	
 	@echo ""
 	@echo "Install complete. Here are some useful commands now:"
 	@echo ""
