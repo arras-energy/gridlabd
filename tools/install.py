@@ -85,7 +85,10 @@ for item in INSTALL:
         toolname = data['tool-name'] if "tool-name" in data else item.split('/')[1]
 
         # run the install command
-        if os.system(data["install-command"].format(branch=BRANCH,BRANCH=BRANCH)):
+        os.environ["REPO"] = item
+        os.environ["BRANCH"] = BRANCH
+        os.environ["NAME"] = toolname
+        if os.system(data["install-command"].format(branch=BRANCH,BRANCH=BRANCH,REPO=data['tool-name'],NAME=toolname)):
             raise Exception(f"{' '.join(sys.argv)} failed")
         else:
             print(f"Install of {item} done. Run 'gridlabd {toolname} help' for more information.")
