@@ -1,19 +1,21 @@
 # Syntax: install [OPTIONS ...] ORGANIZATION/REPOSITORY ...
 """GridLAB-D tool installer
 
-Syntax:
+Syntax
+------
 
     gridlabd install [OPTIONS ...] ORGANIZATION/REPOSITORY ...
 
-Options:
+Options
+-------
 
     --branch|-b=BRANCH   select a branch (default is "main")
 
-The installer inspects the repository's install manifest file 'install.json'.
-The 'application' tag must be 'gridlabd' and the version must be the same the
-current version of 'gridlabd'.  When these conditions are satisfied,
-the 'install-command' is executed in a shell, with the 'branch' variable
-inserted where specified by the '{branch}' string.
+The installer inspects the repository's install manifest file `install.json`.
+The `application` tag must be 'gridlabd' and the version must be the same the
+current version of `gridlabd`.  When these conditions are satisfied,
+the `install-command` is executed in a shell, with the `BRANCH` variable
+inserted where specified by the `{BRANCH}` string.
 
 Developer Guide:
 
@@ -22,15 +24,14 @@ Example `install.json` manifest file
     {
       "application" : "gridlabd",
       "version" : 4.3,
-      "tool-name" : "my_tool",
-      "install-command" : "curl -sL https://raw.githubusercontent.com/dchassin/gridlabd-advisor/{branch}/install.sh | bash"
+      "tool-name" : "{NAME}",
+      "install-command" : "curl -sL https://raw.githubusercontent.com/{REPO}/{BRANCH}/install.sh | bash"
     }
 
 Example `install.sh` install command
 
-    python3 -m pip install -qq openai
-    mkdir -p $HOME/.openai
-    curl -sL https://raw.githubusercontent.com/dchassin/gridlabd-advisor/main/advisor.py -o $(gridlabd --version=install)/share/gridlabd/advisor.py || echo "ERROR: install failed" > /dev/stderr
+    echo 'git clone https://github.com/${REPO} ${GLD_SRC}/module/${NAME} -b ${BRANCH:-master} --depth 1' | gridlabd shell
+    echo 'cd ${GLD_SRC}/module/${NAME}/source;make install' | gridlabd shell
 """
 
 import sys, os
