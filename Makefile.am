@@ -95,8 +95,6 @@ BUILT_SOURCES += python-requirements
 
 install-exec-hook: | index docs
 	@cp ${top_srcdir}/{COPYRIGHT,LICENSE} $(prefix)
-	@mkdir -p $(prefix)/src/module
-	@chmod 775 $(prefix)/src/module	
 	@echo ""
 	@echo "Install complete. Here are some useful commands now:"
 	@echo ""
@@ -304,10 +302,10 @@ system: python-install install $(prefix)/src
 
 $(prefix)/src:
 	@echo Copying source files to $@...
-	@mkdir -p $(prefix)/src/source $(prefix)/src/python
+	@mkdir -p $(prefix)/src/source $(prefix)/src/python  $(prefix)/src/module
 	@cp $(top_srcdir)/source/*.cpp $(prefix)/src/source
 	@cp $(top_srcdir)/python/*.cpp $(prefix)/src/python
-	@chmod -R 555 $(prefix)/src
+	@chmod -R 775 $(prefix)/src
 
 index: weather library template
 
