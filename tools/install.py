@@ -89,7 +89,7 @@ for item in INSTALL:
         os.environ["REPO"] = item
         os.environ["BRANCH"] = BRANCH
         os.environ["NAME"] = toolname
-        if os.system(data["install-command"].format(branch=BRANCH,BRANCH=BRANCH,REPO=data['tool-name'],NAME=toolname)):
+        if os.system(data["install-command"].format(branch=BRANCH,BRANCH=BRANCH,REPO=item,NAME=toolname)):
             raise Exception(f"{' '.join(sys.argv)} failed")
         else:
             print(f"Install of {item} done. Run 'gridlabd {toolname} help' for more information.")
