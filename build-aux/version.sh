@@ -25,7 +25,7 @@
 #
 EXE=$0
 PYV=3.10
-TOP=$(cd ${EXE/version.sh/..}; pwd)
+TOP=$(cd $(dirname $EXE)/.. 1>/dev/null; pwd)
 FIL="${TOP}/source/version.h"
 MAJ=`sed -En 's/#define REV_MAJOR ([0-9]+).*/\1/p' $FIL | tr -d '\n'`
 MIN=`sed -En 's/#define REV_MINOR ([0-9]+).*/\1/p' $FIL | tr -d '\n'`
