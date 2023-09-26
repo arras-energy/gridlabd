@@ -192,5 +192,5 @@ object multi_recorder {
 }
 
 #ifexist "../test_pole.csv"
-#on_exit 0 diff -q test_pole.csv ../test_pole.csv
+#on_exit 0 diff -q test_pole.csv ../test_pole.csv > gridlabd.diff
 #endif
