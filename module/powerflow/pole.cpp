@@ -417,7 +417,6 @@ TIMESTAMP pole::precommit(TIMESTAMP t0)
         wind_gusts = wind_gusts_ref->get_double();
     }
     height = calc_height(); // effective pole height (length of unsupported pole)
-    diameter = calc_diameter(); // diameter at effective pole height
     double t0_year = 1970 + (int)(t0/86400/365.24);
 	double age = t0_year - install_year;
     if ( age > 0 && config->degradation_rate > 0 )
