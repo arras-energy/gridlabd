@@ -77,6 +77,7 @@ private:
 	double last_wind_speed;
 	TIMESTAMP down_time;
 public:
+	double diameter; // calculated pole diameter
 	double height; // effective pole height for moment calculations
     bool recalc; // flag for recalculation
 public:
