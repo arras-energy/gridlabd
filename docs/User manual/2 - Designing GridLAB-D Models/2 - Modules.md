@@ -2,7 +2,9 @@
 
 Runtime modules are implemented as dynamic libraries that are loaded as needed.  The model loaded determines whether a runtime module is needed by specifying a [[module]] block.
 
-; Prior to {{VERSION20}} : Adding a module in Windows can be done using the "Add GridLAB module" wizard.  In Linux it can be done using the "add_gridlab_module" script. 	This document is provided for completeness and to provide details that may be necessary should the scripts not function as required.
+**Prior to Version 2.0** : Adding a module in Windows can be done using the "Add GridLAB module" wizard.  In Linux it can be done using the "add_gridlab_module" script. 	This document is provided for completeness and to provide details that may be necessary should the scripts not function as required.
+
+**As of Version 4.3.3** : The [module template](https://arras.energy/module_template) should be used to build new modules. The template is designed to build external modules. However, the source code to an external module is the same as for an internal module.
 
 The exact approach to use in building a GridLAB module is not clear cut.
 In general a module is a solver that can compute the steady state of
@@ -31,10 +33,10 @@ In addition, modules generally should be able to implement the following
 It turns out that implementing these capabilities is not as easy as it
 at first seems.  In particular, the synchronization has typically been one
 of the most challenging concepts for programmers to understand.  Given
-the amount of time spend in sync calls, it is recommended that
+the amount of time spent in sync calls, it is recommended that
 considerable time and effort be put into its design.
 
-= Basic Synchronization =
+## Basic Synchronization
 
 An object's sync method actually performs two essential functions. First,
 it updates the state of an object to a designated point in time, and second
@@ -78,7 +80,7 @@ nothing further to compute.
 
 For more details on synchronization in GridLAB-D see [[theory of operation]].
 
-= Control Code =
+## Control Code
 
 One very important aspect of synchronization behavior is how control code
 is handled when object behavior goes beyond the mere physics of its
@@ -87,17 +89,20 @@ control code that is integrated with the physical model.  However, this
 would prevent users from altering the control code without altering the
 source code of the object's implementation.
 
-; Prior to {{VERSION30}} : To address this problem, objects can implement default control code that is disabled if a [[PLC]] object is attached later.  The ability to alter control code should be made available when implemented for any object for which this is a realistic possibility, which is very nearly always.
+**Prior to Version 3.0** : To address this problem, objects can implement default control code that is disabled if a [[PLC]] object is attached later.  The ability to alter control code should be made available when implemented for any object for which this is a realistic possibility, which is very nearly always.
 
-: To implement default machine [[PLC]] code for an object, the module must expose a ''plc''() method that will be called immediately before ''sync''() is called, but only if not external PLC method is provided in the model.  This ''plc''() method may be written as though it was integrated with the physics implemented in ''sync''(), but the physics must be able to update even when the default [[PLC]] code is not run.
+To implement default machine [[PLC]] code for an object, the module must expose a ''plc''() method that will be called immediately before ''sync''() is called, but only if not external PLC method is provided in the model.  This ''plc''() method may be written as though it was integrated with the physics implemented in ''sync''(), but the physics must be able to update even when the default [[PLC]] code is not run.
 
-; {{VERSION30}} and later : As of {{VERSION30}} the PLC module will no longer be supported and the [[PID controller]] module replaces it.  Alternatively, the [[class]] [[class#intrinsic|intrinsic]] function [[class#plc|plc]] supports simple control code replacements.
+**As of Version 3.0** : As of Version 3.0 the PLC module will no longer be supported and the [[PID controller]] module replaces it.  Alternatively, the [[class]] [[class#intrinsic|intrinsic]] function [[class#plc|plc]] supports simple control code replacements.
 
-= Building a GridLAB module =
+## Building a GridLAB module
 
 A GridLAB module must be a Windows DLL or a Linux SO.
 
-=== [[VS2005]] ===
+### Visual Studio
+
+**Note**: Windows is not supported directly as of Version 4.3.
+
 The compile options that are typically required are
 * Include path: ../core
 * Runtime library: Multi-threaded Debug DLL (/MDd)
@@ -352,7 +357,7 @@ is run during ''sync''() events.
 
 ; Linux/Unix Note : A Linux GridLAB module must be a shared object library and must be listed in the appropriate <tt>makefile.am</tt> files.
 
-=== Module implementation as of {{VERSION30}} ===
+## Module implementation as of Version 3.0
 
 The above implementation protocol is simplified using the C++ [[Module API]].  
 
@@ -449,10 +454,11 @@ The above implementation protocol is simplified using the C++ [[Module API]].
 
 As of {{VERSION30}} modules must support multithreaded communication between classes.  To upgrade a module created prior to {{VERSION30}} full R/W locking of class members must be supported.  The following must be done to enable use of locked accessors.
 
-== Minimum upgrade ==
+## Minimum upgrade
 
 The following steps are the minimum required to upgrade a class created prior to {{VERSION30}} to full compatibility with {{VERSION30}} and later:
 
+~~~
 # Change <tt>main.cpp</tt> to contain only the following
  #define DLMAIN
  #include "gridlabd.h"
@@ -461,8 +467,9 @@ The following steps are the minimum required to upgrade a class created prior to
 # Remove all self-locking calls.
 # Add read or write lock/unlock calls around all accesses to other objects.
 # Move first sync initialization code when t0=0 to init() and return deferred status when necessary (see [[Tech:Initialization|Initialization Technical Manual]]).
+~~~
 
-== Full upgrade ==
+## Full upgrade
 
 ; Update the <tt>main.cpp</tt> to contain only the following
 
@@ -502,34 +509,34 @@ and <tt>defaults=this;</tt> must be moved to before first use of <tt>get_*_offse
 
 : Right-hand-side uses of ''value''
 
- ''atomic_value'' = get_''atomic_var''();
- ''struct_value'' = get_''struct_var''();
- ''char_ptr'' = get_''string_var''();
- ''char_value'' = get_''string_var''(''index'');
- ''array_ptr'' = get_''array_var''();
- ''array_value'' = get_''array_var''(''index'');
+   ''atomic_value'' = get_''atomic_var''();
+   ''struct_value'' = get_''struct_var''();
+   ''char_ptr'' = get_''string_var''();
+   ''char_value'' = get_''string_var''(''index'');
+   ''array_ptr'' = get_''array_var''();
+   ''array_value'' = get_''array_var''(''index'');
 
 : Left-hand-side uses of ''value''
 
- set_''atomic_var''(''atomic_value'');
- set_''struct_var''(''struct_value'');
- set_''string_var''(''char_ptr'');
- set_''string_var''(''index'',''char_value'');
- set_''array_var''(''array_ptr'');
- set_''array_var''(''index'',''array_value'');
+   set_''atomic_var''(''atomic_value'');
+   set_''struct_var''(''struct_value'');
+   set_''string_var''(''char_ptr'');
+   set_''string_var''(''index'',''char_value'');
+   set_''array_var''(''array_ptr'');
+   set_''array_var''(''index'',''array_value'');
 
 ; Replace needed core linkage code with standard export macros
 
- EXPORT_CREATE(my_class);
- EXPORT_INIT(my_class);
- EXPORT_COMMIT(my_class);
- EXPORT_SYNC(my_class);
- EXPORT_NOTIFY(my_class);
- EXPORT_PRECOMMIT(my_class);
- EXPORT_FINALIZE(my_class);
- EXPORT_ISA(my_class);
- EXPORT_PLC(my_class);
- EXPORT_RECALC(my_class);
+   EXPORT_CREATE(my_class);
+   EXPORT_INIT(my_class);
+   EXPORT_COMMIT(my_class);
+   EXPORT_SYNC(my_class);
+   EXPORT_NOTIFY(my_class);
+   EXPORT_PRECOMMIT(my_class);
+   EXPORT_FINALIZE(my_class);
+   EXPORT_ISA(my_class);
+   EXPORT_PLC(my_class);
+   EXPORT_RECALC(my_class);
 
 : Depending on how the original export function was implemented, you may have to move 
 some code into the class member.
@@ -539,23 +546,23 @@ be 0 on the first sync call.  It will be set to the start time prior to init().
 
 ; Surround all internal references requiring coherent access with locked blocks
 
- [[rlock]]();
- ''copy1'' = ''var1'';
- ''copy2'' = ''var2'';
- [[runlock]]();
-
- [[wlock]]();
- ''var1'' = ''value1'';
- ''var2'' = ''value2'';
- [[wunlock]]();
+   [[rlock]]();
+   ''copy1'' = ''var1'';
+   ''copy2'' = ''var2'';
+   [[runlock]]();
+  
+   [[wlock]]();
+   ''var1'' = ''value1'';
+   ''var2'' = ''value2'';
+   [[wunlock]]();
 
 : For programming convenience a scope lock is available
 
- { [[gld_wlock]] _lock(my); // write locked when block is entered
-   // write safe code
-   value1 += 12.3;
-   value2 -= 12.3;
- } // unlock when scope is exited
+   { [[gld_wlock]] _lock(my); // write locked when block is entered
+     // write safe code
+     value1 += 12.3;
+     value2 -= 12.3;
+   } // unlock when scope is exited
 
 : Ideally, enable automatic locking for all sync operations by added the ''PC_AUTOLOCK'' to the class registration call:
 
@@ -565,28 +572,28 @@ Be careful not to use locking accessors within scope locks or autolocked sync fu
 
 ; Modify all external references to use set/get accessors
 
- [[gld_property]] prop(obj,"varname");
- if ( prop.[[gld_property#is_valid|is_valid]]() )
- {
-    double value;
-    prop.[[gld_property#getp|getp]](value); // read lock is automatic for non-atomic operations
-    value = 12.3;
-    prop.[[gld_property#setp|setp]](value); // write lock is automatic for non-atomic operations
- }
+   [[gld_property]] prop(obj,"varname");
+   if ( prop.[[gld_property#is_valid|is_valid]]() )
+   {
+      double value;
+      prop.[[gld_property#getp|getp]](value); // read lock is automatic for non-atomic operations
+      value = 12.3;
+      prop.[[gld_property#setp|setp]](value); // write lock is automatic for non-atomic operations
+   }
 
 : If code requires a locked block use a scope lock w/non-locking accessors
 
- [[gld_property]] prop(obj,"varname");
- if ( prop.[[gld_property#is_valid|is_valid]]() )
- {
-    double value;
-    [[gld_wlock]] lock(obj); // write lock is taken
-    prop.[[gld_property#getp|getp]](value,lock); // write lock continues so read is ok
-    value += 12.3;
-    prop.[[gld_property#setp|setp]](value,lock); // write lock continues so write is ok
- }  // unlocked
+   [[gld_property]] prop(obj,"varname");
+   if ( prop.[[gld_property#is_valid|is_valid]]() )
+   {
+      double value;
+      [[gld_wlock]] lock(obj); // write lock is taken
+      prop.[[gld_property#getp|getp]](value,lock); // write lock continues so read is ok
+      value += 12.3;
+      prop.[[gld_property#setp|setp]](value,lock); // write lock continues so write is ok
+   }  // unlocked
 
-= Debugging lock timeouts =
+## Debugging lock timeouts
 
 A maximum spin timeout is implemented in both read and write locks to prevent deadlocks. If you run into a situation where you get a "write lock timeout" or "read lock timeout" then most likely you've encountered a condition where an object is trying to take a lock out on itself.  Consider the following
 
@@ -596,5 +603,5 @@ A maximum spin timeout is implemented in both read and write locks to prevent de
 
 ; Try debugging with a breakpoint on the <tt>throw_exception</tt> calls in <tt>core/lock.cpp</tt> : This should tell you exactly which lock is causing the timeout.
 
-== See also ==
+# See also
 {{:Xref:Developers}}
