@@ -22,7 +22,7 @@ dband(int n, int b, int nonz, double **nzval, int **rowind, int **colptr)
     int    *asub, *xa;
     double *val;
     int    *row;
-    extern double dlaran_();
+    extern double dlaran_(int*);
     
     printf("A banded matrix.");
     dallocateA(n, nonz, nzval, rowind, colptr); /* Allocate storage */
@@ -63,7 +63,7 @@ dblockdiag(int nb, /* number of blocks */
     int    *asub, *xa;
     double *val;
     int    *row;
-    extern double dlaran_();
+    extern double dlaran_(int*);
     
     n = bs * nb;
     printf("A block diagonal matrix: nb %d, bs %d, n %d\n", nb, bs, n);

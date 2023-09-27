@@ -774,7 +774,7 @@ dPresetMap(
     int *map_in_sup; /* memory mapping function; values irrelevant on entry. */
     int *colcnt;     /* column count of Lc or H */
     int *super_bnd;  /* supernodes partition in H */
-    char *snode_env, *getenv();
+    char *snode_env, *getenv(const char*);
 
     snode_env = getenv("SuperLU_DYNAMIC_SNODE_STORE");
     if ( snode_env != NULL ) {
