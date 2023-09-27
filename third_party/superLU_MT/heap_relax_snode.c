@@ -26,7 +26,10 @@ heap_relax_snode (
     register int i, j, k, l, parent;
     register int snode_start;	/* beginning of a snode */
     int *et_save, *post, *inv_post, *iwork;
-    int nsuper_et = 0, nsuper_et_post = 0;
+    int nsuper_et = 0;
+#if ( PRNTlevel>=1 )
+    int nsuper_et_post = 0;
+#endif
 
     int *desc;  /* no of descendants of each etree node. */
     int *et = superlumt_options->etree; /* column elimination tree */
@@ -70,7 +73,9 @@ heap_relax_snode (
 	    parent = et[j];
 	}
 	/* Found a supernode in postordered etree; j is the last column. */
+#if ( PRNTlevel>=1 )
 	++nsuper_et_post;
+#endif
 	k = n;
 	for (i = snode_start; i <= j; ++i) k = SUPERLU_MIN(k, inv_post[i]);
 	l = inv_post[j];
