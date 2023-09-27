@@ -73,17 +73,17 @@ Published properties are declared using the `GL_*` declaration macros:
   * `void set_NAME(size_t index, T value)` - set a value
   * `void set_NAME(size_t index, T value, gld_wlock &lock)` - set a value using a write lock
 ### `GL_BITFLAGS(TYPE,NAME)` defines the following members:
-	* `size_t get_NAME_offset(void)` - returns the memory offset for the property
-	* `TYPE get_NAME(TYPE mask=-1)` - returns the bits using the mask
-	* `inline gld_property get_NAME_property(void)` - return the property
-	* `TYPE get_NAME(gld_rlock &lock)` - return the value using a read lock
-	* `TYPE get_NAME(gld_wlock &lock)` - return the value using a write lock
-	* `void set_NAME(TYPE p)` - sets the value
-	* `void set_NAME_bits(TYPE bits)` - sets bits
-	* `void clr_NAME_bits(TYPE bits)` - clears bits
-	* `void set_##X(TYPE p, gld_wlock &lock)` - sets bits using a write lock
-	* `gld_string get_##X##_string(void)` - returns the value as a string
-	* `void set_##X(char *text)` - sets the value from a string
+  * `size_t get_NAME_offset(void)` - returns the memory offset for the property
+  * `TYPE get_NAME(TYPE mask=-1)` - returns the bits using the mask
+  * `inline gld_property get_NAME_property(void)` - return the property
+  * `TYPE get_NAME(gld_rlock &lock)` - return the value using a read lock
+  * `TYPE get_NAME(gld_wlock &lock)` - return the value using a write lock
+  * `void set_NAME(TYPE p)` - sets the value
+  * `void set_NAME_bits(TYPE bits)` - sets bits
+  * `void clr_NAME_bits(TYPE bits)` - clears bits
+  * `void set_##X(TYPE p, gld_wlock &lock)` - sets bits using a write lock
+  * `gld_string get_##X##_string(void)` - returns the value as a string
+  * `void set_##X(char *text)` - sets the value from a string
 ### `GL_METHOD(CLASS,NAME)` defines the following members:
   * `size_t get_##X##_offset(void)` - returns the memory offset for the property
   *	`int get_##X(char *buffer, size_t length)` - gets the output value of the method
