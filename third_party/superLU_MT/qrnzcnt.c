@@ -136,7 +136,7 @@ qrnzcnt(int neqns, int adjlen, int *xadj, int *adjncy, int *zfdperm,
     int  *rowcnt;   /* row colunts for Lc */ 
     int  *colcnt;   /* column colunts for Lc */ 
     int  *rowcnt_h; /* row colunts for H */ 
-    int  nsuper;    /* total number of fundamental supernodes in Lc */
+    // int  nsuper;    /* total number of fundamental supernodes in Lc */
     int  nhnz;
     
     set    = intMalloc(neqns);
@@ -276,7 +276,7 @@ qrnzcnt(int neqns, int adjlen, int *xadj, int *adjncy, int *zfdperm,
     }
 
     xsup    = 0;      /* BUG FIX */
-    nsuper = 0;
+    // nsuper = 0;
     
     /*   ------------------------------------   
          FOR EACH ``LOW NEIGHBOR'' LOWNBR ...   
@@ -360,14 +360,14 @@ qrnzcnt(int neqns, int adjlen, int *xadj, int *adjncy, int *zfdperm,
 	if (lflag == 1 || nchild[lownbr] >= 2) {
 	    /* lownbr is detected as the beginning of the new supernode */
 	    if ( lownbr != 0 ) part_super_ata[xsup] = lownbr - xsup;
-	    ++nsuper;
+	    // ++nsuper;
 	    xsup = lownbr;
 	} else {
 	    if ( parent == ROOT && ifdesc == lownbr ) {
 		/* lownbr is a singleton, and begins a new supernode
 		   but is not detected as doing so -- BUG FIX */
 		part_super_ata[lownbr] = 1;
-		++nsuper;
+		// ++nsuper;
 		xsup = lownbr;
 	    }
 	}
