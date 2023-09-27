@@ -10,7 +10,7 @@
 ##   --install       the install folder path name, e.g., /usr/local/opt/gridlabd/4.3.1-230426-master-ubuntu_22-x86_64
 ##   --name          the install folder base name, /usr/local/opt/gridlabd/4.3.1-230426-master-ubuntu_22-x86_64
 ##   --package       the package name, e.g., gridlabd
-##   --package-name  the package full name, e.g., HiPAS GridLAB-D
+##   --package-name  the package full name, e.g., Arras Energy
 ##   --machine       the machine type, e.g., x86_64
 ##   --system        the system name, e.g., ubuntu_22
 ##   --sysspec       the system specification, e.g., ubuntu_22-x86_64
@@ -25,7 +25,7 @@
 #
 EXE=$0
 PYV=3.10
-TOP=$(cd ${EXE/version.sh/..}; pwd)
+TOP=$(cd $(dirname $EXE)/.. 1>/dev/null; pwd)
 FIL="${TOP}/source/version.h"
 MAJ=`sed -En 's/#define REV_MAJOR ([0-9]+).*/\1/p' $FIL | tr -d '\n'`
 MIN=`sed -En 's/#define REV_MINOR ([0-9]+).*/\1/p' $FIL | tr -d '\n'`

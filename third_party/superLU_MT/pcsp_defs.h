@@ -265,7 +265,7 @@ extern void pxgstrf_scheduler (const int, const int, const int *,
 			       int *, int *, pxgstrf_shared_t *);
 extern int  cParallelInit (int, pxgstrf_relax_t *, superlumt_options_t *,
 			  pxgstrf_shared_t *);
-extern int  ParallelFinalize ();
+extern int  ParallelFinalize (pxgstrf_shared_t *);
 extern int  queue_init (queue_t *, int);
 extern int  queue_destroy (queue_t *);
 extern int  EnqueueRelaxSnode (queue_t *, int, pxgstrf_relax_t *,
@@ -434,7 +434,7 @@ extern int  *intMalloc (int);
 extern int  *intCalloc (int);
 extern complex *complexMalloc(int);
 extern complex *complexCalloc(int);
-extern int  memory_usage ();
+extern int  memory_usage (void);
 extern int  superlu_cQuerySpace (int, SuperMatrix *, SuperMatrix *, int, 
 				 superlu_memusage_t *);
 extern int  Glu_alloc (const int, const int, const int, const MemType,
@@ -443,9 +443,9 @@ extern int  Glu_alloc (const int, const int, const int, const MemType,
 /* -------------------
    Auxiliary routines
    -------------------*/
-extern double  SuperLU_timer_();
+extern double  SuperLU_timer_(void);
 extern int     sp_ienv(int);
-extern double  slamch_();
+extern double  slamch_(char *);
 extern int     lsame_(char *, char *);
 extern int     xerbla_(char *, int *);
 extern void    superlu_abort_and_exit(const char *);
