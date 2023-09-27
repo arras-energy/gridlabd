@@ -277,7 +277,8 @@ class GridlabdServer:
                 exception(f"server start timeout")
             version = self.getversion()
             verbose(f"server version {version} up")
-        GldTimestamp.tz = pytz.timezone(self.get_global("timezone_locale"))
+        timezone_locale = self.get_global("timezone_locale")
+        GldTimestamp.tz = pytz.timezone(timezone_locale if timezone_locale else "UTC")
         GldTimestamp.url = f"http://localhost:{self.port}"
 
     def getstatus(self):
