@@ -27,6 +27,16 @@ The pole mount object attaches powerflow link objects to pole objects.  The
 parent of a `pole_mount` must be the `pole` object on which the equipment is
 mounted.
 
+## Properties
+
+### `direction`
+
+~~~
+double direction[deg];
+~~~
+
+Bearing of the mounted equipment, an angle measured clockwise from due north in degrees with vertex at the pole centerline.
+ 
 # Example
 
 The following example illustrates mounting an overhead line on a pole.
