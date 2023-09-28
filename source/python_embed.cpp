@@ -8,17 +8,20 @@ PyObject *gridlabd_module = NULL;
 
 void python_embed_init(int argc, const char *argv[])
 {
-    program = Py_DecodeLocale(argv[0],NULL);
-    Py_SetProgramName(program);
-    Py_Initialize();
-    main_module = PyModule_GetDict(PyImport_AddModule("__main__"));
-    if ( main_module == NULL )
+    if ( gridlabd_module == NULL )
     {
-        throw_exception("python_embed_init(argc=%d,argv=(%s,...)): unable to load module __main__ module",argc,argv?argv[0]:"NULL");
+        program = Py_DecodeLocale(argv[0],NULL);
+        Py_SetProgramName(program);
+        Py_Initialize();
+        main_module = PyModule_GetDict(PyImport_AddModule("__main__"));
+        if ( main_module == NULL )
+        {
+            throw_exception("python_embed_init(argc=%d,argv=(%s,...)): unable to load module __main__ module",argc,argv?argv[0]:"NULL");
+        }
+        gridlabd_module = PyInit_gridlabd();
+        Py_INCREF(gridlabd_module);
+        Py_INCREF(main_module);
     }
-    gridlabd_module = PyInit_gridlabd();
-    Py_INCREF(gridlabd_module);
-    Py_INCREF(main_module);
 }
 
 void *python_loader_init(int argc, const char **argv)
@@ -53,41 +56,73 @@ void python_reset_stream(PyObject *pModule, const char *stream_name)
     if ( pStringIO ) Py_DECREF(pStringIO);
 }
 
+int python_embed_run_file(const char *filename)
+{
+    FILE *fp = fopen(filename,"rb");
+    return fp ? PyRun_SimpleFile(fp,filename) : -1;
+}
+
 PyObject *python_embed_import(const char *module, const char *path)
 {
+    printf("python_embed_import(module='%s',path='%s')\n",module,path);
+    // clean up module name for use by import
+    char splitname[1024];
+    strcpy(splitname,module);
+
+    char *ext = strrchr(splitname,'.');
+    if ( ext == NULL )
+    {
+        output_error("missing .py extension on python module filename");
+        return NULL;
+    }
+    if ( strcmp(ext,".py") != 0 )
+    {
+        output_error("cannot import %s file as a python module", ext);
+        return NULL;
+    }
+    *ext++ = '\0';
+
+    char *base = strrchr(splitname,'/');
+    const char *dir = ".";
+    if ( base == NULL )
+    {
+        base = splitname;
+    }
+    else
+    {
+        dir = splitname;
+        *base++ = '\0';
+    }
+    printf("python_embed_import: dir='%s', base='%s', ext='%s'\n",dir,base,ext);
+
     // fix module search path
     char tmp[1024];
+    int len = 0;
     if ( path != NULL )
     {
-        snprintf(tmp,sizeof(tmp)-1,"import io, sys\nsys.path.extend('%s'.split(':'))\n",path);
-        int len = strlen(tmp);
-        output_debug("python_embed_import(const char *module='%s', const char *path='%s'): running [%s]",module,path,tmp);
-        if ( len > 0 && PyRun_SimpleString(tmp) )
-        {
-            PyObject *pType, *pValue, *pTraceback;
-            PyErr_Fetch(&pType, &pValue, &pTraceback);
-            PyObject *repr = pValue ? PyObject_Repr(pValue) : NULL;
-            PyObject *bytes = repr ? PyUnicode_AsEncodedString(repr, "utf-8", "backslashreplace") : NULL;
-            const char *msg = bytes?PyBytes_AS_STRING(bytes):"PyRun_SimpleString failed with no information";
-            output_error("python_embed_import(module='%s',path='%s'): %s; string='%s'",module,path,msg,tmp);
-            if ( repr ) Py_DECREF(repr);
-            if ( bytes ) Py_DECREF(bytes);
-            return NULL;
-        }
+        snprintf(tmp,sizeof(tmp)-1,"import sys\nsys.path.a('%s:%s'.split(':'))\n",dir,path);
+        len = strlen(tmp);
     }
-
-    // clean up module name for use by import
-    char basename[1024];
-    strcpy(basename,module);
-    char *ext = strrchr(basename,'.');
-    if ( ext != NULL && strcmp(ext,".py") == 0 )
+    else
     {
-        *ext = '\0';
+        len = snprintf(tmp,sizeof(tmp),"%1023s",dir);
     }
-    char *dir = strrchr(basename,'/');
+    output_debug("python_embed_import(const char *module='%s', const char *path='%s'): running [%s]",module,path,tmp);
+    if ( len > 0 && PyRun_SimpleString(tmp) )
+    {
+        PyObject *pType, *pValue, *pTraceback;
+        PyErr_Fetch(&pType, &pValue, &pTraceback);
+        PyObject *repr = pValue ? PyObject_Repr(pValue) : NULL;
+        PyObject *bytes = repr ? PyUnicode_AsEncodedString(repr, "utf-8", "backslashreplace") : NULL;
+        const char *msg = bytes?PyBytes_AS_STRING(bytes):"PyRun_SimpleString failed with no information";
+        output_error("python_embed_import(module='%s',path='%s'): %s; string='%s'",module,path,msg,tmp);
+        if ( repr ) Py_DECREF(repr);
+        if ( bytes ) Py_DECREF(bytes);
+        return NULL;
+    }
 
     // import module
-    PyObject *pModule = PyImport_ImportModule(dir?dir+1:basename);
+    PyObject *pModule = PyImport_ImportModule(base);
     if ( pModule == NULL )
     { 
         PyObject *pType, *pValue, *pTraceback;
@@ -95,7 +130,7 @@ PyObject *python_embed_import(const char *module, const char *path)
         PyObject *repr = pValue ? PyObject_Repr(pValue) : NULL;
         PyObject *bytes = repr ? PyUnicode_AsEncodedString(repr, "utf-8", "backslashreplace") : NULL;
         const char *msg = bytes?PyBytes_AS_STRING(bytes):"PyImport_ImportModule failed with no information";
-        output_error("python_embed_import(module='%s',path='%s'): %s",module,path,msg);
+        output_error("python_embed_import(module='%s',path='%s'): %s",module,tmp,msg);
         if ( repr ) Py_DECREF(repr);
         if ( bytes ) Py_DECREF(bytes);
         return NULL;
