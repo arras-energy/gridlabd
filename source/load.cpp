@@ -8577,7 +8577,7 @@ bool GldLoader::load_import(const char *from, char *to, int len)
 		}
 		IN_MYCONTEXT output_verbose("changing output to '%s'", to);
 	}
-	int rc = my_instance->subcommand("%s %s -i '%s' -o '%s' '%s'",(const char*)global_pythonexec,converter_path,from,to,unquoted);
+	int rc = my_instance->subcommand("%s %s -i '%s' -o '%s' %s",(const char*)global_pythonexec,converter_path,from,to,unquoted);
 	if ( rc != 0 )
 	{
 		output_error("%s: return code %d",converter_path,rc);
