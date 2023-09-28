@@ -60,7 +60,7 @@ INSTALL "$PYTHON_EXEC" -m pip install --upgrade pip || error "pip update failed"
 INSTALL apt-get install build-essential zlib1g-dev libcurl4-gnutls-dev libncurses5-dev liblzma-dev libbz2-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev -y
 
 # install required tools
-INSTALL apt-get install git unzip libtool libtool-bin g++ cmake flex bison subversion util-linux xz-utils wget -y
+INSTALL apt-get install git unzip libtool libtool-bin mdbtools g++ cmake flex bison subversion util-linux xz-utils wget -y
 
 # update library paths
 INSTALL ldconfig
