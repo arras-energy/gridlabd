@@ -1277,11 +1277,11 @@ bool GldGlobals::parameter_expansion(char *buffer, size_t size, const char *spec
 		size_t start;
 		if ( global_getvar(name,temp,sizeof(temp)-1)==NULL )
 			return 0;
-		strcpy(buffer,"");
+		strcpy(buffer,temp);
 		while ( true )
 		{
 			ptr = strstr(temp,pattern);
-			if ( ptr==NULL )
+			if ( ptr == NULL )
 				break;
 			start = ptr - temp;
 			strncpy(buffer,temp,size);
@@ -1299,9 +1299,9 @@ bool GldGlobals::parameter_expansion(char *buffer, size_t size, const char *spec
 		size_t start;
 		if ( global_getvar(name,temp,sizeof(temp)-1)==NULL )
 			return 0;
-		strcpy(buffer,"");
+		strcpy(buffer,temp);
 		ptr = strstr(temp,pattern);
-		if ( ptr!=NULL )
+		if ( ptr != NULL )
 		{
 			start = ptr - temp;
 			strncpy(buffer,temp,size);
