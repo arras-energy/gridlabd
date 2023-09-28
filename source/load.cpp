@@ -8341,7 +8341,7 @@ int GldLoader::process_macro(char *line, int size, char *_filename, int linenum)
 		strcpy(line,"\n");
 		return TRUE;
 	}
-	int rc = my_instance->subcommand("%s/" PACKAGE "-%s",global_execdir,strchr(line,'#')+1);
+	int rc = my_instance->subcommand("%s/" PACKAGE "-%s",getenv("GLD_BIN"),strchr(line,'#')+1);
 	if ( rc != 127 )
 	{
 		strcpy(line,"\n");
@@ -8546,10 +8546,14 @@ bool GldLoader::load_import(const char *from, char *to, int len)
 	}
 	strcpy(to,from);
 	char *glmext = strrchr(to,'.');
-	if ( glmext == NULL )
+	if ( glmext == NULL || (unsigned long long)glmext < (unsigned long long)strrchr(to,'/') )
+	{
 		strcat(to,".glm");
+	}
 	else
+	{
 		strcpy(glmext,".glm");
+	}
 	char load_options[1024] = "";
 	char load_options_var[64];
 	snprintf(load_options_var,sizeof(load_options_var)-1,"%s_load_options",ext);
@@ -8589,12 +8593,8 @@ bool GldLoader::load_import(const char *from, char *to, int len)
 
 STATUS GldLoader::load_python(const char *filename)
 {
-	extern PyObject *gridlabd_module;
-	if ( gridlabd_module == NULL )
-	{
-		python_embed_init(0,NULL);
-	}
-	return python_embed_import(filename,global_pythonpath) == NULL ? FAILED : SUCCESS;
+	python_embed_init(0,NULL);
+	return python_embed_run_file(filename) ? FAILED : SUCCESS;
 }
 
 /** Load a file
@@ -8629,7 +8629,7 @@ STATUS GldLoader::loadall(const char *fname)
 
 		if ( ext != NULL && ( strcmp(ext,".py") == 0 || strncmp(ext,".py ",4) == 0 || strncmp(ext,".py\t",4) == 0 ) )
 		{
-			return load_python(fname);
+			return load_python(fname) ? SUCCESS : FAILED;
 		}
 
 		// non-glm file
