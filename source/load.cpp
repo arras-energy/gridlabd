@@ -8594,7 +8594,7 @@ bool GldLoader::load_import(const char *from, char *to, int len)
 STATUS GldLoader::load_python(const char *filename)
 {
 	python_embed_init(0,NULL);
-	return python_run_file(filename) ? FAILED : SUCCESS;
+	return python_embed_run_file(filename) ? FAILED : SUCCESS;
 }
 
 /** Load a file
