@@ -6732,7 +6732,15 @@ bool GldLoader::for_capture(const char *line)
 		{
 			IN_MYCONTEXT output_verbose("capturing forloop body line %d as '%s'", forbuffer.size(), line);
 		}
-		forbuffer.push_back(std::string(line));
+		const char *comment = strstr(line,"//");
+		if ( comment == NULL )
+		{
+			forbuffer.push_back(std::string(line));
+		}
+		else if ( comment > line )
+		{
+			forbuffer.push_back(std::string(line).substr(0,(size_t)(comment-line)));
+		}
 		forbufferline = forbuffer.end();
 		return true;
 	}
