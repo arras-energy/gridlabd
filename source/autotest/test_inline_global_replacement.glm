@@ -1,0 +1,4 @@
+// verify that issue #32 is fixed
+#if "${modelname/.csv/.json}" != "${modelname}"
+#error Global replacement failed
+#endif
