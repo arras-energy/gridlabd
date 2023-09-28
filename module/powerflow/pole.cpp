@@ -159,7 +159,6 @@ pole::pole(MODULE *mod)
                 PT_OUTPUT,
                 PT_DESCRIPTION, "wire moment in y-axis due to tension and wind load",
 
-
             PT_double, "equipment_moment_x[ft*lb]", get_wire_moment_x_offset(),
                 PT_OUTPUT,
                 PT_DESCRIPTION, "equipment moment in x-axis due to wind load",
@@ -538,8 +537,6 @@ TIMESTAMP pole::postsync(TIMESTAMP t0) ////
         verbose("name is %s ################################\n", my()->name);
         verbose("pole_stress = %g %%\n",pole_stress*100);
         if ( wind_speed > 0.0 )
-            // d(total_moment)/d(wind_speed)
-			// susceptibility = 2*(pole_moment+equipment_moment+wire_wind)/resisting_moment/(wind_speed)/(0.00256)/(2.24);
             susceptibility = (cos(wind_direction*PI/180) + sin(wind_direction*PI/180)) * (pole_moment_per_wind+equipment_moment_nowind+wire_moment_nowind) * (
                 (wire_moment_x+equipment_moment_x+pole_moment_x) + (wire_moment_y+equipment_moment_y+pole_moment_y)
                 ) * (0.00256*2*2.24*wind_speed*2.24) / total_moment;
@@ -564,7 +561,14 @@ TIMESTAMP pole::postsync(TIMESTAMP t0) ////
         verbose("pole_status = %d",pole_status);
         if ( pole_status == PS_FAILED )
         {
-            verbose("pole failed at %.0f%% stress, time to repair is %g h",pole_stress*100,repair_time);
+	    if ( stop_on_pole_failure )
+	    {
+                verbose("pole failed at %.0f%% stress, time to repair is %g h",pole_stress*100,repair_time);
+	    }
+	    else
+	    {
+                warning("pole failed at %.0f%% stress, time to repair is %g h",pole_stress*100,repair_time);
+	    }
             down_time = gl_globalclock;
             verbose("down_time = %lld", down_time);
         }
