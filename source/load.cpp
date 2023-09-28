@@ -8341,7 +8341,7 @@ int GldLoader::process_macro(char *line, int size, char *_filename, int linenum)
 		strcpy(line,"\n");
 		return TRUE;
 	}
-	int rc = my_instance->subcommand("%s/" PACKAGE "-%s",global_execdir,strchr(line,'#')+1);
+	int rc = my_instance->subcommand("%s/" PACKAGE "-%s",getenv("GLD_BIN"),strchr(line,'#')+1);
 	if ( rc != 127 )
 	{
 		strcpy(line,"\n");
