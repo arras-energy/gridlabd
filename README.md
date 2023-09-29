@@ -164,7 +164,22 @@ cd gridlabd
 ./build.sh --system --validate
 ~~~
 
+The validation may take some time and it need not complete completely successfully for GridLAB-D to be used. The final report may look something like this:
+
+~~~
+Validation report:
+747 models tested
+1 unexpected errors
+746 tests succeeded
+>99% success rate
+Total validation elapsed time: 281.9 seconds
+See '/HOME/USER/gridlabd/validate.txt' for details
+ERROR [build.sh]: unable to verify install
+~~~
+
 ## Windows WSL
+
+GridLAB-D supports several WSL distributions, including the latest Ubuntu versions. See the [setup](setup) folder for currently supported distributions.
 
 Generally, running Arras Energy on Docker is preferred because it is usually faster. Building, running and installing Gridlabd in WSL is not that different from a normal linux installation. You can follow Microsoft's instructions on setting up WSL and adding/changing distro's [here](https://learn.microsoft.com/en-us/windows/wsl/install). These instructions work for both cases on supported operating systems, which you can find in the build-aux directory.
 
