@@ -8,17 +8,20 @@ PyObject *gridlabd_module = NULL;
 
 void python_embed_init(int argc, const char *argv[])
 {
-    program = Py_DecodeLocale(argv[0],NULL);
-    Py_SetProgramName(program);
-    Py_Initialize();
-    main_module = PyModule_GetDict(PyImport_AddModule("__main__"));
-    if ( main_module == NULL )
+    if ( gridlabd_module == NULL )
     {
-        throw_exception("python_embed_init(argc=%d,argv=(%s,...)): unable to load module __main__ module",argc,argv?argv[0]:"NULL");
+        program = Py_DecodeLocale(argv[0],NULL);
+        Py_SetProgramName(program);
+        Py_Initialize();
+        main_module = PyModule_GetDict(PyImport_AddModule("__main__"));
+        if ( main_module == NULL )
+        {
+            throw_exception("python_embed_init(argc=%d,argv=(%s,...)): unable to load module __main__ module",argc,argv?argv[0]:"NULL");
+        }
+        gridlabd_module = PyInit_gridlabd();
+        Py_INCREF(gridlabd_module);
+        Py_INCREF(main_module);
     }
-    gridlabd_module = PyInit_gridlabd();
-    Py_INCREF(gridlabd_module);
-    Py_INCREF(main_module);
 }
 
 void *python_loader_init(int argc, const char **argv)
@@ -51,6 +54,12 @@ void python_reset_stream(PyObject *pModule, const char *stream_name)
     }
     if ( pio ) Py_DECREF(pio);
     if ( pStringIO ) Py_DECREF(pStringIO);
+}
+
+int python_embed_run_file(const char *filename)
+{
+    FILE *fp = fopen(filename,"rb");
+    return fp ? PyRun_SimpleFile(fp,filename) : -1;
 }
 
 PyObject *python_embed_import(const char *module, const char *path)
