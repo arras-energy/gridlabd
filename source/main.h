@@ -227,6 +227,7 @@ public:
 		>=0 command exit code
 	 */
 	int subcommand(const char *format,...);
+	int subcommand(std::string &output, const char *format,...);
 
 	// Method: check_runtime
 	bool check_runtime(bool use_exception=false);

@@ -833,6 +833,64 @@ int ppolls(struct s_pipes *pipes, char *output_buffer, size_t output_size, FILE 
 	return has_error;
 }
 
+int GldMain::subcommand(std::string &result,const char *format,...)
+{
+	char *command = NULL;
+	va_list ptr;
+	va_start(ptr,format);
+	if ( vasprintf(&command,format,ptr) < 0 || command == NULL )
+	{
+		output_error("GldMain::subcommand(format='%s',...): memory allocation failed",format);
+		return -1;
+	}
+	va_end(ptr);
+
+	FILE *output = NULL, *error = NULL;
+	int rc = 0;
+	struct s_pipes * pipes = popens(command, NULL, &output, &error);
+	if ( pipes == NULL )
+	{
+		output_error("GldMain::subcommand(format='%s',...): unable to run command '%s' (%s)",format,command,strerror(errno));
+		rc = -1;
+	}
+	else
+	{
+		IN_MYCONTEXT output_verbose("running subcommand '%s'",command);
+		FILE *output_stream = tmpfile();
+		FILE *error_stream = output_get_stream("error");
+        if ( global_echo )
+        {
+            int len = strlen(global_execdir);
+            if ( strncmp(command,global_execdir,len) == 0 )
+                fprintf(output_stream,"# %s",command+len+10);
+            else
+            fprintf(output_stream,"# %s",command);            
+        }
+		ppolls(pipes,NULL,output_stream,error_stream);
+		rc = pcloses(pipes);
+		if ( rc > 0 )
+		{
+			output_error("GldMain::subcommand(format='%s',...): command '%s' returns code %d",format,command,rc);
+		}
+		IN_MYCONTEXT output_verbose("subcommand '%s' -> status = %d",command,rc);
+
+		int size = ftell(output_stream);
+		if ( size > 0 )
+		{
+			char buffer[size+1];
+			fseek(output_stream,0,SEEK_SET);
+			fread(buffer,1,size,output_stream);
+			buffer[size] = '\0';
+			result = buffer;
+		}
+		else
+		{
+			result = "";
+		}
+		fclose(output_stream);
+	}
+	free(command);
+	return rc;}
 
 int GldMain::subcommand(const char *format, ...)
 {
