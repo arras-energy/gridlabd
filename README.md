@@ -261,5 +261,5 @@ This version of GridLAB-D is derived from the original US Department of Energy v
 
 ## Contributions
 
-Please see https://source.gridlabd.us/blob/master/CONTRIBUTING.md for information on making contributions to this repository.
+Please see [Arras Energy Contribution Policies](https://github.com/arras-energy/.github/blob/main/CONTRIBUTING.md) for information on making contributions to this repository.
 
