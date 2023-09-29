@@ -9,6 +9,18 @@
 | [Benchmarks](https://github.com/arras-energy/gridlabd-benchmarks) | Manual test (see [README.md](https://github.com/arras-energy/gridlabd-benchmarks/blob/main/README.md))
 | [Examples](https://github.com/arras-energy/gridlabd-examples) | Manual test (see [README.md](https://github.com/arras-energy/gridlabd-examples/blob/master/README.md))
 
+| [Tutorials](https://github.com/gridlabd-tutorials) | Topic | Status |
+| :---: | :--- | :---: |
+| [Lesson 1](https://github.com/gridlabd-tutorials/lesson-1) | Create a GitHub project, download a reference model, solve powerflow, and plot a voltage profile. | [![Simulation](https://github.com/gridlabd-tutorials/lesson-1/actions/workflows/main.yml/badge.svg)](https://github.com/gridlabd-tutorials/lesson-1/actions/workflows/main.yml)
+| [Lesson 2](https://github.com/gridlabd-tutorials/lesson-2) | Modify, create, and delete static loads. | [![Simulation](https://github.com/gridlabd-tutorials/lesson-2/actions/workflows/main.yml/badge.svg)](https://github.com/gridlabd-tutorials/lesson-2/actions/workflows/main.yml)
+| [Lesson 3](https://github.com/gridlabd-tutorials/lesson-3) | Create distributed generation resources such as rooftop solar, wind, and backup generators. | [![Simulation](https://github.com/gridlabd-tutorials/lesson-3/actions/workflows/main.yml/badge.svg)](https://github.com/gridlabd-tutorials/lesson-3/actions/workflows/main.yml)
+| [Lesson 4](https://github.com/gridlabd-tutorials/lesson-4) | Create energy storage devices such as residential wall-mount batteries and community energy storage | [![Simulation](https://github.com/gridlabd-tutorials/lesson-4/actions/workflows/main.yml/badge.svg)](https://github.com/gridlabd-tutorials/lesson-4/actions/workflows/main.yml)
+| [Lesson 5](https://github.com/gridlabd-tutorials/lesson-5) | Running simulations over time | [![Simulation](https://github.com/gridlabd-tutorials/lesson-5/actions/workflows/main.yml/badge.svg)](https://github.com/gridlabd-tutorials/lesson-5/actions/workflows/main.yml)
+| [Lesson 6](https://github.com/gridlabd-tutorials/lesson-6) | Managing weather | [![Simulation](https://github.com/gridlabd-tutorials/lesson-6/actions/workflows/main.yml/badge.svg)](https://github.com/gridlabd-tutorials/lesson-6/actions/workflows/main.yml)
+| [Lesson 7](https://github.com/gridlabd-tutorials/lesson-7) | Adding quasi-static loads | [![Simulation](https://github.com/gridlabd-tutorials/lesson-7/actions/workflows/main.yml/badge.svg)](https://github.com/gridlabd-tutorials/lesson-7/actions/workflows/main.yml)
+| [Lesson 8](https://github.com/gridlabd-tutorials/lesson-8) | Exporting data | [![Simulation](https://github.com/gridlabd-tutorials/lesson-8/actions/workflows/main.yml/badge.svg)](https://github.com/gridlabd-tutorials/lesson-8/actions/workflows/main.yml)
+| [Lesson 9](https://github.com/gridlabd-tutorials/lesson-9) | Importing data | [![Simulation](https://github.com/gridlabd-tutorials/lesson-9/actions/workflows/main.yml/badge.svg)](https://github.com/gridlabd-tutorials/lesson-9/actions/workflows/main.yml)
+
 
 The documentation for this project is located at http://docs.gridlabd.us/.
 
@@ -18,7 +30,7 @@ This respository contains the source code to Arras Energy, which is being develo
 
 # Quick start using Docker
 
-The preferred method for running Arras Energy is to download the master image from docker hub (see https://hub.docker.com/repository/docker/arras-energy/gridlabd).  You must install the docker daemon to use docker images.  See https://www.docker.com/get-started for details.
+The preferred method for running Arras Energy is to download the master image from docker hub (see https://hub.docker.com/repository/docker/lfenergy/arras/general).  You must install the docker daemon to use docker images.  See https://www.docker.com/get-started for details.
 
 Once you have installed docker, you may issue the following commands to run GridLAB-D at the command line:
 
