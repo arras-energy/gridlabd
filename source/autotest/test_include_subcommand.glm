@@ -2,6 +2,8 @@
 #define DIR=..
 #endif
 
+#option verbose
+
 #include (cat ${DIR:-.}/test_include_subcommand.txt)
 
 module assert;
