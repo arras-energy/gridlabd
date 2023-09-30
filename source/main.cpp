@@ -857,40 +857,60 @@ int GldMain::subcommand(std::string &result,const char *format,...)
 	{
 		IN_MYCONTEXT output_verbose("running subcommand '%s'",command);
 		FILE *output_stream = tmpfile();
-		FILE *error_stream = output_get_stream("error");
-        if ( global_echo )
-        {
-            int len = strlen(global_execdir);
-            if ( strncmp(command,global_execdir,len) == 0 )
-                fprintf(output_stream,"# %s",command+len+10);
-            else
-            fprintf(output_stream,"# %s",command);            
-        }
-		ppolls(pipes,NULL,output_stream,error_stream);
-		rc = pcloses(pipes);
-		if ( rc > 0 )
+		if ( output_stream == NULL )
 		{
-			output_error("GldMain::subcommand(format='%s',...): command '%s' returns code %d",format,command,rc);
-		}
-		IN_MYCONTEXT output_verbose("subcommand '%s' -> status = %d",command,rc);
-
-		int size = ftell(output_stream);
-		if ( size > 0 )
-		{
-			char buffer[size+1];
-			fseek(output_stream,0,SEEK_SET);
-			fread(buffer,1,size,output_stream);
-			buffer[size] = '\0';
-			result = buffer;
+			output_error("unable to create temporary file for subcommand output");
+			rc = errno;
 		}
 		else
 		{
-			result = "";
+			FILE *error_stream = output_get_stream("error");
+	        if ( global_echo )
+	        {
+	            int len = strlen(global_execdir);
+	            if ( strncmp(command,global_execdir,len) == 0 )
+	                fprintf(output_stream,"# %s",command+len+10);
+	            else
+	            fprintf(output_stream,"# %s",command);            
+	        }
+			ppolls(pipes,NULL,output_stream,error_stream);
+			rc = pcloses(pipes);
+			if ( rc > 0 )
+			{
+				output_error("GldMain::subcommand(format='%s',...): command '%s' returns code %d",format,command,rc);
+			}
+			IN_MYCONTEXT output_verbose("subcommand '%s' -> status = %d",command,rc);
+
+			int size = ftell(output_stream);
+			if ( size > 0 )
+			{
+				char buffer[size+1];
+				if ( fseek(output_stream,0,SEEK_SET) == -1 )
+				{
+					output_error("unable to find start of subcommand output");
+				}
+				int nread = fread(buffer,1,size,output_stream);
+				if ( nread < size )
+				{
+					output_error("unable to read all %d bytes from subcommand output (only read %d bytes)",size,nread);
+				}
+				buffer[nread] = '\0';
+				result = buffer;
+			}
+			else
+			{
+				result = "";
+				if ( size < 0 )
+				{
+					output_error("unable to determine size of subcommand output");
+				}
+			}
+			fclose(output_stream);
 		}
-		fclose(output_stream);
 	}
 	free(command);
-	return rc;}
+	return rc;
+}
 
 int GldMain::subcommand(const char *format, ...)
 {
