@@ -896,6 +896,7 @@ int GldMain::subcommand(std::string &result,const char *format,...)
 				}
 				buffer[nread] = '\0';
 				result = buffer;
+				IN_MYCONTEXT output_verbose("subcommand '%s' -> result = [%s] (%d bytes)",command,size,buffer);
 			}
 			else
 			{
