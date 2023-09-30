@@ -880,7 +880,7 @@ int GldMain::subcommand(std::string &result,const char *format,...)
 				output_error("GldMain::subcommand(format='%s',...): command '%s' returns code %d",format,command,rc);
 			}
 			IN_MYCONTEXT output_verbose("subcommand '%s' -> status = %d",command,rc);
-
+			fflush(output_stream);
 			int size = ftell(output_stream);
 			if ( size > 0 )
 			{
