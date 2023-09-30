@@ -122,7 +122,7 @@ AS_IF([test -f "${GLD_ETC}/gridlabd.rc"],
   [. ${GLD_ETC}/gridlabd.rc],
   [])
 
-AS_IF([test x$1 = xshell],
+AS_IF([test "x$1" = "xshell"],
   [shift 1; $SHELL $@; exit $?],
   [])
 
