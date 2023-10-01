@@ -10,7 +10,10 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    image: ubuntu:22.04
+      volumes:
+        - /tmp:/tmp:delegated
+        
     steps:
     - uses: actions/checkout@v3
 
