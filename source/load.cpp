@@ -7793,10 +7793,16 @@ int GldLoader::process_macro(char *line, int size, char *_filename, int linenum)
 		else if (sscanf(term, "(%[^)])", value) == 1)
 		{
 			/* C include file */
-			IN_MYCONTEXT output_verbose("executing include shell \"%s\"", value);
-			my_instance->subcommand("%s",value);
-			// TODO: insert stdout here
-			strcpy(line,"\n");
+			IN_MYCONTEXT output_verbose("%s(%d): executing include shell command [%s]", filename, linenum, value);
+			FILE *out = NULL, *err = NULL;
+			struct s_pipes *pipes = popens(value, NULL, &out, &err);
+			if ( pipes == NULL )
+			{
+				output_error("process_macro(char *line, int size=%d, char *_filename='%s', int linenum=%d): unable to create pipes",size,_filename,linenum);
+				return FALSE;
+			}
+			ppolls(pipes,line,size-1,output_get_stream("error"));
+			pcloses(pipes);
 			return TRUE;
 		}
 		else
