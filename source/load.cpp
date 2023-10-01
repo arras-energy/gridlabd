@@ -312,7 +312,7 @@ STATUS GldLoader::exec(const char *format,...)
 	vsnprintf(cmd,sizeof(cmd)-1,format,ptr);
 	va_end(ptr);
 	IN_MYCONTEXT output_debug("Running '%s' in '%s'", cmd, getcwd(NULL,0));
-	int rc = my_instance->subcommand(cmd);
+	int rc = my_instance->subcommand("%s",cmd);
 	if ( rc != 0 )
 	{
 		output_error("command [%s] failed, rc=%d",cmd,rc);
@@ -7793,10 +7793,16 @@ int GldLoader::process_macro(char *line, int size, char *_filename, int linenum)
 		else if (sscanf(term, "(%[^)])", value) == 1)
 		{
 			/* C include file */
-			IN_MYCONTEXT output_verbose("executing include shell \"%s\"", value);
-			my_instance->subcommand("%s",value);
-			// TODO: insert stdout here
-			strcpy(line,"\n");
+			IN_MYCONTEXT output_verbose("%s(%d): executing include shell command [%s]", filename, linenum, value);
+			FILE *out = NULL, *err = NULL;
+			struct s_pipes *pipes = popens(value, NULL, &out, &err);
+			if ( pipes == NULL )
+			{
+				output_error("process_macro(char *line, int size=%d, char *_filename='%s', int linenum=%d): unable to create pipes",size,_filename,linenum);
+				return FALSE;
+			}
+			ppolls(pipes,line,size-1,output_get_stream("error"));
+			pcloses(pipes);
 			return TRUE;
 		}
 		else
@@ -8040,7 +8046,7 @@ int GldLoader::process_macro(char *line, int size, char *_filename, int linenum)
 		}
 		strcpy(value, strip_right_white(term+1));
 		IN_MYCONTEXT output_debug("%s(%d): executing system(char *cmd='%s')", filename, linenum, value);
-		int rc = my_instance->subcommand(value);
+		int rc = my_instance->subcommand("%s",value);
 		if( rc == 127 || rc == -1 )
 		{
 			syntax_error(filename,linenum,"#system %s -- system('%s') failed with status %d", value, value, global_return_code);
