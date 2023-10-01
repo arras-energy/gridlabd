@@ -390,7 +390,7 @@ then :
   . ${GLD_ETC}/gridlabd.rc
 fi
 
-if test x$1 = xshell
+if test "x$1" = "xshell"
 then :
   shift 1; $SHELL $@; exit $?
 fi
