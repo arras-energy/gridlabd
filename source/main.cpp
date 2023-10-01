@@ -856,7 +856,13 @@ int GldMain::subcommand(std::string &result,const char *format,...)
 	else
 	{
 		IN_MYCONTEXT output_verbose("running subcommand '%s'",command);
-		FILE *output_stream = tmpfile();
+		char tmpname[64];
+		FILE *output_stream = NULL;
+		while ( output_stream == NULL )
+		{
+			snprintf(tmpname,sizeof(tmpname)-1,"/tmp/gridlabd-%x%x",rand(),rand());
+			output_stream = fopen(tmpname,"wx");
+		}
 		if ( output_stream == NULL )
 		{
 			output_error("unable to create temporary file for subcommand output");
@@ -880,33 +886,28 @@ int GldMain::subcommand(std::string &result,const char *format,...)
 				output_error("GldMain::subcommand(format='%s',...): command '%s' returns code %d",format,command,rc);
 			}
 			IN_MYCONTEXT output_verbose("subcommand '%s' -> status = %d",command,rc);
-			fflush(output_stream);
-			int size = ftell(output_stream);
-			if ( size > 0 )
+			fclose(output_stream);
+			struct stat info;
+			stat(tmpname,&info);
+			output_stream = fopen(tmpname,"r");
+			if ( info.st_size > 0 )
 			{
-				char buffer[size+1];
-				if ( fseek(output_stream,0,SEEK_SET) == -1 )
+				char buffer[info.st_size+1];
+				int nread = fread(buffer,1,info.st_size,output_stream);
+				if ( nread < info.st_size )
 				{
-					output_error("unable to find start of subcommand output");
-				}
-				int nread = fread(buffer,1,size,output_stream);
-				if ( nread < size )
-				{
-					output_error("unable to read all %d bytes from subcommand output (only read %d bytes)",size,nread);
+					output_error("unable to read all %d bytes from subcommand output (only read %d bytes)",info.st_size,nread);
 				}
 				buffer[nread] = '\0';
 				result = buffer;
-				IN_MYCONTEXT output_verbose("subcommand '%s' -> result = [%s] (%d bytes)",command,buffer,size);
 			}
 			else
 			{
 				result = "";
-				if ( size < 0 )
-				{
-					output_error("unable to determine size of subcommand output");
-				}
 			}
+			IN_MYCONTEXT output_verbose("subcommand '%s' -> result = [%s] (%d bytes)",command,result.c_str(),info.st_size);
 			fclose(output_stream);
+			unlink(tmpname);
 		}
 	}
 	free(command);
