@@ -763,55 +763,73 @@ int ppolls(struct s_pipes *pipes, FILE* input_stream, FILE* output_stream, FILE 
 	return has_error;
 }
 
-int ppolls(struct s_pipes *pipes, char *output_buffer, size_t output_size, FILE *error_stream)
+int ppolls(struct s_pipes *pipes, FILE *input_stream, char *output_buffer, size_t output_size, FILE *error_stream)
 {
-	struct pollfd polldata[2];
-	polldata[0].fd = pipes->child_output ? fileno(pipes->child_output) : 0;
-	polldata[0].events = POLLIN|POLLERR|POLLHUP;
-	polldata[1].fd = pipes->child_error ? fileno(pipes->child_error) : 0;
+	struct pollfd polldata[3];
+	polldata[0].fd = pipes->child_input ? fileno(pipes->child_input) : 0;
+	polldata[0].events = POLLOUT|POLLERR|POLLHUP;
+	polldata[1].fd = pipes->child_output ? fileno(pipes->child_output) : 1;
 	polldata[1].events = POLLIN|POLLERR|POLLHUP;
-	bool has_error = false;
+	polldata[2].fd = pipes->child_error ? fileno(pipes->child_error) : 2;
+	polldata[2].events = POLLIN|POLLERR|POLLHUP;
 	char line[65536];
 	size_t len = 0;
-	while ( poll(polldata,sizeof(polldata)/sizeof(polldata[0]),-1) > 0 && len < output_size-1)
+	bool has_error = false;
+	while ( poll(polldata,sizeof(polldata)/sizeof(polldata[0]),-1) > 0 )
 	{
-		if ( pipes->child_output && len < output_size-1 && polldata[0].revents&POLLIN )
+		if ( polldata[1].revents&POLLIN )
 		{
-			while ( fgets(line, sizeof(line)-1, pipes->child_output) != NULL )
+			if ( pipes->child_output )
 			{
-				snprintf(output_buffer+len,output_size-len-1,"%s",line);
-				len = strlen(output_buffer);
-			}
-			if ( ferror(pipes->child_output) )
-			{
-				output_error("pipe read failed on child stdout (errno=%d %s, fd=%d)\n",errno,strerror(errno),fileno(pipes->child_output)); fflush(stderr);
-			}
-			if ( ! feof(pipes->child_output) )
-			{
-				output_error("pipe read incomplete on child stdout (errno=%d %s, fd=%d)\n",errno,strerror(errno),fileno(pipes->child_output)); fflush(stderr);
+				while ( fgets(line, sizeof(line)-1, pipes->child_output) != NULL && len < output_size )
+				{
+					if ( output_buffer )
+					{
+						len += snprintf(output_buffer+len,output_size-len-1,"%s",line);
+					}
+				}
 			}
 		}
-		if ( pipes->child_error && error_stream && polldata[1].revents&POLLIN )
+		if ( polldata[2].revents&POLLIN )
 		{
-			while ( fgets(line, sizeof(line)-1, pipes->child_error) != NULL )
+			if ( pipes->child_error )
 			{
-				fprintf(error_stream,"%s",line);
-			}
-			if ( ferror(pipes->child_error) )
-			{
-				output_error("pipe read on child stderr (errno=%d %s, fd=%d)\n",errno,strerror(errno),fileno(pipes->child_error)); fflush(stderr);
-			}
-			if ( ! feof(pipes->child_error) )
-			{
-				output_error("pipe read incomplete on child stderr (errno=%d %s, fd=%d)\n",errno,strerror(errno),fileno(pipes->child_output)); fflush(stderr);
+				while ( fgets(line, sizeof(line)-1, pipes->child_error) != NULL )
+				{
+					if ( error_stream )
+					{
+						fprintf(error_stream,"%s",line);
+					}
+				}
 			}
 		}
-		if ( polldata[0].revents&POLLHUP || polldata[1].revents&POLLHUP )
+		if ( polldata[0].revents&POLLOUT )
+		{
+			if ( input_stream )
+			{
+				while ( fgets(line, sizeof(line)-1, input_stream) != NULL )
+				{
+					if ( pipes->child_input )
+					{
+						fprintf(pipes->child_input,"%s",line);
+					}
+				}
+				if ( feof(input_stream) && pipes->child_input )
+				{
+					fclose(pipes->child_input);
+				}
+			}
+			else if ( pipes->child_input )
+			{
+					fclose(pipes->child_input);
+			}
+		}
+		if ( polldata[0].revents&POLLHUP || polldata[1].revents&POLLHUP || polldata[2].revents&POLLHUP )
 		{
 			IN_MYCONTEXT output_verbose("GldMain::subcommand(command='%s'): end of output", pipes->child_command);
 			break;
 		}
-		if ( polldata[0].revents&POLLERR || polldata[1].revents&POLLERR )
+		if ( polldata[0].revents&POLLERR || polldata[1].revents&POLLERR || polldata[2].revents&POLLERR )
 		{
 			output_error("GldMain::subcommand(command='%s'): pipe error", pipes->child_command);
 			has_error = true;
@@ -819,11 +837,16 @@ int ppolls(struct s_pipes *pipes, char *output_buffer, size_t output_size, FILE 
 		}
 		if ( polldata[0].revents&POLLNVAL )
 		{
+			output_warning("GldMain::subcommand(command='%s'): input pipe invalid", pipes->child_command);
+			break;
+		}
+		if ( polldata[1].revents&POLLNVAL )
+		{
 			output_error("GldMain::subcommand(command='%s'): output pipe invalid", pipes->child_command);
 			has_error = true;
 			break;
 		}
-		if ( polldata[1].revents&POLLNVAL )
+		if ( polldata[2].revents&POLLNVAL )
 		{
 			output_error("GldMain::subcommand(command='%s'): error pipe invalid", pipes->child_command);
 			has_error = true;
@@ -833,6 +856,42 @@ int ppolls(struct s_pipes *pipes, char *output_buffer, size_t output_size, FILE 
 	return has_error;
 }
 
+int GldMain::subcommand(char *buffer, size_t len,const char *format,...)
+{
+	char *command = NULL;
+	va_list ptr;
+	va_start(ptr,format);
+	if ( vasprintf(&command,format,ptr) < 0 || command == NULL )
+	{
+		output_error("GldMain::subcommand(format='%s',...): memory allocation failed",format);
+		return -1;
+	}
+	va_end(ptr);
+
+	FILE *output = NULL, *error = NULL;
+	int rc = 0;
+	struct s_pipes * pipes = popens(command, NULL, &output, &error);
+	if ( pipes == NULL )
+	{
+		output_error("GldMain::subcommand(format='%s',...): unable to run command '%s' (%s)",format,command,strerror(errno));
+		rc = -1;
+	}
+	else
+	{
+		IN_MYCONTEXT output_verbose("running subcommand '%s'",command);
+		FILE *error_stream = output_get_stream("error");
+		ppolls(pipes,NULL,buffer,len-1,error_stream);
+		rc = pcloses(pipes);
+		if ( rc > 0 )
+		{
+			output_error("GldMain::subcommand(format='%s',...): command '%s' returns code %d",format,command,rc);
+		}
+		IN_MYCONTEXT output_verbose("subcommand '%s' -> status = %d",command,rc);
+		IN_MYCONTEXT output_verbose("subcommand '%s' -> result = [%s]",command,buffer);
+	}
+	free(command);
+	return rc;
+}
 
 int GldMain::subcommand(const char *format, ...)
 {

@@ -1145,7 +1145,7 @@ DEPRECATED const char *global_shell(char *buffer, int size, const char *command)
 		output_error("global_shell(buffer=0x%x,size=%d,command='%s'): unable to create pipes",buffer,size,command);
 		return NULL;
 	}
-	ppolls(pipes,buffer,size,output_get_stream("error"));
+	ppolls(pipes,NULL,buffer,size,output_get_stream("error"));
 	pcloses(pipes);
 	for ( char *c = buffer ; *c != '\0' ; c++ )
 	{
