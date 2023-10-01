@@ -1730,7 +1730,7 @@ int GldCmdarg::info(int argc, const char *argv[])
 		snprintf(cmd,sizeof(cmd)-1,"%s \"%s%s\" & ps -p $! >/dev/null", global_browser, global_infourl, argv[1]);
 #endif
 		IN_MYCONTEXT output_verbose("Starting browser using command [%s]", cmd);
-		if (my_instance->subcommand(cmd)!=0)
+		if (my_instance->subcommand("%s",cmd)!=0)
 		{
 			output_error("unable to start browser");
 			return CMDERR;
@@ -2080,7 +2080,7 @@ DEPRECATED static int printenv(void *main, int argc, const char *argv[])
 }
 int GldCmdarg::printenv(int argc, const char *argv[])
 {
-	return my_instance->subcommand("printenv") == 0 ? 0 : CMDERR;
+	return my_instance->subcommand("%s","printenv") == 0 ? 0 : CMDERR;
 }
 
 DEPRECATED static int formats(void *main, int argc, const char *argv[])

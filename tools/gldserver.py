@@ -185,7 +185,7 @@ class GridlabdServer:
 
     HOST = "localhost" # default host to use when connecting
     PROTOCOL = "http" # default protocol to use when connecting
-    TIMEOUT = 5.0 # default timeout to use when starting/stopping
+    TIMEOUT = 10.0 # default timeout to use when starting/stopping
     RETRYTIME = 0.1 # initial retry time to use when starting/stopping
     LOGFILE = None # file in which to store simulation output (or None, or subprocess.PIPE)
 
@@ -383,10 +383,11 @@ clock {{
 
             def test_detached(self):
                 """Verify that server can be started detached"""
-                fh.seek(0)
-                sim = GridlabdServer(fh.name,detached=True)
-                self.assertEqual(len(sim.get_objects("class=load")),85)
-                sim.stop()
+                if not "github_actions" in os.environ: # detached server is not supported in github
+                    fh.seek(0)
+                    sim = GridlabdServer(fh.name,detached=True)
+                    self.assertEqual(len(sim.get_objects("class=load")),85)
+                    sim.stop()
 
             def test_attached(self):
                 """Verify that server can be started attached"""
