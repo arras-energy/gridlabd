@@ -7794,10 +7794,7 @@ int GldLoader::process_macro(char *line, int size, char *_filename, int linenum)
 		{
 			/* C include file */
 			IN_MYCONTEXT output_verbose("executing include shell \"%s\"", value);
-			std::string output;
-			my_instance->subcommand(output,"%s",value);
-			snprintf(line,size-1,"%s",output.c_str());
-			return TRUE;
+			return my_instance->subcommand(line,size-1,"%s",value) == 0 ? TRUE : FALSE;
 		}
 		else
 		{

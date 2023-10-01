@@ -30,7 +30,7 @@ struct s_pipes {
 };
 struct s_pipes *popens(const char *program, FILE **input, FILE **output, FILE **error);
 int ppolls(struct s_pipes *pipes, FILE* input_stream, FILE* output_stream, FILE *error_stream);
-int ppolls(struct s_pipes *pipes, char *output_buffer, size_t output_size, FILE *error_stream);
+int ppolls(struct s_pipes *pipes, FILE* input_stream, char *output_buffer, size_t output_size, FILE *error_stream);
 int pcloses(struct s_pipes *pipes, bool wait=true);
 #define READ_END 0
 #define WRITE_END 1
@@ -227,7 +227,7 @@ public:
 		>=0 command exit code
 	 */
 	int subcommand(const char *format,...);
-	int subcommand(std::string &output, const char *format,...);
+	int subcommand(char *buffer, size_t len, const char *format,...);
 
 	// Method: check_runtime
 	bool check_runtime(bool use_exception=false);
