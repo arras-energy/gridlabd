@@ -1,0 +1,21 @@
+#ifexist ../test_include_subcommand.txt
+#define DIR=..
+#endif
+
+#option verbose
+
+#include (cat ${DIR:-.}/test_include_subcommand.txt)
+
+module assert;
+
+object test
+{
+    x 12;
+    z 12+2j;
+    object assert {
+        status TRUE;
+        target x;
+        relation ==;
+        value 12;
+    };
+}
