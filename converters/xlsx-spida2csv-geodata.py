@@ -50,41 +50,34 @@ def string_clean(input_str):
 	return output_str
 
 def convert(input_pole_file, input_equipment_file, output_file, options={}):
-	# Round to nearest hundreth decimal place if value has more decimal places than that.
+
+	# read default options into globals
 	for name, value in default_options.items():
 		globals()[name] = value
+
+	# read user options into globals
 	for name, value in options.items():
 		if name not in default_options.keys():
 			raise Exception("option '{name}={value}' is not valid")
 		globals()[name] = value
+
+	# check network mounts
 	if include_network : 
-		include_mount="yes"
+		globals()['include_mount'] = "yes"
 
 	# Read all the sheets in the .xls file 
-	df = pd.read_excel(input_pole_file, sheet_name=0) 
+	df = pd.read_excel(input_pole_file, sheet_name=0, usecols=[
+		'Structure ID', 'AS-IS AGL', 'AS-IS Species', 'AS-IS GLC', 'AS-IS Length', 
+		'AS-IS Class', 'AS-IS Allowable Stress Adjustment', 
+		'AS-IS Effective Stress Adjustment', 'AS-IS GPS Point']) 
 
 	# Read the overhead lines 
-	df_lines = pd.read_csv(include_network)
+	df_lines = pd.read_csv(include_network) if include_network else pd.DataFrame()
 	overheadline_names = []
 	for index, row in df_lines.iterrows(): 
 
 		if row['class']=="overhead_line" : 
 			overheadline_names.append(row['name'])
-
-	# SPIDA export with 1 sheet 
-
-	# Drop unneeded columns 
-	columns_to_drop = ['ProjectID', 'DesignLayer', 'Project ID 1', 'BW Delta Process: Record Mode', 
-						'Calc Version', 'Calc Version 1', 'GLC Unit', 'GLC Value', 'AGL Unit', 'AGL Value', 'Environment', 
-						'Temperature Unit', 'Temperature Value', 'Stress Ratio', 'Owner', 'Class', 'Height Unit', 
-						'Height Value', 'Owner Industry', 'Species', 'AS-IS Owner', 'SCE QC Species', 
-						'SCE QC Length', 'SCE QC Class', 'SCE QC AGL', 'SCE QC GLC', 'SCE QC Allowable Stress Adjustment', 
-						'SCE QC Effective Stress Adjustment', 'SCE QC GPS Point', 'Rework Species', 'Rework Length', 
-						'Rework Class', 'Rework AGL', 'Rework GLC', 'Rework Allowable Stress Adjustment', 
-						'Rework Effective Stress Adjustment', 'Rework GPS Point', 'SCE QC Owner', 'Rework Owner', 
-						'COUNT', 'Ext Last RunTIme', 'Ext Last Run Date', 'Date Modified', 'Time Modified']
-
-	df.drop(columns_to_drop, axis=1, inplace=True)
 
 	# Parse necessary columns into a format supported by Gridlabd.
 	# parse_column(df_current_sheet, 'Lean Angle', parse_angle)
@@ -716,4 +709,4 @@ def xls2glm_object(df_glm, input_file):
 
 	return df_glm.copy()
 
-convert('CARDINAL_Polar - Design CalcDesign DSO.xlsx', 'CARDINAL_PolarDesign Attachment and Equipment_Asset Details from SPIDA and SAP.xlsx', 'cardinal_poles.csv', options={'extract_equipment':'yes','include_network':'yes', 'include_mount':'yes', 'include_network':'CARDINAL.csv'})
+# convert('CARDINAL_Polar - Design CalcDesign DSO.xlsx', 'CARDINAL_PolarDesign Attachment and Equipment_Asset Details from SPIDA and SAP.xlsx', 'cardinal_poles.csv', options={'extract_equipment':'yes','include_network':'yes', 'include_mount':'yes', 'include_network':'CARDINAL.csv'})
