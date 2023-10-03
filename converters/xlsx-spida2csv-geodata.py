@@ -3,7 +3,7 @@
 SYNOPSIS
 
 	GLM:
-		#convert SPIDACALC.xlsx GEODATA.csv -f xlsx-spida -t csv-geodata [precision=2] [extract_equipment=yes] [include_dummy_network=yes]
+		#convert -i poles:POLES.xlsx,equipment:ASSETS.xlsx -o GEODATA.csv -f xlsx-spida -t csv-geodata [precision=2] [extract_equipment=yes] [include_dummy_network=yes]
 
 DESCRIPTION
 
@@ -49,7 +49,24 @@ def string_clean(input_str):
 	output_str = output_str.replace('"', "")
 	return output_str
 
-def convert(input_pole_file, input_equipment_file, output_file, options={}):
+def convert(input_files, output_file, options={}):
+	print("input_files =",input_files)
+	if type(input_files) is dict:
+		for key in input_files:
+			if not key in ["poles","equipment"]:
+				print(f"WARNING [xlsx-spida2csv-geodata]: input file spec '{key}' is not valid",file=sys.stderr)
+		if not "poles" in input_files:
+			raise Exception("poles not specified among input files")
+		else:
+			input_pole_file = input_files["poles"]
+		if not "equipment" in input_files:
+			input_equipment_file = None
+		else:
+			input_equipment_file = input_files["equipment"]
+	elif type(input_files) is str:
+		input_pole_file = input_files
+	else:
+		raise Exception("input_files is not dict or str")
 
 	# read default options into globals
 	for name, value in default_options.items():
@@ -200,10 +217,8 @@ def convert(input_pole_file, input_equipment_file, output_file, options={}):
 	if extract_equipment:
 		
 
-		df_structure_raw = pd.read_excel(input_equipment_file, sheet_name=0)
-		columns_to_keep = ['ID', 'Structure_x0020_ID', 'AS-IS_x0020_Size', 'AtHeight_x0020_Unit', 'AtHeight_x0020_Value', 'Usage_x0020_Group', 'AS-IS_x0020_Height', 'AS-IS_x0020_Direction',
-       'AS-IS_x0020_Offset_x002F_Lead']
-		df_structure = df_structure_raw[columns_to_keep]
+		df_structure_raw = pd.read_excel(input_equipment_file, sheet_name=0, usecols=['ID', 'Structure_x0020_ID', 'AS-IS_x0020_Size', 'AtHeight_x0020_Unit', 'AtHeight_x0020_Value', 'Usage_x0020_Group', 'AS-IS_x0020_Height', 'AS-IS_x0020_Direction',
+       'AS-IS_x0020_Offset_x002F_Lead'])
 
 
 		# new_header_index = df_structure.iloc[:, 0].first_valid_index()
@@ -329,6 +344,7 @@ def convert(input_pole_file, input_equipment_file, output_file, options={}):
 	df_final.reset_index(drop=True, inplace=True)
 
 	# Create final csv file. 
+	print(output_file)
 	df_final.to_csv(output_file, index=False)
 
 def parse_angle(cell_string, current_column, current_row):
