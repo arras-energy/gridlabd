@@ -138,7 +138,7 @@ $(PYENV): requirements.txt
 	@$(ENVPYTHON) --version 1>/dev/null || ( echo "ERROR [Makefile]: $(ENVPYTHON) is not found" > /dev/stderr ; false )
 	@$(ENVPYTHON) -m pip install --upgrade pip
 	@$(ENVPYTHON) -m pip install pandas==2.0.0
-	@$(ENVPYTHON) WEBSITESpython/requirements.py --buildenv | bash
+	@$(ENVPYTHON) $(top_srcdir)/python/requirements.py --buildenv | bash
 	@$(ENVPYTHON) -m pip install -r requirements.txt 
 	@touch $(PYENV)
 
