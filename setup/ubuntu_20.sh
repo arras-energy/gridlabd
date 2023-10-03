@@ -65,6 +65,10 @@ INSTALL apt-get install git unzip libtool libtool-bin mdbtools g++ cmake flex bi
 # update library paths
 INSTALL ldconfig
 
+# symlink mysql files
+ln -s /usr/include/mysql /usr/local/include/mysql
+ln -s /usr/lib/aarch64-linux-gnu/libmysqlclient.a /usr/local/lib/libmysqlclient.a
+
 # install autoconf 2.71 as required
 if [ "$(autoconf --version | head -n 1 | cut -f4 -d' ')" != "2.71" ] ; then
 	(cd /tmp ; curl -sL https://ftpmirror.gnu.org/autoconf/autoconf-2.71.tar.gz | tar xz )
