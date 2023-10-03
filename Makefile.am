@@ -70,7 +70,7 @@ dist_doc_DATA =
 docs_targets =
 
 check-target:
-	@test $(prefix) = $(shell build-aux/version.sh --install) || ( echo "ERROR [Makefile]: prefix and target mismatch; ./configure is outdated. Build using '--clean' option to fix this." > /dev/stderr ; false )
+	@test $(prefix) = $(shell $(top_srcdir)/build-aux/version.sh --install) || ( echo "ERROR [Makefile]: prefix '$(prefix)' and target '($(shell $(top_srcdir)/build-aux/version.sh --install))' mismatch; ./configure is outdated. Build using '--clean' option to fix this." > /dev/stderr ; false )
 
 # required modules
 include $(top_srcdir)/third_party/Makefile.mk
@@ -127,7 +127,7 @@ python-venv:
 # NB: it's ok to use the runner's python to generate the requirements.txt file
 requirements.txt: python/requirements.csv
 	@python3 -m pip -q install pandas==2.0.0
-	@python3 python/requirements.py $< >$@
+	@python3 $(top_srcdir)/python/requirements.py $< >$@
 
 $(PYENV): requirements.txt
 	@$(SYSPYTHON) --version 1>/dev/null || ( echo "ERROR [Makefile]: $(SYSPYTHON) is not found" > /dev/stderr ; false )
@@ -138,7 +138,7 @@ $(PYENV): requirements.txt
 	@$(ENVPYTHON) --version 1>/dev/null || ( echo "ERROR [Makefile]: $(ENVPYTHON) is not found" > /dev/stderr ; false )
 	@$(ENVPYTHON) -m pip install --upgrade pip
 	@$(ENVPYTHON) -m pip install pandas==2.0.0
-	@$(ENVPYTHON) python/requirements.py --buildenv | bash
+	@$(ENVPYTHON) WEBSITESpython/requirements.py --buildenv | bash
 	@$(ENVPYTHON) -m pip install -r requirements.txt 
 	@touch $(PYENV)
 
