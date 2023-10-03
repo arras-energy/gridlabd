@@ -1,8 +1,22 @@
 ''':'
 exec "$GLD_BIN/python3" "$0" "$@"
 :' '''
-# Syntax: convert [[-i|--input] FILE1] [[-o|--output] FILE2] [-v|--verbose] [-d|--debug] [-f|--from TYPE1] [-t|--to TYPE2] [OPTIONS]
-__doc__="""General GridLAB-D file format converter for command line and macro usage.
+# Syntax: convert [[-i|--input] INPUTS] [[-o|--output] OUTPUTS] [-v|--verbose] [-d|--debug] [-f|--from TYPE1] [-t|--to TYPE2] [OPTIONS]
+__doc__="""Syntax: onvert [[-i|--input] INPUTS] [[-o|--output] OUTPUTS] [-v|--verbose] [-d|--debug] [-f|--from TYPE1] [-t|--to TYPE2] [OPTIONS]
+
+The convert subcommand is the general GridLAB-D file format converter for command line and macro usage. It can be used as the shell command, e.g., `gridlabd convert ...` or as a GLM macro, e.g., `#convert ...`.
+
+OPTIONS
+
+	-d|--debug           enable debugging traceback output on error
+	-f|--from ITYPE      specify the input file type and semantics
+	-i|--input INPUTS    specify the output files
+	-o|--output OUTPUTS  specify the output files
+	-r|--read OPTION     specify a converter read option
+	-t|--to OTYPE        specify the output file type and semantics
+	-v|--verbose         enable verbose message output
+	-w|--write OPTION    specify a converter write option
+	OPTION=VALUE         specify a converter option
 """
 import sys, os
 import importlib
@@ -80,14 +94,29 @@ while n < len(sys.argv):
 			OUTPUTFILE = sys.argv[n]
 		except:
 			error("missing output file name",E_MISSING)
+	elif sys.argv[n] in ['-r','--read']:
+		n +=1 
+		specs = sys.argv[n].split('=')
+		if len(specs) == 1:
+			OPTIONS[specs[0]] = None
+		else:
+			OPTIONS[specs[0]] = 'read.' + '='.join(specs[1:])
+	elif sys.argv[n] in ['-w','--write']:
+		n +=1 
+		specs = sys.argv[n].split('=')
+		if len(specs) == 1:
+			OPTIONS[specs[0]] = None
+		else:
+			OPTIONS[specs[0]] = 'write.' + '='.join(specs[1:])
 	elif not INPUTFILE:
 		INPUTFILE = sys.argv[n]
 	elif not OUTPUTFILE:
 		OUTPUTFILE = sys.argv[n]
 	else:
+		n +=1 
 		specs = sys.argv[n].split('=')
 		if len(specs) == 1:
-			OPTIONS[specs[0]] = None
+			OPTIONS[specs[0]] = True
 		else:
 			OPTIONS[specs[0]] = '='.join(specs[1:])
 	n += 1
@@ -99,17 +128,29 @@ if not INPUTFILE:
 	else:
 		INPUTFILE = "/dev/stdin"
 else:
-	# convert input files spec to dict if it contains a colon
-	if ":" in INPUTFILE:
-		if not INPUTTYPE:
-			error("input type must be specified when using multiple input files",E_MISSING)
+	# convert input files spec to dict if possible
+	try:
 		INPUTFILE = dict([x.split(":") for x in INPUTFILE.split(",")])
-	elif not INPUTTYPE:
-		INPUTTYPE = os.path.splitext(INPUTFILE)[1][1:]
+	except:
+		if not INPUTTYPE:
+			INPUTTYPE = os.path.splitext(INPUTFILE)[1][1:]
+	if type(INPUTFILE) is dict and not INPUTTYPE:
+		error("input type must be specified when using multiple input files",E_MISSING)
+
 if not OUTPUTFILE:
-	OUTPUTFILE = "/dev/stdout"
-elif not OUTPUTTYPE:
-	OUTPUTTYPE = os.path.splitext(OUTPUTFILE)[1][1:]
+	if not OUTPUTTYPE:
+		error("output type must be specified when using stdout",E_MISSING)
+	else:
+		OUTPUTFILE = "/dev/stdout"
+else:
+	# convert output files spec to dict if it possible
+	try:
+		OUTPUTFILE = dict([x.split(":") for x in OUTPUTFILE.split(",")])
+	except:
+		if not OUTPUTTYPE:
+			OUTPUTTYPE = os.path.splitext(OUTPUTFILE)[1][1:]
+	if type(OUTPUTFILE) is dict and not OUTPUTTYPE:
+		error("input type must be specified when using multiple input files",E_MISSING)
 
 modname = f'{MODPATH}/{INPUTTYPE}2{OUTPUTTYPE}.py'
 if os.path.exists(modname):

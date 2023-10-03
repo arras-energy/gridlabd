@@ -2,28 +2,49 @@
 
 SYNOPSIS
 
-	GLM:
-		#convert -i poles:POLES.xlsx,equipment:ASSETS.xlsx -o GEODATA.csv -f xlsx-spida -t csv-geodata [precision=2] [extract_equipment=yes] [include_dummy_network=yes]
+	Shell: 
+		$ gridlabd convert -i poles:POLES.xlsx,equipment:ASSETS.xlsx 
+			-o GEODATA.csv -f xlsx-spida -t csv-geodata [OPTIONS ...]
 
-DESCRIPTION
+	GLM: 
+		#convert -i poles:POLES.xlsx,equipment:ASSETS.xlsx -o GEODATA.csv 
+			-f xlsx-spida -t csv-geodata [OPTIONS ...]
 
-	This converter extracts pole geodata from a SPIDAcalc pole asset report spreadsheet
-	and generates a GriDLAB-D geodata CSV file.
 
 OPTIONS:
 
-- `precision=2`: specify the number of digits in a number and function ROUND will be used (default 2)
+	- `precision=2`: specify the number of digits in a number and function
+	  		ROUND will be used (default 2)
 
-- `extract_equipment=yes`: enable the conversion of pole-mounted equipment, dummy values will be used for equipment properties (default None)
+	- `extract_equipment`: enable the conversion of pole-mounted equipment,
+			dummy values will be used for equipment properties (default None)
 
-- `include_dummy_network=yes`: enable the generation of a bus-type feeder, dummy values will be used for properties of feeder and equipment (default None)
+	- `include_dummy_network`: enable the generation of a bus-type feeder,
+			dummy values will be used for properties of feeder and equipment
+			(default None)
 
-- `include_weather=NAME`: name the weather object and do not use dummy values for weather data (default None)
+	- `include_weather=NAME`: name the weather object and do not use dummy
+	  		values for weather data (default None)
 
-- `include_mount=yes` : enable the generation of pole mounts objects for the ability to connect poles to network
+	- `include_mount` : enable the generation of pole mounts objects for the
+	  		ability to connect poles to network
 
-- `include_network=NAME` : name the distribution feeder network to reference the connection via include mount.
-	
+DESCRIPTION
+
+	This converter extracts pole geodata from a SPIDAcalc pole asset report
+	spreadsheet and generates a GriDLAB-D geodata CSV file.
+
+	If only a single input file is specified without a file type
+	specification, then it is assumed to be the pole data file. In
+	general, multiple files are needed, in which case they must be
+	specified as a series of comma-separated specifications, e.g.,
+	`TYPE1:NAME1,TYPE2:NAME2,...`.  Accepted file types are
+
+		- `pole`       Pole data from SpidaCalc (XLSX)
+		- `equipment`  Equipment data from SpidaCalc (XLSX)
+		- `network`    Network mapping data (CSV)
+
+	The output is always a GridLAB-D GeoData CSV file.
 """
 
 import pandas as pd 
@@ -40,7 +61,6 @@ default_options = {
 	"include_dummy_network" : None,
 	"include_weather" : None,
 	"include_mount" : None,
-	"include_network" : None 
 }
 
 def string_clean(input_str):
@@ -49,21 +69,34 @@ def string_clean(input_str):
 	output_str = output_str.replace('"', "")
 	return output_str
 
+include_network = False
+extract_equipment = False
+
 def convert(input_files, output_file, options={}):
+
 	if type(input_files) is dict:
 		for key in input_files:
 			if not key in ["poles","equipment","network"]:
 				print(f"WARNING [xlsx-spida2csv-geodata]: input file spec '{key}' is not valid",file=sys.stderr)
+		
 		if not "poles" in input_files:
 			raise Exception("poles not specified among input files")
 		else:
 			input_pole_file = input_files["poles"]
+		
 		if not "equipment" in input_files:
 			input_equipment_file = None
 		else:
 			input_equipment_file = input_files["equipment"]
+			global extract_equipment
+			extract_equipment = True
+
 		if "network" in input_files:
-			globals()['include_mount'] = input_files["network"]
+			global include_network
+			include_network = input_files["network"]
+			global include_mount
+			include_mount = True
+
 	elif type(input_files) is str:
 		input_pole_file = input_files
 	else:
