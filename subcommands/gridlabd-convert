@@ -92,10 +92,20 @@ while n < len(sys.argv):
 			OPTIONS[specs[0]] = '='.join(specs[1:])
 	n += 1
 
+
 if not INPUTFILE:
-	INPUTFILE = "/dev/stdin"
-elif not INPUTTYPE:
-	INPUTTYPE = os.path.splitext(INPUTFILE)[1][1:]
+	if not INPUTTYPE:
+		error("input type must be specified when using stdin",E_MISSING)
+	else:
+		INPUTFILE = "/dev/stdin"
+else:
+	# convert input files spec to dict if it contains a colon
+	if ":" in INPUTFILE:
+		if not INPUTTYPE:
+			error("input type must be specified when using multiple input files",E_MISSING)
+		INPUTFILE = dict([x.split(":") for x in INPUTFILE.split(",")])
+	elif not INPUTTYPE:
+		INPUTTYPE = os.path.splitext(INPUTFILE)[1][1:]
 if not OUTPUTFILE:
 	OUTPUTFILE = "/dev/stdout"
 elif not OUTPUTTYPE:

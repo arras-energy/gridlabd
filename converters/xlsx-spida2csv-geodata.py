@@ -53,7 +53,7 @@ def convert(input_files, output_file, options={}):
 	print("input_files =",input_files)
 	if type(input_files) is dict:
 		for key in input_files:
-			if not key in ["poles","equipment"]:
+			if not key in ["poles","equipment","network"]:
 				print(f"WARNING [xlsx-spida2csv-geodata]: input file spec '{key}' is not valid",file=sys.stderr)
 		if not "poles" in input_files:
 			raise Exception("poles not specified among input files")
@@ -63,6 +63,8 @@ def convert(input_files, output_file, options={}):
 			input_equipment_file = None
 		else:
 			input_equipment_file = input_files["equipment"]
+		if "network" in input_files:
+			globals()['include_mount'] = input_files["network"]
 	elif type(input_files) is str:
 		input_pole_file = input_files
 	else:
