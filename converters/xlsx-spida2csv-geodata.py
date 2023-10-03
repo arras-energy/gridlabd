@@ -50,7 +50,6 @@ def string_clean(input_str):
 	return output_str
 
 def convert(input_files, output_file, options={}):
-	print("input_files =",input_files)
 	if type(input_files) is dict:
 		for key in input_files:
 			if not key in ["poles","equipment","network"]:
@@ -82,7 +81,7 @@ def convert(input_files, output_file, options={}):
 
 	# check network mounts
 	if include_network : 
-		globals()['include_mount'] = "yes"
+		globals()['include_mount'] = True
 
 	# Read all the sheets in the .xls file 
 	df = pd.read_excel(input_pole_file, sheet_name=0, usecols=[
@@ -727,4 +726,3 @@ def xls2glm_object(df_glm, input_file):
 
 	return df_glm.copy()
 
-# convert('CARDINAL_Polar - Design CalcDesign DSO.xlsx', 'CARDINAL_PolarDesign Attachment and Equipment_Asset Details from SPIDA and SAP.xlsx', 'cardinal_poles.csv', options={'extract_equipment':'yes','include_network':'yes', 'include_mount':'yes', 'include_network':'CARDINAL.csv'})
