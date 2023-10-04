@@ -978,7 +978,7 @@ class GLM:
     # add node to glm file
     def add_node(self, node_id, node_links, device_dict, version, **kwargs):
         phase = 0
-    
+
         for device_id in node_links[node_id]:
             phase |= glm_phase_code[device_dict[device_id]["phases"]]
         obj = self.object(
@@ -2933,8 +2933,6 @@ def cyme_extract_9(network_id, network, conversion_info):
     all_load = table_find(cyme_table["load"], NetworkId=network_id)
     all_node = table_find(cyme_table["node"], NetworkId=network_id)
 
-  
-
     # node graph data
     if "nodetag" in cyme_table.keys():
         for index, node in table_find(
@@ -3244,7 +3242,7 @@ def cyme_extract_9(network_id, network, conversion_info):
 
         for index, row in df_all_nodes.iterrows():
             node_id = row["NodeId"]
-            if node_id not in node_geodata.keys():  
+            if node_id not in node_geodata.keys():
                 try:
                     node_X = float(row["X"])
                     node_Y = float(row["Y"])
@@ -3322,9 +3320,6 @@ def convert(input_file: str, output_file: str = None, options: dict[str, Any] = 
                     print(config)
             elif opt in ("t", "cyme-tables"):
                 print(" ".join(cyme_tables_required))
-                sys.exit(0)
-            elif opt in ("x"):
-                print('help')
                 sys.exit(0)
             elif opt in ("d", "data-dir"):
                 data_folder = arg.strip()
