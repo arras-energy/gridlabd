@@ -978,29 +978,7 @@ class GLM:
     # add node to glm file
     def add_node(self, node_id, node_links, device_dict, version, **kwargs):
         phase = 0
-        if geodata_file:
-            node_geodata_id = f"{node_id}_{network_id}"
-            if node_geodata_id not in node_geodata.keys():
-                all_node = kwargs["node_info"]["all_node"]
-                try:
-                    node_X = float(all_node[all_node["NodeId"] == node_id]["X"].values)
-                    node_Y = float(all_node[all_node["NodeId"] == node_id]["Y"].values)
-                except:
-                    warning(
-                        f"{cyme_mdbname}@{network_id}: cannot add coordinates for node_id"
-                    )
-                    node_X = np.nan
-                    node_Y = np.nan
-                node_geodata[node_geodata_id] = {
-                    "NotworkID": network_id,
-                    "node": node_id,
-                    "x": node_X,
-                    "y": node_Y,
-                }
-            else:
-                raise Exception(
-                    f"{cyme_mdbname}@{network_id}: multiple definition for {node_id}"
-                )
+    
         for device_id in node_links[node_id]:
             phase |= glm_phase_code[device_dict[device_id]["phases"]]
         obj = self.object(
@@ -2955,6 +2933,8 @@ def cyme_extract_9(network_id, network, conversion_info):
     all_load = table_find(cyme_table["load"], NetworkId=network_id)
     all_node = table_find(cyme_table["node"], NetworkId=network_id)
 
+  
+
     # node graph data
     if "nodetag" in cyme_table.keys():
         for index, node in table_find(
@@ -3259,10 +3239,36 @@ def cyme_extract_9(network_id, network, conversion_info):
 
     # generate coordinate file
     if geodata_file:
+        all_node = table_find(cyme_table["node"], NetworkId=network_id)
+        df_all_nodes = pd.DataFrame.from_dict(all_node)
+
+        for index, row in df_all_nodes.iterrows():
+            node_id = row["NodeId"]
+            if node_id not in node_geodata.keys():  
+                try:
+                    node_X = float(row["X"])
+                    node_Y = float(row["Y"])
+                except:
+                    warning(
+                        f"{cyme_mdbname}@{network_id}: cannot add coordinates for node_id"
+                    )
+                    node_X = np.nan
+                    node_Y = np.nan
+                node_geodata[node_id] = {
+                    "NetworkID": network_id,
+                    "node": node_id,
+                    "x": node_X,
+                    "y": node_Y,
+                }
+            else:
+                raise Exception(
+                    f"{cyme_mdbname}@{network_id}: multiple definition for {node_id}"
+                )
+
         df_node = pd.DataFrame.from_dict(node_geodata)
         df_node = df_node.T
-        df_node.drop(df_node[df_node[:]["NotworkID"] != network_id].index, inplace=True)
-        df_node = df_node.drop(["NotworkID"], axis=1)
+        df_node.drop(df_node[df_node[:]["NetworkID"] != network_id].index, inplace=True)
+        df_node = df_node.drop(["NetworkID"], axis=1)
         df_node.to_csv(f"{output_folder}/{geodata_file}", index=False, header=True)
 
     glm.close()
@@ -3316,6 +3322,9 @@ def convert(input_file: str, output_file: str = None, options: dict[str, Any] = 
                     print(config)
             elif opt in ("t", "cyme-tables"):
                 print(" ".join(cyme_tables_required))
+                sys.exit(0)
+            elif opt in ("x"):
+                print('help')
                 sys.exit(0)
             elif opt in ("d", "data-dir"):
                 data_folder = arg.strip()
