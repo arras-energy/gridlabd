@@ -365,7 +365,6 @@ def convert(input_files, output_file, options={}):
 	if include_dummy_network:
 		df = xls2glm_object(df,input_pole_file)
 
-
 	# Keep track of final df to output at the end. 
 	df_final = df.copy()
 
@@ -651,6 +650,7 @@ def xls2glm_object(df_glm, input_file):
 	glm_TF_dic = {}
 
 	swing_node = f"ND_{re.sub(r'[^a-zA-Z]', '_', os.path.basename(input_file).split('.')[0])}"
+	df_glm["parent"]=swing_node
 	glm_node_dic[swing_node] = {
 		"name" : swing_node,
 		"class" : "node",
