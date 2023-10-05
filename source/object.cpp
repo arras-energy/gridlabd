@@ -1283,7 +1283,7 @@ static int set_header_value(OBJECT *obj, const char *name, const char *value,boo
 	}
 }
 
-const char *object_get_header_string(OBJECT *obj, const char *item, char *buffer, size_t len)
+const char *object_get_header_string(OBJECT *obj, const char *item, char *buffer, size_t len, bool quiet)
 {
 	if ( strcmp(item,"name") == 0 )
 	{
@@ -1401,7 +1401,10 @@ const char *object_get_header_string(OBJECT *obj, const char *item, char *buffer
 	}
 	else
 	{
-		output_error("object_get_header_string(obj=<%s:%d>,item='%s',...): invalid header item name",obj->oclass->name,obj->id,item);
+		if ( ! quiet )
+		{
+			output_error("object_get_header_string(obj=<%s:%d>,item='%s',...): invalid header item name",obj->oclass->name,obj->id,item);
+		}
 		return NULL;
 	}
 	return buffer;
