@@ -378,7 +378,6 @@ def convert(input_files, output_file, options={}):
 	df_final.reset_index(drop=True, inplace=True)
 
 	# Create final csv file. 
-	print(output_file)
 	df_final.to_csv(output_file, index=False)
 
 def parse_angle(cell_string, current_column, current_row):
