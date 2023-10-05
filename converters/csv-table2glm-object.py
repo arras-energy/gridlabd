@@ -24,7 +24,7 @@ def convert (input_name, output_name=None, options={} ) :
 		configurations = csv.reader(csvfile, delimiter=',')
 		glm = open(output_name, "w")
 		glm.write(f"// {__file__} {input_name} {output_name} {options} \n")
-		if "module" in options.keys():
+		if any('module' in key for key in test_dict.keys()):
 			for module in options["module"].split(","):
 				glm.write(f"module {module};\n")
 		for i, row in enumerate(configurations):
