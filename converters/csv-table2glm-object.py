@@ -24,24 +24,21 @@ def convert (input_name, output_name=None, options={} ) :
 		configurations = csv.reader(csvfile, delimiter=',')
 		glm = open(output_name, "w")
 		glm.write(f"// {__file__} {input_name} {output_name} {options} \n")
-		
-		if any('module' in key for key in options.keys()):
-			modules = [part for key, value in options.items() if value is True and 'module' in key for part in key.split(':')[1].split(',')]
-			for module in modules:
+		if "module" in options.keys():
+			for module in options["module"].split(","):
 				glm.write(f"module {module};\n")
 		for i, row in enumerate(configurations):
 			if i == 0 : 
-				headers = row # column names from files 
-				classes = [part for key, value in options.items() if value is True and 'class' in key for part in key.split(':')[0].split(',')]
-				if "class" in headers: #if class is specified as one of the columns 
+				headers = row
+				if "class" in headers:
 					class_index = headers.index("class")
-				elif 'class' not in classes: #if class is not a column of CSV but is listed in options call
-					error("no class specified either in CSV or command options") 
-				else: # class is specified in command options
-					class_index = None 
+				elif "class" not in options.keys():
+					error("no class specified either in CSV or command options")
+				else:
+					class_index = None
 			else : 
 				if class_index == None or not row[class_index] : 
-					class_name = [part for key, value in options.items() if value is True and 'class' in key for part in key.split(':')[1].split(',')][0]
+					class_name = options['class']
 				else:
 					class_name = row[class_index]
 				glm.write(f"object {class_name} ")
@@ -56,9 +53,8 @@ def convert (input_name, output_name=None, options={} ) :
 									glm.write("\t" + headers[j].strip() + " " + value + ";\n")
 								else : 
 									glm.write("\t" + headers[j].strip() + " " + "\"" +value + "\"" + ";\n")
-					# for key,value in {key: True for key in options.keys()}.items(): # Don't know what this is?????
-					# 	print(value)
-					# 	if not key in ["module","class"]:
-					# 		glm.write(f"\t{key} \"{value}\";\n")
+					for key,value in options.items():
+						if not key in ["module","class"]:
+							glm.write(f"\t{key} \"{value}\";\n")
 				glm.write("}\n")
 		glm.close()
