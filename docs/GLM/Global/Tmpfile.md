@@ -3,6 +3,7 @@
 # Synopsis
 
 ~~~
+${TMPFILE}
 ${TMPFILE TAG}
 ~~~
 
@@ -15,7 +16,7 @@ Create and access a temporary file using a tag.  The file is deleted when the Gr
   - `NAME` is the tag name
   - `EXT` is the tag type
 
-If `TAG` has the format `EXT:NAME` these are used in constructing the file name, otherwise `NAME` is set to `TAG`.
+If `TAG` is omitted, a random tag is generated. If `TAG` has the format `EXT:NAME` these are used in constructing the file name, otherwise `NAME` is set to `TAG`.
 
 # Example
 

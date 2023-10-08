@@ -38,19 +38,10 @@ void tmpfile_get(
                 tmp = "/tmp";
             }
         }
-        char hostname[1024]="localhost";
-        gethostname(hostname,sizeof(hostname)-1);
-        for ( char *c = hostname ; *c != '\0' ; c++ )
-        {
-            if ( ! isalnum(*c) )
-            {
-                *c = '_';
-            }
-        }
         snprintf(tmpname,sizeof(tmpname)-1,"%s%sgridlabd_tmp_%s_%u_%s.%s",
             tmp,
             tmp[strlen(tmp)-1] == '/' ? "" : "/",
-            hostname,
+            global_hostname,
             getpid(),
             name,
             ext);
