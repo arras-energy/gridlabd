@@ -1869,14 +1869,20 @@ const char *GldGlobals::getvar(const char *name, char *buffer, size_t size)
 	if ( strncmp(name,"FILETYPE ",9) == 0 )
 		return global_filetype(buffer,size,name+9);
 
-    if ( strncmp(name,"FIND ",5) == 0 )
-    {
-        return global_findobj(buffer,size,name+5);
-    }
-    if ( strncmp(name,"GEOCODE ",8) == 0 )
-    {
-    	return global_geocode(buffer,size,name+8);
-    }
+	if ( strncmp(name,"FIND ",5) == 0 )
+	{
+	  return global_findobj(buffer,size,name+5);
+	}
+	if ( strncmp(name,"GEOCODE ",8) == 0 )
+	{
+		return global_geocode(buffer,size,name+8);
+	}
+	if ( strncmp(name,"TMPFILE ",8) == 0 )
+	{
+		while ( isspace(name[8]) ) name++;
+		tmpfile_get(buffer,size,name+8);
+		return buffer;
+	}
 	/* expansions */
 	if ( parameter_expansion(buffer,size,name) )
 		return buffer;

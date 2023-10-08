@@ -78,6 +78,7 @@ int main
 		int stat;
 		wait(&stat);
 	}
+	tmpfile_term();
 	return return_code;
 }
 unsigned int GldMain::next_id = 0;
