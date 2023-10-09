@@ -521,8 +521,8 @@ AS_IF([test "x$MYSQL" != "xno"],
 				MYSQL_LIBS="-lmysqlclient"],
 			[*darwin*], [MYSQL_LDFLAGS="'-L$MYSQL/lib'"
 				MYSQL_LIBS="-lmysqlclient"])
-		GLD_CPPFLAGS="$GLD_CPPFLAGS -DHAVE_MYSQL"
-		HAVE_MYSQL=yes],
+		HAVE_MYSQL=yes
+        GLD_CPPFLAGS="$GLD_CPPFLAGS -DHAVE_MYSQL"],
 	[HAVE_MYSQL=no])
 AC_SUBST([MYSQL_CPPFLAGS])
 AC_SUBST([MYSQL_LDFLAGS])
