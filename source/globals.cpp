@@ -1778,6 +1778,12 @@ DEPRECATED const char *global_geocode(char *buffer, int size, const char *spec)
 	return buffer;
 }
 
+DEPRECATED const char *global_pid(char *buffer, int size)
+{
+	snprintf(buffer,size-1,"%d",getpid());
+	return buffer;
+}
+
 /** Get the value of a global variable in a safer fashion
 	@return a \e char * pointer to the buffer holding the buffer where we wrote the data,
 		\p NULL if insufficient buffer space or if the \p name was not found.
@@ -1815,6 +1821,7 @@ const char *GldGlobals::getvar(const char *name, char *buffer, size_t size)
 		{"MYSQL",global_true},
 #endif
 		{"PYTHON",global_true},
+		{"PID",global_pid},
 	};
 	size_t i;
 	if(buffer == NULL){
@@ -1869,14 +1876,31 @@ const char *GldGlobals::getvar(const char *name, char *buffer, size_t size)
 	if ( strncmp(name,"FILETYPE ",9) == 0 )
 		return global_filetype(buffer,size,name+9);
 
-    if ( strncmp(name,"FIND ",5) == 0 )
-    {
-        return global_findobj(buffer,size,name+5);
-    }
-    if ( strncmp(name,"GEOCODE ",8) == 0 )
-    {
-    	return global_geocode(buffer,size,name+8);
-    }
+	if ( strncmp(name,"FIND ",5) == 0 )
+	{
+	  return global_findobj(buffer,size,name+5);
+	}
+	if ( strncmp(name,"GEOCODE ",8) == 0 )
+	{
+		return global_geocode(buffer,size,name+8);
+	}
+	if ( strncmp(name,"TMPFILE",7) == 0 )
+	{
+		if ( strcmp(name,"TMPFILE") == 0 )
+		{
+			char tag[64];
+			snprintf(tag,sizeof(tag)-1,"%x%x%x%x",rand(),rand(),rand(),rand());
+			tmpfile_get(buffer,size,tag);
+			return buffer;
+		}
+		else if ( strncmp(name,"TMPFILE ",8) == 0 )
+		{
+			while ( isspace(name[8]) ) name++;
+			tmpfile_get(buffer,size,name+8);
+			return buffer;
+		}
+	}
+
 	/* expansions */
 	if ( parameter_expansion(buffer,size,name) )
 		return buffer;
