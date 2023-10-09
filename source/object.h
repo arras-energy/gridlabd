@@ -164,7 +164,7 @@ typedef struct s_callbacks {
 		int (*set_dependent)(OBJECT*,OBJECT*);
 		int (*set_parent)(OBJECT*,OBJECT*);
 		OBJECTRANK (*set_rank)(OBJECT*,OBJECTRANK);
-		const char *(*get_header_string)(OBJECT *obj, const char *item, char *buffer, size_t len);
+		const char *(*get_header_string)(OBJECT *obj, const char *item, char *buffer, size_t len, bool quiet);
 	} object;
 	struct {
 		PROPERTY *(*get_property)(OBJECT*,PROPERTYNAME,PROPERTYSTRUCT*);
@@ -505,7 +505,7 @@ const char *object_property_to_initial(OBJECT *obj, const char *name, char *buff
 }
 #endif
 
-const char* object_get_header_string(OBJECT *obj, const char *item, char *buffer, size_t len);
+const char* object_get_header_string(OBJECT *obj, const char *item, char *buffer, size_t len, bool quiet=false);
 
 #define object_size(X) ((X)?(X)->size:-1) /**< get the size of the object X */
 #define object_id(X) ((X)?(X)->id:-1) /**< get the id of the object X */
