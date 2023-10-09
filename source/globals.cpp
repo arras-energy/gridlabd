@@ -1019,13 +1019,13 @@ DEPRECATED const char *global_run(char *buffer, int size)
 	else
 		return NULL;
 }
-DEPRECATED const char *global_now(char *buffer, int size)
+DEPRECATED const char *global_now(char *buffer, int size,const char *format="%Y%m%d-%H%M%S")
 {
 	if ( size>32 )
 	{
 		time_t now = time(NULL);
 		struct tm *tmbuf = gmtime(&now);
-		strftime(buffer,size,"%Y%m%d-%H%M%S",tmbuf);
+		strftime(buffer,size,format,tmbuf);
 		return buffer;
 	}
 	else
@@ -1794,7 +1794,6 @@ const char *GldGlobals::getvar(const char *name, char *buffer, size_t size)
 		const char *(*call)(char *buffer,int size);
 	} map[] = {
 		{"GUID",global_guid},
-		{"NOW",global_now},
 		{"TODAY",global_today},
 		{"RUN",global_run},
 		{"URAND",global_urand},
@@ -1869,14 +1868,25 @@ const char *GldGlobals::getvar(const char *name, char *buffer, size_t size)
 	if ( strncmp(name,"FILETYPE ",9) == 0 )
 		return global_filetype(buffer,size,name+9);
 
-    if ( strncmp(name,"FIND ",5) == 0 )
-    {
-        return global_findobj(buffer,size,name+5);
-    }
-    if ( strncmp(name,"GEOCODE ",8) == 0 )
-    {
-    	return global_geocode(buffer,size,name+8);
-    }
+	if ( strncmp(name,"FIND ",5) == 0 )
+	{
+	  return global_findobj(buffer,size,name+5);
+	}
+	if ( strncmp(name,"GEOCODE ",8) == 0 )
+	{
+		return global_geocode(buffer,size,name+8);
+	}
+	if ( strncmp(name,"NOW",3) == 0 )
+	{
+		if ( strcmp(name,"NOW") == 0 )
+		{
+			return global_now(buffer,size);
+		}
+		else if ( strncmp(name,"NOW ",4) == 0 )
+		{
+			return global_now(buffer,size,name+4);
+		}
+	}
 	/* expansions */
 	if ( parameter_expansion(buffer,size,name) )
 		return buffer;
