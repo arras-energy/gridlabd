@@ -57,7 +57,7 @@ fi
 INSTALL "$PYTHON_EXEC" -m pip install --upgrade pip || error "pip update failed"
 
 # install required libraries
-INSTALL apt-get install build-essential zlib1g-dev libcurl4-gnutls-dev libncurses5-dev liblzma-dev libbz2-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libmysqlclient-dev -y
+INSTALL apt-get install build-essential zlib1g-dev libcurl4-gnutls-dev libncurses5-dev liblzma-dev libbz2-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libmysqlclient-dev mysql-server -y
 
 # install required tools
 INSTALL apt-get install git unzip libtool libtool-bin mdbtools g++ cmake flex bison subversion util-linux xz-utils wget -y
