@@ -1,9 +1,17 @@
+#ifmissing ${GLD_BIN}/mdb-schema
+
+#warning mdbtools is not available
+
+#else // found ${GLD_BIN}/mdb-schema
+
 #ifexist ../IEEE-13-cyme.mdb
 #define DIR=..
-#endif
+#endif // exist ../IEEE-13-cyme.mdb
 
 #input "${DIR:-.}/IEEE-13-cyme.mdb" -t cyme -o ./test-IEEE-13.glm -p coordinateCSV=test-IEEE-13-cyme-xy-coordinates.csv
 
 #ifexist ../IEEE-13-cyme-xy-coordinates.csv
 #on_exit 0 diff -I '^[#/]' ../IEEE-13-cyme-xy-coordinates.csv test-IEEE-13-cyme-xy-coordinates.csv > gridlabd.diff
-#endif
+#endif // exist ../IEEE-13-cyme-xy-coordinates.csv
+
+#endif // missing ${GLD_BIN}/mdb-schema

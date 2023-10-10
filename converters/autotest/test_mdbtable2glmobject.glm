@@ -1,3 +1,9 @@
+#ifmissing ${GLD_BIN}/mdb-schema
+
+#warning mdbtools is not available
+
+#else // found ${GLD_BIN}/mdb-schema
+
 #ifexist ../IEEE-13-cyme.mdb
 #define DIR=..
 #endif // exist ../IEEE-13-cyme.mdb
@@ -7,3 +13,5 @@
 #ifexist ../IEEE-13-cyme-object.glm
 #on_exit 0 diff -I '^[#/]' ../IEEE-13-cyme-object.glm IEEE-13-cyme-object.glm > gridlabd.diff
 #endif // exist ../IEEE-13-cyme-object.glm
+
+#endif // missing ${GLD_BIN}/mdb-schema
