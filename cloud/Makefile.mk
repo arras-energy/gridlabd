@@ -41,7 +41,7 @@ cloud-deploy: aws-deploy gcp-deploy az-deploy
 # Get a list of files that have to be updated
 #
 
-WEBSITES=$(shell find cloud/websites/*.gridlabd.us -type d -prune)
+WEBSITES=$(shell find $(top_srcdir)/cloud/websites/*.gridlabd.us -type d -prune)
 
 #
 # Target that forces updates
