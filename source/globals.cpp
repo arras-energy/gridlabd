@@ -1019,13 +1019,13 @@ DEPRECATED const char *global_run(char *buffer, int size)
 	else
 		return NULL;
 }
-DEPRECATED const char *global_now(char *buffer, int size)
+DEPRECATED const char *global_now(char *buffer, int size,const char *format="%Y%m%d-%H%M%S")
 {
 	if ( size>32 )
 	{
 		time_t now = time(NULL);
 		struct tm *tmbuf = gmtime(&now);
-		strftime(buffer,size,"%Y%m%d-%H%M%S",tmbuf);
+		strftime(buffer,size,format,tmbuf);
 		return buffer;
 	}
 	else
@@ -1778,6 +1778,12 @@ DEPRECATED const char *global_geocode(char *buffer, int size, const char *spec)
 	return buffer;
 }
 
+DEPRECATED const char *global_pid(char *buffer, int size)
+{
+	snprintf(buffer,size-1,"%d",getpid());
+	return buffer;
+}
+
 /** Get the value of a global variable in a safer fashion
 	@return a \e char * pointer to the buffer holding the buffer where we wrote the data,
 		\p NULL if insufficient buffer space or if the \p name was not found.
@@ -1794,7 +1800,6 @@ const char *GldGlobals::getvar(const char *name, char *buffer, size_t size)
 		const char *(*call)(char *buffer,int size);
 	} map[] = {
 		{"GUID",global_guid},
-		{"NOW",global_now},
 		{"TODAY",global_today},
 		{"RUN",global_run},
 		{"URAND",global_urand},
@@ -1815,6 +1820,7 @@ const char *GldGlobals::getvar(const char *name, char *buffer, size_t size)
 		{"MYSQL",global_true},
 #endif
 		{"PYTHON",global_true},
+		{"PID",global_pid},
 	};
 	size_t i;
 	if(buffer == NULL){
@@ -1869,15 +1875,43 @@ const char *GldGlobals::getvar(const char *name, char *buffer, size_t size)
 	if ( strncmp(name,"FILETYPE ",9) == 0 )
 		return global_filetype(buffer,size,name+9);
 
-    if ( strncmp(name,"FIND ",5) == 0 )
-    {
-        return global_findobj(buffer,size,name+5);
-    }
-    if ( strncmp(name,"GEOCODE ",8) == 0 )
-    {
-    	return global_geocode(buffer,size,name+8);
-    }
-	/* expansions */
+	if ( strncmp(name,"FIND ",5) == 0 )
+	{
+	  return global_findobj(buffer,size,name+5);
+	}
+	if ( strncmp(name,"GEOCODE ",8) == 0 )
+	{
+		return global_geocode(buffer,size,name+8);
+	}
+	if ( strncmp(name,"TMPFILE",7) == 0 )
+	{
+		if ( strcmp(name,"TMPFILE") == 0 )
+		{
+			char tag[64];
+			snprintf(tag,sizeof(tag)-1,"%x%x%x%x",rand(),rand(),rand(),rand());
+			tmpfile_get(buffer,size,tag);
+			return buffer;
+		}
+		else if ( strncmp(name,"TMPFILE ",8) == 0 )
+		{
+			while ( isspace(name[8]) ) name++;
+			tmpfile_get(buffer,size,name+8);
+			return buffer;
+		}
+	}
+	if ( strncmp(name,"NOW",3) == 0 )
+	{
+		if ( strcmp(name,"NOW") == 0 )
+		{
+			return global_now(buffer,size);
+		}
+		else if ( strncmp(name,"NOW ",4) == 0 )
+		{
+			return global_now(buffer,size,name+4);
+		}
+	}
+
+  /* expansions */
 	if ( parameter_expansion(buffer,size,name) )
 		return buffer;
 

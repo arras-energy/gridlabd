@@ -385,8 +385,7 @@ clock {{
                 """Verify that server can be started detached"""
                 fh.seek(0)
                 sim = GridlabdServer(fh.name,detached=True)
-                if sim.get_global("github_actions") != "yes": 
-                    # detached server is not supported in github actions
+                if "github_actions" in os.environ and os.environ["github_actions"] != "yes":
                     self.assertEqual(len(sim.get_objects("class=load")),85)
                 sim.stop()
 

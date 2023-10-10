@@ -7349,11 +7349,11 @@ int writefile(char *fname, char *specs)
 			case CSV:
                 if ( obj->name )
                 {
-                    fprintf(fp,"%d,%s,\"%s\"",obj->id,obj->oclass->name,obj->name);
+                    fprintf(fp,"%d,\"%s\",\"%s\"",obj->id,obj->oclass->name,obj->name);
                 }
                 else
                 {
-                    fprintf(fp,"%d,%s,\"%s:%d\"",obj->id,obj->oclass->name,obj->oclass->name,obj->id);
+                    fprintf(fp,"%d,\"%s\",\"%s:%d\"",obj->id,obj->oclass->name,obj->oclass->name,obj->id);
                 }
 				break;
 			case JSON:
@@ -7378,7 +7378,8 @@ int writefile(char *fname, char *specs)
 			for ( size_t n = 0 ; n < n_props ; n++ )
 			{
 				char value[1024] = "";
-                if ( object_get_value_by_name(obj,proplist[n],value,sizeof(value)-1) < 0 )
+				bool is_header_value = ( object_get_header_string(obj,proplist[n],value,sizeof(value)-1,true) != NULL );
+                if ( ! is_header_value && object_get_value_by_name(obj,proplist[n],value,sizeof(value)-1) < 0 )
 				{
 					output_warning("writefile(char *fname='%s', char *specs='%s'): unable to get value for property '%s' object '%s:%d'",fname,specs,proplist[n],obj->oclass->name,obj->id);
 				}
@@ -7391,16 +7392,20 @@ int writefile(char *fname, char *specs)
     					fprintf(fp,",%s%s%s",quote,value,quote);
     					break;
     				case JSON:
-                        if ( object_get_property(obj,proplist[n],NULL) )
+                        if ( is_header_value || object_get_property(obj,proplist[n],NULL) )
                         {
                             // only output properties that exist
                             fprintf(fp,",\n\t\t\"%s\" : \"%s\"",proplist[n],value);
                         }
+                        else
+                        {
+                        	output_warning("property '%s' does not exist in class '%s'",proplist[n],obj->oclass->name);
+                        }
     					break;
     				case GLM:
-                        if ( ! object_get_property(obj,proplist[n],NULL) )
+                        if ( ! is_header_value || ! object_get_property(obj,proplist[n],NULL) )
                         {
-                            // output nothing
+                            output_warning("property '%s' does not exist in class '%s'",proplist[n],obj->oclass->name);
                         }
                         else if ( obj->name == NULL )
     					{
