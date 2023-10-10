@@ -1,7 +1,7 @@
 PYTHONVERSION=$(shell python$(PYVER) $(top_srcdir)/python/setup.py --version)
 PYPKG=$(PYENV)/lib/python$(PYVER)/site-packages/gridlabd
 
-$(top_srcdir)/python/dist/gridlabd-$(PYTHONVERSION).tar.gz: $(top_srcdir)/source/build.h | $(PYENV)
+$(top_srcdir)/python/dist/gridlabd-$(PYTHONVERSION).tar.gz: $(top_srcdir)/source/build.h $(wildcard $(top_srcdir)/source/*.cpp) | $(PYENV)
 	@echo "building gridlabd-$(PYTHONVERSION)..."
 	@rm -f $(PYPKG)-$(PYTHONVERSION)*.{whl,tar.gz}
 	@$(ENVPYTHON) -m pip install build 
