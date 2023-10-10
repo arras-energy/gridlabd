@@ -11,7 +11,9 @@
 #include <arpa/inet.h>
 #include <assert.h>
 #include <ctype.h>
+#include <dirent.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <float.h>
 #include <math.h>
 #include <memory.h>
@@ -25,6 +27,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/errno.h>
+#include <sys/ioctl.h>
 #include <sys/signal.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
@@ -32,12 +36,8 @@
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
-#include <wchar.h>
-#include <sys/errno.h>
-
-#include <sys/ioctl.h>
-#include <dirent.h>
 #include <unistd.h>
+#include <wchar.h>
 
 #include "gld_sock.h"
 
@@ -134,6 +134,7 @@ typedef enum e_status {FAILED=FALSE, SUCCESS=TRUE} STATUS;
 #include "test.h"
 #include "threadpool.h"
 #include "timestamp.h"
+#include "tmpfile.h"
 #include "transform.h"
 #include "ufile.h"
 #include "unit.h"
