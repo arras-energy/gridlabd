@@ -25,11 +25,12 @@
 ## 
 STDOUT=/dev/stdout
 STDERR=/dev/stderr
+DEFAULT_ORIGIN="https://github.com/arras-energy/gridlabd/master"
 error () { echo "ERROR [setup.sh]: $*" > $STDERR ; exit 1; }
 if [ -d $(dirname $0)/.git ]; then
-	DEFAULT_ORIGIN=$(git remote get-url origin | sed -e 's|https://github.com/||' | sed -e 's|.git$||')/$(git rev-parse --abbrev-ref HEAD)
+	export GRIDLABD_ORIGIN="."
 else
-	DEFAULT_ORIGIN=arras-energy/gridlabd/master
+	export GRIDLABD_ORIGIN="$DEFAULT_ORIGIN"
 fi
 while [ $# -gt 0 ]; do
 	case "$1" in
@@ -49,6 +50,9 @@ while [ $# -gt 0 ]; do
 		--local)
 			export GRIDLABD_ORIGIN="."
 			;;
+		--remote)
+			export GRIDLABD_ORIGIN="$DEFAULT_ORIGIN"
+			;;
 		*)
 			export GRIDLABD_ORIGIN="$1"
 			;;
@@ -57,12 +61,9 @@ while [ $# -gt 0 ]; do
 done
 export SYSTEMNAME=$(uname -s)
 if [ "$GRIDLABD_ORIGIN" = "." ]; then
-	sh setup/$SYSTEMNAME.sh 1>$STDOUT 2>$STDERR || error "setup failed"
+	sh $(dirname $0)/setup/$SYSTEMNAME.sh 1>$STDOUT 2>$STDERR || error "setup failed"
 else
 	curl --version 1>/dev/null 2>&1 || error "you must install curl first"
-	if [ -z "$GRIDLABD_ORIGIN" ] ; then 
-		export GRIDLABD_ORIGIN=$DEFAULT_ORIGIN
-	fi
 	test "$(echo $GRIDLABD_ORIGIN | cut -c-8)" != "https://" && GRIDLABD_ORIGIN=https://raw.githubusercontent.com/$GRIDLABD_ORIGIN
 	echo GRIDLABD_ORIGIN=$GRIDLABD_ORIGIN
 	if curl -H 'Cache-Control: no-cache' -fsL $GRIDLABD_ORIGIN/setup/$SYSTEMNAME.sh > /tmp/setup_$$.sh ; then
