@@ -1,4 +1,4 @@
-// /usr/local/opt/gridlabd/4.3.1-220814-develop_user_manual/share/gridlabd/csv-table2glm-object.py ./test_object.csv test_object_opt.glm {} 
+// /usr/local/opt/gridlabd/4.3.3-231003-develop_add_xlsx_converter-darwin_22-x86_64/share/gridlabd/csv-table2glm-object.py ./test_object.csv test_object_opt.glm {'class': 'test'} 
 object test { 
 	name "item1";
 	value1 1.2;
