@@ -2,8 +2,8 @@
 #define DIR=..
 #endif // exist ../IEEE-13-cyme.mdb
 
-#input "${DIR:-.}/IEEE-13-cyme.mdb" -t cyme -o test-IEEE-13.glm -p coordinateCSV=test-IEEE-13-cyme-xy-coordinates.csv
+#input "${DIR:-.}/IEEE-13-cyme.mdb" -t cyme -o IEEE-13.glm -p coordinateCSV=IEEE-13-cyme-xy-coordinates.csv
 
 #ifexist ../IEEE-13-cyme-xy-coordinates.csv
-#on_exit 0 diff -I '^[#/]' ../IEEE-13-cyme-xy-coordinates.csv test-IEEE-13-cyme-xy-coordinates.csv > gridlabd.diff
+#on_exit 0 diff -I '^[#/]' ../IEEE-13-cyme-xy-coordinates.csv IEEE-13-cyme-xy-coordinates.csv > gridlabd.diff
 #endif // exist ../IEEE-13-cyme-xy-coordinates.csv
