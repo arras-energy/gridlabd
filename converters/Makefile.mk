@@ -5,6 +5,7 @@
 # csv -> glm
 dist_pkgdata_DATA += converters/csv-ami2glm-ceus.py
 dist_pkgdata_DATA += converters/csv-ami2glm-rbsa.py
+dist_pkgdata_DATA += converters/csv-ami2glm-player.py
 dist_pkgdata_DATA += converters/csv-ceus2glm-ceus.py
 dist_pkgdata_DATA += converters/csv-geodata2kml.py
 dist_pkgdata_DATA += converters/csv-ica2glm-ica.py
