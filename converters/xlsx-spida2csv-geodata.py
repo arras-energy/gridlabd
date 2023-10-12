@@ -116,11 +116,22 @@ def convert(input_files, output_file, options={}):
 	if include_network : 
 		globals()['include_mount'] = True
 
-	# Read all the sheets in the .xls file 
-	df = pd.read_excel(input_pole_file, sheet_name=0, usecols=[
-		'Structure ID', 'AS-IS AGL', 'AS-IS Species', 'AS-IS GLC', 'AS-IS Length', 
-		'AS-IS Class', 'AS-IS Allowable Stress Adjustment', 
-		'AS-IS Effective Stress Adjustment', 'AS-IS GPS Point']) 
+	# Read all the sheets in the .xlxs file 
+	if file_extension == 'xlsx':
+		df = pd.read_excel(input_pole_file, sheet_name=0, usecols=[
+			'Structure ID', 'AS-IS AGL', 'AS-IS Species', 'AS-IS GLC', 'AS-IS Length', 
+			'AS-IS Class', 'AS-IS Allowable Stress Adjustment', 
+			'AS-IS Effective Stress Adjustment', 'AS-IS GPS Point'], engine='openpyxl') 
+	elif file_extension == 'xls':
+		df = pd.read_excel(input_pole_file, sheet_name=0, usecols=[
+			'Structure ID', 'AS-IS AGL', 'AS-IS Species', 'AS-IS GLC', 'AS-IS Length', 
+			'AS-IS Class', 'AS-IS Allowable Stress Adjustment', 
+			'AS-IS Effective Stress Adjustment', 'AS-IS GPS Point']) 
+	elif file_extension == 'csv':
+		df = pd.read_csv(input_pole_file, usecols=[
+			'Structure ID', 'AS-IS AGL', 'AS-IS Species', 'AS-IS GLC', 'AS-IS Length', 
+			'AS-IS Class', 'AS-IS Allowable Stress Adjustment', 
+			'AS-IS Effective Stress Adjustment', 'AS-IS GPS Point']) 
 
 	# Read the overhead lines 
 	df_lines = pd.read_csv(include_network) if include_network else pd.DataFrame()
@@ -250,9 +261,16 @@ def convert(input_files, output_file, options={}):
 	# Secondly do operations on the sheet 'Design - Structure'
 	if extract_equipment:
 		
-
-		df_structure_raw = pd.read_excel(input_equipment_file, sheet_name=0, usecols=['ID', 'Structure_x0020_ID', 'AS-IS_x0020_Size', 'AtHeight_x0020_Unit', 'AtHeight_x0020_Value', 'Usage_x0020_Group', 'AS-IS_x0020_Height', 'AS-IS_x0020_Direction',
+		if file_extension == 'xlsx':
+			df_structure_raw = pd.read_excel(input_equipment_file, sheet_name=0, usecols=['ID', 'Structure_x0020_ID', 'AS-IS_x0020_Size', 'AtHeight_x0020_Unit', 'AtHeight_x0020_Value', 'Usage_x0020_Group', 'AS-IS_x0020_Height', 'AS-IS_x0020_Direction',
+       'AS-IS_x0020_Offset_x002F_Lead'], engine='openpyxl')
+		elif file_extension == 'xls':
+			df_structure_raw = pd.read_excel(input_equipment_file, sheet_name=0, usecols=['ID', 'Structure_x0020_ID', 'AS-IS_x0020_Size', 'AtHeight_x0020_Unit', 'AtHeight_x0020_Value', 'Usage_x0020_Group', 'AS-IS_x0020_Height', 'AS-IS_x0020_Direction',
        'AS-IS_x0020_Offset_x002F_Lead'])
+		elif file_extension == 'csv':
+		    df_structure_raw = pd.read_csv(input_equipment_file, usecols=['ID', 'Structure_x0020_ID', 'AS-IS_x0020_Size', 'AtHeight_x0020_Unit', 'AtHeight_x0020_Value', 'Usage_x0020_Group', 'AS-IS_x0020_Height', 'AS-IS_x0020_Direction',
+       'AS-IS_x0020_Offset_x002F_Lead'], engine='openpyxl')
+		
 
 
 		# new_header_index = df_structure.iloc[:, 0].first_valid_index()
