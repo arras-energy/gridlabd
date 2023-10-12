@@ -45,11 +45,12 @@ for opt, arg in opts:
         help()
         sys.exit(0)
     elif opt in ("-c","--config"):
-        print(json.dumps(config))
         sys.exit(0)
     elif opt in ("-i", "--ifile"):
-        input_file = dict([x.split(":") for x in arg.strip().split(",")])
-        print("input_file:",input_file)
+        try:
+            input_file = dict([x.split(":") for x in arg.strip().split(",")])
+        except:
+            input_file = arg.strip()
     elif opt in ("-o", "--ofile"):
         output_file = arg.strip()
     elif opt in ("-f","--from"):
