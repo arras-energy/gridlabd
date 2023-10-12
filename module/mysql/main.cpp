@@ -3,6 +3,23 @@
 
 #define DLMAIN
 
+#include "gridlabd.h"
+
+/********************************************************
+ * MODULE SUPPORT
+ ********************************************************/
+
+EXPORT int do_kill(void*)
+{
+	/* if global memory needs to be released, this is a good time to do it */
+	return 0;
+}
+
+EXPORT int check(){
+	/* if any assert objects have bad filenames, they'll fail on init() */
+	return 0;
+}
+
 #ifdef HAVE_MYSQL
 #include "database.h"
 
@@ -29,26 +46,6 @@ bool use_graph = true; ///< flag to enable graph schema
 bool use_guid = false; ///< flag to enable use of guid
 bool use_transaction = true; ///< flag to disable use of transactions
 
-#else
-#include "gridlabd.h"
-#endif
-
-/********************************************************
- * MODULE SUPPORT
- ********************************************************/
-
-EXPORT int do_kill(void*)
-{
-	/* if global memory needs to be released, this is a good time to do it */
-	return 0;
-}
-
-EXPORT int check(){
-	/* if any assert objects have bad filenames, they'll fail on init() */
-	return 0;
-}
-
-#ifdef HAVE_MYSQL
 /********************************************************
  * MYSQL SUPPORT
  ********************************************************/
