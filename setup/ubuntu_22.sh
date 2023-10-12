@@ -26,7 +26,7 @@ if ! python$PYTHON_VERSION --version 1>/dev/null 2>&1 ; then
 	python$PYTHON_VERSION --version || error "python$PYTHON_VERSION installation failed"
 fi
 INSTALL apt-get install python$PYTHON_VERSION-venv -y
-apt-get install python$PYTHON_VERSION-setuptools -y
+python$PYTHON_VERSION -m pip install setuptools
 
 # create python venv for setup if not already done
 if [ ! -x "$PYTHON_EXEC" ] ; then
