@@ -117,6 +117,7 @@ def convert(input_files, output_file, options={}):
 		globals()['include_mount'] = True
 
 	# Read all the sheets in the .xlxs file 
+	file_extension = input_pole_file.split(".")[-1]
 	if file_extension == 'xlsx':
 		df = pd.read_excel(input_pole_file, sheet_name=0, usecols=[
 			'Structure ID', 'AS-IS AGL', 'AS-IS Species', 'AS-IS GLC', 'AS-IS Length', 
@@ -260,7 +261,7 @@ def convert(input_files, output_file, options={}):
 	df = df.drop_duplicates(subset=['name'])
 	# Secondly do operations on the sheet 'Design - Structure'
 	if extract_equipment:
-		
+		file_extension = input_equipment_file.split(".")[-1]
 		if file_extension == 'xlsx':
 			df_structure_raw = pd.read_excel(input_equipment_file, sheet_name=0, usecols=['ID', 'Structure_x0020_ID', 'AS-IS_x0020_Size', 'AtHeight_x0020_Unit', 'AtHeight_x0020_Value', 'Usage_x0020_Group', 'AS-IS_x0020_Height', 'AS-IS_x0020_Direction',
        'AS-IS_x0020_Offset_x002F_Lead'], engine='openpyxl')
