@@ -46,7 +46,7 @@ except:
 		compile_options = None
 if not compile_options :
 	compile_options=['-Wall','-O3','-g']
-compile_options.extend(['-I%s/source'%srcdir,'-I%s/python'%srcdir,'-I%s/runtime'%srcdir,'-I%s/source'%blddir,"-fPIC","-DHAVE_CONFIG_H","-DHAVE_PYTHON", "-DHAVE_MYSQL"])
+compile_options.extend(['-I%s/source'%srcdir,'-I%s/python'%srcdir,'-I%s/runtime'%srcdir,'-I%s/source'%blddir,"-fPIC","-DHAVE_CONFIG_H","-DHAVE_PYTHON"])
 
 from setuptools import setup, Extension
 gridlabd = Extension('gridlabd', 
