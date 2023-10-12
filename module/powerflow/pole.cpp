@@ -230,7 +230,7 @@ double pole::calc_diameter() {
 //            For reliability, the National Electrical Safety Code requires that these overload factors 
 //            be used when calculating the maximum force a pole must withstand.
 double pole::calc_pole_moment_per_wind() {
-    return  1/6 * height * height * (diameter + 2*config->top_diameter)/12 * config->overload_factor_transverse_general;
+    return  height * height * (diameter + 2*config->top_diameter)/72.0 * config->overload_factor_transverse_general;
 }
 
 void pole::reset_commit_accumulators()
@@ -458,6 +458,7 @@ TIMESTAMP pole::precommit(TIMESTAMP t0)
             resisting_moment = 0.0;
         }
         verbose("wind speed change requires update of pole analysis");
+        verbose("wind speed = %g m/s", wind_speed);
         wind_pressure = 0.00256 * (2.24*wind_speed) * (2.24*wind_speed); // 2.24 account for m/s to mph conversion
         verbose("wind_pressure = %g psf",wind_pressure); // unit: pounds per square foot
 
@@ -543,13 +544,15 @@ TIMESTAMP pole::postsync(TIMESTAMP t0) ////
 		else
 			susceptibility = 0.0;
         verbose("susceptibility = %g ft*lb.s/m\n",susceptibility);
+        verbose("wind_speed = %g m/s", wind_speed);
+        verbose("pole moment no wind %g ", pole_moment_per_wind);
 
         double effective_moment = resisting_moment * (1+config->wind_overdesign);
         double wind_pressure_failure = sqrt( effective_moment*effective_moment - 
             (wire_weight+equipment_weight+pole_moment)*(wire_weight+equipment_weight+pole_moment)) 
             / (pole_moment_per_wind+equipment_moment_nowind+wire_moment_nowind); // ignore wiree_tension
         critical_wind_speed = sqrt(wind_pressure_failure / (0.00256 * 2.24 * 2.24));
-        verbose("wind_pressure_failure = %g psf (overdesighn facter = %g)",wind_pressure_failure,config->wind_overdesign); // unit: pounds per square foot
+        verbose("wind_pressure_failure = %g psf (overdesign factor = %g)",wind_pressure_failure,config->wind_overdesign); // unit: pounds per square foot
         verbose("critical_wind_speed = %g m/s",critical_wind_speed);
         if ( wind_gusts > 0.0 )
         {

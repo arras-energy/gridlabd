@@ -116,11 +116,23 @@ def convert(input_files, output_file, options={}):
 	if include_network : 
 		globals()['include_mount'] = True
 
-	# Read all the sheets in the .xls file 
-	df = pd.read_excel(input_pole_file, sheet_name=0, usecols=[
-		'Structure ID', 'AS-IS AGL', 'AS-IS Species', 'AS-IS GLC', 'AS-IS Length', 
-		'AS-IS Class', 'AS-IS Allowable Stress Adjustment', 
-		'AS-IS Effective Stress Adjustment', 'AS-IS GPS Point']) 
+	# Read all the sheets in the .xlxs file 
+	file_extension = input_pole_file.split(".")[-1]
+	if file_extension == 'xlsx':
+		df = pd.read_excel(input_pole_file, sheet_name=0, usecols=[
+			'Structure ID', 'AS-IS AGL', 'AS-IS Species', 'AS-IS GLC', 'AS-IS Length', 
+			'AS-IS Class', 'AS-IS Allowable Stress Adjustment', 
+			'AS-IS Effective Stress Adjustment', 'AS-IS GPS Point'], engine='openpyxl') 
+	elif file_extension == 'xls':
+		df = pd.read_excel(input_pole_file, sheet_name=0, usecols=[
+			'Structure ID', 'AS-IS AGL', 'AS-IS Species', 'AS-IS GLC', 'AS-IS Length', 
+			'AS-IS Class', 'AS-IS Allowable Stress Adjustment', 
+			'AS-IS Effective Stress Adjustment', 'AS-IS GPS Point']) 
+	elif file_extension == 'csv':
+		df = pd.read_csv(input_pole_file, usecols=[
+			'Structure ID', 'AS-IS AGL', 'AS-IS Species', 'AS-IS GLC', 'AS-IS Length', 
+			'AS-IS Class', 'AS-IS Allowable Stress Adjustment', 
+			'AS-IS Effective Stress Adjustment', 'AS-IS GPS Point']) 
 
 	# Read the overhead lines 
 	df_lines = pd.read_csv(include_network) if include_network else pd.DataFrame()
@@ -249,10 +261,17 @@ def convert(input_files, output_file, options={}):
 	df = df.drop_duplicates(subset=['name'])
 	# Secondly do operations on the sheet 'Design - Structure'
 	if extract_equipment:
-		
-
-		df_structure_raw = pd.read_excel(input_equipment_file, sheet_name=0, usecols=['ID', 'Structure_x0020_ID', 'AS-IS_x0020_Size', 'AtHeight_x0020_Unit', 'AtHeight_x0020_Value', 'Usage_x0020_Group', 'AS-IS_x0020_Height', 'AS-IS_x0020_Direction',
+		file_extension = input_equipment_file.split(".")[-1]
+		if file_extension == 'xlsx':
+			df_structure_raw = pd.read_excel(input_equipment_file, sheet_name=0, usecols=['ID', 'Structure_x0020_ID', 'AS-IS_x0020_Size', 'AtHeight_x0020_Unit', 'AtHeight_x0020_Value', 'Usage_x0020_Group', 'AS-IS_x0020_Height', 'AS-IS_x0020_Direction',
+       'AS-IS_x0020_Offset_x002F_Lead'], engine='openpyxl')
+		elif file_extension == 'xls':
+			df_structure_raw = pd.read_excel(input_equipment_file, sheet_name=0, usecols=['ID', 'Structure_x0020_ID', 'AS-IS_x0020_Size', 'AtHeight_x0020_Unit', 'AtHeight_x0020_Value', 'Usage_x0020_Group', 'AS-IS_x0020_Height', 'AS-IS_x0020_Direction',
        'AS-IS_x0020_Offset_x002F_Lead'])
+		elif file_extension == 'csv':
+		    df_structure_raw = pd.read_csv(input_equipment_file, usecols=['ID', 'Structure_x0020_ID', 'AS-IS_x0020_Size', 'AtHeight_x0020_Unit', 'AtHeight_x0020_Value', 'Usage_x0020_Group', 'AS-IS_x0020_Height', 'AS-IS_x0020_Direction',
+       'AS-IS_x0020_Offset_x002F_Lead'], engine='openpyxl')
+		
 
 
 		# new_header_index = df_structure.iloc[:, 0].first_valid_index()
@@ -365,7 +384,6 @@ def convert(input_files, output_file, options={}):
 	if include_dummy_network:
 		df = xls2glm_object(df,input_pole_file)
 
-
 	# Keep track of final df to output at the end. 
 	df_final = df.copy()
 
@@ -378,7 +396,6 @@ def convert(input_files, output_file, options={}):
 	df_final.reset_index(drop=True, inplace=True)
 
 	# Create final csv file. 
-	print(output_file)
 	df_final.to_csv(output_file, index=False)
 
 def parse_angle(cell_string, current_column, current_row):
@@ -652,6 +669,7 @@ def xls2glm_object(df_glm, input_file):
 	glm_TF_dic = {}
 
 	swing_node = f"ND_{re.sub(r'[^a-zA-Z]', '_', os.path.basename(input_file).split('.')[0])}"
+	df_glm["parent"]=swing_node
 	glm_node_dic[swing_node] = {
 		"name" : swing_node,
 		"class" : "node",
@@ -758,4 +776,3 @@ def xls2glm_object(df_glm, input_file):
 	df_glm= pd.concat([df_glm, df_glm_network], axis=0, ignore_index=True)
 
 	return df_glm.copy()
-
