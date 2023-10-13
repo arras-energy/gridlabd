@@ -510,7 +510,7 @@ AM_CONDITIONAL([HAVE_DOXYGEN], [test ! "x$HAVE_DOXYGEN" = "xno"])
 
 # Check for mysql
 AS_IF([test -f /usr/local/include/mysql/mysql.h -a /usr/local/lib/libmysqlclient.a ],
-    [MYSQL="/usr/local/bin"],
+    [MYSQL="/usr/local"],
     [MYSQL="no"])
 AS_IF([test "x$MYSQL" != "xno"],
 	[MYSQL_CPPFLAGS="'-I$MYSQL/include/mysql'"
@@ -521,8 +521,9 @@ AS_IF([test "x$MYSQL" != "xno"],
 				MYSQL_LIBS="-lmysqlclient"],
 			[*darwin*], [MYSQL_LDFLAGS="'-L$MYSQL/lib'"
 				MYSQL_LIBS="-lmysqlclient"])
-		GLD_CPPFLAGS="$GLD_CPPFLAGS -DHAVE_MYSQL"
-		HAVE_MYSQL=yes],
+		HAVE_MYSQL=yes
+        GLD_CPPFLAGS="$GLD_CPPFLAGS -DHAVE_MYSQL"
+        AC_DEFINE([HAVE_MYSQL], [yes], [Enables mysql module])],
 	[HAVE_MYSQL=no])
 AC_SUBST([MYSQL_CPPFLAGS])
 AC_SUBST([MYSQL_LDFLAGS])
