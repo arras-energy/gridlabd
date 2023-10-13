@@ -1024,7 +1024,7 @@ static bool export_properties(MYSQL *mysql, OBJECT *obj, CLASS *cls = NULL)
 		gld_property var(obj,prop);
 		if ( !var.get_access(PA_R|PA_S) )
 			continue; // ignore properties that not readable or saveable
-		snprintf(names+len_names,sizeof(name)-len_names-1,",`%s`", prop->name);
+		snprintf(names+len_names,sizeof(names)-len_names-1,",`%s`", prop->name);
 		len_names = strlen(names);
 		char buffer[4096]="", quoted[4096*2+1+3]="", *value = buffer;
 		TIMESTAMP ts;
