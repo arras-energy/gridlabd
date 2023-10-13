@@ -23,9 +23,9 @@ if ! python$PYTHON_VERSION -m venv -h 1>/dev/null 2>&1 ; then
     INSTALL brew install python$PYTHON_VERSION-venv
     python$PYTHON_VERSION -m venv -h >/dev/null || error "unable to install python$PYTHON_VERSION-venv"
 fi
-if ! python$PYTHON_VERSION -m distutils.core 1>/dev/null 2>&1 ; then
-    INSTALL brew install python$PYTHON_VERSION-distutils
-    python$PYTHON_VERSION -m distutils.core >/dev/null || error "unable to install python$PYTHON_VERSION-distutils"
+if ! python$PYTHON_VERSION -m setuptools 1>/dev/null 2>&1 ; then
+    INSTALL brew install python$PYTHON_VERSION-setuptools
+    python$PYTHON_VERSION -m setuptools >/dev/null || error "unable to install python$PYTHON_VERSION-setuptools"
 fi
 
 # create python venv for setup if not already done
