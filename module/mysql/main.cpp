@@ -1024,7 +1024,7 @@ static bool export_properties(MYSQL *mysql, OBJECT *obj, CLASS *cls = NULL)
 		gld_property var(obj,prop);
 		if ( !var.get_access(PA_R|PA_S) )
 			continue; // ignore properties that not readable or saveable
-		snprintf(names+len_names,sizeof(name)-len_names-1",`%s`", prop->name);
+		snprintf(names+len_names,sizeof(name)-len_names-1,",`%s`", prop->name);
 		len_names = strlen(names);
 		char buffer[4096]="", quoted[4096*2+1+3]="", *value = buffer;
 		TIMESTAMP ts;
@@ -1051,12 +1051,12 @@ static bool export_properties(MYSQL *mysql, OBJECT *obj, CLASS *cls = NULL)
 		if ( strlen(value)>0 )
 		{
 			mysql_real_escape_string(mysql,quoted,value,strlen(value)); // protect SQL from contents
-			snprintf(values+len_values,sizeof(values)-len_values-1",\"%s\"", quoted);
+			snprintf(values+len_values,sizeof(values)-len_values-1,",\"%s\"", quoted);
 			len_values = strlen(values);
 		}
 		else
 		{
-			snprintf(values+len_values,sizeof(values)-len_values-1",NULL");
+			snprintf(values+len_values,sizeof(values)-len_values-1,",NULL");
 			len_values = strlen(values);
 		}
 	}
@@ -1241,7 +1241,7 @@ bool export_transforms(MYSQL *mysql)
 		case XT_EXTERNAL:
 			if ( xform->nlhs>1 )
 			{
-				snprintf(specs+len,sizeof(specs)-len-1"%s","(");
+				snprintf(specs+len,sizeof(specs)-len-1,"%s","(");
 				len = strlen(specs);
 			}
 			for ( int n = 1 ; n < xform->nlhs ; n++)
