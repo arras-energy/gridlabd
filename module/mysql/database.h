@@ -111,7 +111,7 @@ public:
 	const char *get_sqltype(gld_property &p);
 	char *get_sqldata(char *buffer, size_t size, gld_property &p, double scale=1.0);
 	char *get_sqldata(char *buffer, size_t size, gld_property &p, gld_unit *unit=NULL);
-	bool get_sqlbind(MYSQL_BIND &value,gld_property &target, my_bool *error=NULL);
+	bool get_sqlbind(MYSQL_BIND &value,gld_property &target, bool *error=NULL);
 	bool check_field(const char *table, const char *field);
 
 	TIMESTAMP convert_from_dbtime(TIMESTAMP);
