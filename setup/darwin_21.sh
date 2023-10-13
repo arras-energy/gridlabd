@@ -24,7 +24,7 @@ if ! python$PYTHON_VERSION -m venv -h 1>/dev/null 2>&1 ; then
     python$PYTHON_VERSION -m venv -h >/dev/null || error "unable to install python$PYTHON_VERSION-venv"
 fi
 if ! python$PYTHON_VERSION -m setuptools 1>/dev/null 2>&1 ; then
-    INSTALL brew install python$PYTHON_VERSION-setuptools
+    INSTALL python$PYTHON_VERSION -m pip install setuptools
     python$PYTHON_VERSION -m setuptools >/dev/null || error "unable to install python$PYTHON_VERSION-setuptools"
 fi
 
