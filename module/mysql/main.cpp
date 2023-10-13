@@ -531,7 +531,7 @@ static bool import_objects(MYSQL *mysql)
 				return false;
 			}
 		}
-		if ( row[3]!=NULL ) strncpy(obj->groupid,row[3],sizeof(obj->groupid));
+		if ( row[3]!=NULL ) snprintf(obj->groupid,sizeof(obj->groupid)-1,"%s",row[3]);
 		obj->parent = row[4]==NULL ? NULL : gl_object_find_by_id(atoi(row[4]));
 		obj->rank = atoi(row[5]);
 		obj->clock = get_mysql_timestamp(row[6]);
@@ -918,7 +918,7 @@ static bool export_globals(MYSQL *mysql)
 static bool export_class(MYSQL *mysql, CLASS *cls)
 {
 	MODULE *mod = cls->module;
-	char modname[128] = "NULL";
+	char modname[1024] = "NULL";
 	if ( mod )
 		snprintf(modname,sizeof(modname)-1,"\"%s\"",mod->name);
 
@@ -1095,10 +1095,10 @@ static bool export_objects(MYSQL *mysql)
 		// objects table
 		CLASS *cls = obj->oclass;
 		MODULE *mod = cls->module;
-		char modname[64]="NULL";
+		char modname[1024]="NULL";
 		char name[1024]="NULL";
 		char parent[64]="NULL";
-		char groupid[32]="NULL";
+		char groupid[1027]="NULL";
 		char latitude[64] = "NULL";
 		char longitude[64] = "NULL";
 		char clock[64] = MYSQL_TS_NEVER;
