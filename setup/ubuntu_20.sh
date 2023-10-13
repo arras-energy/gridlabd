@@ -26,7 +26,7 @@ if ! python$PYTHON_VERSION --version 1>/dev/null 2>&1 ; then
 	python$PYTHON_VERSION --version || error "python$PYTHON_VERSION installation failed"
 fi
 INSTALL apt-get install python$PYTHON_VERSION-venv -y
-apt-get install python$PYTHON_VERSION-distutils -y
+apt-get install python$PYTHON_VERSION-setuptools -y
 
 # create python venv for setup if not already done
 if [ ! -x "$PYTHON_EXEC" ] ; then
@@ -57,13 +57,17 @@ fi
 INSTALL "$PYTHON_EXEC" -m pip install --upgrade pip || error "pip update failed"
 
 # install required libraries
-INSTALL apt-get install build-essential zlib1g-dev libcurl4-gnutls-dev libncurses5-dev liblzma-dev libbz2-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev -y
+INSTALL apt-get install build-essential zlib1g-dev libcurl4-gnutls-dev libncurses5-dev liblzma-dev libbz2-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libmysqlclient-dev mysql-server -y
 
 # install required tools
 INSTALL apt-get install git unzip libtool libtool-bin mdbtools g++ cmake flex bison subversion util-linux xz-utils wget -y
 
 # update library paths
 INSTALL ldconfig
+
+# symlink mysql files
+ln -s /usr/include/mysql /usr/local/include/mysql
+ln -s /usr/lib/aarch64-linux-gnu/libmysqlclient.a /usr/local/lib/libmysqlclient.a
 
 # install autoconf 2.71 as required
 if [ "$(autoconf --version | head -n 1 | cut -f4 -d' ')" != "2.71" ] ; then
