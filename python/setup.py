@@ -48,7 +48,7 @@ if not compile_options :
 	compile_options=['-Wall','-O3','-g']
 compile_options.extend(['-I%s/source'%srcdir,'-I%s/python'%srcdir,'-I%s/runtime'%srcdir,'-I%s/source'%blddir,"-fPIC","-DHAVE_CONFIG_H","-DHAVE_PYTHON"])
 
-from distutils.core import setup, Extension
+from setuptools import setup, Extension
 gridlabd = Extension('gridlabd', 
 	include_dirs = list(map(lambda x: srcdir+'/'+x,['python','source'])),
 	extra_compile_args = compile_options,

@@ -50,7 +50,10 @@ for opt, arg in opts:
         sys.exit(0)
     elif opt in ("-i", "--ifile"):
         try:
-            input_file = dict([x.split(":") for x in arg.strip().split(",")])
+            if not arg.startswith("http"):
+                input_file = dict([x.split(":") for x in arg.strip().split(",")])
+            else:
+                input_file = arg.strip()
         except:
             input_file = arg.strip()
     elif opt in ("-o", "--ofile"):
