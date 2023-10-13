@@ -28,7 +28,7 @@ void tmpfile_get(
             name = delim+1;
         }
 
-        char tmpname[1024];
+        char tmpname[4096];
         const char *tmp = getenv("TMPDIR");
         if ( tmp == NULL )
         {
