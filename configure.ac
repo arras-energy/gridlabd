@@ -509,7 +509,7 @@ AS_IF([test -n "$DX_DOXYGEN"],
 AM_CONDITIONAL([HAVE_DOXYGEN], [test ! "x$HAVE_DOXYGEN" = "xno"])
 
 # Check for mysql
-AC_SEARCH_LIBS([mysqlclient], [mysql_init], [], [MYSQL="no"])
+AC_CHECK_LIB([mysqlclient], [mysql_init], [MYSQL="yes"], [MYSQL="no"])
 
 AS_IF([test "x$MYSQL" != "xno"],
 	[
