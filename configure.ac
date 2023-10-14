@@ -522,9 +522,9 @@ AS_IF([test "x$MYSQL" != "xno"],
             MYSQL_CPPFLAGS="-I`$MYSQL_CONFIG --cflags | sed 's/^-I//; s/ .*//'`"
             MYSQL_LDFLAGS="-L`$MYSQL_CONFIG --libs | sed 's/^-L//; s/ .*//'`"
             AS_CASE([$host],
-                [*mingw*], [MYSQL_LIBS="`$MYSQL_CONFIG --libs | sed 's/^-l//; s/ .*//'`"],
-                [*linux*], [MYSQL_LIBS="`$MYSQL_CONFIG --libs | sed 's/^-l//; s/ .*//'`"],
-                [*darwin*], [MYSQL_LIBS="`$MYSQL_CONFIG --libs | sed 's/^-l//; s/ .*//'`"])
+                [*mingw*], [MYSQL_LIBS="-lmysqlclient -lzstd -lssl -lcrypto -lresolv -lm"],
+                [*linux*], [MYSQL_LIBS="-lmysqlclient -lzstd -lssl -lcrypto -lresolv -lm"],
+                [*darwin*], [MYSQL_LIBS="-lmysqlclient -lzstd -lssl -lcrypto -lresolv -lm"])
             echo $MYSQL_CPPFLAGS
             echo $MYSQL_LDFLAGS
             echo $MYSQL_LIBS
