@@ -522,12 +522,9 @@ AS_IF([test "x$MYSQL" != "xno"],
             MYSQL_CPPFLAGS="-I`$MYSQL_CONFIG --cflags | sed 's/^-I//; s/ .*//'`"
             MYSQL_LDFLAGS="-L`$MYSQL_CONFIG --libs | sed 's/^-L//; s/ .*//'`"
             AS_CASE([$host],
-                [*mingw*], [MYSQL_LIBS="-lmysqlclient -lzstd -lssl -lcrypto -lresolv -lm"],
+                [*mingw*], [MYSQL_LIBS="-mysql -lzstd -lssl -lcrypto -lresolv -lm"],
                 [*linux*], [MYSQL_LIBS="-lmysqlclient -lzstd -lssl -lcrypto -lresolv -lm"],
                 [*darwin*], [MYSQL_LIBS="-lmysqlclient -lzstd -lssl -lcrypto -lresolv -lm"])
-            echo $MYSQL_CPPFLAGS
-            echo $MYSQL_LDFLAGS
-            echo $MYSQL_LIBS
             HAVE_MYSQL=yes
 
             # Set the paths based on mysql_config output
