@@ -519,8 +519,12 @@ AS_IF([test "x$MYSQL" != "xno"],
         # Check if the mysql_config tool is found
         if test "x$MYSQL_CONFIG" != "xno"; then
             # Use mysql_config to get include and library directories
-            MYSQL_INCLUDE_DIR=`$MYSQL_CONFIG --cflags | sed 's/^-I//; s/ .*//'`
-            MYSQL_LIB_DIR=`$MYSQL_CONFIG --libs | sed 's/^-L//; s/ .*//'`
+            MYSQL_CPPFLAGS=`$MYSQL_CONFIG --cflags | sed 's/^-I//; s/ .*//'`
+            MYSQL_LDFLAGS=`$MYSQL_CONFIG --libs | sed 's/^-L//; s/ .*//'`
+            AS_CASE([$host],
+                [*mingw*], [MYSQL_LIBS="-lmysql"],
+                [*linux*], [MYSQL_LIBS="-lmysqlclient"],
+                [*darwin*], [MYSQL_LIBS="-lmysqlclient"])
             HAVE_MYSQL=yes
 
             # Set the paths based on mysql_config output
