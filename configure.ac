@@ -512,19 +512,19 @@ AM_CONDITIONAL([HAVE_DOXYGEN], [test ! "x$HAVE_DOXYGEN" = "xno"])
 AC_CHECK_LIB([mysqlclient], [mysql_init], [MYSQL="yes"], [MYSQL="no"])
 
 AS_IF([test "x$MYSQL" != "xno"],
-	[
+    [
         # Use AC_PATH_TOOL to find the mysql_config tool
         AC_PATH_TOOL([MYSQL_CONFIG], [mysql_config], [no])
 
         # Check if the mysql_config tool is found
         if test "x$MYSQL_CONFIG" != "xno"; then
             # Use mysql_config to get include and library directories
-            MYSQL_CPPFLAGS=`$MYSQL_CONFIG --cflags | sed 's/^-I//; s/ .*//'`
-            MYSQL_LDFLAGS=`$MYSQL_CONFIG --libs | sed 's/^-L//; s/ .*//'`
+            MYSQL_CPPFLAGS="-I`$MYSQL_CONFIG --cflags | sed 's/^-I//; s/ .*//'`"
+            MYSQL_LDFLAGS="-L`$MYSQL_CONFIG --libs | sed 's/^-L//; s/ .*//'`"
             AS_CASE([$host],
-                [*mingw*], [MYSQL_LIBS=`$MYSQL_CONFIG --libs | sed 's/^-l//; s/ .*//'`],
-                [*linux*], [MYSQL_LIBS=`$MYSQL_CONFIG --libs | sed 's/^-l//; s/ .*//'`],
-                [*darwin*], [MYSQL_LIBS=`$MYSQL_CONFIG --libs | sed 's/^-l//; s/ .*//'`])
+                [*mingw*], [MYSQL_LIBS="`$MYSQL_CONFIG --libs | sed 's/^-l//; s/ .*//'`"],
+                [*linux*], [MYSQL_LIBS="`$MYSQL_CONFIG --libs | sed 's/^-l//; s/ .*//'`"],
+                [*darwin*], [MYSQL_LIBS="`$MYSQL_CONFIG --libs | sed 's/^-l//; s/ .*//'`"])
             echo $MYSQL_CPPFLAGS
             echo $MYSQL_LDFLAGS
             echo $MYSQL_LIBS
@@ -536,7 +536,8 @@ AS_IF([test "x$MYSQL" != "xno"],
             AC_MSG_ERROR([mysql_config not found. Please install MySQL development package.])
         fi
     ],
-	[HAVE_MYSQL=no])
+    [HAVE_MYSQL=no])
+
 AC_SUBST([MYSQL_CPPFLAGS])
 AC_SUBST([MYSQL_LDFLAGS])
 AC_SUBST([MYSQL_LIBS])
