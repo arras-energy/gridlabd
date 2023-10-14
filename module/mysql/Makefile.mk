@@ -4,7 +4,7 @@ module_mysql_mysql_la_CPPFLAGS =
 module_mysql_mysql_la_CPPFLAGS += $(MYSQL_CPPFLAGS)
 module_mysql_mysql_la_CPPFLAGS += $(AM_CPPFLAGS)
 
-module_mysql_mysql_la_LDFLAGS = -lpthread -lssl -lcrypto
+module_mysql_mysql_la_LDFLAGS = -lpthread
 module_mysql_mysql_la_LDFLAGS += $(MYSQL_LDFLAGS)
 module_mysql_mysql_la_LDFLAGS += $(AM_LDFLAGS)
 
