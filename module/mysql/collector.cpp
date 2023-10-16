@@ -155,10 +155,10 @@ int collector::init(OBJECT *parent)
 			size_t n;
 			for ( n=0 ; n<n_aggregates ; n++ )
 			{
-				snprintf(buffer+eos,sizeof(buffer)-eos-1"`%s` double, ",names[n]);
+				snprintf(buffer+eos,sizeof(buffer)-eos-1,"'%s' double, ",names[n]);
 				eos = strlen(buffer);
 			}
-			snprintf(buffer+eos,sizeof(buffer)-eos-1"%s","INDEX i_t (t))");
+			snprintf(buffer+eos,sizeof(buffer)-eos-1,"%s","INDEX i_t (t))");
 			eos = strlen(buffer);
 
 			if ( !db->query(buffer) )
@@ -217,17 +217,17 @@ TIMESTAMP collector::commit(TIMESTAMP t0, TIMESTAMP t1)
 		size_t n;
 		for ( n=0 ; n<n_aggregates ; n++ )
 		{
-			snprintf(buffer+eos,sizeof(buffer)-eos-1",`%s`",names[n]);
+			snprintf(buffer+eos,sizeof(buffer)-eos-1,",`%s`",names[n]);
 			eos = strlen(buffer);
 		}
-		snprintf(buffer+eos,sizeof(buffer)-eos-1") VALUES (from_unixtime(%lli)",db->convert_to_dbtime(gl_globalclock));
+		snprintf(buffer+eos,sizeof(buffer)-eos-1,") VALUES (from_unixtime(%lli)	",db->convert_to_dbtime(gl_globalclock));
 		eos = strlen(buffer);
 		for ( n=0 ; n<n_aggregates ; n++ )
 		{
-			snprintf(buffer+eos,sizeof(buffer)-eos-1",%g",list[n].get_value());
+			snprintf(buffer+eos,sizeof(buffer)-eos-1,",%g",list[n].get_value());
 			eos = strlen(buffer);
 		}
-		snprintf(buffer+eos,sizeof(buffer)-eos-1"%s",")");
+		snprintf(buffer+eos,sizeof(buffer)-eos-1,"%s",")");
 		eos = strlen(buffer);
 
 		if ( !db->query(buffer) )
