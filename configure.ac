@@ -518,26 +518,13 @@ AS_IF([test "x$MYSQL_CONFIG" = "xno"],
 
 AS_IF([test "x$MYSQL" != "xno"],
     [
-        # Use AC_PATH_TOOL to find the mysql_config tool
-        AC_PATH_TOOL([MYSQL_CONFIG], [mysql_config], [no])
-
-        # Check if the mysql_config tool is found
-        if test "x$MYSQL_CONFIG" != "xno"; then
             # Use mysql_config to get include and library directories
-            MYSQL_CPPFLAGS="$MYSQL_CONFIG --cflags"
-            MYSQL_LDFLAGS="$MYSQL_CONFIG --libs"
-            MYSQL_LIBS="$MYSQL_CONFIG --libs"
+            MYSQL_CPPFLAGS=$(mysql_config --cflags)
+            MYSQL_LDFLAGS=$(mysql_config --libs)
+            MYSQL_LIBS=$(mysql_config --libs)
 
-            # Print the result
-            echo "MYSQL_LDFLAGS: $MYSQL_LDFLAGS"
-            echo "MYSQL_LIBS: $MYSQL_LIBS"
-            HAVE_MYSQL=yes
-
-            # Set the paths based on mysql_config output
-            AC_DEFINE([HAVE_MYSQL], [1], [Define if you have MySQL])
-        else
-            AC_MSG_ERROR([mysql_config not found. Please install MySQL development package.])
-        fi
+            # Define HAVE_MYSQL
+            AC_DEFINE([HAVE_MYSQL], [1], [Define when you have MySQL])
     ],
     [HAVE_MYSQL=no])
 
