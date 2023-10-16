@@ -505,7 +505,11 @@ def mdb2csv(input_file, output_dir, tables, extract_option):
     os.system(f"mkdir -p {data_folder}")
     for table in tables:
         csvname = table[3:].lower()
-        os.system(f"mdb-export {input_file} {table} > {output_dir}/{csvname}.csv")
+        subprocess.run(
+            ["mdb-export", input_file, table, ">", f"{output_dir}/{csvname}.csv"],
+            capture_output=True,
+        )
+        # os.system(f"mdb-export {input_file} {table} > {output_dir}/{csvname}.csv")
         row_count = os.popen(f"wc -l {output_dir}/{csvname}.csv").read()
         if (int(row_count.strip().split(" ")[0]) <= 1) and extract_option != "all":
             os.remove(f"{output_dir}/{csvname}.csv")
@@ -3350,6 +3354,7 @@ def convert(input_file: str, output_file: str = None, options: dict[str, Any] = 
     if not data_folder:
         data_folder = f"/tmp/gridlabd/mdb-cyme2glm/{input_file_name}"
     cyme_table = mdb2csv(input_file, data_folder, cyme_tables_required, "non-empty")
+    sys.exit(4)
     cyme_mdbname = data_folder.split("/")[-1]
     if equipment_file != None:  # if equipment MDB is provided
         equipment_data_folder = f"{data_folder}/cyme_equipment_tables"
@@ -3401,6 +3406,7 @@ def convert(input_file: str, output_file: str = None, options: dict[str, Any] = 
     cyme_extracter["default"] = cyme_extracter["90000"]
 
     version = cyme_table["schemaversion"].loc[0]["Version"]
+
     network_count = 0
     conversion_info = {
         "input_folder": input_folder,
