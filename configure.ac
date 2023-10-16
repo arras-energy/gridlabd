@@ -520,11 +520,26 @@ AS_IF([test "x$MYSQL" != "xno"],
         if test "x$MYSQL_CONFIG" != "xno"; then
             # Use mysql_config to get include and library directories
             MYSQL_CPPFLAGS="-I`$MYSQL_CONFIG --cflags | sed 's/^-I//; s/ .*//'`"
-            MYSQL_LDFLAGS="-L`$MYSQL_CONFIG --libs | sed 's/^-L//; s/ .*//'`"
-            AS_CASE([$host],
-                [*mingw*], [MYSQL_LIBS="-mysql -lzstd -lssl -lcrypto -lresolv -lm"],
-                [*linux*], [MYSQL_LIBS="-lmysqlclient -lzstd -lssl -lcrypto -lresolv -lm"],
-                [*darwin*], [MYSQL_LIBS="-lmysqlclient -lz -lzstd -lssl -lcrypto -lresolv"])
+            # Use mysql_config to get include and library directories
+            MYSQL_CONFIG_LIBS="$(mysql_config --libs)"
+            MYSQL_LDFLAGS=""
+            MYSQL_LIBS=""
+
+            # Split the input string by spaces
+            IFS=' ' read -ra items <<< "$MYSQL_CONFIG_LIBS"
+
+            # Iterate through the items and add to MYSQL_LDFLAGS or MYSQL_LIBS
+            for item in "${items[@]}"; do
+            if [[ $item == -L* ]]; then
+                MYSQL_LDFLAGS+=" $item"
+            elif [[ $item == -l* ]]; then
+                MYSQL_LIBS+=" $item"
+            fi
+            done
+
+            # Print the result
+            echo "MYSQL_LDFLAGS: $MYSQL_LDFLAGS"
+            echo "MYSQL_LIBS: $MYSQL_LIBS"
             HAVE_MYSQL=yes
 
             # Set the paths based on mysql_config output
