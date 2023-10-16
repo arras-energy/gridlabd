@@ -15,12 +15,12 @@ EXPORT_COMMIT(recorder);
 CLASS *recorder::oclass = NULL;
 recorder *recorder::defaults = NULL;
 
-vector<string> split(char* str, const char* delim)
+std::vector<std::string> split(char* str, const char* delim)
 {
     char* saveptr;
     char* token = strtok_r(str,delim,&saveptr);
 
-    vector<string> result;
+    std::vector<std::string> result;
 
     while(token != NULL)
     {
@@ -74,8 +74,8 @@ int recorder::create(void)
 	db = last_database;
 	strcpy(datetime_fieldname,"t");
 	strcpy(recordid_fieldname,"id");
-	property_target = new vector<gld_property>;
-	property_unit = new vector<gld_unit>;
+	property_target = new std::vector<gld_property>;
+	property_unit = new std::vector<gld_unit>;
 	return 1; /* return 1 on success, 0 on failure */
 }
 
@@ -164,13 +164,13 @@ int recorder::init(OBJECT *parent)
 	}
 
 	// connect the target properties
-	vector<string> property_specs = split(get_property(), ", \t;");
+	std::vector<std::string> property_specs = split(get_property(), ", \t;");
 	char property_list[65536]="";
 	for ( size_t n = 0 ; n < property_specs.size() ; n++ )
 	{
 		char buffer[1024];
 		strcpy(buffer,(const char*)property_specs[n].c_str());
-		vector<string> spec = split(buffer,"[]");
+		std::vector<std::string> spec = split(buffer,"[]");
 		if ( spec.size()>0 )
 		{
 			strcpy(buffer,(const char*)spec[0].c_str());
@@ -237,7 +237,7 @@ int recorder::init(OBJECT *parent)
 			exception("cannot find header fields without a parent");
 		char buffer[1024];
 		strcpy(buffer,header_fieldnames);
-		vector<string> header_specs = split(buffer, ",");
+		std::vector<std::string> header_specs = split(buffer, ",");
 		size_t header_pos = 0;
 		header_data[0] = '\0';
 		for ( size_t n = 0 ; n < header_specs.size() ; n++ )

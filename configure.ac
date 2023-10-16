@@ -508,30 +508,25 @@ AS_IF([test -n "$DX_DOXYGEN"],
       [HAVE_DOXYGEN=no])
 AM_CONDITIONAL([HAVE_DOXYGEN], [test ! "x$HAVE_DOXYGEN" = "xno"])
 
-# Check for mysql
-AC_CHECK_LIB([mysqlclient], [mysql_init], [MYSQL="yes"], [MYSQL="no"])
+# Check for mysql_config tool
+AC_PATH_PROG(MYSQL_CONFIG, mysql_config, no)
+
+AS_IF([test "x$MYSQL_CONFIG" = "xno"],
+    [MYSQL="no"
+     AC_MSG_WARN([mysql_config not found - MySQL support will be disabled])],
+    [MYSQL="yes"])
 
 AS_IF([test "x$MYSQL" != "xno"],
     [
-        # Use AC_PATH_TOOL to find the mysql_config tool
-        AC_PATH_TOOL([MYSQL_CONFIG], [mysql_config], [no])
-
-        # Check if the mysql_config tool is found
-        if test "x$MYSQL_CONFIG" != "xno"; then
             # Use mysql_config to get include and library directories
-            MYSQL_CPPFLAGS="-I`$MYSQL_CONFIG --cflags | sed 's/^-I//; s/ .*//'`"
-            MYSQL_LDFLAGS="-L`$MYSQL_CONFIG --libs | sed 's/^-L//; s/ .*//'`"
-            AS_CASE([$host],
-                [*mingw*], [MYSQL_LIBS="-mysql -lzstd -lssl -lcrypto -lresolv -lm"],
-                [*linux*], [MYSQL_LIBS="-lmysqlclient -lzstd -lssl -lcrypto -lresolv -lm"],
-                [*darwin*], [MYSQL_LIBS="-lmysqlclient -lzstd -lssl -lcrypto -lresolv -lm"])
+            MYSQL_CPPFLAGS="$(mysql_config --cflags) -DHAVE_MYSQL"
+            MYSQL_LDFLAGS=$(mysql_config --libs)
+            MYSQL_LIBS=$(mysql_config --libs)
             HAVE_MYSQL=yes
+            GLD_CPPFLAGS="$GLD_CPPFLAGS -DHAVE_MYSQL"
 
-            # Set the paths based on mysql_config output
-            AC_DEFINE([HAVE_MYSQL], [1], [Define if you have MySQL])
-        else
-            AC_MSG_ERROR([mysql_config not found. Please install MySQL development package.])
-        fi
+            # Define HAVE_MYSQL
+            AC_DEFINE([HAVE_MYSQL], [1], [Define when you have MySQL])
     ],
     [HAVE_MYSQL=no])
 
