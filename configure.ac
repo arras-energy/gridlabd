@@ -524,12 +524,9 @@ AS_IF([test "x$MYSQL" != "xno"],
         # Check if the mysql_config tool is found
         if test "x$MYSQL_CONFIG" != "xno"; then
             # Use mysql_config to get include and library directories
-            MYSQL_CPPFLAGS="x$MYSQL_CONFIG --cflags"
-            MYSQL_LDFLAGS="x$MYSQL_CONFIG --libs"
-            AS_CASE([$host],
-                [*mingw*], [MYSQL_LIBS="x$MYSQL_CONFIG --libs"],
-                [*linux*], [MYSQL_LIBS="x$MYSQL_CONFIG --libs"],
-                [*darwin*], [MYSQL_LIBS="x$MYSQL_CONFIG --libs"])
+            MYSQL_CPPFLAGS="$MYSQL_CONFIG --cflags"
+            MYSQL_LDFLAGS="$MYSQL_CONFIG --libs"
+            MYSQL_LIBS="$MYSQL_CONFIG --libs"
 
             # Print the result
             echo "MYSQL_LDFLAGS: $MYSQL_LDFLAGS"
