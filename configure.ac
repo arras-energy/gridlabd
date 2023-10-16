@@ -526,15 +526,18 @@ AS_IF([test "x$MYSQL" != "xno"],
             MYSQL_LIBS=""
 
             # Split the input string by spaces
-            IFS=' ' read -ra items <<< "$MYSQL_CONFIG_LIBS"
+            IFS=' ' items=($MYSQL_CONFIG_LIBS)
 
             # Iterate through the items and add to MYSQL_LDFLAGS or MYSQL_LIBS
-            for item in "${items[@]}"; do
-            if [[ $item == -L* ]]; then
+            for item in ${items[*]}; do
+            case $item in
+                -L*)
                 MYSQL_LDFLAGS+=" $item"
-            elif [[ $item == -l* ]]; then
+                ;;
+                -l*)
                 MYSQL_LIBS+=" $item"
-            fi
+                ;;
+            esac
             done
 
             # Print the result
