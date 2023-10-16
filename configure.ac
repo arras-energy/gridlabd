@@ -519,26 +519,9 @@ AS_IF([test "x$MYSQL" != "xno"],
         # Check if the mysql_config tool is found
         if test "x$MYSQL_CONFIG" != "xno"; then
             # Use mysql_config to get include and library directories
-            MYSQL_CPPFLAGS="-I`$MYSQL_CONFIG --cflags | sed 's/^-I//; s/ .*//'`"
-            # Use mysql_config to get include and library directories
-            MYSQL_CONFIG_LIBS="$(mysql_config --libs)"
-            MYSQL_LDFLAGS=""
-            MYSQL_LIBS=""
-
-            # Split the input string by spaces
-            IFS=' ' items=($MYSQL_CONFIG_LIBS)
-
-            # Iterate through the items and add to MYSQL_LDFLAGS or MYSQL_LIBS
-            for item in ${items[*]}; do
-            case $item in
-                -L*)
-                MYSQL_LDFLAGS+=" $item"
-                ;;
-                -l*)
-                MYSQL_LIBS+=" $item"
-                ;;
-            esac
-            done
+            MYSQL_CPPFLAGS="$(mysql_config --cflags)"
+            MYSQL_LDFLAGS="$(mysql_config --libs)"
+            MYSQL_LIBS="$(mysql_config --libs)"
 
             # Print the result
             echo "MYSQL_LDFLAGS: $MYSQL_LDFLAGS"
