@@ -509,6 +509,7 @@ def mdb2csv(input_file, output_dir, tables, extract_option):
             ["mdb-export", input_file, table, ">", f"{output_dir}/{csvname}.csv"],
             capture_output=True,
         )
+
         # os.system(f"mdb-export {input_file} {table} > {output_dir}/{csvname}.csv")
         row_count = os.popen(f"wc -l {output_dir}/{csvname}.csv").read()
         if (int(row_count.strip().split(" ")[0]) <= 1) and extract_option != "all":
