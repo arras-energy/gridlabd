@@ -519,10 +519,11 @@ AS_IF([test "x$MYSQL_CONFIG" = "xno"],
 AS_IF([test "x$MYSQL" != "xno"],
     [
             # Use mysql_config to get include and library directories
-            MYSQL_CPPFLAGS=$(mysql_config --cflags)
+            MYSQL_CPPFLAGS="$(mysql_config --cflags) -DHAVE_MYSQL"
             MYSQL_LDFLAGS=$(mysql_config --libs)
             MYSQL_LIBS=$(mysql_config --libs)
             HAVE_MYSQL=yes
+            GLD_CPPFLAGS="$GLD_CPPFLAGS -DHAVE_MYSQL"
 
             # Define HAVE_MYSQL
             AC_DEFINE([HAVE_MYSQL], [1], [Define when you have MySQL])
