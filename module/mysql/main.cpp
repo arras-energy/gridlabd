@@ -918,7 +918,7 @@ static bool export_globals(MYSQL *mysql)
 static bool export_class(MYSQL *mysql, CLASS *cls)
 {
 	MODULE *mod = cls->module;
-	char modname[1025] = "NULL";
+	char modname[1026] = "NULL";
 	if ( mod )
 		snprintf(modname,sizeof(modname)-1,"\"%s\"",mod->name);
 
@@ -1095,7 +1095,7 @@ static bool export_objects(MYSQL *mysql)
 		// objects table
 		CLASS *cls = obj->oclass;
 		MODULE *mod = cls->module;
-		char modname[1024]="NULL";
+		char modname[1025]="NULL";
 		char name[1024]="NULL";
 		char parent[64]="NULL";
 		char groupid[1027]="NULL";
