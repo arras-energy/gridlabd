@@ -508,8 +508,13 @@ AS_IF([test -n "$DX_DOXYGEN"],
       [HAVE_DOXYGEN=no])
 AM_CONDITIONAL([HAVE_DOXYGEN], [test ! "x$HAVE_DOXYGEN" = "xno"])
 
-# Check for mysql
-AC_CHECK_LIB([mysqlclient], [mysql_init], [MYSQL="yes"], [MYSQL="no"])
+# Check for mysql_config tool
+AC_PATH_PROG(MYSQL_CONFIG, mysql_config, no)
+
+AS_IF([test "x$MYSQL_CONFIG" = "xno"],
+    [MYSQL="no"
+     AC_MSG_WARN([mysql_config not found - MySQL support will be disabled])],
+    [MYSQL="yes"])
 
 AS_IF([test "x$MYSQL" != "xno"],
     [
@@ -519,12 +524,12 @@ AS_IF([test "x$MYSQL" != "xno"],
         # Check if the mysql_config tool is found
         if test "x$MYSQL_CONFIG" != "xno"; then
             # Use mysql_config to get include and library directories
-            MYSQL_CPPFLAGS="$MYSQL_CONFIG --cflags"
-            MYSQL_LDFLAGS="$MYSQL_CONFIG --libs"
+            MYSQL_CPPFLAGS="x$MYSQL_CONFIG --cflags"
+            MYSQL_LDFLAGS="x$MYSQL_CONFIG --libs"
             AS_CASE([$host],
-                [*mingw*], [MYSQL_LIBS="$MYSQL_CONFIG --libs"],
-                [*linux*], [MYSQL_LIBS="$MYSQL_CONFIG --libs"],
-                [*darwin*], [MYSQL_LIBS="$MYSQL_CONFIG --libs"])
+                [*mingw*], [MYSQL_LIBS="x$MYSQL_CONFIG --libs"],
+                [*linux*], [MYSQL_LIBS="x$MYSQL_CONFIG --libs"],
+                [*darwin*], [MYSQL_LIBS="x$MYSQL_CONFIG --libs"])
 
             # Print the result
             echo "MYSQL_LDFLAGS: $MYSQL_LDFLAGS"
