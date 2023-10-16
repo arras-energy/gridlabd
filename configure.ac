@@ -522,6 +522,7 @@ AS_IF([test "x$MYSQL" != "xno"],
             MYSQL_CPPFLAGS=$(mysql_config --cflags)
             MYSQL_LDFLAGS=$(mysql_config --libs)
             MYSQL_LIBS=$(mysql_config --libs)
+            HAVE_MYSQL=yes
 
             # Define HAVE_MYSQL
             AC_DEFINE([HAVE_MYSQL], [1], [Define when you have MySQL])
