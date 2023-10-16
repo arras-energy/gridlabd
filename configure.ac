@@ -524,7 +524,7 @@ AS_IF([test "x$MYSQL" != "xno"],
             AS_CASE([$host],
                 [*mingw*], [MYSQL_LIBS="-mysql -lzstd -lssl -lcrypto -lresolv -lm"],
                 [*linux*], [MYSQL_LIBS="-lmysqlclient -lzstd -lssl -lcrypto -lresolv -lm"],
-                [*darwin*], [MYSQL_LIBS="-lmysqlclient -lzstd -lssl -lcrypto -lresolv -lm"])
+                [*darwin*], [MYSQL_LIBS="-lmysqlclient -lz -lzstd -lssl -lcrypto -lresolv"])
             HAVE_MYSQL=yes
 
             # Set the paths based on mysql_config output

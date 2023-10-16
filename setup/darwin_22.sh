@@ -23,7 +23,6 @@ if ! python$PYTHON_VERSION -m venv -h 1>/dev/null 2>&1 ; then
     INSTALL brew install python$PYTHON_VERSION-venv
     python$PYTHON_VERSION -m venv -h >/dev/null || error "unable to install python$PYTHON_VERSION-venv"
 fi
-iINSTALL python$PYTHON_VERSION -m pip install setuptools
 
 # create python venv for setup if not already done
 if [ ! -x "$PYTHON_EXEC" ] ; then
