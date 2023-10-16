@@ -918,17 +918,21 @@ static bool export_globals(MYSQL *mysql)
 static bool export_class(MYSQL *mysql, CLASS *cls)
 {
 	MODULE *mod = cls->module;
-	char modname[1026] = "NULL";
+	char modname[1032] = "NULL";
 	if ( mod )
+	{
 		snprintf(modname,sizeof(modname)-1,"\"%s\"",mod->name);
-
+	}
+	
 	// handle parent class first
 	if ( cls->parent!=NULL )
 	{
 		if ( !export_class(mysql,cls->parent) || !query(mysql,"REPLACE INTO `%s` (`name`,`module`,`property`,`type`) "
 				"VALUES (\"%s\",%s,\"%s\",%d)",
 				get_table_name("classes"), cls->name, modname, cls->parent->name, PT_INHERIT) )
+		{
 			return false;
+		}
 	}
 
 	// create class tables
@@ -941,7 +945,9 @@ static bool export_class(MYSQL *mysql, CLASS *cls)
 	for ( PROPERTY *prop = cls->pmap ; prop!=NULL && prop->oclass==cls ; prop=prop->next )
 	{
 		if ( !(prop->access&(PA_R|PA_S) ) )
+		{
 			continue; // ignore unreadable non-saved properties
+		}
 
 		// write class structure info
 		char units[1024] = "NULL";
@@ -951,7 +957,9 @@ static bool export_class(MYSQL *mysql, CLASS *cls)
 		if ( !query(mysql,"REPLACE INTO `%s` (`name`,`module`,`property`,`type`,`flags`,`units`,`description`) "
 				"VALUES (\"%s\",%s,\"%s\",%d,%d,%s,%s)",
 				get_table_name("classes"), prop->oclass->name,modname,prop->name,prop->ptype,prop->flags,units,description) )
+		{
 			return false;
+		}
 
 		// write class table
 		snprintf(query_string+len,sizeof(query_string)-len-1, ", `%s` text", prop->name);
@@ -970,7 +978,9 @@ static bool export_class(MYSQL *mysql, CLASS *cls)
 			if ( !query(mysql,"REPLACE INTO `%s` (`name`,`module`,`property`,`keyword`,`type`,`flags`) "
 					"VALUES (\"%s\",%s,\"%s\",\"%s\",%d,%lld)",
 					get_table_name("classes"), prop->oclass->name,modname,prop->name,keyword->name,PT_KEYWORD,keyword->value) )
+			{
 				return false;
+			}
 		}
 	}
 	snprintf(query_string+len,sizeof(query_string)-len-1,")");
@@ -1067,7 +1077,9 @@ static bool export_properties(MYSQL *mysql, OBJECT *obj, CLASS *cls = NULL)
 static bool export_objects(MYSQL *mysql)
 {
 	if ( my_overwrite && !query(mysql,"DROP TABLE IF EXISTS `%s`", get_table_name("objects")) )
+	{
 		return false;
+	}
 	if ( !no_create && !query(mysql,"CREATE TABLE IF NOT EXISTS `%s` ("
 			" `id` mediumint PRIMARY KEY,"
 			" `module` char(64),"
@@ -1089,13 +1101,15 @@ static bool export_objects(MYSQL *mysql)
 			" `heartbeat` timestamp default " MYSQL_TS_ZERO ","
 			" `flags` bigint,"
 			" KEY (`name`))", get_table_name("objects")) )
+	{
 		return false;
+	}
 	for ( OBJECT *obj = gl_object_get_first(); obj!=NULL ; obj=obj->next )
 	{
 		// objects table
 		CLASS *cls = obj->oclass;
 		MODULE *mod = cls->module;
-		char modname[1025]="NULL";
+		char modname[1032]="NULL";
 		char name[1024]="NULL";
 		char parent[64]="NULL";
 		char groupid[1027]="NULL";
@@ -1130,7 +1144,9 @@ static bool export_objects(MYSQL *mysql)
 				obj->id,modname,cls->name,name,groupid,parent,obj->rank,latitude,longitude,
 				clock,valid_to,schedule_skew,in_svc,obj->in_svc_micro,out_svc,obj->out_svc_micro,
 				obj->rng_state,heartbeat,obj->flags) )
+		{
 			return false;
+		}
 
 		// data table
 		if ( !export_properties(mysql,obj) )
