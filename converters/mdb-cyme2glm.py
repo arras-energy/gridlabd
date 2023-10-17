@@ -505,12 +505,25 @@ def mdb2csv(input_file, output_dir, tables, extract_option):
     os.system(f"mkdir -p {data_folder}")
     for table in tables:
         csvname = table[3:].lower()
-        subprocess.run(
-            ["mdb-export", input_file, table, ">", f"{output_dir}/{csvname}.csv"],
-            capture_output=True,
-        )
+        # subprocess.run(
+        #     ["mdb-export", input_file, table, ">", f"{output_dir}/{csvname}.csv"],
+        # )
 
         # os.system(f"mdb-export {input_file} {table} > {output_dir}/{csvname}.csv")
+
+        output_file = f"{output_dir}/{csvname}.csv"
+
+        try:
+            with open(output_file, "w") as output_file_obj:
+                subprocess.run(["mdb-export", input_file, table], stdout=output_file_obj, check=True)
+        except subprocess.CalledProcessError as e:
+            error(f"Command failed with error code {e.returncode}", 1)
+        except FileNotFoundError:
+            error(f"Command not found. Make sure mdb-export is installed and in your PATH.", 3)
+        except Exception as e:
+            error(f"An unexpected error occurred: {e}", 1)
+
+
         row_count = os.popen(f"wc -l {output_dir}/{csvname}.csv").read()
         if (int(row_count.strip().split(" ")[0]) <= 1) and extract_option != "all":
             os.remove(f"{output_dir}/{csvname}.csv")
@@ -3354,8 +3367,8 @@ def convert(input_file: str, output_file: str = None, options: dict[str, Any] = 
     # converter input MBD to CSV tables
     if not data_folder:
         data_folder = f"/tmp/gridlabd/mdb-cyme2glm/{input_file_name}"
+    print(input_file, data_folder)
     cyme_table = mdb2csv(input_file, data_folder, cyme_tables_required, "non-empty")
-    sys.exit(4)
     cyme_mdbname = data_folder.split("/")[-1]
     if equipment_file != None:  # if equipment MDB is provided
         equipment_data_folder = f"{data_folder}/cyme_equipment_tables"
