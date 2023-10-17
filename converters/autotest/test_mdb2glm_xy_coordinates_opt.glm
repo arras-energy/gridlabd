@@ -1,3 +1,6 @@
+// NOTE: This test yields an intermittent validation error for some unknown reason
+//       For now it should remain optional until the cause is identified and remedied.
+//       - DPC 10/17/23
 #ifexist ../IEEE-13-cyme.mdb
 #define DIR=..
 #endif // exist ../IEEE-13-cyme.mdb
