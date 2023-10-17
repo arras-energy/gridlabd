@@ -2,7 +2,48 @@
 exec "$GLD_BIN/python3" "$0" "$@"
 :' '''
 # Syntax: contributors [<options>]
+## GridLAB-D contributors
+## 
+## SYNTAX
+## 
+##  gridlabd contributions [OPTIONS ...]
+## 
+## OPTIONS
+## 
+##  -c|--csv        Output result as CSV file
+##  -h|--help|help  Get this help text
+## 
+##  -k|--known      Limit result to users with known full names only
+##                  (default False)
+## 
+##  -l|--login      Display only github login id (usually faster, default is
+##                  False)
+## 
+##  -q|--quotes "None"|STRING
+##                  Place quotes around full names (default is None)
+## 
+##  -s|--separate "SPACE"|"NEWLINE"|STRING
+##                  Separate output using the STRING delimiter (default is NEWLINE)
+## 
+##  -t|--token TOKEN
+##                  Use TOKEN as the github access token (default is content
+##                  of ~/.github/access-token)
+## 
+## DESCRIPTION
+## 
+## Processes all repositories that contributed source code and extracts all the people
+## from whom contributions were received.
+
 import sys, os, github
+
+#
+# Update this to reflect all contributing projects
+#
+REPOSITORIES = [
+	"gridlab-d/gridlab-d",
+	"arras-energy/gridlabd-old",
+	"arras-energy/gridlabd",
+	]
 
 E_NONE = None
 E_OK = 0
@@ -15,6 +56,7 @@ quotes = ""
 login = False
 known = False
 token = None
+tocsv = False
 
 def error(msg,code=E_NONE):
 	if type(msg) is Exception:
@@ -43,15 +85,9 @@ while n < len(sys.argv):
 	else:
 		value = None
 	if tag in ["-h","--help","help"]:
-		print(f"Syntax: gridlabd contributors [<options>]")
-		print("Options:")
-		print("  -h|--help           get this help list")
-		print("  -k|--known          print known users only")
-		print("  -l|--login          print only login ids")
-		print("  -q|--quotes <str>   quote names with <str>")
-		print("  -s|--separate <str> separate names with <str>")
-		print("  -t|--token <str>    use github access token <str>")
-		exit(0)
+		with open(sys.argv[0],"r") as fh:
+			print("".join([line[3:] for line in fh.readlines() if line.startswith("##")]))
+		exit(E_OK)
 	elif tag in ["-t","--token"]:
 		if value == "None":
 			token = None
@@ -74,10 +110,10 @@ while n < len(sys.argv):
 		n += 1
 	elif tag in ["-k","--known"]:
 		known = True
-		n += 1
 	elif tag in ["-l","--login"]:
 		login = True
-		n += 1
+	elif tag in ["-c","--csv"]:
+		tocsv = True
 	else:
 		error(f"'{tag}' is not valid",code=E_INVALID)
 	n += 1
@@ -94,13 +130,24 @@ if not token:
 try:
 	git = github.Github(token)
 
-	repo = git.get_repo("arras-energy/gridlabd")
-	for user in repo.get_contributors():
-		if login:
-			output(user.login)
-		elif user.name:
-			output(user.name)
-		elif not known:
-			output(f"<user:{user.login}>")
+	result = {}
+	for repository in REPOSITORIES:
+		repo = git.get_repo(repository)
+		for user in repo.get_contributors():
+			if login:
+				result[user.login] = user.login
+			elif user.name:
+				result[user.login] = quotes + user.name + quotes
+			elif not known:
+				result[user.login] = f"<user:{user.login}>"
+
+	if tocsv:
+		output("id,name")
+	for id in result:
+		if tocsv:
+			output(f"{id},{result[id]}")
+		else:
+			output(result[id])
+
 except Exception as exc:
 	error(exc)
