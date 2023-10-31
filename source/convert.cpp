@@ -93,8 +93,7 @@ int convert_from_double(char *buffer, /**< pointer to the string buffer */
 	int count = strlen(temp);
 	if ( prop->unit )
 	{
-		snprintf(temp+count,sizeof(temp)-count-1," %s",prop->unit->name);
-		count += strlen(temp);
+		count += snprintf(temp+count,sizeof(temp)-count-1," %s",prop->unit->name);
 	}
 
 	if ( size == 0 )
