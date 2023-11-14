@@ -379,16 +379,16 @@ char *database::get_sqldata(char *buffer, size_t size, gld_property &prop, gld_u
 	default:
 		return NULL;
 	}
-	char tmp[65536];
-	if ( prop.to_string(tmp,sizeof(tmp)) < (int)size )
-	{
-		snprintf(buffer,size,"'%s'",tmp);
-	}
-	else
-	{
-		snprintf(buffer,size,"NULL");
-	}
-	return buffer;
+	// char tmp[65536];
+	// if ( prop.to_string(tmp,sizeof(tmp)) < (int)size )
+	// {
+	// 	snprintf(buffer,size,"'%s'",tmp);
+	// }
+	// else
+	// {
+	// 	snprintf(buffer,size,"NULL");
+	// }
+	// return buffer;
 }
 void database::start_transaction(void)
 {
