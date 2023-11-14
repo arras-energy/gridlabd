@@ -529,6 +529,7 @@ DEPRECATED static struct s_varmap {
     {"organization",PT_char32, &global_organization,PA_PUBLIC,"organization name"},
     {"profile_output_format",PT_set,&global_profile_output_format,PA_PUBLIC,"profiler output data format"},
     {"maximum_runtime",PT_int64,&global_maximum_runtime,PA_PUBLIC,"maximum wall clock runtime allowed"},
+    {"flush_output",PT_int32,&global_flush_output,PA_PUBLIC,"flush output buffers continuously"},
 	/* add new global variables here */
 };
 
