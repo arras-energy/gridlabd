@@ -2357,6 +2357,24 @@ DEPRECATED static int csvloadshape(void *main, int argc, const char *argv[])
 	return argc;
 }
 
+DEPRECATED static int module(void *main, int argc, const char *argv[])
+{
+	if ( argc < 2 )
+	{
+		output_error("missing module name");
+		return CMDERR;
+	}
+	else if ( module_load(argv[1],0,NULL) == NULL )
+    {
+    	output_error("module '%s' load failed",argv[0]);
+    	return CMDERR;
+    }
+    else
+    {
+    	return 1;
+    }
+}
+
 /*********************************************/
 /* ADD NEW CMDARG PROCESSORS ABOVE THIS HERE */
 /* Then make the appropriate entry in the    */
@@ -2383,6 +2401,7 @@ DEPRECATED static CMDARG main_commands[] = {
 	{"warn",		"w",	warn,			NULL, "Toggles display of warning messages" },
 	{"workdir",		"W",	workdir,		NULL, "Sets the working directory" },
 	{"rusage",      NULL,   rusage,         NULL, "Collect resource usage statistics" },
+	{"module",      "M",    module,         "<module>", "Load a module" },
 
 	{NULL,NULL,NULL,NULL, "Global, environment and module information"},
 	{"define",		"D",	define,			"<name>=[<module>:]<value>", "Defines or sets a global (or module) variable" },
