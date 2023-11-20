@@ -27,3 +27,5 @@ dist_pkgdata_DATA += tools/nsrdb_weather.py
 dist_pkgdata_DATA += tools/pole_analysis.py
 dist_pkgdata_DATA += tools/read_dlp.py
 dist_pkgdata_DATA += tools/ucar_weather.py
+dist_pkgdata_DATA += tools/gridlabd_runner.py
+dist_pkgdata_DATA += tools/gridlabd_weather_ui.py
