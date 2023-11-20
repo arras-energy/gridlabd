@@ -165,26 +165,27 @@ def __(
     # Preview
     #
     def preview(_):
-        data = io.StringIO(
+        with mo.status.spinner("Downloading data"):
+            data = io.StringIO(
+                gridlabd("nsrdb_weather",
+                         f"-y={year.value}",
+                         f"-p={latitude.value},{longitude.value}",
+                        )
+            )
+            df = pd.read_csv(data,parse_dates=True)
+            set_df(df)
+            set_csv(df.to_csv(index=False,header=False))
+            set_fields(list(df.columns))
             gridlabd("nsrdb_weather",
+                     f"--csv={setting_weathercsv.value}",
+                     f"--glm={setting_weatherglm.value}",
+                     f"--name={setting_weatherobj.value}",
+                     f"--interpolate={interpolation.value}",
                      f"-y={year.value}",
                      f"-p={latitude.value},{longitude.value}",
                     )
-        )
-        df = pd.read_csv(data,parse_dates=True)
-        set_df(df)
-        set_csv(df.to_csv(index=False,header=False))
-        set_fields(list(df.columns))
-        gridlabd("nsrdb_weather",
-                 f"--csv={setting_weathercsv.value}",
-                 f"--glm={setting_weatherglm.value}",
-                 f"--name={setting_weatherobj.value}",
-                 f"--interpolate={interpolation.value}",
-                 f"-y={year.value}",
-                 f"-p={latitude.value},{longitude.value}",
-                )
-        with open("weather.glm","r") as glm:
-            set_glm(glm.read())
+            with open("weather.glm","r") as glm:
+                set_glm(glm.read())
 
     def get_table():
         if get_df() is None:
