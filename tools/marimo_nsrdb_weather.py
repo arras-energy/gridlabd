@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.1.55"
+__generated_with = "0.1.53"
 app = marimo.App(width="full")
 
 
@@ -190,7 +190,10 @@ def __(
         if get_df() is None:
             return
         return mo.vstack([
-            mo.ui.table(get_df(), page_size=24),
+            mo.ui.table(get_df(), 
+                        page_size=24,
+                        selection = None,
+                       ),
             mo.hstack([download_csv,download_glm],justify='start')
         ])
 
@@ -224,7 +227,10 @@ def __(
                 data["Stdev"].append(X.std().round(2))
                 data["Maximum"].append(X.max().round(2))
         return mo.vstack([
-            mo.ui.table(pd.DataFrame(data)),
+            mo.ui.table(pd.DataFrame(data),
+                        pagination = False,
+                        selection = None,
+                       ),
             mo.hstack([download_csv,download_glm],justify='start')
         ])
 

@@ -1,7 +1,79 @@
 #!/bin/bash
 # Syntax: gridlabd marimo COMMAND [OPTIONS]
 
-if [ $# == 1 ]; then
-	grep '^# Syntax:' $0 | cut -c2-
-	exit 1
+E_OK=0
+E_SYNTAX=1
+E_INVALID=2
+E_FAILED=3
+E_NOTFOUND=4
+
+if [ $# -eq 0 ]; then
+	grep '^# Syntax:' $0 | cut -c3-
+	exit $E_SYNTAX
 fi
+
+case $1 in 
+
+list)
+
+	FIRST=2718
+	LAST=2800
+	PORT=$FIRST
+	echo "PID   PORT  FILENAME"
+	echo "----- ----- --------------------"
+	while [ $PORT -lt $LAST ]; do
+		FILENAME=$(curl -s http://localhost:$PORT | grep '<marimo-filename[^>]*>' | sed 's/<[^>]*>//g' || echo "NAN")
+		if [ ! -z "$FILENAME" -a "$FILENAME" != "NAN" ]; then
+			PID=$(ps ax | grep 'marimo run $FILENAME' | cut -f1 -d' ')
+			printf "%5s %5s %s\n" $PID $PORT $FILENAME
+		fi
+		PORT=$(($PORT+1))
+	done
+	exit $E_OK
+	;;
+
+kill)
+
+	FIRST=2718
+	LAST=2800
+	for PID in $(ps $2 | grep 'marimo run' | cut -f1 -d' '); do
+		if [ "$(ps $PID 1>/dev/null 2>&1 && echo ok || echo fail)" == "ok" ]; then
+			echo -n "[$$] Killing $PID..."
+			kill $PID && echo "ok" || echo "failed"
+		fi
+	done
+	;;
+
+open)
+
+	APP=${GLD_ETC}/marimo_$2.py
+	if [ ! -f $APP ]; then
+		echo "ERROR [gridlabd-marimo]: $APP not found"
+		exit $E_NOTFOUND
+	fi
+	LOG=/tmp/gridlabd-marimo-$2.log
+	marimo run $APP 1>$LOG 2>&1 &
+	PORT=""
+	TIMEOUT=5
+	while [ -z "$PORT" -a $TIMEOUT -gt 0 ]; do
+		sleep 1
+		PORT=$(grep "http://" $LOG | cut -f4 -d:)
+		TIMEOUT=$(($TIMEOUT-1))
+	done
+	if [ $TIMEOUT -eq 0 ]; then
+		echo "ERROR [gridlabd-marimo]: timeout" > /dev/stderr
+		cat $LOG > /dev/stderr
+		exit $E_FAILED
+	fi
+	echo PORT=$PORT
+	exit $E_OK
+	;;
+
+*)
+
+	echo "ERROR [gridlabd-marimo]: $1 is not a valid command" > /dev/stderr
+	exit $E_INVALID
+
+esac
+
+exit $E_FAILED
