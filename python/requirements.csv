@@ -22,7 +22,7 @@ ipyplot,,,1.1.1
 ipython,3,,8.10.0
 ipython,,,8.10.0
 marimo,,,
-matplotlib,2,,3.3.3
+matplotlib,2,,3.8.2
 matplotlib_inline,,,0.1.6
 metar,,,1.9.0
 networkx,,,2.8.8

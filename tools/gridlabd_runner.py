@@ -69,7 +69,7 @@ class Gridlabd:
         - GridlabdException(code,stderr)
         """
         cmd = shutil.which("gridlabd.bin")
-        cmd = cmd if cmd else shutil.which("gridlabd")
+        cmd = cmd if cmd and binary else shutil.which("gridlabd")
         if not cmd:
             raise GridlabdException(-1,"gridlabd not found")
         self.command = [cmd]

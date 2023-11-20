@@ -80,7 +80,7 @@ def __(geolocator, mo, set_city, set_latitude, set_longitude):
 
 
 @app.cell
-def __(download_csv, download_glm, find_city, location, mo):
+def __(find_city, location, mo):
     #
     # Location lookup
     #
@@ -88,9 +88,9 @@ def __(download_csv, download_glm, find_city, location, mo):
     mo.hstack([mo.hstack([location,
                           lookup,
                          ],justify='start'),
-               mo.hstack([download_csv,
-                          download_glm,
-                         ],justify='start'),
+               # mo.hstack([download_csv,
+               #            download_glm,
+               #           ],justify='start'),
               ])
     return lookup,
 
@@ -134,6 +134,7 @@ def __(
 
 @app.cell
 def __(
+    dt,
     get_csv,
     get_df,
     get_glm,
@@ -155,6 +156,7 @@ def __(
     setting_weathercsv,
     setting_weatherglm,
     setting_weatherobj,
+    setting_weatheryear,
     settings,
     xaxis,
     yaxis,
@@ -187,7 +189,10 @@ def __(
     def get_table():
         if get_df() is None:
             return
-        return mo.ui.table(get_df(), page_size=24)
+        return mo.vstack([
+            mo.ui.table(get_df(), page_size=24),
+            mo.hstack([download_csv,download_glm],justify='start')
+        ])
 
     def get_graph():
         if get_df() is None:
@@ -201,7 +206,8 @@ def __(
                      marker = marker.value,
                      linestyle = line.value,
                     ) 
-                if xaxis.value and yaxis.value else mo.md("Choose fields")
+                if xaxis.value and yaxis.value else mo.md("Choose fields"),
+            mo.hstack([download_csv,download_glm],justify='start')
         ])
 
     def get_stats():
@@ -217,22 +223,23 @@ def __(
                 data["Mean"].append(X.mean().round(2))
                 data["Stdev"].append(X.std().round(2))
                 data["Maximum"].append(X.max().round(2))
-        return mo.ui.table(pd.DataFrame(data))
+        return mo.vstack([
+            mo.ui.table(pd.DataFrame(data)),
+            mo.hstack([download_csv,download_glm],justify='start')
+        ])
 
     def get_text():
         glm = get_glm()
         if glm is None:
             return
-        return mo.ui.text_area(value = glm,
-                               full_width = True,
-                              )
+        return mo.vstack([
+            mo.ui.text_area(value = glm,
+                            full_width = True,
+                           ),
+            mo.hstack([download_csv,download_glm],justify='start')
+        ])
 
-    stats = get_stats()
-    table = get_table()
-    graph = get_graph()
-    text = get_text()
-
-    year = mo.ui.number(start=2000, stop=2020, label="Year:", value=2020)
+    year = mo.ui.number(start=2000, stop=dt.datetime.now().year, label="Year:", value=setting_weatheryear.value)
     latitude = mo.ui.text(label="Latitude:", value=get_latitude())
     longitude = mo.ui.text(label="Longitude:", value=get_longitude())
     interpolation = mo.ui.dropdown(label="Interpolation (min):", options=["60","30","20","15","10","5","1"],value="60")
@@ -248,6 +255,11 @@ def __(
                            disabled = (get_csv() == ""), 
                            mimetype = "text/csv")
     nodata = mo.md(("No data" if get_whoami() else "You must register with NSRDB first (see Settings).") + "\n"*10)
+
+    stats = get_stats()
+    table = get_table()
+    graph = get_graph()
+    text = get_text()
 
     body = mo.vstack([
         mo.tabs({
@@ -284,15 +296,78 @@ def __(
 
 
 @app.cell
-def __(mo, settings_credentials, settings_glmfile, settings_weatherdata):
+def __(json, mo, sys):
+    default_weatherobj = "weather"
+    default_weathercsv = "weather.csv"
+    default_weatherglm = "weather.glm"
+
+    default_graphxaxis = "datetime"
+    default_graphyaxis = "temperature[degF]"
+    default_weatheryear = 2020
+
+    _settings_filename = sys.argv[2].replace(".py",".json")
+
+    def load_settings(_):
+        pass
+
+    def save_settings(_):
+        with open(_settings_filename,"w") as fh:
+            json.dump(dict(weatherobj = default_weatherobj,
+                           weathercsv = default_weathercsv,
+                           weatherglm = default_weatherglm,                    
+                           graphxaxis = default_graphxaxis,
+                           graphyaxis = default_graphyaxis,
+                           weatheryear = default_weatheryear,
+                          ), 
+                      fh,
+                      indent = 4,
+                     )
+
+    save_settings_button = mo.ui.button(label="Save",on_click=save_settings)
+    load_settings_button = mo.ui.button(label="Reset",on_click=load_settings)
+
+
+    return (
+        default_graphxaxis,
+        default_graphyaxis,
+        default_weathercsv,
+        default_weatherglm,
+        default_weatherobj,
+        default_weatheryear,
+        load_settings,
+        load_settings_button,
+        save_settings,
+        save_settings_button,
+    )
+
+
+@app.cell
+def __(
+    load_settings_button,
+    mo,
+    save_settings_button,
+    settings_credentials,
+    settings_glmfile,
+    settings_weatherdata,
+):
     #
     # Settings
     #
-    settings = mo.accordion({
-        "NSRDB Credentials" : settings_credentials,
-        "Weather Data" : settings_weatherdata,
-        "GLM File" : settings_glmfile,
-        })
+
+    settings = mo.vstack([
+        mo.accordion({
+                "NSRDB Credentials" : settings_credentials,
+                "Weather Data" : settings_weatherdata,
+                "GLM File" : settings_glmfile,
+            }),
+        mo.hstack([
+                save_settings_button,
+                load_settings_button,
+            ],
+            justify = 'start',
+             )
+        ])
+
     return settings,
 
 
@@ -304,6 +379,7 @@ def __(mo):
     setting_weatherobj = mo.ui.text(label = "Weather object name", value = "weather")
     setting_weathercsv = mo.ui.text(label = "Weather CSV name", value = "weather.csv")
     setting_weatherglm = mo.ui.text(label = "Weather GLM name", value = "weather.glm")
+
     settings_glmfile = mo.vstack([
         setting_weatherobj,
         setting_weathercsv,
@@ -330,6 +406,7 @@ def __(get_apikey, get_whoami, mo):
                                 placeholder = "Paste API key here",
                                 value = get_apikey() if get_apikey() else "")
     setting_register = mo.ui.button(label="Register")
+
     settings_credentials = mo.vstack([
         mo.hstack([setting_email,setting_register],justify='start'),
         setting_apikey,
@@ -345,17 +422,25 @@ def __(get_apikey, get_whoami, mo):
 
 
 @app.cell
-def __(mo):
+def __(default_weatheryear, dt, mo):
     #
     # Weather graph settings
     #
     setting_graphxaxis = mo.ui.text(label = "Weather graph default x-axis", value = "datetime")
     setting_graphyaxis = mo.ui.text(label = "Weather graph default y-axis", value = "temperature[degF]")
+    setting_weatheryear = mo.ui.number(start=2000, stop=dt.datetime.now().year, label="Weather year", value=default_weatheryear)
+
     settings_weatherdata = mo.vstack([
         setting_graphxaxis,
         setting_graphyaxis,
+        setting_weatheryear,
     ])
-    return setting_graphxaxis, setting_graphyaxis, settings_weatherdata
+    return (
+        setting_graphxaxis,
+        setting_graphyaxis,
+        setting_weatheryear,
+        settings_weatherdata,
+    )
 
 
 @app.cell
@@ -404,6 +489,7 @@ def __():
     #
     import marimo as mo
     import os, sys, io, json
+    import datetime as dt
     import subprocess as sp
     import pandas as pd
     import numpy as np
@@ -414,6 +500,7 @@ def __():
     geolocator = gp.geocoders.Nominatim(user_agent="marimo")
     me = gc.ip('me')
     return (
+        dt,
         gc,
         geolocator,
         gp,
