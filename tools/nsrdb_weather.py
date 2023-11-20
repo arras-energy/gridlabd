@@ -522,7 +522,7 @@ if __name__ == "__main__":
     csv = None
 
     if len(sys.argv) == 1:
-        syntax(1)
+        os.system(f"marimo run {os.environ['GLD_ETC']}/gridlabd_weather_ui.py")
     for arg in sys.argv[1:]:
         args = arg.split("=")
         if type(args) is list and len(args) > 1:
