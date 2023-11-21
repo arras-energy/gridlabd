@@ -1,18 +1,19 @@
 #!/bin/bash
 ## Syntax: gridlabd marimo COMMAND [OPTIONS ...]
 ## 
-## Access marimo apps available in the GridLAB-D tools.
+## Access GridLAB-D marimo apps.
 ## 
 ## Commands:
 ## 
-##   list - get a list of active marimo pages
+##   index - get a list of available marimo apps
 ## 
-##   kill [PORT1 [PORT2 [...]]] - kill marimo pages (all if no PORT given)
+##   list - get a list of active marimo apps
 ## 
-##   open NAME - open marimo page
+##   stop all|PORT [...] - stop marimo apps
 ## 
-##   reopen [PORT1 [PORT2 [...]]] - reopen marimo page on PORT (all if no PORT
-##                                  given)
+##   open NAME [...] - open marimo page
+## 
+##   reopen all|PORT [...] - reopen marimo pages
 ## 
 FIRST=2718
 LAST=2800
@@ -54,11 +55,11 @@ function get_filename() # PORT
 function get_pid() # FILENAME
 {
     if [ ! -z "$1" -a "$1" != "NAN" ]; then
-        ps ax | grep 'marimo run $1' | cut -f1 -d' '
+        ps ax | grep "marimo run $1" | grep -v grep | cut -f1 -d' '
     fi
 }
 
-function get_name()
+function get_name() # FILENAME
 {
     NAME=$1
     echo $(basename ${NAME/marimo_//}) | sed 's/\.py$//'
@@ -88,14 +89,16 @@ list)
     done
     ;;
 
-kill)
+stop)
 
     shift 1
-    if [ $# -eq 0 ]; then # kill them all
+    if [ $# -eq 0 ]; then 
+        error $E_SYNTAX "missing port number"
+    elif [ "$1" == "all" ]; then # kill them all
         for PORT in $(get_active); do
             FILENAME=$(get_filename $PORT)
             PID=$(get_pid $FILENAME)
-            if [ "$(ps $PID 1>/dev/null 2>&1 && echo ok || echo fail)" == "ok" ]; then
+            if [ -z "$PID" ]; then
                 echo -n "[$$] Killing $PID..."
                 kill $PID && echo "ok" || echo "failed"
             fi
@@ -121,23 +124,35 @@ kill)
 
 open)
 
-    APP=${GLD_ETC}/marimo_$2.py
-    if [ ! -f $APP ]; then
-        error $E_NOTFOUND "$APP not found"
+    shift 1
+    if [ $# -eq 0 ]; then
+        error $E_SYNTAX "missing app name"
     fi
-    LOG=/tmp/gridlabd-marimo-$2.log
-    marimo run $APP 1>$LOG 2>&1 &
-    PORT=""
-    TIMEOUT=5
-    while [ -z "$PORT" -a $TIMEOUT -gt 0 ]; do
-        sleep 1
-        PORT=$(grep "http://" $LOG | cut -f4 -d:)
-        TIMEOUT=$(($TIMEOUT-1))
+    for PORT in $(get_active); do
+        FILENAME=$(get_filename $PORT)
+        NAME=$(get_name $FILENAME)
+        if [ "$1" == "$NAME" ]; then
+            open http://localhost:$PORT/
+            echo $PORT
+            exit $E_OK
+        fi
     done
-    if [ $TIMEOUT -eq 0 ]; then
-        error $E_TIMEOUT "timeout waiting for $APP startup -- see $LOG for details"
-    fi
-    echo PORT=$PORT
+    for NAME in $*; do
+        APP=${GLD_ETC}/marimo_$NAME.py
+        if [ ! -f $APP ]; then
+            error $E_NOTFOUND "$APP not found"
+        fi
+        LOG=/tmp/gridlabd-marimo-$NAME.log
+        marimo run $APP 1>$LOG 2>&1 &
+        sleep 1
+        for PORT in $(get_active); do
+            FILENAME=$(get_filename $PORT)
+            if [ $NAME == "$(get_name $FILENAME)" ]; then
+                echo $PORT
+                break;
+            fi
+        done
+    done
     ;;
 
 reopen)
