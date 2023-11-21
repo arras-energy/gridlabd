@@ -11,7 +11,7 @@
 ## 
 ##   stop all|PORT [...] - stop marimo apps
 ## 
-##   open NAME [...] - open marimo page
+##   open [--edit] NAME [...] - open marimo page
 ## 
 ##   reopen all|PORT [...] - reopen marimo pages
 ## 
@@ -30,6 +30,11 @@ function error()
     shift 1
     echo "ERROR [gridlabd-marimo]: $* (code $CODE)"  >/dev/stderr
     exit $CODE
+}
+
+function warning()
+{
+    echo "WARNING [gridlabd-marimo]: $*" >/dev/stderr
 }
 
 function get_active()
@@ -128,11 +133,20 @@ open)
     if [ $# -eq 0 ]; then
         error $E_SYNTAX "missing app name"
     fi
+    if [ $1 == '--edit' ]; then
+        shift 1
+        COMMAND="edit"
+    else
+        COMMAND="run"
+    fi
     for PORT in $(get_active); do
         FILENAME=$(get_filename $PORT)
         NAME=$(get_name $FILENAME)
         if [ "$1" == "$NAME" ]; then
             open http://localhost:$PORT/
+            if [ "$COMMAND" == "edit" ]; then
+                warning "cannot edit running app"
+            fi
             echo $PORT
             exit $E_OK
         fi
@@ -143,7 +157,7 @@ open)
             error $E_NOTFOUND "$APP not found"
         fi
         LOG=/tmp/gridlabd-marimo-$NAME.log
-        marimo run $APP 1>$LOG 2>&1 &
+        marimo $COMMAND $APP 1>$LOG 2>&1 &
         sleep 1
         for PORT in $(get_active); do
             FILENAME=$(get_filename $PORT)
