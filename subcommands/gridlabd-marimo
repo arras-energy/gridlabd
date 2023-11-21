@@ -1,5 +1,21 @@
 #!/bin/bash
-# Syntax: gridlabd marimo COMMAND [OPTIONS]
+## Syntax: gridlabd marimo COMMAND [OPTIONS ...]
+## 
+## Access marimo apps available in the GridLAB-D tools.
+## 
+## Commands:
+## 
+##   list - get a list of active marimo pages
+## 
+##   kill [PORT1 [PORT2 [...]]] - kill marimo pages (all if no PORT given)
+## 
+##   open NAME - open marimo page
+## 
+##   reopen [PORT1 [PORT2 [...]]] - reopen marimo page on PORT (all if no PORT
+##                                  given)
+## 
+FIRST=2718
+LAST=2800
 
 E_OK=0
 E_SYNTAX=1
@@ -7,73 +23,164 @@ E_INVALID=2
 E_FAILED=3
 E_NOTFOUND=4
 
+function error()
+{
+    CODE=$1
+    shift 1
+    echo "ERROR [gridlabd-marimo]: $* (code $CODE)"  >/dev/stderr
+    exit $CODE
+}
+
+function get_active()
+{
+    PORT=$FIRST
+    while [ $PORT -lt $LAST ]; do
+        FILENAME=$(get_filename $PORT)
+        if [ ! -z "$FILENAME" -a "$FILENAME" != "NAN" ]; then
+            echo $PORT
+        fi
+        PORT=$(($PORT+1))
+    done
+}
+
+function get_filename() # PORT
+{
+    FILENAME=$(curl -s http://localhost:$1 | grep '<marimo-filename[^>]*>' | sed 's/<[^>]*>//g' || echo "NAN")
+    if [ ! -z "$FILENAME" -a "$FILENAME" != "NAN" ]; then
+        echo $FILENAME
+    fi  
+}
+
+function get_pid() # FILENAME
+{
+    if [ ! -z "$1" -a "$1" != "NAN" ]; then
+        ps ax | grep 'marimo run $1' | cut -f1 -d' '
+    fi
+}
+
+function get_name()
+{
+    NAME=$1
+    echo $(basename ${NAME/marimo_//}) | sed 's/\.py$//'
+}
+
+# de profundis clamo ad te
 if [ $# -eq 0 ]; then
-	grep '^# Syntax:' $0 | cut -c3-
-	exit $E_SYNTAX
+    grep '^## Syntax:' $0 | cut -c4-
+    exit $E_SYNTAX
 fi
 
+# the helping hand obviously worked
 case $1 in 
 
-list)
+help)
 
-	FIRST=2718
-	LAST=2800
-	PORT=$FIRST
-	echo "PID   PORT  FILENAME"
-	echo "----- ----- --------------------"
-	while [ $PORT -lt $LAST ]; do
-		FILENAME=$(curl -s http://localhost:$PORT | grep '<marimo-filename[^>]*>' | sed 's/<[^>]*>//g' || echo "NAN")
-		if [ ! -z "$FILENAME" -a "$FILENAME" != "NAN" ]; then
-			PID=$(ps ax | grep 'marimo run $FILENAME' | cut -f1 -d' ')
-			printf "%5s %5s %s\n" $PID $PORT $FILENAME
-		fi
-		PORT=$(($PORT+1))
-	done
-	exit $E_OK
-	;;
+    grep '^## ' $0 | cut -c4-
+    ;;
+
+list)
+    echo "PORT  PID   FILENAME"
+    echo "----- ----- ---------------"
+    for PORT in $(get_active); do
+        FILENAME=$(get_filename $PORT)
+        PID=$(get_pid $FILENAME)
+        printf '%5s %5s %s\n' $PORT ${PID:--} $(get_name $FILENAME)
+    done
+    ;;
 
 kill)
 
-	FIRST=2718
-	LAST=2800
-	for PID in $(ps $2 | grep 'marimo run' | cut -f1 -d' '); do
-		if [ "$(ps $PID 1>/dev/null 2>&1 && echo ok || echo fail)" == "ok" ]; then
-			echo -n "[$$] Killing $PID..."
-			kill $PID && echo "ok" || echo "failed"
-		fi
-	done
-	;;
+    shift 1
+    if [ $# -eq 0 ]; then # kill them all
+        for PORT in $(get_active); do
+            FILENAME=$(get_filename $PORT)
+            PID=$(get_pid $FILENAME)
+            if [ "$(ps $PID 1>/dev/null 2>&1 && echo ok || echo fail)" == "ok" ]; then
+                echo -n "[$$] Killing $PID..."
+                kill $PID && echo "ok" || echo "failed"
+            fi
+        done
+    else # kill specific ports
+        for PORT in $*; do
+            FILENAME=$(get_filename $PORT)
+            if [ "$FILENAME" == "NAN" ]; then
+                error $E_INVALID "server on port $PORT does not appear to a marimo notebook"
+            elif [ ! -z "$FILENAME" ]; then
+                PID=$(get_pid $FILENAME)
+                if [ ! -z "$PID" ]; then
+                    kill $PID
+                else
+                    error $E_NOTFOUND "no valid PID for $FILENAME on port $PORT"
+                fi
+            else
+                error $E_NOTFOUND "no server running on port $PORT"
+            fi
+        done
+    fi
+    ;;
 
 open)
 
-	APP=${GLD_ETC}/marimo_$2.py
-	if [ ! -f $APP ]; then
-		echo "ERROR [gridlabd-marimo]: $APP not found"
-		exit $E_NOTFOUND
-	fi
-	LOG=/tmp/gridlabd-marimo-$2.log
-	marimo run $APP 1>$LOG 2>&1 &
-	PORT=""
-	TIMEOUT=5
-	while [ -z "$PORT" -a $TIMEOUT -gt 0 ]; do
-		sleep 1
-		PORT=$(grep "http://" $LOG | cut -f4 -d:)
-		TIMEOUT=$(($TIMEOUT-1))
-	done
-	if [ $TIMEOUT -eq 0 ]; then
-		echo "ERROR [gridlabd-marimo]: timeout" > /dev/stderr
-		cat $LOG > /dev/stderr
-		exit $E_FAILED
-	fi
-	echo PORT=$PORT
-	exit $E_OK
-	;;
+    APP=${GLD_ETC}/marimo_$2.py
+    if [ ! -f $APP ]; then
+        error $E_NOTFOUND "$APP not found"
+    fi
+    LOG=/tmp/gridlabd-marimo-$2.log
+    marimo run $APP 1>$LOG 2>&1 &
+    PORT=""
+    TIMEOUT=5
+    while [ -z "$PORT" -a $TIMEOUT -gt 0 ]; do
+        sleep 1
+        PORT=$(grep "http://" $LOG | cut -f4 -d:)
+        TIMEOUT=$(($TIMEOUT-1))
+    done
+    if [ $TIMEOUT -eq 0 ]; then
+        error $E_TIMEOUT "timeout waiting for $APP startup -- see $LOG for details"
+    fi
+    echo PORT=$PORT
+    ;;
+
+reopen)
+
+    # automatically open any notebook without an open browser tab
+    shift 1
+    if [ $# -eq 0 ]; then # search
+        PORT=$FIRST
+        while [ $PORT -lt $LAST ]; do
+            FILENAME=$(get_filename $PORT)
+            if [ "$FILENAME" == "NAN" ]; then
+                error $E_INVALID "server on port $PORT does not appear to a marimo notebook"
+            elif [ ! -z "$FILENAME" ]; then
+                open http://localhost:$PORT/ &
+            else
+                error $E_NOTFOUND "no server running on port $PORT"
+            fi
+            PORT=$(($PORT+1))
+        done
+    else # reopen specific ports
+        for PORT in $*; do
+            FILENAME=$(get_filename $PORT)
+            if [ "$FILENAME" == "NAN" ]; then
+                error $E_INVALID "server on port $PORT does not appear to a marimo notebook"
+            elif [ ! -z "$FILENAME" ]; then
+                open http://localhost:$PORT/ &
+            else
+                error $E_NOTFOUND "no server running on port $PORT"
+            fi
+        done
+    fi
+    ;;
+
+index)
+
+    for FILENAME in $GLD_ETC/marimo_*.py; do
+        get_name $FILENAME
+    done
+    ;;
 
 *)
 
-	echo "ERROR [gridlabd-marimo]: $1 is not a valid command" > /dev/stderr
-	exit $E_INVALID
+    error $E_SYNTAX "$1 is not a valid command"
+    ;;
 
 esac
-
-exit $E_FAILED
