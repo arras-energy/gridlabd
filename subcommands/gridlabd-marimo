@@ -60,7 +60,7 @@ function get_filename() # PORT
 function get_pid() # FILENAME
 {
     if [ ! -z "$1" -a "$1" != "NAN" ]; then
-        ps ax | grep "marimo run $1" | grep -v grep | cut -f1 -d' '
+        ps ax | grep "marimo run $1\|marimo edit $1" | grep -v grep | cut -f1 -d' '
     fi
 }
 
