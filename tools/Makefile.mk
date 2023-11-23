@@ -17,6 +17,7 @@ dist_pkgdata_DATA += tools/group.py
 dist_pkgdata_DATA += tools/insights.py
 dist_pkgdata_DATA += tools/install.py
 dist_pkgdata_DATA += tools/isone.py
+dist_pkgdata_DATA += tools/marimo_admin.py
 dist_pkgdata_DATA += tools/marimo_nsrdb_weather.py
 dist_pkgdata_DATA += tools/marimo_viewer.py
 dist_pkgdata_DATA += tools/market_data.py
