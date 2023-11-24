@@ -11,8 +11,22 @@ def __(mo):
 
 
 @app.cell
-def __(actions, mo, refresh):
-    mo.hstack([actions,refresh])
+def __(actions, editor, mo, refresh):
+    refresh
+    mo.tabs({
+        "Marimo Tools" : actions,
+        # "Settings" : mo.vstack([
+        #     mo.hstack([mo.md("Use editor"),editor],justify = 'start'),
+        #     mo.hstack([mo.md("Refresh rate"),refresh],justify = 'start'),
+        # ])
+        "Settings" : mo.md("""
+        <table>
+        <tr><th>Use editor</th><td>{editor}</td></tr>
+        <tr><th>Refresh rate></th><td>{refresh}</td></tr>
+        </table>
+        """).batch(editor=editor,refresh=refresh)
+    })
+
     return
 
 
@@ -24,29 +38,36 @@ def __(gridlabd):
 
 @app.cell
 def __(mo):
-    refresh = mo.ui.refresh(label="Refresh rate:",
-                            options = ["1s","2s","5s","10s","20s","30s","1min"],
+    refresh = mo.ui.refresh(options = ["1s","2s","5s","10s","20s","30s","1min"],
                             default_interval = "1s",
                            )
     return refresh,
 
 
 @app.cell
-def __(available, get_active, gridlabd, inactive, mo, psutil):
+def __(mo):
+    editor = mo.ui.switch()
+    return editor,
+
+
+@app.cell
+def __(available, editor, get_active, gridlabd, inactive, mo, psutil):
     def _action(x):
         if x in get_active():
             proc = psutil.Process(get_active()[x]["pid"])
             proc.terminate()
-        else:
+        elif editor.value:
             gridlabd("marimo","open","--edit",x)
+        else:
+            gridlabd("marimo","open",x)
 
     def _url(x):
         port = get_active()[x]["port"]
         return f"""<b><a href="http://localhost:{port}/" target="_blank">{x.replace("_"," ").title()}</a></b> """
 
     _active = get_active()
-    _args = dict([(x,mo.ui.button(label="Stop" if x in _active else "Open",on_click=lambda _,x=x:_action(x))) for x in available])
-    actions = mo.md("<table><caption>Marimo Apps</caption><tr><th>Action</th><th>Tool name</th><th>Port</th><th>Process</th></tr>"+"\n".join([f"""<tr><td>{{{x}}}</td><td>{x.replace("_"," ").title() if x in inactive else _url(x)}</td><td>{_active[x]["port"] if x in _active else ""}</td><td>{_active[x]["pid"] if x in _active else ""}</td></tr>""" for x in available])+"</table>").batch(**_args)
+    _args = dict([(x,mo.ui.button(label="Stop" if x in _active else "Start",on_click=lambda _,x=x:_action(x))) for x in available])
+    actions = mo.md("<table><tr><th>Action</th><th>Tool name</th><th>Port</th><th>Process</th></tr>"+"\n".join([f"""<tr><td>{{{x}}}</td><td>{x.replace("_"," ").title() if x in inactive else _url(x)}</td><td>{_active[x]["port"] if x in _active else ""}</td><td>{_active[x]["pid"] if x in _active else ""}</td></tr>""" for x in available])+"</table>").batch(**_args)
     return actions,
 
 
