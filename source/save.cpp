@@ -145,7 +145,7 @@ int saveall(const char *filename)
 	}
 
 	/* setup output stream */
-	if (filename[0]=='-')
+	if (filename[0]=='.' || filename[0]=='-')
 	{
 		fp = stdout;
 	}
