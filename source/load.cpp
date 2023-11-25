@@ -8406,7 +8406,7 @@ STATUS GldLoader::loadall_glm(const char *fname) /**< a pointer to the first cha
 
 	if ( file[0] == '.' ) // format only for /dev/stdin
 	{
-		fp = fopen("/dev/stdin","rt");
+		fp = stdin;
 	}
 	else
 	{
