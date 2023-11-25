@@ -37,7 +37,7 @@ int saveall(const char *filename)
 	/* identify output format */
 	if (ext==NULL)
 	{	/* no extension given */
-		if (filename[0]=='-') /* stdout */
+		if (filename[0]=='.' || filename[0]=='-') /* stdout */
 		{
 			ext=filename+1; /* format is specified after - */
 		}
