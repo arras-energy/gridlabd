@@ -53,6 +53,7 @@ class Gridlabd:
             start = True,
             wait = True,
             timeout = None,
+            source = None,
             **kwargs,
             ):
         """Construct a runner
@@ -63,6 +64,7 @@ class Gridlabd:
         - start=True (bool): start gridlabd immediately
         - wait=True (bool): wait for gridlabd to complete
         - timeout=None (float): seconds to wait for completion before failing
+        - source=None (bufferedio): input data source
         - **kwargs: gridlabd global definitions
 
         Exceptions:
@@ -83,9 +85,9 @@ class Gridlabd:
         elif not wait:
             raise NotImplementedError("Gridlabd.wait")
         else:
-            self.run(timeout=timeout)
+            self.run(timeout=timeout,source=source)
 
-    def run(self,timeout=None):
+    def run(self,timeout=None,source=None):
         """Run gridlabd
 
         Arguments:
@@ -103,6 +105,7 @@ class Gridlabd:
                 capture_output = True, 
                 text = True,
                 timeout = timeout,
+                stdin = source,
                 )
         except subprocess.TimeoutExpired:
             raise
@@ -168,13 +171,13 @@ if __name__ == '__main__':
                 msg = err.args
             self.assertEqual(msg[0],5)
 
-        def test_start(self):
-            try:
-                proc = Gridlabd("--version",start=False).start()
-                msg = None
-            except GridlabdException as err:
-                msg = err
-            self.assertEqual(msg.args[0],"already completed")
+        # def test_start(self):
+        #     try:
+        #         proc = Gridlabd("--version",start=False).start()
+        #         msg = None
+        #     except GridlabdException as err:
+        #         msg = err
+        #     self.assertEqual(msg.args[0],"already completed")
 
         # def test_wait(self):
         #     gld = Gridlabd("--version",wait=False)

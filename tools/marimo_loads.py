@@ -44,8 +44,8 @@ def __(loadclass, loadlist, loadmeter, loadmodel, loadtype, mo):
 @app.cell
 def __(mo):
     loadclass = mo.ui.dropdown(label = "Load class",
-                               options = {"3 Phase":"load","1 Phase":"triplex_load"},
-                               value = "3 Phase",
+                               options = {"3 phase load":"load","Triplex load":"triplex_load"},
+                               value = "3 phase load",
                               )
     return loadclass,
 
@@ -78,29 +78,35 @@ def __(mo):
 
 
 @app.cell
-def __(loadlist, loads, loadtype, mo):
+def __(loadlist, loads, loadtype, mo, sys):
     def _static(data):
-        _fields = dict([(x,mo.ui.text(value=y)) for x,y in data.items()])
-        def _field(x):
-            return f"<th>{x.replace('_',' ').title()}</th><td>{{{x}}}</td>"
-        _rows = [_field("phases")+_field("nominal_voltage"),"<td colspan=4><hr/></td>"]
-        for x in [_x for _x in ["A","B","C"] if _x in data["phases"]]:
-            _rows.extend([_field(f"constant_power_{x}_real") + _field(f"constant_power_{x}_reac"),
-                          _field(f"constant_current_{x}_real") + _field(f"constant_current_{x}_reac"),
-                          _field(f"constant_impedance_{x}_real") + _field(f"constant_impedance_{x}_reac"),
-                          "<td colspan=4><hr/></td>",
-                ])
-        return mo.md(f"""<table>
-                         <caption>Static load composition<hr/><caption>
-                         <tr>{'</tr><tr>'.join(_rows)}</tr>
-                         </table>""").batch(**_fields)
+        try:
+            _fields = dict([(x,mo.ui.text(value=y)) for x,y in data.items()])
+            def _field(x):
+                return f"<th>{x.replace('_',' ').title()}</th><td>{{{x}}}</td>"
+            _rows = [_field("phases")+_field("nominal_voltage"),"<td colspan=4><hr/></td>"]
+            for x in [_x for _x in ["A","B","C"] if _x in data["phases"]]:
+                _rows.extend([_field(f"constant_power_{x}_real") + _field(f"constant_power_{x}_reac"),
+                              _field(f"constant_current_{x}_real") + _field(f"constant_current_{x}_reac"),
+                              _field(f"constant_impedance_{x}_real") + _field(f"constant_impedance_{x}_reac"),
+                              "<td colspan=4><hr/></td>",
+                    ])
+            return mo.md(f"""<table>
+                             <caption>Static load composition<hr/><caption>
+                             <tr>{'</tr><tr>'.join(_rows)}</tr>
+                             </table>""").batch(**_fields)
+        except Exception as err:
+            e_type,e_value,_ = sys.exc_info()
+            return mo.md(f"""EXCEPTION: {e_type.__name__} {e_value}""")
 
     def _player(data):
         return mo.md(f"""<table>
     <tr><
     <table>""")
 
-    if loadtype.value == "Static":
+    if not loadlist.value in loads:
+        loadmodel = mo.md("Select a load")
+    elif loadtype.value == "Static":
         loadmodel = _static(loads[loadlist.value])
     elif loadtype.value == "Player":
         loadmodel = _player(loads[loadlist.value])
@@ -133,7 +139,7 @@ def __(get_glm, mo, set_glm):
 @app.cell
 def __(get_glm, loadclass):
     loads = get_glm().get_objects(classes=loadclass.value)
-    selected_load = list(loads)[0]
+    selected_load = list(loads)[0] if len(loads) > 0 else None
     def select_load(x):
         selected_load = x
     return loads, select_load, selected_load
@@ -160,8 +166,8 @@ def __():
 
 
 @app.cell
-def __():
-    "A" in "ABC"
+def __(loads):
+    loads
     return
 
 
