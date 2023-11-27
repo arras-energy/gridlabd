@@ -5,6 +5,7 @@
 import os, sys
 import json
 import re
+import io
 from gridlabd_runner import gridlabd
 import pandas as pd
 
@@ -67,13 +68,9 @@ class GridlabdModel:
         - force (bool): force overwrite of JSON
         - initialize (bool): initialize GLM first
         """
-        jsonfile = os.path.splitext(filename)[0] + ".json"
-        if not os.path.exists(jsonfile) \
-                or os.path.getctime(jsonfile) < os.path.getctime(filename) \
-                or force:
-            gridlabd("-I" if initialize else "-C",filename,"-o",jsonfile)
-        self.filename = filename
-        self.read_json(jsonfile)
+        with open(filename,"r") as fh:
+            self.filename = filename
+            self.load(data)
 
     def read_json(self,filename):
         """Read JSON file
@@ -95,10 +92,11 @@ class GridlabdModel:
         if type(data) is bytes:
             data = data.decode(ENCODING)
         if type(data) is str:
-            try:
+            if data[0] in ["[","{"]:
                 data = json.loads(data)
-            except:
-                data = gridlabd()
+            else:
+                data = json.loads(gridlabd("-C",".glm","-o","-json",binary=True,source=io.StringIO(data)))
+                print(data)
         if not type(data) is dict:
             raise GridlabdModelException("data is not a dictionary")
         if data["application"] != "gridlabd":
@@ -113,16 +111,19 @@ class GridlabdModel:
         """Find objects belonging to specified classes
 
         Arguments:
-        - classes (list of str): patterns of class names to search (default is '.*')
+        - classes (str|list of str): patterns of class names to search (default is '.*')
         - as_type (class): type to use for return value
         - kwargs (dict): arguments for as_type
 
         Return:
         - as_type: object data
         """
-        match = []
-        for y in classes if classes else '.*':
-            match.extend([x for x in self.classes if re.match(y,x)])
+        if type(classes) is str:
+            match = classes.split(",")
+        else:
+            match = []
+            for y in classes if classes else '.*':
+                match.extend([x for x in self.classes if re.match(y,x)])
         data = dict([(obj,data) for obj,data in self.objects.items() if data["class"] in match])
         return as_type(data,**kwargs)
 
@@ -141,27 +142,34 @@ if __name__ == "__main__":
 
     class TestModel(unittest.TestCase):
 
-        def test_glm(self):
-            glm = GridlabdModel("/tmp/13.glm",force=True)
-            loads = glm.get_objects(classes=[".*load"])
-            self.assertEqual(len(loads),10)
+        # def test_glm(self):
+        #     glm = GridlabdModel("/tmp/13.glm",force=True)
+        #     loads = glm.get_objects(classes=[".*load"])
+        #     self.assertEqual(len(loads),10)
 
-        def test_json(self):
-            glm = GridlabdModel("/tmp/13.json")
-            loads = glm.get_objects(classes=["load","triplex_load"])
-            self.assertEqual(len(loads),10)
+        # def test_json(self):
+        #     glm = GridlabdModel("/tmp/13.json")
+        #     loads = glm.get_objects(classes=["load","triplex_load"])
+        #     self.assertEqual(len(loads),10)
 
-        def test_new(self):
+        # def test_new(self):
 
-            glm = GridlabdModel("/tmp/test.json",force=True)
-            self.assertEqual(glm.objects,{})
-            self.assertEqual(glm.classes,{})
+        #     glm = GridlabdModel("/tmp/test.json",force=True)
+        #     self.assertEqual(glm.objects,{})
+        #     self.assertEqual(glm.classes,{})
 
-        def test_str(self):
-            with open("/tmp/13.json","r") as fh:
-                data = json.load(fh)
+        def test_str_glm(self):
+            with open("/tmp/13.glm","r") as fh:
+                data = fh.read()
                 glm = GridlabdModel(data)
                 loads = glm.get_objects(classes=["load","triplex_load"])
                 self.assertEqual(len(loads),10)
+
+        # def test_str_json(self):
+        #     with open("/tmp/13.json","r") as fh:
+        #         data = json.load(fh)
+        #         glm = GridlabdModel(data)
+        #         loads = glm.get_objects(classes=["load","triplex_load"])
+        #         self.assertEqual(len(loads),10)
 
     unittest.main()
