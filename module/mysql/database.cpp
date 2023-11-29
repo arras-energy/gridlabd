@@ -303,7 +303,7 @@ const char *database::get_last_error(void)
 {
 	return mysql_error(mysql);
 }
-bool database::get_sqlbind(MYSQL_BIND &value, gld_property &target, bool *error)
+bool database::get_sqlbind(MYSQL_BIND &value, gld_property &target, my_bool *error)
 {
 	memset(&value,0,sizeof(value));
 	switch ( target.get_type() ) {	
