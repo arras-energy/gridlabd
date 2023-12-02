@@ -127,5 +127,3 @@ def convert(input_files, output_file, options={}):
 	    # Save the DataFrame to a CSV file
 		output_file = f"{folder_name}{customer_id}.csv"
 		customer_df.to_csv(output_file, index=False, header=False)
-
-
