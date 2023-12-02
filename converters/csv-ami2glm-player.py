@@ -4,7 +4,7 @@ SYNOPSIS
 
 	Shell: 
 		$ gridlabd convert -i ami:AMI.csv,ami_key:AMI_KEYS.csv, network:NETWORK.csv 
-			-o PLAYERS.csv -f csv-ami -t glm-player [OPTIONS ...]
+			-o PLAYERS.csv -f xlsx-spida -t csv-geodata [OPTIONS ...]
 
 	GLM: 
 		#convert ami:AMI.csv,ami_key:AMI_KEYS.csv 
@@ -29,11 +29,10 @@ import math
 import re
 import numpy as np
 import os
-import csv
 
 
 default_options = {
-	"folder_name" : "./player/",
+	# "include_network" : None,
 }
 
 def string_clean(input_str):
@@ -46,6 +45,7 @@ include_network = False
 ami_key = False
 
 def convert(input_files, output_file, options={}):
+	print('test')
 
 	if type(input_files) is dict:
 		for key in input_files:
@@ -88,37 +88,18 @@ def convert(input_files, output_file, options={}):
 
 	node_ID_set = set(df_ami['transformer_structure'])
 
-	df = pd.DataFrame({'class': ['player']*len(node_ID_set), 'parent' : list(node_ID_set), 'file' : ['player_' + str(node) + '.csv' for node in node_ID_set]})
-	
-	if not os.path.exists(folder_name):
-		os.makedirs(folder_name)
+	with open(output_file, mode='w', newline='') as file :  
+		writer = csv.writer(file)
+		writer.writerow(['module tape;'])
 
-	if os.path.splitext(output_file)[1]=='.csv' : 
-		df.to_csv(os.path.join(folder_name,os.path.basename(output_file)), index=False)
-	elif os.path.splitext(output_file)[1]=='.glm' :
-		with open(output_file, mode='w') as file :  
-			file.write('module tape;\n')
+		for node_ID in node_ID_set : 
+			writer.writerow(['\n'])
+			writer.writerow(['object player {\n'])
+			writer.writerow(['\tproperty measured_real_energy;\n'])
+			writer.writerow(['\tparent ' + node_ID + '\n'])
+			writer.writerow(['\tfile ./player/' + node_ID + '.csv\n'])
+			writer.writerow(['}\n'])
 
-			for node_ID in node_ID_set : 
-				file.write('object player {\n')
-				file.write('\tparent "' + str(node_ID) + '";\n')
-				file.write('\tfile "' + os.path.join(folder_name,str(node_ID)) + '.csv";\n')
-				file.write('}\n')
 
-	new_column_names = {
-		'reading_dttm': 'timestamp',
-		'net_usage': 'power[kW]',
-		'transformer_structure': 'customer_id'
-	}
-	df_ami.rename(columns=new_column_names,inplace=True)
-	df_ami.drop(['interval_pcfc_date','interval_pcfc_hour'],axis=1,inplace=True)
-	df_ami.sort_index(inplace=True)
 
-	# Iterate over unique customer IDs
-	for customer_id in df_ami['customer_id'].unique():
-	    # Create a new DataFrame for each customer ID
-		customer_df = df_ami[df_ami['customer_id'] == customer_id].drop(columns='customer_id')
-		customer_df = customer_df.sort_values(by='timestamp')
-	    # Save the DataFrame to a CSV file
-		output_file = f"{folder_name}/{customer_id}.csv"
-		customer_df.to_csv(output_file, index=False, header=False)
+
