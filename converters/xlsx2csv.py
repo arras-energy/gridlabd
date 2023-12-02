@@ -8,13 +8,13 @@ from importlib import util
 config = {
     "input" : "xlsx",
     "output" : "csv",
-    "from" : ["workbook"],
-    "type" : ["table"],
+    "from" : ["workbook","spida"],
+    "type" : ["table","geodata"],
     }
 
 def help():
     print('Syntax:')
-    print(f'{config["input"]}2{config["output"]}.py -i|--ifile <input-file>[,<input-file>[,...]] -o|--ofile <output-file> [options ...]')
+    print(f'{config["input"]}2{config["output"]}.py -i|--ifile INPUTSPEC -o|--ofile OUTPUTSPEC [options ...]')
     print(f'  -c|--config    : [OPTIONAL] display converter configuration')
     print(f'  -i|--ifile     : [REQUIRED] {config["input"]} input file name')
     print(f'  -o|--ofile     : [REQUIRED] {config["output"]} output file name')
@@ -22,6 +22,7 @@ def help():
     print(f'  -t|--type      : [REQUIRED] output {config["output"]} data type')
     print(f'  -r|--read      : [OPTIONAL] set converter read option')
     print(f'  -w|--write     : [OPTIONAL] set converter write option')
+    print(f'  OPTION[=VALUE  : [OPTIONAL] set converter general option')
 
 def error(msg):
     print(f'ERROR    [{config["input"]}2{config["output"]}]: {msg}')
@@ -33,7 +34,7 @@ output_file = None
 output_type = None
 options = {}
 
-opts, args = getopt.getopt(sys.argv[1:],"hci:o:f:t:r:w:",["help","config","ifile=","ofile=","from=","type=","read=","write="])
+opts, args = getopt.getopt(sys.argv[1:],"hci:o:f:t:r:w:",["help","config","ifile=","sfile=","ofile=","from=","type=","read=","write="])
 
 if not opts : 
     help()
@@ -44,10 +45,12 @@ for opt, arg in opts:
         help()
         sys.exit(0)
     elif opt in ("-c","--config"):
-        print(json.dumps(config))
         sys.exit(0)
     elif opt in ("-i", "--ifile"):
-        input_file = arg.strip()
+        try:
+            input_file = dict([x.split(":") for x in arg.strip().split(",")])
+        except:
+            input_file = arg.strip()
     elif opt in ("-o", "--ofile"):
         output_file = arg.strip()
     elif opt in ("-f","--from"):
@@ -70,6 +73,14 @@ for opt, arg in opts:
             options[f"write.{spec[0]}"] = spec[1]
         else:
             options[f"write.{spec[0]}"] = "=".join(spec[1:])
+    elif not opt.startswith("-"):
+        spec = arg.split("=")
+        if len(spec) == 1:
+            options[arg] = True
+        elif len(spec) == 2:
+            options[spec[0]] = spec[1]
+        else:
+            options[spec[0]] = "=".join(spec[1:])
     else:
         error(f"{opt}={arg} is not a valid option");
 

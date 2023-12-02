@@ -1,0 +1,12 @@
+// NOTE: This test yields an intermittent validation error for some unknown reason
+//       For now it should remain optional until the cause is identified and remedied.
+//       - DPC 10/17/23
+#ifexist ../IEEE-13-cyme.mdb
+#define DIR=..
+#endif // exist ../IEEE-13-cyme.mdb
+
+#input "${DIR:-.}/IEEE-13-cyme.mdb" -t cyme -o ./IEEE-13.glm -p coordinateCSV=IEEE-13-cyme-xy-coordinates.csv
+
+#ifexist ../IEEE-13-cyme-xy-coordinates.csv
+#on_exit 0 diff -I '^[#/]' ../IEEE-13-cyme-xy-coordinates.csv IEEE-13-cyme-xy-coordinates.csv > gridlabd.diff
+#endif // exist ../IEEE-13-cyme-xy-coordinates.csv

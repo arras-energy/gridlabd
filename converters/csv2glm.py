@@ -9,7 +9,7 @@ config = {
     "input" : "csv",
     "output" : "glm",
     "from" : ["ami","scada","onpoint-weather", "table"],
-    "type" : ["ceus","rbsa","climate", "object"],
+    "type" : ["ceus","rbsa","climate", "object", "player"],
     }
 
 def help():
@@ -49,7 +49,13 @@ for opt, arg in opts:
         print(json.dumps(config))
         sys.exit(0)
     elif opt in ("-i", "--ifile"):
-        input_file = arg.strip()
+        try:
+            if not arg.startswith("http"):
+                input_file = dict([x.split(":") for x in arg.strip().split(",")])
+            else:
+                input_file = arg.strip()
+        except:
+            input_file = arg.strip()
     elif opt in ("-o", "--ofile"):
         output_file = arg.strip()
     elif opt in ("-f","--from"):

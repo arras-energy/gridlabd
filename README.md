@@ -1,42 +1,17 @@
----
-
-<div align=center><H3>IMPORTANT NOTICE</H3></div>
-
-This is the last release of HiPAS GridLAB-D before it is transferred to LF Energy's [Arras Energy project](https://github.com/arras-energy).
-
----
-
-| Repository | Build | Deploy |
-| :---: | :---: | :---: |
-| [GridLAB-D](https://github.com/arras-energy/gridlabd) | ![master](https://github.com/arras-energy/gridlabd/actions/workflows/master.yml/badge.svg?branch=master) ![develop](https://github.com/arras-energy/gridlabd/workflows/develop/badge.svg?branch=develop) | [![master-images](https://github.com/arras-energy/gridlabd/actions/workflows/master-image.yml/badge.svg)](https://github.com/arras-energy/gridlabd/actions/workflows/master-image.yml) [![develop-images](https://github.com/arras-energy/gridlabd/actions/workflows/develop-image.yml/badge.svg)](https://github.com/arras-energy/gridlabd/actions/workflows/develop-image.yml) |
-| [Templates](https://github.com/arras-energy/gridlabd-template) | [![master](https://github.com/arras-energy/gridlabd-template/actions/workflows/master.yml/badge.svg)](https://github.com/arras-energy/gridlabd-template/actions/workflows/master.yml) [![develop](https://github.com/arras-energy/gridlabd-template/actions/workflows/develop.yml/badge.svg)](https://github.com/arras-energy/gridlabd-template/actions/workflows/develop.yml)
-| [Weather](https://github.com/arras-energy/gridlabd-weather) | [![validate](https://github.com/arras-energy/gridlabd-weather/actions/workflows/validate.yml/badge.svg)](https://github.com/arras-energy/gridlabd-weather/actions/workflows/validate.yml)
-| [Library](https://github.com/arras-energy/gridlabd-library) | [![validate](https://github.com/arras-energy/gridlabd-library/actions/workflows/master.yml/badge.svg)](https://github.com/arras-energy/gridlabd-library/actions/workflows/master.yml) [![validate](https://github.com/arras-energy/gridlabd-library/actions/workflows/develop.yml/badge.svg)](https://github.com/arras-energy/gridlabd-library/actions/workflows/develop.yml)
-| [Models](https://github.com/arras-energy/gridlabd-models) | [![validate](https://github.com/arras-energy/gridlabd-models/actions/workflows/validate.yml/badge.svg)](https://github.com/arras-energy/gridlabd-models/actions/workflows/validate.yml)
-| [Benchmarks](https://github.com/arras-energy/gridlabd-benchmarks) | Manual test (see [README.md](https://github.com/arras-energy/gridlabd-benchmarks/blob/main/README.md))
-| [Examples](https://github.com/arras-energy/gridlabd-examples) | Manual test (see [README.md](https://github.com/arras-energy/gridlabd-examples/blob/master/README.md))
-
-
-The documentation for this project is located at http://docs.gridlabd.us/.
-
-This respository contains the source code to HiPAS GridLAB-D, which is being developed by SLAC National Accelerator Laboratory for the California Energy Commission under grant [EPC-17-046](https://www.energy.ca.gov/filebrowser/download/1147).  This version of GridLAB-D is intended to be a commercial-grade version of the [US Department of Energy's research version of GridLAB-D developed by Pacific Northwest National Laboratory](https://github.com/gridlab-d/gridlab-d).
-
-*Note*: This fork of [GridLAB-D](https://github.com/gridlab-d/gridlab-d) does not support MS Windows directly. You must use docker or a virtual machine running linux.
-
 # Quick start using Docker
 
-The preferred method for running HiPAS GridLAB-D is to download the master image from docker hub (see https://hub.docker.com/repository/docker/arras-energy/gridlabd).  You must install the docker daemon to use docker images.  See https://www.docker.com/get-started for details.
+The preferred method for running Arras Energy is to download the master image from docker hub (see https://hub.docker.com/repository/docker/lfenergy/arras/general).  You must install the docker daemon to use docker images.  See https://www.docker.com/get-started for details.
 
 Once you have installed docker, you may issue the following commands to run GridLAB-D at the command line:
 
 ~~~
-docker run -it -v $PWD:/model arras-energy/gridlabd:latest gridlabd -W /model [LOADOPTIONS] [FILENAME.EXT] [RUNOPTIONS] 
+docker run -it -v $PWD:/model lfenergy/arras:latest gridlabd -W /model [LOADOPTIONS] [FILENAME.EXT] [RUNOPTIONS] 
 ~~~ 
 
 On many systems, an alias can be used to make this a simple command that resembles the command you would normally issue to run a host-based installation:
 
 ~~~
-alias gridlabd='docker run -it -v $PWD:/tmp arras-energy/gridlabd:latest gridlabd'
+alias gridlabd='docker run -it -v $PWD:/tmp lfenergy/arras:latest gridlabd'
 ~~~
 
 Note that this alias will interfere with any host-based installation. You may use the `gridlabd docker` command to manage the use of docker images concurrently with host-based installations.
@@ -86,7 +61,7 @@ Note that the installer only works with image name that conform to the name patt
 
 # Build from source
 
-The prerequesites for building HiPAS GridLAB-D from source include `git` and `curl`.  In general you can use the `setup.sh` script to verify and update your system so that the prerequesites are satisifed.  
+The prerequesites for building Arras Energy from source include `git` and `curl`.  In general you can use the `setup.sh` script to verify and update your system so that the prerequesites are satisifed.  
 
 On most systems, the process is as follows:
 
@@ -159,9 +134,24 @@ cd gridlabd
 ./build.sh --system --validate
 ~~~
 
+The validation may take some time and it need not complete completely successfully for GridLAB-D to be used. The final report may look something like this:
+
+~~~
+Validation report:
+747 models tested
+1 unexpected errors
+746 tests succeeded
+>99% success rate
+Total validation elapsed time: 281.9 seconds
+See '/HOME/USER/gridlabd/validate.txt' for details
+ERROR [build.sh]: unable to verify install
+~~~
+
 ## Windows WSL
 
-Generally, running HiPAS GridLAB-D on Docker is preferred because it is usually faster. Building, running and installing Gridlabd in WSL is not that different from a normal linux installation. You can follow Microsoft's instructions on setting up WSL and adding/changing distro's [here](https://learn.microsoft.com/en-us/windows/wsl/install). These instructions work for both cases on supported operating systems, which you can find in the build-aux directory.
+GridLAB-D supports several WSL distributions, including the latest Ubuntu versions. See the [setup](setup) folder for currently supported distributions.
+
+Generally, running Arras Energy on Docker is preferred because it is usually faster. Building, running and installing Gridlabd in WSL is not that different from a normal linux installation. You can follow Microsoft's instructions on setting up WSL and adding/changing distro's [here](https://learn.microsoft.com/en-us/windows/wsl/install). These instructions work for both cases on supported operating systems, which you can find in the build-aux directory.
 
 1) Open PowerShell as administrator or run the WSL (Ubuntu) from the start menu to open a dedicated terminal
 2) Run `wsl` (Using Ubuntu)
@@ -169,7 +159,7 @@ Generally, running HiPAS GridLAB-D on Docker is preferred because it is usually 
 
 ## Manual Build
 
-You can build HiPAS GridLAB-D manually by running following commands in the top level repository folder:
+You can build Arras Energy manually by running following commands in the top level repository folder:
 
 1. Create the target folder:
 
@@ -256,5 +246,5 @@ This version of GridLAB-D is derived from the original US Department of Energy v
 
 ## Contributions
 
-Please see https://source.gridlabd.us/blob/master/CONTRIBUTING.md for information on making contributions to this repository.
+Please see [Arras Energy Contribution Policies](https://github.com/arras-energy/.github/blob/main/CONTRIBUTING.md) for information on making contributions to this repository.
 

@@ -1672,14 +1672,14 @@ static PyObject *gridlabd_set_int16(PyObject *self, PyObject *args)
 
 static PyObject *gridlabd_set_bool(PyObject *self, PyObject *args)
 {
-    bool *addr;
-    bool value;
+    int *addr;
+    int value;
     restore_environ();
     if ( ! PyArg_ParseTuple(args, "Kp", &addr, &value) )
     {
         return NULL;
     }
-    bool old = *addr;
+    int old = *addr;
     *addr = value;
     if ( old )
         Py_RETURN_TRUE;

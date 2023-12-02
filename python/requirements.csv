@@ -15,6 +15,7 @@ geopandas,,,0.12.2
 geopy,,,2.1.0
 github,,,
 haversine,,,2.3.0
+imageio,,,2.31.5
 ipinfo,,,4.2.1
 ipykernel,,,5.5.5
 ipyplot,,,1.1.1
@@ -47,4 +48,3 @@ timezonefinder,,,5.2.0
 xlrd,2,,2.0.1
 xlrd,,,2.0.1
 wheel,3,,0.40.0
-

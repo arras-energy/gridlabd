@@ -5,6 +5,7 @@
 # csv -> glm
 dist_pkgdata_DATA += converters/csv-ami2glm-ceus.py
 dist_pkgdata_DATA += converters/csv-ami2glm-rbsa.py
+dist_pkgdata_DATA += converters/csv-ami2glm-player.py
 dist_pkgdata_DATA += converters/csv-ceus2glm-ceus.py
 dist_pkgdata_DATA += converters/csv-geodata2kml.py
 dist_pkgdata_DATA += converters/csv-ica2glm-ica.py
@@ -78,6 +79,7 @@ dist_pkgdata_DATA += converters/xls-spida2csv-geodata.py
 # xlsx -> csv
 dist_pkgdata_DATA += converters/xlsx2csv.py
 dist_pkgdata_DATA += converters/xlsx-workbook2csv-table.py
+dist_pkgdata_DATA += converters/xlsx-spida2csv-geodata.py
 
 #
 # SUPPORT MODULES

@@ -333,12 +333,26 @@ void pythonpath_init(const char *name,const char *value)
 	const char * pythonpath = getenv("PYTHONPATH");
 	if ( pythonpath != NULL )
 	{
-		int len = snprintf(global_pythonpath,sizeof(global_pythonpath)-1,"%.*s",(int)sizeof(global_pythonpath)-2,value);
-		snprintf(global_pythonpath+len,sizeof(global_pythonpath)-1-len,":%.*s",(int)(sizeof(global_pythonpath)-2),pythonpath);
+		if ( value != NULL )
+		{
+			int len = snprintf(global_pythonpath,sizeof(global_pythonpath)-1,"%.*s",(int)sizeof(global_pythonpath)-2,value);
+			snprintf(global_pythonpath+len,sizeof(global_pythonpath)-1-len,":%.*s",(int)(sizeof(global_pythonpath)-2),pythonpath);
+		}
+		else
+		{
+			snprintf(global_pythonpath,sizeof(global_pythonpath)-1,"%.*s",(int)sizeof(global_pythonpath)-2,pythonpath);
+		}
 	}
 	else
 	{
-		snprintf(global_pythonpath,sizeof(global_pythonpath)-1,"%.*s",(int)sizeof(global_pythonpath)-2,value);
+		if ( value != NULL )
+		{
+			snprintf(global_pythonpath,sizeof(global_pythonpath)-1,"%.*s",(int)sizeof(global_pythonpath)-2,value);
+		}
+		else
+		{
+			snprintf(global_pythonpath,sizeof(global_pythonpath)-1,"%s","");
+		}
 	}
 }
 /* Add more derivative directories here */
@@ -515,6 +529,7 @@ DEPRECATED static struct s_varmap {
     {"organization",PT_char32, &global_organization,PA_PUBLIC,"organization name"},
     {"profile_output_format",PT_set,&global_profile_output_format,PA_PUBLIC,"profiler output data format"},
     {"maximum_runtime",PT_int64,&global_maximum_runtime,PA_PUBLIC,"maximum wall clock runtime allowed"},
+    {"flush_output",PT_int32,&global_flush_output,PA_PUBLIC,"flush output buffers continuously"},
 	/* add new global variables here */
 };
 
@@ -1005,13 +1020,13 @@ DEPRECATED const char *global_run(char *buffer, int size)
 	else
 		return NULL;
 }
-DEPRECATED const char *global_now(char *buffer, int size)
+DEPRECATED const char *global_now(char *buffer, int size,const char *format="%Y%m%d-%H%M%S")
 {
 	if ( size>32 )
 	{
 		time_t now = time(NULL);
 		struct tm *tmbuf = gmtime(&now);
-		strftime(buffer,size,"%Y%m%d-%H%M%S",tmbuf);
+		strftime(buffer,size,format,tmbuf);
 		return buffer;
 	}
 	else
@@ -1263,11 +1278,11 @@ bool GldGlobals::parameter_expansion(char *buffer, size_t size, const char *spec
 		size_t start;
 		if ( global_getvar(name,temp,sizeof(temp)-1)==NULL )
 			return 0;
-		strcpy(buffer,"");
+		strcpy(buffer,temp);
 		while ( true )
 		{
 			ptr = strstr(temp,pattern);
-			if ( ptr==NULL )
+			if ( ptr == NULL )
 				break;
 			start = ptr - temp;
 			strncpy(buffer,temp,size);
@@ -1285,9 +1300,9 @@ bool GldGlobals::parameter_expansion(char *buffer, size_t size, const char *spec
 		size_t start;
 		if ( global_getvar(name,temp,sizeof(temp)-1)==NULL )
 			return 0;
-		strcpy(buffer,"");
+		strcpy(buffer,temp);
 		ptr = strstr(temp,pattern);
-		if ( ptr!=NULL )
+		if ( ptr != NULL )
 		{
 			start = ptr - temp;
 			strncpy(buffer,temp,size);
@@ -1764,6 +1779,12 @@ DEPRECATED const char *global_geocode(char *buffer, int size, const char *spec)
 	return buffer;
 }
 
+DEPRECATED const char *global_pid(char *buffer, int size)
+{
+	snprintf(buffer,size-1,"%d",getpid());
+	return buffer;
+}
+
 /** Get the value of a global variable in a safer fashion
 	@return a \e char * pointer to the buffer holding the buffer where we wrote the data,
 		\p NULL if insufficient buffer space or if the \p name was not found.
@@ -1780,7 +1801,6 @@ const char *GldGlobals::getvar(const char *name, char *buffer, size_t size)
 		const char *(*call)(char *buffer,int size);
 	} map[] = {
 		{"GUID",global_guid},
-		{"NOW",global_now},
 		{"TODAY",global_today},
 		{"RUN",global_run},
 		{"URAND",global_urand},
@@ -1801,6 +1821,7 @@ const char *GldGlobals::getvar(const char *name, char *buffer, size_t size)
 		{"MYSQL",global_true},
 #endif
 		{"PYTHON",global_true},
+		{"PID",global_pid},
 	};
 	size_t i;
 	if(buffer == NULL){
@@ -1855,15 +1876,43 @@ const char *GldGlobals::getvar(const char *name, char *buffer, size_t size)
 	if ( strncmp(name,"FILETYPE ",9) == 0 )
 		return global_filetype(buffer,size,name+9);
 
-    if ( strncmp(name,"FIND ",5) == 0 )
-    {
-        return global_findobj(buffer,size,name+5);
-    }
-    if ( strncmp(name,"GEOCODE ",8) == 0 )
-    {
-    	return global_geocode(buffer,size,name+8);
-    }
-	/* expansions */
+	if ( strncmp(name,"FIND ",5) == 0 )
+	{
+	  return global_findobj(buffer,size,name+5);
+	}
+	if ( strncmp(name,"GEOCODE ",8) == 0 )
+	{
+		return global_geocode(buffer,size,name+8);
+	}
+	if ( strncmp(name,"TMPFILE",7) == 0 )
+	{
+		if ( strcmp(name,"TMPFILE") == 0 )
+		{
+			char tag[64];
+			snprintf(tag,sizeof(tag)-1,"%x%x%x%x",rand(),rand(),rand(),rand());
+			tmpfile_get(buffer,size,tag);
+			return buffer;
+		}
+		else if ( strncmp(name,"TMPFILE ",8) == 0 )
+		{
+			while ( isspace(name[8]) ) name++;
+			tmpfile_get(buffer,size,name+8);
+			return buffer;
+		}
+	}
+	if ( strncmp(name,"NOW",3) == 0 )
+	{
+		if ( strcmp(name,"NOW") == 0 )
+		{
+			return global_now(buffer,size);
+		}
+		else if ( strncmp(name,"NOW ",4) == 0 )
+		{
+			return global_now(buffer,size,name+4);
+		}
+	}
+
+  /* expansions */
 	if ( parameter_expansion(buffer,size,name) )
 		return buffer;
 

@@ -1730,7 +1730,7 @@ int GldCmdarg::info(int argc, const char *argv[])
 		snprintf(cmd,sizeof(cmd)-1,"%s \"%s%s\" & ps -p $! >/dev/null", global_browser, global_infourl, argv[1]);
 #endif
 		IN_MYCONTEXT output_verbose("Starting browser using command [%s]", cmd);
-		if (my_instance->subcommand(cmd)!=0)
+		if (my_instance->subcommand("%s",cmd)!=0)
 		{
 			output_error("unable to start browser");
 			return CMDERR;
@@ -2080,7 +2080,7 @@ DEPRECATED static int printenv(void *main, int argc, const char *argv[])
 }
 int GldCmdarg::printenv(int argc, const char *argv[])
 {
-	return my_instance->subcommand("printenv") == 0 ? 0 : CMDERR;
+	return my_instance->subcommand("%s","printenv") == 0 ? 0 : CMDERR;
 }
 
 DEPRECATED static int formats(void *main, int argc, const char *argv[])
@@ -2357,6 +2357,24 @@ DEPRECATED static int csvloadshape(void *main, int argc, const char *argv[])
 	return argc;
 }
 
+DEPRECATED static int module(void *main, int argc, const char *argv[])
+{
+	if ( argc < 2 )
+	{
+		output_error("missing module name");
+		return CMDERR;
+	}
+	else if ( module_load(argv[1],0,NULL) == NULL )
+    {
+    	output_error("module '%s' load failed",argv[0]);
+    	return CMDERR;
+    }
+    else
+    {
+    	return 1;
+    }
+}
+
 /*********************************************/
 /* ADD NEW CMDARG PROCESSORS ABOVE THIS HERE */
 /* Then make the appropriate entry in the    */
@@ -2383,6 +2401,7 @@ DEPRECATED static CMDARG main_commands[] = {
 	{"warn",		"w",	warn,			NULL, "Toggles display of warning messages" },
 	{"workdir",		"W",	workdir,		NULL, "Sets the working directory" },
 	{"rusage",      NULL,   rusage,         NULL, "Collect resource usage statistics" },
+	{"module",      "M",    module,         "<module>", "Load a module" },
 
 	{NULL,NULL,NULL,NULL, "Global, environment and module information"},
 	{"define",		"D",	define,			"<name>=[<module>:]<value>", "Defines or sets a global (or module) variable" },

@@ -2831,7 +2831,7 @@ public:
 	inline uint64 get_flags(uint64 mask=0xffffffffffffffff) { return (my()->flags)&mask; };
 
 	// Method: get_header_string
-	inline const char *get_header_string(const char *item, char *buffer=NULL, size_t len=0) { return callback->object.get_header_string(my(),item,buffer,len); };
+	inline const char *get_header_string(const char *item, char *buffer=NULL, size_t len=0, bool quiet=false) { return callback->object.get_header_string(my(),item,buffer,len,quiet); };
 
 protected: 
 

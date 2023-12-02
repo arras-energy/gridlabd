@@ -107,7 +107,7 @@ int database::init(OBJECT *parent)
 	}
 
 	// set options
-	my_bool report_truncate = false;
+	bool report_truncate = false;
 	if ( mysql_options(mysql_client,MYSQL_REPORT_DATA_TRUNCATION,&report_truncate)!=0 )
 		gl_warning("unable to disable data truncation reporting in mysql");
 
@@ -303,10 +303,10 @@ const char *database::get_last_error(void)
 {
 	return mysql_error(mysql);
 }
-bool database::get_sqlbind(MYSQL_BIND &value, gld_property &target, my_bool *error)
+bool database::get_sqlbind(MYSQL_BIND &value, gld_property &target, bool *error)
 {
 	memset(&value,0,sizeof(value));
-	switch ( target.get_type() ) {
+	switch ( target.get_type() ) {	
 	case PT_double:
 	case PT_random:
 	case PT_loadshape:
@@ -336,6 +336,7 @@ char *database::get_sqldata(char *buffer, size_t size, gld_property &prop, doubl
 				return NULL;
 			return buffer;
 		}
+		break;
 	default:
 		return NULL;
 	}
@@ -378,16 +379,16 @@ char *database::get_sqldata(char *buffer, size_t size, gld_property &prop, gld_u
 	default:
 		return NULL;
 	}
-	char tmp[65536];
-	if ( prop.to_string(tmp,sizeof(tmp)) < (int)size )
-	{
-		snprintf(buffer,size,"'%s'",tmp);
-	}
-	else
-	{
-		snprintf(buffer,size,"NULL");
-	}
-	return buffer;
+	// char tmp[65536];
+	// if ( prop.to_string(tmp,sizeof(tmp)) < (int)size )
+	// {
+	// 	snprintf(buffer,size,"'%s'",tmp);
+	// }
+	// else
+	// {
+	// 	snprintf(buffer,size,"NULL");
+	// }
+	// return buffer;
 }
 void database::start_transaction(void)
 {

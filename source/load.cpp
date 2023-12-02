@@ -312,7 +312,7 @@ STATUS GldLoader::exec(const char *format,...)
 	vsnprintf(cmd,sizeof(cmd)-1,format,ptr);
 	va_end(ptr);
 	IN_MYCONTEXT output_debug("Running '%s' in '%s'", cmd, getcwd(NULL,0));
-	int rc = my_instance->subcommand(cmd);
+	int rc = my_instance->subcommand("%s",cmd);
 	if ( rc != 0 )
 	{
 		output_error("command [%s] failed, rc=%d",cmd,rc);
@@ -6732,7 +6732,15 @@ bool GldLoader::for_capture(const char *line)
 		{
 			IN_MYCONTEXT output_verbose("capturing forloop body line %d as '%s'", forbuffer.size(), line);
 		}
-		forbuffer.push_back(std::string(line));
+		const char *comment = strstr(line,"//");
+		if ( comment == NULL )
+		{
+			forbuffer.push_back(std::string(line));
+		}
+		else if ( comment > line )
+		{
+			forbuffer.push_back(std::string(line).substr(0,(size_t)(comment-line)));
+		}
 		forbufferline = forbuffer.end();
 		return true;
 	}
@@ -7341,11 +7349,11 @@ int writefile(char *fname, char *specs)
 			case CSV:
                 if ( obj->name )
                 {
-                    fprintf(fp,"%d,%s,\"%s\"",obj->id,obj->oclass->name,obj->name);
+                    fprintf(fp,"%d,\"%s\",\"%s\"",obj->id,obj->oclass->name,obj->name);
                 }
                 else
                 {
-                    fprintf(fp,"%d,%s,\"%s:%d\"",obj->id,obj->oclass->name,obj->oclass->name,obj->id);
+                    fprintf(fp,"%d,\"%s\",\"%s:%d\"",obj->id,obj->oclass->name,obj->oclass->name,obj->id);
                 }
 				break;
 			case JSON:
@@ -7370,7 +7378,8 @@ int writefile(char *fname, char *specs)
 			for ( size_t n = 0 ; n < n_props ; n++ )
 			{
 				char value[1024] = "";
-                if ( object_get_value_by_name(obj,proplist[n],value,sizeof(value)-1) < 0 )
+				bool is_header_value = ( object_get_header_string(obj,proplist[n],value,sizeof(value)-1,true) != NULL );
+                if ( ! is_header_value && object_get_value_by_name(obj,proplist[n],value,sizeof(value)-1) < 0 )
 				{
 					output_warning("writefile(char *fname='%s', char *specs='%s'): unable to get value for property '%s' object '%s:%d'",fname,specs,proplist[n],obj->oclass->name,obj->id);
 				}
@@ -7383,16 +7392,20 @@ int writefile(char *fname, char *specs)
     					fprintf(fp,",%s%s%s",quote,value,quote);
     					break;
     				case JSON:
-                        if ( object_get_property(obj,proplist[n],NULL) )
+                        if ( is_header_value || object_get_property(obj,proplist[n],NULL) )
                         {
                             // only output properties that exist
                             fprintf(fp,",\n\t\t\"%s\" : \"%s\"",proplist[n],value);
                         }
+                        else
+                        {
+                        	output_warning("property '%s' does not exist in class '%s'",proplist[n],obj->oclass->name);
+                        }
     					break;
     				case GLM:
-                        if ( ! object_get_property(obj,proplist[n],NULL) )
+                        if ( ! is_header_value || ! object_get_property(obj,proplist[n],NULL) )
                         {
-                            // output nothing
+                            output_warning("property '%s' does not exist in class '%s'",proplist[n],obj->oclass->name);
                         }
                         else if ( obj->name == NULL )
     					{
@@ -7785,10 +7798,16 @@ int GldLoader::process_macro(char *line, int size, char *_filename, int linenum)
 		else if (sscanf(term, "(%[^)])", value) == 1)
 		{
 			/* C include file */
-			IN_MYCONTEXT output_verbose("executing include shell \"%s\"", value);
-			my_instance->subcommand("%s",value);
-			// TODO: insert stdout here
-			strcpy(line,"\n");
+			IN_MYCONTEXT output_verbose("%s(%d): executing include shell command [%s]", filename, linenum, value);
+			FILE *out = NULL, *err = NULL;
+			struct s_pipes *pipes = popens(value, NULL, &out, &err);
+			if ( pipes == NULL )
+			{
+				output_error("process_macro(char *line, int size=%d, char *_filename='%s', int linenum=%d): unable to create pipes",size,_filename,linenum);
+				return FALSE;
+			}
+			ppolls(pipes,line,size-1,output_get_stream("error"));
+			pcloses(pipes);
 			return TRUE;
 		}
 		else
@@ -8032,7 +8051,7 @@ int GldLoader::process_macro(char *line, int size, char *_filename, int linenum)
 		}
 		strcpy(value, strip_right_white(term+1));
 		IN_MYCONTEXT output_debug("%s(%d): executing system(char *cmd='%s')", filename, linenum, value);
-		int rc = my_instance->subcommand(value);
+		int rc = my_instance->subcommand("%s",value);
 		if( rc == 127 || rc == -1 )
 		{
 			syntax_error(filename,linenum,"#system %s -- system('%s') failed with status %d", value, value, global_return_code);
@@ -8341,7 +8360,7 @@ int GldLoader::process_macro(char *line, int size, char *_filename, int linenum)
 		strcpy(line,"\n");
 		return TRUE;
 	}
-	int rc = my_instance->subcommand("%s/" PACKAGE "-%s",global_execdir,strchr(line,'#')+1);
+	int rc = my_instance->subcommand("%s/" PACKAGE "-%s",getenv("GLD_BIN"),strchr(line,'#')+1);
 	if ( rc != 127 )
 	{
 		strcpy(line,"\n");
@@ -8546,10 +8565,14 @@ bool GldLoader::load_import(const char *from, char *to, int len)
 	}
 	strcpy(to,from);
 	char *glmext = strrchr(to,'.');
-	if ( glmext == NULL )
+	if ( glmext == NULL || (unsigned long long)glmext < (unsigned long long)strrchr(to,'/') )
+	{
 		strcat(to,".glm");
+	}
 	else
+	{
 		strcpy(glmext,".glm");
+	}
 	char load_options[1024] = "";
 	char load_options_var[64];
 	snprintf(load_options_var,sizeof(load_options_var)-1,"%s_load_options",ext);
@@ -8577,7 +8600,7 @@ bool GldLoader::load_import(const char *from, char *to, int len)
 		}
 		IN_MYCONTEXT output_verbose("changing output to '%s'", to);
 	}
-	int rc = my_instance->subcommand("%s %s -i %s -o %s %s",(const char*)global_pythonexec,converter_path,from,to,unquoted);
+	int rc = my_instance->subcommand("%s %s -i '%s' -o '%s' %s",(const char*)global_pythonexec,converter_path,from,to,unquoted);
 	if ( rc != 0 )
 	{
 		output_error("%s: return code %d",converter_path,rc);
@@ -8589,12 +8612,8 @@ bool GldLoader::load_import(const char *from, char *to, int len)
 
 STATUS GldLoader::load_python(const char *filename)
 {
-	extern PyObject *gridlabd_module;
-	if ( gridlabd_module == NULL )
-	{
-		python_embed_init(0,NULL);
-	}
-	return python_embed_import(filename,global_pythonpath) == NULL ? FAILED : SUCCESS;
+	python_embed_init(0,NULL);
+	return python_embed_run_file(filename) ? FAILED : SUCCESS;
 }
 
 /** Load a file
@@ -8629,7 +8648,7 @@ STATUS GldLoader::loadall(const char *fname)
 
 		if ( ext != NULL && ( strcmp(ext,".py") == 0 || strncmp(ext,".py ",4) == 0 || strncmp(ext,".py\t",4) == 0 ) )
 		{
-			return load_python(fname);
+			return load_python(fname) ? SUCCESS : FAILED;
 		}
 
 		// non-glm file
@@ -8822,7 +8841,7 @@ void GldLoader::sublime_syntax(void)
 	output_message("%%YAML 1.2");
 	output_message("---");
 	output_message("# See http://www.sublimetext.com/docs/3/syntax.html");
-	output_message("name: HiPAS GridLAB-D");
+	output_message("name: Arras Energy");
 	output_message("file_extensions:");
 	output_message("  - glm");
 	output_message("scope: source");

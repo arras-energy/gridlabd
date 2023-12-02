@@ -48,7 +48,7 @@ if not compile_options :
 	compile_options=['-Wall','-O3','-g']
 compile_options.extend(['-I%s/source'%srcdir,'-I%s/python'%srcdir,'-I%s/runtime'%srcdir,'-I%s/source'%blddir,"-fPIC","-DHAVE_CONFIG_H","-DHAVE_PYTHON"])
 
-from distutils.core import setup, Extension
+from setuptools import setup, Extension
 gridlabd = Extension('gridlabd', 
 	include_dirs = list(map(lambda x: srcdir+'/'+x,['python','source'])),
 	extra_compile_args = compile_options,
@@ -108,6 +108,7 @@ gridlabd = Extension('gridlabd',
 		'source/test.cpp',
 		'source/threadpool.cpp',
 		'source/timestamp.cpp',
+		'source/tmpfile.cpp',
 		'source/transform.cpp',
 		'source/unit.cpp',
 		'source/validate.cpp',
@@ -162,8 +163,8 @@ if len(sys.argv) > 1:
 setup (	
 	name = 'gridlabd',
 	version = get_version(),
-	description = 'HiPAS GridLAB-D',
+	description = 'Arras Energy',
 	author = 'SLAC Gismo',
 	author_email = 'gridlabd@gmail.com',
 	ext_modules = [gridlabd],
-	url = "https://www.gridlabd.us/")
+	url = "https://arras.energy/")
