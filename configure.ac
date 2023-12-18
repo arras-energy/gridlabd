@@ -508,22 +508,28 @@ AS_IF([test -n "$DX_DOXYGEN"],
       [HAVE_DOXYGEN=no])
 AM_CONDITIONAL([HAVE_DOXYGEN], [test ! "x$HAVE_DOXYGEN" = "xno"])
 
-# Check for mysql
-AS_IF([test -f /usr/local/include/mysql/mysql.h -a /usr/local/lib/libmysqlclient.a ],
-    [MYSQL="/usr/local/bin"],
-    [MYSQL="no"])
+# Check for mysql_config tool
+AC_PATH_PROG(MYSQL_CONFIG, mysql_config, no)
+
+AS_IF([test "x$MYSQL_CONFIG" = "xno"],
+    [MYSQL="no"
+     AC_MSG_WARN([mysql_config not found - MySQL support will be disabled])],
+    [MYSQL="yes"])
+
 AS_IF([test "x$MYSQL" != "xno"],
-	[MYSQL_CPPFLAGS="'-I$MYSQL/include/mysql'"
-		AS_CASE([$host],
-			[*mingw*], [MYSQL_LDFLAGS="'-L$MYSQL/lib'"
-				MYSQL_LIBS="-lmysql"],
-			[*linux*], [MYSQL_LDFLAGS="'-L$MYSQL/lib'"
-				MYSQL_LIBS="-lmysqlclient"],
-			[*darwin*], [MYSQL_LDFLAGS="'-L$MYSQL/lib'"
-				MYSQL_LIBS="-lmysqlclient"])
-		GLD_CPPFLAGS="$GLD_CPPFLAGS -DHAVE_MYSQL"
-		HAVE_MYSQL=yes],
-	[HAVE_MYSQL=no])
+    [
+            # Use mysql_config to get include and library directories
+            MYSQL_CPPFLAGS="$(mysql_config --cflags) -DHAVE_MYSQL"
+            MYSQL_LDFLAGS=$(mysql_config --libs)
+            MYSQL_LIBS=$(mysql_config --libs)
+            HAVE_MYSQL=yes
+            GLD_CPPFLAGS="$GLD_CPPFLAGS -DHAVE_MYSQL"
+
+            # Define HAVE_MYSQL
+            AC_DEFINE([HAVE_MYSQL], [1], [Define when you have MySQL])
+    ],
+    [HAVE_MYSQL=no])
+
 AC_SUBST([MYSQL_CPPFLAGS])
 AC_SUBST([MYSQL_LDFLAGS])
 AC_SUBST([MYSQL_LIBS])
@@ -570,15 +576,13 @@ AS_CASE([$BRANCHNAME],
     [*], [SUFFIX="no"])
 AM_CONDITIONAL([SUFFIX],[test ! "x$SUFFIX" = "xno"] )
 
-VERSION_NAME=$(build-aux/version.sh --name)
-
 AC_ARG_WITH([prefix], [AS_HELP_STRING([--with-prefix=PREFIX], [install architecture-independent files in PREFIX])], [prefix="$withval"], [prefix="/usr/local/opt/gridlabd"])
 if test "x$prefix" = "xNONE"; then
   prefix="/usr/local/opt/gridlabd"
 fi
 
 PREFIX=$prefix
-DSTDIR=$PREFIX/$VERSION_NAME
+DSTDIR=$PREFIX/versionname
 prefix=$DSTDIR
 
 BINDIR=$DSTDIR/bin

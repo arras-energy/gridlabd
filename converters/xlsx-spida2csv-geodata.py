@@ -271,8 +271,6 @@ def convert(input_files, output_file, options={}):
 		elif file_extension == 'csv':
 		    df_structure_raw = pd.read_csv(input_equipment_file, usecols=['ID', 'Structure_x0020_ID', 'AS-IS_x0020_Size', 'AtHeight_x0020_Unit', 'AtHeight_x0020_Value', 'Usage_x0020_Group', 'AS-IS_x0020_Height', 'AS-IS_x0020_Direction',
        'AS-IS_x0020_Offset_x002F_Lead'], engine='openpyxl')
-		
-
 
 		# new_header_index = df_structure.iloc[:, 0].first_valid_index()
 		# new_header = df_structure.iloc[new_header_index+1]
@@ -776,4 +774,3 @@ def xls2glm_object(df_glm, input_file):
 	df_glm= pd.concat([df_glm, df_glm_network], axis=0, ignore_index=True)
 
 	return df_glm.copy()
-

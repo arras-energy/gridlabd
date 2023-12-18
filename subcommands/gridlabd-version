@@ -68,7 +68,7 @@ function version-check()
     # Using curl command to check the version
     version_check_response=$(curl -sL "https://version.gridlabd.us/?v=${submitversion}&b=${branch}")
     if [[ $version_check_response != '"ok"' ]]; then
-        warning "Your version is behind. The latest version information is: $version_check_response"
+        warning "Your version is outdated. The latest version information is: $version_check_response"
         exit 0
     fi
     

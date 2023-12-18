@@ -23,10 +23,6 @@ if ! python$PYTHON_VERSION -m venv -h 1>/dev/null 2>&1 ; then
     INSTALL brew install python$PYTHON_VERSION-venv
     python$PYTHON_VERSION -m venv -h >/dev/null || error "unable to install python$PYTHON_VERSION-venv"
 fi
-if ! python$PYTHON_VERSION -m distutils.core 1>/dev/null 2>&1 ; then
-    INSTALL brew install python$PYTHON_VERSION-distutils
-    python$PYTHON_VERSION -m distutils.core >/dev/null || error "unable to install python$PYTHON_VERSION-distutils"
-fi
 
 # create python venv for setup if not already done
 if [ ! -x "$PYTHON_EXEC" ] ; then
@@ -61,6 +57,15 @@ clang -v >/dev/null || error "you have not installed clang. Use 'xcode-select --
 
 # # update library paths
 # INSTALL ldconfig
+
+# install mysql
+if ! mysql_config --libs >/dev/null 2>&1 ; then
+    printf "Installing MySQL... "
+    brew install mysql
+    if ! mysql_config --libs >/dev/null 2>&1 ; then
+        error "Failed to install MySQL with Homebrew."
+    fi
+fi
 
 # install autoconf 2.71 as required
 if [ "$(autoconf --version | head -n 1 | cut -f4 -d' ')" != "2.71" ] ; then

@@ -38,7 +38,7 @@ static LOCKVAR output_lock = 0;
 static char buffer[65536];
 #define CHECK 0xcdcd
 int overflow=CHECK;
-int flush = 0;
+int &flush = global_flush_output;
 
 bool output_enable_flush(bool enable)
 {

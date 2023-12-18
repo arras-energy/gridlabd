@@ -505,7 +505,18 @@ def mdb2csv(input_file, output_dir, tables, extract_option):
     os.system(f"mkdir -p {data_folder}")
     for table in tables:
         csvname = table[3:].lower()
-        os.system(f"mdb-export {input_file} {table} > {output_dir}/{csvname}.csv")
+        output_file = f"{output_dir}/{csvname}.csv"
+
+        try:
+            with open(output_file, "w") as output_file_obj:
+                subprocess.run(["mdb-export", input_file, table], stdout=output_file_obj, check=True)
+        except subprocess.CalledProcessError as e:
+            error(f"Command failed with error code {e.returncode}", 1)
+        except FileNotFoundError:
+            error(f"Command not found. Make sure mdb-export is installed and in your PATH.", 3)
+        except Exception as e:
+            error(f"An unexpected error occurred: {e}", 1)
+
         row_count = os.popen(f"wc -l {output_dir}/{csvname}.csv").read()
         if (int(row_count.strip().split(" ")[0]) <= 1) and extract_option != "all":
             os.remove(f"{output_dir}/{csvname}.csv")
@@ -978,29 +989,7 @@ class GLM:
     # add node to glm file
     def add_node(self, node_id, node_links, device_dict, version, **kwargs):
         phase = 0
-        if geodata_file:
-            node_geodata_id = f"{node_id}_{network_id}"
-            if node_geodata_id not in node_geodata.keys():
-                all_node = kwargs["node_info"]["all_node"]
-                try:
-                    node_X = float(all_node[all_node["NodeId"] == node_id]["X"].values)
-                    node_Y = float(all_node[all_node["NodeId"] == node_id]["Y"].values)
-                except:
-                    warning(
-                        f"{cyme_mdbname}@{network_id}: cannot add coordinates for node_id"
-                    )
-                    node_X = np.nan
-                    node_Y = np.nan
-                node_geodata[node_geodata_id] = {
-                    "NotworkID": network_id,
-                    "node": node_id,
-                    "x": node_X,
-                    "y": node_Y,
-                }
-            else:
-                raise Exception(
-                    f"{cyme_mdbname}@{network_id}: multiple definition for {node_id}"
-                )
+
         for device_id in node_links[node_id]:
             phase |= glm_phase_code[device_dict[device_id]["phases"]]
         obj = self.object(
@@ -3259,10 +3248,36 @@ def cyme_extract_9(network_id, network, conversion_info):
 
     # generate coordinate file
     if geodata_file:
+        all_node = table_find(cyme_table["node"], NetworkId=network_id)
+        df_all_nodes = pd.DataFrame.from_dict(all_node)
+
+        for index, row in df_all_nodes.iterrows():
+            node_id = row["NodeId"]
+            if node_id not in node_geodata.keys():
+                try:
+                    node_X = float(row["X"])
+                    node_Y = float(row["Y"])
+                except:
+                    warning(
+                        f"{cyme_mdbname}@{network_id}: cannot add coordinates for node_id"
+                    )
+                    node_X = np.nan
+                    node_Y = np.nan
+                node_geodata[node_id] = {
+                    "NetworkID": network_id,
+                    "node": node_id,
+                    "x": node_X,
+                    "y": node_Y,
+                }
+            else:
+                raise Exception(
+                    f"{cyme_mdbname}@{network_id}: multiple definition for {node_id}"
+                )
+
         df_node = pd.DataFrame.from_dict(node_geodata)
         df_node = df_node.T
-        df_node.drop(df_node[df_node[:]["NotworkID"] != network_id].index, inplace=True)
-        df_node = df_node.drop(["NotworkID"], axis=1)
+        df_node.drop(df_node[df_node[:]["NetworkID"] != network_id].index, inplace=True)
+        df_node = df_node.drop(["NetworkID"], axis=1)
         df_node.to_csv(f"{output_folder}/{geodata_file}", index=False, header=True)
 
     glm.close()
@@ -3397,6 +3412,7 @@ def convert(input_file: str, output_file: str = None, options: dict[str, Any] = 
     cyme_extracter["default"] = cyme_extracter["90000"]
 
     version = cyme_table["schemaversion"].loc[0]["Version"]
+
     network_count = 0
     conversion_info = {
         "input_folder": input_folder,

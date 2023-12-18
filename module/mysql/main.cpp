@@ -3,6 +3,23 @@
 
 #define DLMAIN
 
+#include "gridlabd.h"
+
+/********************************************************
+ * MODULE SUPPORT
+ ********************************************************/
+
+EXPORT int do_kill(void*)
+{
+	/* if global memory needs to be released, this is a good time to do it */
+	return 0;
+}
+
+EXPORT int check(){
+	/* if any assert objects have bad filenames, they'll fail on init() */
+	return 0;
+}
+
 #ifdef HAVE_MYSQL
 #include "database.h"
 
@@ -29,26 +46,6 @@ bool use_graph = true; ///< flag to enable graph schema
 bool use_guid = false; ///< flag to enable use of guid
 bool use_transaction = true; ///< flag to disable use of transactions
 
-#else
-#include "gridlabd.h"
-#endif
-
-/********************************************************
- * MODULE SUPPORT
- ********************************************************/
-
-EXPORT int do_kill(void*)
-{
-	/* if global memory needs to be released, this is a good time to do it */
-	return 0;
-}
-
-EXPORT int check(){
-	/* if any assert objects have bad filenames, they'll fail on init() */
-	return 0;
-}
-
-#ifdef HAVE_MYSQL
 /********************************************************
  * MYSQL SUPPORT
  ********************************************************/
@@ -534,7 +531,7 @@ static bool import_objects(MYSQL *mysql)
 				return false;
 			}
 		}
-		if ( row[3]!=NULL ) strncpy(obj->groupid,row[3],sizeof(obj->groupid));
+		if ( row[3]!=NULL ) snprintf(obj->groupid,sizeof(obj->groupid)-1,"%s",row[3]);
 		obj->parent = row[4]==NULL ? NULL : gl_object_find_by_id(atoi(row[4]));
 		obj->rank = atoi(row[5]);
 		obj->clock = get_mysql_timestamp(row[6]);
@@ -921,17 +918,21 @@ static bool export_globals(MYSQL *mysql)
 static bool export_class(MYSQL *mysql, CLASS *cls)
 {
 	MODULE *mod = cls->module;
-	char modname[128] = "NULL";
+	char modname[1032] = "NULL";
 	if ( mod )
+	{
 		snprintf(modname,sizeof(modname)-1,"\"%s\"",mod->name);
-
+	}
+	
 	// handle parent class first
 	if ( cls->parent!=NULL )
 	{
 		if ( !export_class(mysql,cls->parent) || !query(mysql,"REPLACE INTO `%s` (`name`,`module`,`property`,`type`) "
 				"VALUES (\"%s\",%s,\"%s\",%d)",
 				get_table_name("classes"), cls->name, modname, cls->parent->name, PT_INHERIT) )
+		{
 			return false;
+		}
 	}
 
 	// create class tables
@@ -944,7 +945,9 @@ static bool export_class(MYSQL *mysql, CLASS *cls)
 	for ( PROPERTY *prop = cls->pmap ; prop!=NULL && prop->oclass==cls ; prop=prop->next )
 	{
 		if ( !(prop->access&(PA_R|PA_S) ) )
+		{
 			continue; // ignore unreadable non-saved properties
+		}
 
 		// write class structure info
 		char units[1024] = "NULL";
@@ -954,7 +957,9 @@ static bool export_class(MYSQL *mysql, CLASS *cls)
 		if ( !query(mysql,"REPLACE INTO `%s` (`name`,`module`,`property`,`type`,`flags`,`units`,`description`) "
 				"VALUES (\"%s\",%s,\"%s\",%d,%d,%s,%s)",
 				get_table_name("classes"), prop->oclass->name,modname,prop->name,prop->ptype,prop->flags,units,description) )
+		{
 			return false;
+		}
 
 		// write class table
 		snprintf(query_string+len,sizeof(query_string)-len-1, ", `%s` text", prop->name);
@@ -973,7 +978,9 @@ static bool export_class(MYSQL *mysql, CLASS *cls)
 			if ( !query(mysql,"REPLACE INTO `%s` (`name`,`module`,`property`,`keyword`,`type`,`flags`) "
 					"VALUES (\"%s\",%s,\"%s\",\"%s\",%d,%lld)",
 					get_table_name("classes"), prop->oclass->name,modname,prop->name,keyword->name,PT_KEYWORD,keyword->value) )
+			{
 				return false;
+			}
 		}
 	}
 	snprintf(query_string+len,sizeof(query_string)-len-1,")");
@@ -1027,7 +1034,7 @@ static bool export_properties(MYSQL *mysql, OBJECT *obj, CLASS *cls = NULL)
 		gld_property var(obj,prop);
 		if ( !var.get_access(PA_R|PA_S) )
 			continue; // ignore properties that not readable or saveable
-		snprintf(names+len_names,sizeof(name)-len_names-1",`%s`", prop->name);
+		snprintf(names+len_names,sizeof(names)-len_names-1,",`%s`", prop->name);
 		len_names = strlen(names);
 		char buffer[4096]="", quoted[4096*2+1+3]="", *value = buffer;
 		TIMESTAMP ts;
@@ -1054,12 +1061,12 @@ static bool export_properties(MYSQL *mysql, OBJECT *obj, CLASS *cls = NULL)
 		if ( strlen(value)>0 )
 		{
 			mysql_real_escape_string(mysql,quoted,value,strlen(value)); // protect SQL from contents
-			snprintf(values+len_values,sizeof(values)-len_values-1",\"%s\"", quoted);
+			snprintf(values+len_values,sizeof(values)-len_values-1,",\"%s\"", quoted);
 			len_values = strlen(values);
 		}
 		else
 		{
-			snprintf(values+len_values,sizeof(values)-len_values-1",NULL");
+			snprintf(values+len_values,sizeof(values)-len_values-1,",NULL");
 			len_values = strlen(values);
 		}
 	}
@@ -1070,7 +1077,9 @@ static bool export_properties(MYSQL *mysql, OBJECT *obj, CLASS *cls = NULL)
 static bool export_objects(MYSQL *mysql)
 {
 	if ( my_overwrite && !query(mysql,"DROP TABLE IF EXISTS `%s`", get_table_name("objects")) )
+	{
 		return false;
+	}
 	if ( !no_create && !query(mysql,"CREATE TABLE IF NOT EXISTS `%s` ("
 			" `id` mediumint PRIMARY KEY,"
 			" `module` char(64),"
@@ -1092,16 +1101,18 @@ static bool export_objects(MYSQL *mysql)
 			" `heartbeat` timestamp default " MYSQL_TS_ZERO ","
 			" `flags` bigint,"
 			" KEY (`name`))", get_table_name("objects")) )
+	{
 		return false;
+	}
 	for ( OBJECT *obj = gl_object_get_first(); obj!=NULL ; obj=obj->next )
 	{
 		// objects table
 		CLASS *cls = obj->oclass;
 		MODULE *mod = cls->module;
-		char modname[64]="NULL";
+		char modname[1032]="NULL";
 		char name[1024]="NULL";
 		char parent[64]="NULL";
-		char groupid[32]="NULL";
+		char groupid[1027]="NULL";
 		char latitude[64] = "NULL";
 		char longitude[64] = "NULL";
 		char clock[64] = MYSQL_TS_NEVER;
@@ -1133,7 +1144,9 @@ static bool export_objects(MYSQL *mysql)
 				obj->id,modname,cls->name,name,groupid,parent,obj->rank,latitude,longitude,
 				clock,valid_to,schedule_skew,in_svc,obj->in_svc_micro,out_svc,obj->out_svc_micro,
 				obj->rng_state,heartbeat,obj->flags) )
+		{
 			return false;
+		}
 
 		// data table
 		if ( !export_properties(mysql,obj) )
@@ -1244,7 +1257,7 @@ bool export_transforms(MYSQL *mysql)
 		case XT_EXTERNAL:
 			if ( xform->nlhs>1 )
 			{
-				snprintf(specs+len,sizeof(specs)-len-1"%s","(");
+				snprintf(specs+len,sizeof(specs)-len-1,"%s","(");
 				len = strlen(specs);
 			}
 			for ( int n = 1 ; n < xform->nlhs ; n++)

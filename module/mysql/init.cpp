@@ -76,4 +76,3 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
 	return NULL;
 }
 #endif // HAVE_MYSQL
-

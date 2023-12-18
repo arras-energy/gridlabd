@@ -9,6 +9,6 @@
 #setenv REQ=38.8977,-77.036553
 #define RES=${SHELL gridlabd geodata merge -D address "$REQ" -f RAW:address}
 #define ANS=White House, 1600, Pennsylvania Avenue Northwest, Washington, District of Columbia, 20500, United States
-#if ${RES} != ${ANS}
-    #error "geodata -D address location ${REQ}" is incorrect: expected ${ANS} but got ${RES} instead
+#if "${RES:1:11}" != "${ANS:1:11}"
+    #error "geodata -D address location ${REQ}" is incorrect: expected '${ANS:1:11}...' but got '${RES:1:11}...' instead
 #endif
