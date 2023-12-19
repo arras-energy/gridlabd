@@ -61,6 +61,7 @@ default_options = {
 	"include_dummy_network" : None,
 	"include_weather" : None,
 	"include_mount" : None,
+	"include_network" : None
 }
 
 def string_clean(input_str):
@@ -73,7 +74,6 @@ include_network = False
 extract_equipment = False
 
 def convert(input_files, output_file, options={}):
-
 	if type(input_files) is dict:
 		for key in input_files:
 			if not key in ["poles","equipment","network"]:
@@ -92,11 +92,10 @@ def convert(input_files, output_file, options={}):
 			extract_equipment = True
 
 		if "network" in input_files:
-			global include_network
-			include_network = input_files["network"]
+			global network_name
+			network_name = input_files["network"]
 			global include_mount
 			include_mount = True
-
 	elif type(input_files) is str:
 		input_pole_file = input_files
 	else:
@@ -135,7 +134,7 @@ def convert(input_files, output_file, options={}):
 			'AS-IS Effective Stress Adjustment', 'AS-IS GPS Point']) 
 
 	# Read the overhead lines 
-	df_lines = pd.read_csv(include_network) if include_network else pd.DataFrame()
+	df_lines = pd.read_csv(network_name) if include_network else pd.DataFrame()
 	overheadline_names = []
 	for index, row in df_lines.iterrows(): 
 
