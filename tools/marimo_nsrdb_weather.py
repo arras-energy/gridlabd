@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.1.53"
+__generated_with = "0.1.66"
 app = marimo.App(width="full")
 
 
@@ -66,7 +66,15 @@ def __(get_fields, mo, setting_graphxaxis, setting_graphyaxis):
 
 
 @app.cell
-def __(geolocator, mo, set_city, set_latitude, set_longitude):
+def __(
+    geolocator,
+    get_latitude,
+    get_longitude,
+    mo,
+    set_city,
+    set_latitude,
+    set_longitude,
+):
     #
     # City finder
     #
@@ -75,7 +83,15 @@ def __(geolocator, mo, set_city, set_latitude, set_longitude):
         loc = geolocator.geocode(location.value)
         set_latitude(f"{loc.latitude:.2f}")
         set_longitude(f"{loc.longitude:.2f}")
-    location = mo.ui.text(label = "Search for location:")  
+    try:
+        _addr = geolocator.reverse(f"{get_latitude()},{get_longitude()}").raw["address"]
+        _city = _addr.get('city','')
+    except:
+        _city = "Type a city name"
+
+    location = mo.ui.text(label = "Search for location:",
+                          placeholder = _city,
+                         )  
     return find_city, location
 
 
@@ -84,7 +100,9 @@ def __(find_city, location, mo):
     #
     # Location lookup
     #
-    lookup = mo.ui.button(label = "Find",on_click=find_city)
+    lookup = mo.ui.button(label = "Find",
+                          on_click = find_city,
+                         )
     mo.hstack([mo.hstack([location,
                           lookup,
                          ],justify='start'),
@@ -242,6 +260,7 @@ def __(
         return mo.vstack([
             mo.ui.text_area(value = glm,
                             full_width = True,
+                            rows = len(glm.split("\n"))+2,
                            ),
             mo.hstack([download_csv,download_glm],justify='start')
         ])
