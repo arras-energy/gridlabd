@@ -129,7 +129,3 @@ def convert(input_files, output_file, options={}):
 		customer_df.to_csv(output_file, index=False, header=False)
 
 
-
-
-convert({"ami":"./input/CARDINAL_AMI.csv"}, "./output/ami-player.glm", options={"folder_name":"./output/player/"})
-
