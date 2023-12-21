@@ -4,7 +4,7 @@ SYNOPSIS
 
 	Shell: 
 		$ gridlabd convert -i ami:AMI.csv,ami_key:AMI_KEYS.csv, network:NETWORK.csv 
-			-o PLAYERS.csv -f csv-ami -t glm-player [OPTIONS ...]
+			-o PLAYERS.csv -f xlsx-spida -t csv-geodata [OPTIONS ...]
 
 	GLM: 
 		#convert ami:AMI.csv,ami_key:AMI_KEYS.csv 
@@ -127,5 +127,19 @@ def convert(input_files, output_file, options={}):
 	    # Save the DataFrame to a CSV file
 		output_file = f"{folder_name}{customer_id}.csv"
 		customer_df.to_csv(output_file, index=False, header=False)
+    
+# from develop after branch
+# 	with open(output_file, mode='w', newline='') as file :  
+# 		writer = csv.writer(file)
+# 		writer.writerow(['module tape;'])
+# 		for node_ID in node_ID_set : 
+# 			writer.writerow(['\n'])
+# 			writer.writerow(['object player {\n'])
+# 			writer.writerow(['\tproperty measured_real_energy;\n'])
+# 			writer.writerow(['\tparent ' + node_ID + '\n'])
+# 			writer.writerow(['\tfile ./player/' + node_ID + '.csv\n'])
+# 			writer.writerow(['}\n'])
+
+
 
 
