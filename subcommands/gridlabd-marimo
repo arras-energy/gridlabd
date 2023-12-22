@@ -1,0 +1,215 @@
+#!/bin/bash
+## Syntax: gridlabd marimo COMMAND [OPTIONS ...]
+## 
+## Access GridLAB-D marimo apps.
+## 
+## Commands:
+## 
+##   index - get a list of available marimo apps
+## 
+##   list - get a list of active marimo apps
+## 
+##   stop all|PORT [...] - stop marimo apps
+## 
+##   open [--edit] NAME [...] - open marimo page
+## 
+##   reopen all|PORT [...] - reopen marimo pages
+## 
+FIRST=2718
+LAST=2800
+
+E_OK=0
+E_SYNTAX=1
+E_INVALID=2
+E_FAILED=3
+E_NOTFOUND=4
+
+function error()
+{
+    CODE=$1
+    shift 1
+    echo "ERROR [gridlabd-marimo]: $* (code $CODE)"  >/dev/stderr
+    exit $CODE
+}
+
+function warning()
+{
+    echo "WARNING [gridlabd-marimo]: $*" >/dev/stderr
+}
+
+function get_active()
+{
+    PORT=$FIRST
+    while [ $PORT -lt $LAST ]; do
+        FILENAME=$(get_filename $PORT)
+        if [ ! -z "$FILENAME" -a "$FILENAME" != "NAN" ]; then
+            echo $PORT
+        fi
+        PORT=$(($PORT+1))
+    done
+}
+
+function get_filename() # PORT
+{
+    FILENAME=$(curl -s http://localhost:$1 | grep '<marimo-filename[^>]*>' | sed 's/<[^>]*>//g' || echo "NAN")
+    if [ ! -z "$FILENAME" -a "$FILENAME" != "NAN" ]; then
+        echo $FILENAME
+    fi  
+}
+
+function get_pid() # FILENAME
+{
+    if [ ! -z "$1" -a "$1" != "NAN" ]; then
+        ps ax | grep "marimo run $1\|marimo edit $1" | grep -v grep | cut -f1 -d' '
+    fi
+}
+
+function get_name() # FILENAME
+{
+    NAME=$1
+    echo $(basename ${NAME/marimo_//}) | sed 's/\.py$//'
+}
+
+# de profundis clamo ad te
+if [ $# -eq 0 ]; then
+    grep '^## Syntax:' $0 | cut -c4-
+    exit $E_SYNTAX
+fi
+
+# the helping hand obviously worked
+case $1 in 
+
+help)
+
+    grep '^## ' $0 | cut -c4-
+    ;;
+
+list)
+    echo "PORT  PID   FILENAME"
+    echo "----- ----- ---------------"
+    for PORT in $(get_active); do
+        FILENAME=$(get_filename $PORT)
+        PID=$(get_pid $FILENAME)
+        printf '%5s %5s %s\n' $PORT ${PID:--} $(get_name $FILENAME)
+    done
+    ;;
+
+stop)
+
+    shift 1
+    if [ $# -eq 0 ]; then 
+        error $E_SYNTAX "missing port number"
+    elif [ "$1" == "all" ]; then # kill them all
+        for PORT in $(get_active); do
+            FILENAME=$(get_filename $PORT)
+            PID=$(get_pid $FILENAME)
+            if [ -z "$PID" ]; then
+                echo -n "[$$] Killing $PID..."
+                kill $PID && echo "ok" || echo "failed"
+            fi
+        done
+    else # kill specific ports
+        for PORT in $*; do
+            FILENAME=$(get_filename $PORT)
+            if [ "$FILENAME" == "NAN" ]; then
+                error $E_INVALID "server on port $PORT does not appear to a marimo notebook"
+            elif [ ! -z "$FILENAME" ]; then
+                PID=$(get_pid $FILENAME)
+                if [ ! -z "$PID" ]; then
+                    kill $PID
+                else
+                    error $E_NOTFOUND "no valid PID for $FILENAME on port $PORT"
+                fi
+            else
+                error $E_NOTFOUND "no server running on port $PORT"
+            fi
+        done
+    fi
+    ;;
+
+open)
+
+    shift 1
+    if [ $# -eq 0 ]; then
+        error $E_SYNTAX "missing app name"
+    fi
+    if [ $1 == '--edit' ]; then
+        shift 1
+        COMMAND="edit"
+    else
+        COMMAND="run"
+    fi
+    for PORT in $(get_active); do
+        FILENAME=$(get_filename $PORT)
+        NAME=$(get_name $FILENAME)
+        if [ "$1" == "$NAME" ]; then
+            open http://localhost:$PORT/
+            if [ "$COMMAND" == "edit" ]; then
+                warning "cannot edit running app"
+            fi
+            echo $PORT
+            exit $E_OK
+        fi
+    done
+    for NAME in $*; do
+        APP=${GLD_ETC}/marimo_$NAME.py
+        if [ ! -f $APP ]; then
+            error $E_NOTFOUND "$APP not found"
+        fi
+        LOG=/tmp/gridlabd-marimo-$NAME.log
+        marimo $COMMAND $APP 1>$LOG 2>&1 &
+        sleep 1
+        for PORT in $(get_active); do
+            FILENAME=$(get_filename $PORT)
+            if [ $NAME == "$(get_name $FILENAME)" ]; then
+                echo $PORT
+                break;
+            fi
+        done
+    done
+    ;;
+
+reopen)
+
+    # automatically open any notebook without an open browser tab
+    shift 1
+    if [ $# -eq 0 ]; then # search
+        PORT=$FIRST
+        while [ $PORT -lt $LAST ]; do
+            FILENAME=$(get_filename $PORT)
+            if [ "$FILENAME" == "NAN" ]; then
+                error $E_INVALID "server on port $PORT does not appear to a marimo notebook"
+            elif [ ! -z "$FILENAME" ]; then
+                open http://localhost:$PORT/ &
+            else
+                error $E_NOTFOUND "no server running on port $PORT"
+            fi
+            PORT=$(($PORT+1))
+        done
+    else # reopen specific ports
+        for PORT in $*; do
+            FILENAME=$(get_filename $PORT)
+            if [ "$FILENAME" == "NAN" ]; then
+                error $E_INVALID "server on port $PORT does not appear to a marimo notebook"
+            elif [ ! -z "$FILENAME" ]; then
+                open http://localhost:$PORT/ &
+            else
+                error $E_NOTFOUND "no server running on port $PORT"
+            fi
+        done
+    fi
+    ;;
+
+index)
+
+    for FILENAME in $GLD_ETC/marimo_*.py; do
+        get_name $FILENAME
+    done
+    ;;
+
+*)
+
+    error $E_SYNTAX "$1 is not a valid command"
+    ;;
+
+esac

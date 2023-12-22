@@ -212,7 +212,7 @@ int
 dPrintSuperPart(char *pname, int n, int *part_super)
 {
     register int i;
-    FILE *fopen(), *fp;
+    FILE *fp;
     char fname[20];
     strcpy(fname, pname);
     strcat(fname, ".dat");

@@ -21,7 +21,8 @@ ipykernel,,,5.5.5
 ipyplot,,,1.1.1
 ipython,3,,8.10.0
 ipython,,,8.10.0
-matplotlib,2,,3.3.3
+marimo,,,
+matplotlib,2,,3.8.2
 matplotlib_inline,,,0.1.6
 metar,,,1.9.0
 networkx,,,2.8.8
@@ -32,6 +33,7 @@ pandas,,,2.0.0
 pandas_access,,,0.0.1
 Pillow,2,,9.3.0
 Pillow,,,9.3.0
+psutil,,,
 PyGithub,2,,1.54.1
 pymysql,,,1.0.2
 pyproj,,,3.4.0
