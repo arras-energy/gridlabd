@@ -33,8 +33,7 @@ import csv
 
 
 default_options = {
-	# "include_network" : None,
-	"folder_name" : "./player/"
+	"folder_name" : "./player/",
 }
 
 def string_clean(input_str):
@@ -91,15 +90,11 @@ def convert(input_files, output_file, options={}):
 
 	df = pd.DataFrame({'class': ['player']*len(node_ID_set), 'parent' : list(node_ID_set), 'file' : ['player_' + str(node) + '.csv' for node in node_ID_set]})
 	
-	if "folder_name" in options : 
-		player_folder = options["folder_name"]
-	else : 
-		player_folder = default_options["folder_name"]
-	if not os.path.exists(player_folder):
-		os.makedirs(player_folder)
-	if os.path.splitext(output_file)[1]=='.csv' : 
+	if not os.path.exists(folder_name):
+		os.makedirs(folder_name)
 
-			df.to_csv(player_folder+output_file, index=False)
+	if os.path.splitext(output_file)[1]=='.csv' : 
+		df.to_csv(os.path.join(folder_name,os.path.basename(output_file)), index=False)
 	elif os.path.splitext(output_file)[1]=='.glm' :
 		with open(output_file, mode='w') as file :  
 			file.write('module tape;\n')
@@ -107,7 +102,7 @@ def convert(input_files, output_file, options={}):
 			for node_ID in node_ID_set : 
 				file.write('object player {\n')
 				file.write('\tparent "' + str(node_ID) + '";\n')
-				file.write('\tfile "'+player_folder + str(node_ID) + '.csv";\n')
+				file.write('\tfile "' + os.path.join(folder_name,str(node_ID)) + '.csv";\n')
 				file.write('}\n')
 
 	new_column_names = {
@@ -116,7 +111,7 @@ def convert(input_files, output_file, options={}):
 		'transformer_structure': 'customer_id'
 	}
 	df_ami.rename(columns=new_column_names,inplace=True)
-	[df_ami.drop(x,axis=1,inplace=True) for x in ['interval_pcfc_date','interval_pcfc_hour']];
+	df_ami.drop(['interval_pcfc_date','interval_pcfc_hour'],axis=1,inplace=True)
 	df_ami.sort_index(inplace=True)
 
 	# Iterate over unique customer IDs
@@ -125,5 +120,5 @@ def convert(input_files, output_file, options={}):
 		customer_df = df_ami[df_ami['customer_id'] == customer_id].drop(columns='customer_id')
 		customer_df = customer_df.sort_values(by='timestamp')
 	    # Save the DataFrame to a CSV file
-		output_file = f"{folder_name}{customer_id}.csv"
+		output_file = f"{folder_name}/{customer_id}.csv"
 		customer_df.to_csv(output_file, index=False, header=False)
