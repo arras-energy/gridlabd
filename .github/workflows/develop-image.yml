@@ -26,6 +26,15 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
+    - name: Symlink for libtool
+      run: |
+        ln -s /usr/local/bin/glibtoolize /usr/local/bin/libtoolize
+        ln -s /usr/local/bin/glibtool /usr/local/bin/libtool
+
+    - name: Add libraries to PATH
+      run: |
+        echo "LIBRARY_PATH=$(brew --prefix)/lib:$(brew --prefix)/opt:$(brew --prefix)/include" >> $GITHUB_ENV
+
     - name: Deploy to S3
       run: |
         sh ./setup.sh --local
@@ -51,6 +60,15 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
+    - name: Symlink for libtool
+      run: |
+        ln -s /usr/local/bin/glibtoolize /usr/local/bin/libtoolize
+        ln -s /usr/local/bin/glibtool /usr/local/bin/libtool
+
+    - name: Add libraries to PATH
+      run: |
+        echo "LIBRARY_PATH=$(brew --prefix)/lib:$(brew --prefix)/opt:$(brew --prefix)/include" >> $GITHUB_ENV
+
     - name: Deploy to S3
       run: |
         sh ./setup.sh --local
@@ -75,6 +93,15 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Symlink for libtool
+      run: |
+        ln -s /usr/local/bin/glibtoolize /usr/local/bin/libtoolize
+        ln -s /usr/local/bin/glibtool /usr/local/bin/libtool
+
+    - name: Add libraries to PATH
+      run: |
+        echo "LIBRARY_PATH=$(brew --prefix)/lib:$(brew --prefix)/opt:$(brew --prefix)/include" >> $GITHUB_ENV
 
     - name: Deploy to S3
       run: |
