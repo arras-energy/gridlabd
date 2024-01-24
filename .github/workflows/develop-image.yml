@@ -151,7 +151,7 @@ jobs:
   buildAWSUbuntuAMI:
     runs-on: ubuntu-latest
     environment: Integration
-    needs: [buildUbuntu22FastS3,buildUbuntu20FastS3,buildMacos11FastS3,buildMacos12FastS3,buildMacos13FastS3]
+    needs: [buildUbuntu22FastS3,buildUbuntu20FastS3,buildMacos12FastS3,buildMacos13FastS3]
 
     steps:
     - uses: actions/checkout@v3
