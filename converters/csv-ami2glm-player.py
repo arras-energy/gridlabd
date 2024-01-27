@@ -105,11 +105,12 @@ def convert(input_files, output_file, options={}):
 				if isinstance(node_ID, float) and math.isnan(node_ID) :
 					continue 
 				file.write('object player {\n')
-				file.write('\tparent "' + str(node_ID) + '";\n')
-				file.write('\tfile "' + os.path.join(folder_name,str(node_ID)) + '.csv";\n')
 				for obj,val in network["objects"].items() : 
 					if "load" in val["class"] and node_ID in obj: 
 						node_phase = val["phases"]
+						parent = val["parent"]
+				file.write('\tparent "' + str(parent) + '";\n')
+				file.write('\tfile "' + os.path.join(folder_name,str(node_ID)) + '.csv";\n')
 				file.write('\tphases "' + node_phase  + '";\n')
 				file.write('}\n')
 
