@@ -51,7 +51,7 @@ for opt, arg in opts:
     elif opt in ("-i", "--ifile"):
         try:
             if not arg.startswith("http"):
-                input_file = dict([x.split(":") for x in arg.strip().split(",")])
+                input_file = dict([x.strip().split(":") for x in arg.strip().split(",")])
             else:
                 input_file = arg.strip()
         except:
