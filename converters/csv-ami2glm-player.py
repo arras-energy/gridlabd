@@ -114,7 +114,7 @@ def convert(input_files, output_file, options={}):
 					continue 
 				for obj,val in network["objects"].items() : 
 					if "load" in val["class"] and node_ID in obj: 
-						node_phase = val["phases"].replace("N", '').replace("S",'')
+						node_phase = ''.join([x for x in 'ABC' if x in val['phases']])
 						parent = val["parent"]
 						phase_dict[node_ID]=node_phase
 				for p in node_phase : 
