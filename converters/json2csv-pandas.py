@@ -27,6 +27,13 @@ Filter values are interpreted using regular expressions, e.g.,
 
 Be careful to quote expressions that can be interpreted by the shell.
 
+The output type can include a column list to limit the fields that are
+included in the output CSV file. For example,
+
+	gridlabd -C input.glm -D csv_save_options="-t pandas:name,phases" -o output.csv
+
+will only output the `name` and `phases` columns.
+
 EXAMPLE
 -------
 
@@ -45,7 +52,11 @@ import pandas as pd
 import re
 
 def convert(input_file,output_file=None, options={}):
-
+	"""
+	Valid options are:
+	- output-columns (list of str): a list of columns to output
+	- filter (dict of regex): patterns to match for properties to filter objects
+	"""
 	if output_file == '':
 		if input_file[-5:] == ".json":
 			output_file = input_file[:-5] + ".csv" 
@@ -71,4 +82,8 @@ def convert(input_file,output_file=None, options={}):
 	else:
 		result = data["objects"]
 	df = pd.DataFrame(result).transpose()
+	if "output-columns" in options:
+		for field in df.columns:
+			if not field in options["output-columns"]:
+					df.drop(field,inplace=True,axis=1)
 	df.to_csv(output_file,header=True,index=False)	
