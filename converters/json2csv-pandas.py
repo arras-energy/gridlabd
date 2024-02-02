@@ -90,4 +90,5 @@ def convert(input_file,output_file=None, options={}):
 		for field in df.columns:
 			if not re.match("|".join(options["output-columns"]),field):
 				df.drop(field,inplace=True,axis=1)
-	df.to_csv(output_file,header=True,index=("output-columns" in options and "name" in options["output-columns"]))	
+	keep_index = ("output-columns" in options and re.match("|".join(options["output-columns"]),"name"))
+	df.to_csv(output_file,header=True,index=keep_index)
