@@ -16,7 +16,7 @@ config = {
 
 def help():
 	print(f'Syntax:')
-	print(f'{config["input"]}2{config["output"]}.py -i|--ifile <input-file>[,<input-file>[,...]] -o|--ofile <output-file> -t|--type <input-type> -f|--filter <filter-spec>')
+	print(f'{config["input"]}2{config["output"]}.py -i|--ifile <input-file>[,<input-file>[,...]] -o|--ofile <output-file> -t|--type <output-type>[:<column-list>] -f|--filter <filter-spec>')
 	print(f'  -c|--config    : [OPTIONAL] output converter configuration')
 	print(f'  -i|--ifile     : [REQUIRED] {config["input"]} input file name')
 	print(f'  -o|--ofile     : [REQUIRED] {config["output"]} output file name')
@@ -49,6 +49,10 @@ for opt, arg in opts:
 	elif opt in ["-t","--type"]:
 		if arg in config['type'].keys():
 			output_type = arg.strip()
+			if ":" in output_type:
+				spec = output_type.split(":")
+				output_type = spec[0]
+				options["output-columns"] = spec[1].split(",")
 		else:
 			raise Exception(f"type '{arg}' is not recognized")
 	elif opt in ["-f","--filter"]:
