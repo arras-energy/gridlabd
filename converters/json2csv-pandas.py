@@ -25,14 +25,17 @@ Filter values are interpreted using regular expressions, e.g.,
 
 	-f name=EXPRESSION
 
-Be careful to quote expressions that can be interpreted by the shell.
-
 The output type can include a column list to limit the fields that are
 included in the output CSV file. For example,
 
 	gridlabd -C input.glm -D csv_save_options="-t pandas:name,phases" -o output.csv
 
-will only output the `name` and `phases` columns.
+will only output the `name` and `phases` columns. 
+
+Be careful to quote expressions that can be interpreted by the shell. Also
+note that regular expressions match the beginning of any string. For an exact
+match you must use a `$` to stop the parse, e.g., `overhead_line$` will not
+match `overhead_line_conductor`.
 
 EXAMPLE
 -------
@@ -82,8 +85,9 @@ def convert(input_file,output_file=None, options={}):
 	else:
 		result = data["objects"]
 	df = pd.DataFrame(result).transpose()
+	df.index.name = "name"
 	if "output-columns" in options:
 		for field in df.columns:
-			if not field in options["output-columns"]:
-					df.drop(field,inplace=True,axis=1)
-	df.to_csv(output_file,header=True,index=False)	
+			if not re.match("|".join(options["output-columns"]),field):
+				df.drop(field,inplace=True,axis=1)
+	df.to_csv(output_file,header=True,index=("output-columns" in options and "name" in options["output-columns"]))	

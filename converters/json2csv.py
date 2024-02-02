@@ -47,7 +47,7 @@ for opt, arg in opts:
 	elif opt in ("-o", "--ofile"):
 		output_file = arg.strip()
 	elif opt in ["-t","--type"]:
-		if arg in config['type'].keys():
+		if arg.split(":")[0] in config['type'].keys():
 			output_type = arg.strip()
 			if ":" in output_type:
 				spec = output_type.split(":")
