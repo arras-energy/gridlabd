@@ -52,7 +52,11 @@ import pandas as pd
 import re
 
 def convert(input_file,output_file=None, options={}):
-
+	"""
+	Valid options are:
+	- output-columns (list of str): a list of columns to output
+	- filter (dict of regex): patterns to match for properties to filter objects
+	"""
 	if output_file == '':
 		if input_file[-5:] == ".json":
 			output_file = input_file[:-5] + ".csv" 
@@ -79,8 +83,7 @@ def convert(input_file,output_file=None, options={}):
 		result = data["objects"]
 	df = pd.DataFrame(result).transpose()
 	if "output-columns" in options:
-		for column in options["output-columns"]:
-			for field in df.columns:
-				if field != column:
+		for field in df.columns:
+			if not field in options["output-columns"]:
 					df.drop(field,inplace=True,axis=1)
 	df.to_csv(output_file,header=True,index=False)	
