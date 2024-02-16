@@ -119,10 +119,13 @@ def convert(input_files, output_file, options={}):
 	# Read all the sheets in the .xlxs file 
 	file_extension = input_pole_file.split(".")[-1]
 	if file_extension == 'xlsx':
-		df = pd.read_excel(input_pole_file, sheet_name=0, usecols=[
-			'Structure ID', 'AS-IS AGL', 'AS-IS Species', 'AS-IS GLC', 'AS-IS Length', 
-			'AS-IS Class', 'AS-IS Allowable Stress Adjustment', 
-			'AS-IS Effective Stress Adjustment', 'AS-IS GPS Point'], engine='openpyxl') 
+		df = pd.read_excel(input_pole_file, sheet_name=0, engine='openpyxl') 
+		df.columns = [col.replace("_x0020_", " ") for col in df.columns]
+		desired_columns = [
+			'Structure ID', 'AS-IS AGL', 'AS-IS Species', 'AS-IS GLC', 'AS-IS Length',
+			'AS-IS Class', 'AS-IS Allowable Stress Adjustment',
+			'AS-IS Effective Stress Adjustment', 'AS-IS GPS Point']
+		df = df[desired_columns]
 	elif file_extension == 'xls':
 		df = pd.read_excel(input_pole_file, sheet_name=0, usecols=[
 			'Structure ID', 'AS-IS AGL', 'AS-IS Species', 'AS-IS GLC', 'AS-IS Length', 
