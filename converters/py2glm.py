@@ -52,7 +52,7 @@ def convert(ifile,ofile,py_type):
 
     modspec = util.spec_from_file_location("glm",ifile)
     modname = os.path.splitext(ifile)[0]
-    mod = importlib.import_module(modname)
+    mod = importlib.import_module(os.path.basename(modname))
     casedef = getattr(mod,os.path.basename(modname))
     data = casedef()
 
