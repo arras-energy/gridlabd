@@ -73,6 +73,9 @@ dist_pkgdata_DATA += converters/json2txt.py
 # json -> zip
 dist_pkgdata_DATA += converters/json2zip.py
 
+# py->glm
+dist_pkgdata_DATA += converters/py2glm.py
+
 # xls -> csv
 dist_pkgdata_DATA += converters/xls2csv.py
 dist_pkgdata_DATA += converters/xls-spida2csv-geodata.py

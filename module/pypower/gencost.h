@@ -1,17 +1,17 @@
-// module/pypower/bus.h
+// module/pypower/gencost.h
 // Copyright (C) 2024 Regents of the Leland Stanford Junior University
 
-#ifndef _BUS_H
-#define _BUS_H
+#ifndef _gencost_H
+#define _gencost_H
 
 #include "gridlabd.h"
 
-class bus : public gld_object 
+class gencost : public gld_object 
 {
 
 public:
 	// published properties
-	GL_ATOMIC(int32,bus_i);
+	GL_ATOMIC(int32,gencost_i);
 	GL_ATOMIC(enumeration,type);
 	GL_ATOMIC(double,Pd);
 	GL_ATOMIC(double,Qd);
@@ -31,7 +31,7 @@ public:
 
 public:
 	// event handlers
-	bus(MODULE *module);
+	gencost(MODULE *module);
 	int create(void);
 	int init(OBJECT *parent);
 	TIMESTAMP commit(TIMESTAMP t1, TIMESTAMP t2);
@@ -39,7 +39,7 @@ public:
 public:
 	// internal properties
 	static CLASS *oclass;
-	static bus *defaults;
+	static gencost *defaults;
 };
 
-#endif // _BUS_H
+#endif // _gencost_H
