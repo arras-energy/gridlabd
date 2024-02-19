@@ -5,6 +5,10 @@
 
 #include "pypower.h"
 
+bool enable_opf = false;
+double base_MVA = 100.0;
+int32 pypower_version = 2;
+
 EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
 {
     if (set_callback(fntable)==NULL)
@@ -16,9 +20,25 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
     INIT_MMF(pypower);
 
     new bus(module);
-    // new branch(module);
-    // new gen(module);
-    // new gencost(module)
+    new branch(module);
+    new gen(module);
+    new gencost(module);
+
+    gl_global_create("pypower::version",
+        PT_int32, &pypower_version, 
+        PT_DESCRIPTION, "Version of pypower used",
+        NULL);
+
+    gl_global_create("pypower::enable_opf",
+        PT_bool, &enable_opf, 
+        PT_DESCRIPTION, "Flag to enable optimal powerflow (OPF) solver",
+        NULL);
+
+    gl_global_create("pypower::baseMVA",
+        PT_double, &base_MVA, 
+        PT_UNITS, "MVA", 
+        PT_DESCRIPTION, "Base MVA value",
+        NULL);
 
     // always return the first class registered
     return bus::oclass;

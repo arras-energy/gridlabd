@@ -12,8 +12,8 @@
 #include "gridlabd.h"
 
 #include "bus.h"
-// #include "branch.h"
-// #include "gen.h"
-// #include "gencost.h"
+#include "branch.h"
+#include "gen.h"
+#include "gencost.h"
 
 #endif

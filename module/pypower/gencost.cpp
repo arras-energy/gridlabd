@@ -1,33 +1,33 @@
-// module/pypower/bus.cpp
+// module/pypower/gencost.cpp
 // Copyright (C) 2024 Regents of the Leland Stanford Junior University
 
 #include "pypower.h"
 
-EXPORT_CREATE(bus);
-EXPORT_INIT(bus);
-EXPORT_COMMIT(bus);
+EXPORT_CREATE(gencost);
+EXPORT_INIT(gencost);
+EXPORT_COMMIT(gencost);
 
-CLASS *bus::oclass = NULL;
-bus *bus::defaults = NULL;
+CLASS *gencost::oclass = NULL;
+gencost *gencost::defaults = NULL;
 
-bus::bus(MODULE *module)
+gencost::gencost(MODULE *module)
 {
 	if (oclass==NULL)
 	{
 		// register to receive notice for first top down. bottom up, and second top down synchronizations
-		oclass = gld_class::create(module,"bus",sizeof(bus),PC_AUTOLOCK|PC_OBSERVER);
+		oclass = gld_class::create(module,"gencost",sizeof(gencost),PC_AUTOLOCK|PC_OBSERVER);
 		if (oclass==NULL)
-			throw "unable to register class bus";
+			throw "unable to register class gencost";
 		else
 			oclass->trl = TRL_PROVEN;
 
 		defaults = this;
 		if (gl_publish_variable(oclass,
-			PT_int32, "bus_i", get_bus_i_offset(),
-				PT_DESCRIPTION, "bus number (1 to 29997)",
+			PT_int32, "gencost_i", get_gencost_i_offset(),
+				PT_DESCRIPTION, "gencost number (1 to 29997)",
 
 			PT_enumeration, "type", get_type_offset(),
-				PT_DESCRIPTION, "bus type (1 = PQ, 2 = PV, 3 = ref, 4 = isolated)",
+				PT_DESCRIPTION, "gencost type (1 = PQ, 2 = PV, 3 = ref, 4 = isolated)",
 				PT_KEYWORD, "UNKNOWN", (enumeration)0,
 				PT_KEYWORD, "PQ", (enumeration)1,
 				PT_KEYWORD, "PV", (enumeration)2,
@@ -91,17 +91,17 @@ bus::bus(MODULE *module)
 	}
 }
 
-int bus::create(void) 
+int gencost::create(void) 
 {
 	return 1; /* return 1 on success, 0 on failure */
 }
 
-int bus::init(OBJECT *parent)
+int gencost::init(OBJECT *parent)
 {
 	return 1;
 }
 
-TIMESTAMP bus::commit(TIMESTAMP t1, TIMESTAMP t2)
+TIMESTAMP gencost::commit(TIMESTAMP t1, TIMESTAMP t2)
 {
 	return TS_NEVER;
 }
