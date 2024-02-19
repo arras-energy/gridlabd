@@ -16,9 +16,9 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
     INIT_MMF(pypower);
 
     new bus(module);
-    new branch(module);
-    new gen(module);
-    new gencost(module)
+    // new branch(module);
+    // new gen(module);
+    // new gencost(module)
 
     // always return the first class registered
     return bus::oclass;
