@@ -93,6 +93,17 @@ bus::bus(MODULE *module)
 
 int bus::create(void) 
 {
+	extern bus *buslist[MAXENT];
+	extern size_t nbus;
+	if ( nbus < MAXENT )
+	{
+		buslist[nbus++] = this;
+	}
+	else
+	{
+		throw "maximum bus entities exceeded";
+	}
+
 	return 1; /* return 1 on success, 0 on failure */
 }
 

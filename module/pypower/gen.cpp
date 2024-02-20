@@ -111,6 +111,17 @@ gen::gen(MODULE *module)
 
 int gen::create(void) 
 {
+	extern gen *genlist[MAXENT];
+	extern size_t ngen;
+	if ( ngen < MAXENT )
+	{
+		genlist[ngen++] = this;
+	}
+	else
+	{
+		throw "maximum gen entities exceeded";
+	}
+
 	extern double base_MVA;
 	mBase = base_MVA;
 
