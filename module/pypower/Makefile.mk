@@ -17,3 +17,5 @@ module_pypower_pypower_la_SOURCES += module/pypower/bus.cpp module/pypower/bus.h
 module_pypower_pypower_la_SOURCES += module/pypower/branch.cpp module/pypower/branch.h
 module_pypower_pypower_la_SOURCES += module/pypower/gen.cpp module/pypower/gen.h
 module_pypower_pypower_la_SOURCES += module/pypower/gencost.cpp module/pypower/gencost.h
+
+dist_pkgdata_DATA += runtime/pypower_solver.py

@@ -1,3 +1,6 @@
+# module/pypower/pypower_solver.py
+# Copyright (C) 2024 Regents of the Leland Stanford Junior University
+
 import os, sys
 from pypower import runpf
 from numpy import array
