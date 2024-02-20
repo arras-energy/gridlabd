@@ -22,5 +22,5 @@ objects' properties, see the [PyPower documentation]([https://pypi.org/project/P
 
 # See also
 
-* [PyPower documentation]([https://pypi.org/project/PYPOWER/)
-* [/Converters/Import/PyPower_cases]
+* [PyPower documentation](https://pypi.org/project/PYPOWER/)
+* [[/Converters/Import/PyPower_cases]]
