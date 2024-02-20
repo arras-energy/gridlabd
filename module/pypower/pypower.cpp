@@ -200,7 +200,7 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
 
     // run solver
     PyObject *result = PyObject_CallOneArg(solver,data);
-    if ( Py_IsTrue(result) )
+    if ( result && Py_IsTrue(result) )
     {
         // copy values back from solver
         for ( size_t n = 0 ; n < nbus ; n++ )
@@ -285,8 +285,10 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
     {
         gl_warning("solver failed");
     }
-    Py_DECREF(result);
-
+    if ( result )
+    {
+        Py_DECREF(result);
+    }
 
     return t0+3600;
 }
