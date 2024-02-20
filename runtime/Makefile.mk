@@ -27,7 +27,6 @@ dist_pkgdata_DATA += runtime/node_b.png
 dist_pkgdata_DATA += runtime/node_g.png
 dist_pkgdata_DATA += runtime/node_k.png
 dist_pkgdata_DATA += runtime/node_r.png
-dist_pkgdata_DATA += runtime/pypower_solver.py
 dist_pkgdata_DATA += runtime/regulator_b.png
 dist_pkgdata_DATA += runtime/regulator_g.png
 dist_pkgdata_DATA += runtime/regulator_k.png

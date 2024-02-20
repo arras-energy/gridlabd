@@ -1,4 +1,4 @@
-// module/pypower/main.cpp
+// module/pypower/pypower.cpp
 // Copyright (C) 2024 Regents of the Leland Stanford Junior University
 
 #define DLMAIN
