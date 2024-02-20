@@ -10,6 +10,9 @@
 bool enable_opf = false;
 double base_MVA = 100.0;
 int32 pypower_version = 2;
+bool stop_on_failure = false;
+int32 maximum_timestep = 0; // seconds; 0 = no max ts
+enumeration solver_method = 1;
 
 EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
 {
@@ -32,6 +35,21 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
         PT_DESCRIPTION, "Version of pypower used",
         NULL);
 
+    gl_global_create("pypower::solver_method",
+        PT_enumeration, &solver_method,
+        PT_KEYWORD, "NR", (enumeration)1,
+        PT_KEYWORD, "FD-XB", (enumeration)1,
+        PT_KEYWORD, "FD-BX", (enumeration)1,
+        PT_KEYWORD, "GS", (enumeration)1,
+        PT_DESCRIPTION, "PyPower solver method to use",
+        NULL
+        );
+
+    gl_global_create("pypower::maximum_timestep",
+        PT_int32, &maximum_timestep, 
+        PT_DESCRIPTION, "Maximum timestep allowed between solutions",
+        NULL);
+
     gl_global_create("pypower::baseMVA",
         PT_double, &base_MVA, 
         PT_UNITS, "MVA", 
@@ -43,6 +61,11 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
     //     PT_bool, &enable_opf, 
     //     PT_DESCRIPTION, "Flag to enable optimal powerflow (OPF) solver",
     //     NULL);
+
+    gl_global_create("pypower::stop_on_failure",
+        PT_bool, &stop_on_failure, 
+        PT_DESCRIPTION, "Flag to stop simulation on solver failure",
+        NULL);
 
     // always return the first class registered
     return bus::oclass;
@@ -91,7 +114,7 @@ EXPORT bool on_init(void)
     busdata = PyList_New(nbus);
     for ( size_t n = 0 ; n < nbus ; n++ )
     {
-        PyList_SET_ITEM(busdata,n,PyList_New(enable_opf?17:13));
+        PyList_SetItem(busdata,n,PyList_New(enable_opf?17:13));
     }
     PyDict_SetItemString(data,"bus",busdata);
 
@@ -99,14 +122,14 @@ EXPORT bool on_init(void)
     PyDict_SetItemString(data,"branch",branchdata);
     for ( size_t n = 0 ; n < nbranch ; n++ )
     {
-        PyList_SET_ITEM(branchdata,n,PyList_New(13));
+        PyList_SetItem(branchdata,n,PyList_New(13));
     }
 
     gendata = PyList_New(ngen);
     PyDict_SetItemString(data,"gen",gendata);
     for ( size_t n = 0 ; n < ngen ; n++ )
     {
-        PyList_SET_ITEM(gendata,n,PyList_New(enable_opf?25:21));
+        PyList_SetItem(gendata,n,PyList_New(enable_opf?25:21));
     }
 
     if ( enable_opf )
@@ -128,74 +151,78 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
     {
         bus *obj = buslist[n];
         PyObject *pyobj = PyList_GetItem(busdata,n);
-        PyList_SET_ITEM(pyobj,0,PyLong_FromLong(obj->get_bus_i()));
-        PyList_SET_ITEM(pyobj,1,PyLong_FromLong(obj->get_type()));
-        PyList_SET_ITEM(pyobj,2,PyFloat_FromDouble(obj->get_Pd()));
-        PyList_SET_ITEM(pyobj,3,PyFloat_FromDouble(obj->get_Qd()));
-        PyList_SET_ITEM(pyobj,4,PyFloat_FromDouble(obj->get_Gs()));
-        PyList_SET_ITEM(pyobj,5,PyFloat_FromDouble(obj->get_Bs()));
-        PyList_SET_ITEM(pyobj,6,PyLong_FromLong(obj->get_area()));
-        PyList_SET_ITEM(pyobj,7,PyFloat_FromDouble(obj->get_Vm()));
-        PyList_SET_ITEM(pyobj,8,PyFloat_FromDouble(obj->get_Va()));
-        PyList_SET_ITEM(pyobj,9,PyFloat_FromDouble(obj->get_baseKV()));
-        PyList_SET_ITEM(pyobj,10,PyLong_FromLong(obj->get_zone()));
-        PyList_SET_ITEM(pyobj,11,PyFloat_FromDouble(obj->get_Vmax()));
-        PyList_SET_ITEM(pyobj,12,PyFloat_FromDouble(obj->get_Vmin()));
-        // TODO: add support for OPF
-        // PyList_SET_ITEM(pyobj,13,PyFloat_FromDouble(obj->get_lam_P()));
-        // PyList_SET_ITEM(pyobj,14,PyFloat_FromDouble(obj->get_lam_Q()));
-        // PyList_SET_ITEM(pyobj,15,PyFloat_FromDouble(obj->get_mu_Vmax()));
-        // PyList_SET_ITEM(pyobj,16,PyFloat_FromDouble(obj->get_mu_Vmin()));
+        PyList_SetItem(pyobj,0,PyLong_FromLong(obj->get_bus_i()));
+        PyList_SetItem(pyobj,1,PyLong_FromLong(obj->get_type()));
+        PyList_SetItem(pyobj,2,PyFloat_FromDouble(obj->get_Pd()));
+        PyList_SetItem(pyobj,3,PyFloat_FromDouble(obj->get_Qd()));
+        PyList_SetItem(pyobj,4,PyFloat_FromDouble(obj->get_Gs()));
+        PyList_SetItem(pyobj,5,PyFloat_FromDouble(obj->get_Bs()));
+        PyList_SetItem(pyobj,6,PyLong_FromLong(obj->get_area()));
+        PyList_SetItem(pyobj,7,PyFloat_FromDouble(obj->get_Vm()));
+        PyList_SetItem(pyobj,8,PyFloat_FromDouble(obj->get_Va()));
+        PyList_SetItem(pyobj,9,PyFloat_FromDouble(obj->get_baseKV()));
+        PyList_SetItem(pyobj,10,PyLong_FromLong(obj->get_zone()));
+        PyList_SetItem(pyobj,11,PyFloat_FromDouble(obj->get_Vmax()));
+        PyList_SetItem(pyobj,12,PyFloat_FromDouble(obj->get_Vmin()));
+        if ( enable_opf )
+        {
+            PyList_SetItem(pyobj,13,PyFloat_FromDouble(obj->get_lam_P()));
+            PyList_SetItem(pyobj,14,PyFloat_FromDouble(obj->get_lam_Q()));
+            PyList_SetItem(pyobj,15,PyFloat_FromDouble(obj->get_mu_Vmax()));
+            PyList_SetItem(pyobj,16,PyFloat_FromDouble(obj->get_mu_Vmin()));
+        }
     }
     for ( size_t n = 0 ; n < nbranch ; n++ )
     {
         branch *obj = branchlist[n];
         PyObject *pyobj = PyList_GetItem(branchdata,n);
-        PyList_SET_ITEM(pyobj,0,PyLong_FromLong(obj->get_fbus()));
-        PyList_SET_ITEM(pyobj,1,PyLong_FromLong(obj->get_tbus()));
-        PyList_SET_ITEM(pyobj,2,PyFloat_FromDouble(obj->get_r()));
-        PyList_SET_ITEM(pyobj,3,PyFloat_FromDouble(obj->get_x()));
-        PyList_SET_ITEM(pyobj,4,PyFloat_FromDouble(obj->get_b()));
-        PyList_SET_ITEM(pyobj,5,PyFloat_FromDouble(obj->get_rateA()));
-        PyList_SET_ITEM(pyobj,6,PyFloat_FromDouble(obj->get_rateB()));
-        PyList_SET_ITEM(pyobj,7,PyFloat_FromDouble(obj->get_rateC()));
-        PyList_SET_ITEM(pyobj,8,PyFloat_FromDouble(obj->get_ratio()));
-        PyList_SET_ITEM(pyobj,9,PyFloat_FromDouble(obj->get_angle()));
-        PyList_SET_ITEM(pyobj,10,PyLong_FromLong(obj->get_status()));
-        PyList_SET_ITEM(pyobj,11,PyFloat_FromDouble(obj->get_angmin()));
-        PyList_SET_ITEM(pyobj,12,PyFloat_FromDouble(obj->get_angmax()));
+        PyList_SetItem(pyobj,0,PyLong_FromLong(obj->get_fbus()));
+        PyList_SetItem(pyobj,1,PyLong_FromLong(obj->get_tbus()));
+        PyList_SetItem(pyobj,2,PyFloat_FromDouble(obj->get_r()));
+        PyList_SetItem(pyobj,3,PyFloat_FromDouble(obj->get_x()));
+        PyList_SetItem(pyobj,4,PyFloat_FromDouble(obj->get_b()));
+        PyList_SetItem(pyobj,5,PyFloat_FromDouble(obj->get_rateA()));
+        PyList_SetItem(pyobj,6,PyFloat_FromDouble(obj->get_rateB()));
+        PyList_SetItem(pyobj,7,PyFloat_FromDouble(obj->get_rateC()));
+        PyList_SetItem(pyobj,8,PyFloat_FromDouble(obj->get_ratio()));
+        PyList_SetItem(pyobj,9,PyFloat_FromDouble(obj->get_angle()));
+        PyList_SetItem(pyobj,10,PyLong_FromLong(obj->get_status()));
+        PyList_SetItem(pyobj,11,PyFloat_FromDouble(obj->get_angmin()));
+        PyList_SetItem(pyobj,12,PyFloat_FromDouble(obj->get_angmax()));
 
     }
     for ( size_t n = 0 ; n < ngen ; n++ )
     {
         gen *obj = genlist[n];
         PyObject *pyobj = PyList_GetItem(gendata,n);
-        PyList_SET_ITEM(pyobj,0,PyLong_FromLong(obj->get_bus()));
-        PyList_SET_ITEM(pyobj,1,PyFloat_FromDouble(obj->get_Pg()));
-        PyList_SET_ITEM(pyobj,2,PyFloat_FromDouble(obj->get_Qg()));
-        PyList_SET_ITEM(pyobj,3,PyFloat_FromDouble(obj->get_Qmax()));
-        PyList_SET_ITEM(pyobj,4,PyFloat_FromDouble(obj->get_Qmin()));
-        PyList_SET_ITEM(pyobj,5,PyFloat_FromDouble(obj->get_Vg()));
-        PyList_SET_ITEM(pyobj,6,PyFloat_FromDouble(obj->get_mBase()));
-        PyList_SET_ITEM(pyobj,7,PyLong_FromLong(obj->get_status()));
-        PyList_SET_ITEM(pyobj,8,PyFloat_FromDouble(obj->get_Pmax()));
-        PyList_SET_ITEM(pyobj,9,PyFloat_FromDouble(obj->get_Pmin()));
-        PyList_SET_ITEM(pyobj,10,PyFloat_FromDouble(obj->get_Pc1()));
-        PyList_SET_ITEM(pyobj,11,PyFloat_FromDouble(obj->get_Pc2()));
-        PyList_SET_ITEM(pyobj,12,PyFloat_FromDouble(obj->get_Qc1min()));
-        PyList_SET_ITEM(pyobj,13,PyFloat_FromDouble(obj->get_Qc1max()));
-        PyList_SET_ITEM(pyobj,14,PyFloat_FromDouble(obj->get_Qc2min()));
-        PyList_SET_ITEM(pyobj,15,PyFloat_FromDouble(obj->get_Qc2max()));
-        PyList_SET_ITEM(pyobj,16,PyFloat_FromDouble(obj->get_ramp_agc()));
-        PyList_SET_ITEM(pyobj,17,PyFloat_FromDouble(obj->get_ramp_10()));
-        PyList_SET_ITEM(pyobj,18,PyFloat_FromDouble(obj->get_ramp_30()));
-        PyList_SET_ITEM(pyobj,19,PyFloat_FromDouble(obj->get_ramp_q()));
-        PyList_SET_ITEM(pyobj,20,PyFloat_FromDouble(obj->get_apf()));
-        // TODO: add support for OPF
-        // PyList_SET_ITEM(pyobj,21,PyFloat_FromDouble(obj->get_mu_Pmax()));
-        // PyList_SET_ITEM(pyobj,22,PyFloat_FromDouble(obj->get_mu_Pmin()));
-        // PyList_SET_ITEM(pyobj,23,PyFloat_FromDouble(obj->get_mu_Qmax()));
-        // PyList_SET_ITEM(pyobj,24,PyFloat_FromDouble(obj->get_mu_Qmin()));
+        PyList_SetItem(pyobj,0,PyLong_FromLong(obj->get_bus()));
+        PyList_SetItem(pyobj,1,PyFloat_FromDouble(obj->get_Pg()));
+        PyList_SetItem(pyobj,2,PyFloat_FromDouble(obj->get_Qg()));
+        PyList_SetItem(pyobj,3,PyFloat_FromDouble(obj->get_Qmax()));
+        PyList_SetItem(pyobj,4,PyFloat_FromDouble(obj->get_Qmin()));
+        PyList_SetItem(pyobj,5,PyFloat_FromDouble(obj->get_Vg()));
+        PyList_SetItem(pyobj,6,PyFloat_FromDouble(obj->get_mBase()));
+        PyList_SetItem(pyobj,7,PyLong_FromLong(obj->get_status()));
+        PyList_SetItem(pyobj,8,PyFloat_FromDouble(obj->get_Pmax()));
+        PyList_SetItem(pyobj,9,PyFloat_FromDouble(obj->get_Pmin()));
+        PyList_SetItem(pyobj,10,PyFloat_FromDouble(obj->get_Pc1()));
+        PyList_SetItem(pyobj,11,PyFloat_FromDouble(obj->get_Pc2()));
+        PyList_SetItem(pyobj,12,PyFloat_FromDouble(obj->get_Qc1min()));
+        PyList_SetItem(pyobj,13,PyFloat_FromDouble(obj->get_Qc1max()));
+        PyList_SetItem(pyobj,14,PyFloat_FromDouble(obj->get_Qc2min()));
+        PyList_SetItem(pyobj,15,PyFloat_FromDouble(obj->get_Qc2max()));
+        PyList_SetItem(pyobj,16,PyFloat_FromDouble(obj->get_ramp_agc()));
+        PyList_SetItem(pyobj,17,PyFloat_FromDouble(obj->get_ramp_10()));
+        PyList_SetItem(pyobj,18,PyFloat_FromDouble(obj->get_ramp_30()));
+        PyList_SetItem(pyobj,19,PyFloat_FromDouble(obj->get_ramp_q()));
+        PyList_SetItem(pyobj,20,PyFloat_FromDouble(obj->get_apf()));
+        if ( enable_opf )
+        {
+            PyList_SetItem(pyobj,21,PyFloat_FromDouble(obj->get_mu_Pmax()));
+            PyList_SetItem(pyobj,22,PyFloat_FromDouble(obj->get_mu_Pmin()));
+            PyList_SetItem(pyobj,23,PyFloat_FromDouble(obj->get_mu_Qmax()));
+            PyList_SetItem(pyobj,24,PyFloat_FromDouble(obj->get_mu_Qmin()));
+        }
     }
 
     // run solver
@@ -290,7 +317,14 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
         Py_DECREF(result);
     }
 
-    return t0+3600;
+    if ( stop_on_failure )
+    {
+        return TS_INVALID;
+    }
+    else
+    { 
+        return maximum_timestep > 0 ? t0+3600 : TS_NEVER;
+    }
 }
 
 EXPORT int do_kill(void*)
