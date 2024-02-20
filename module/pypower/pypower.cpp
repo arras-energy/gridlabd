@@ -24,16 +24,12 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
     new bus(module);
     new branch(module);
     new gen(module);
-    new gencost(module);
+    // TODO: add support for OPF
+    // new gencost(module);
 
     gl_global_create("pypower::version",
         PT_int32, &pypower_version, 
         PT_DESCRIPTION, "Version of pypower used",
-        NULL);
-
-    gl_global_create("pypower::enable_opf",
-        PT_bool, &enable_opf, 
-        PT_DESCRIPTION, "Flag to enable optimal powerflow (OPF) solver",
         NULL);
 
     gl_global_create("pypower::baseMVA",
@@ -41,6 +37,12 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
         PT_UNITS, "MVA", 
         PT_DESCRIPTION, "Base MVA value",
         NULL);
+
+    // TODO: add support for OPF
+    // gl_global_create("pypower::enable_opf",
+    //     PT_bool, &enable_opf, 
+    //     PT_DESCRIPTION, "Flag to enable optimal powerflow (OPF) solver",
+    //     NULL);
 
     // always return the first class registered
     return bus::oclass;
@@ -89,7 +91,7 @@ EXPORT bool on_init(void)
     busdata = PyList_New(nbus);
     for ( size_t n = 0 ; n < nbus ; n++ )
     {
-        PyList_SET_ITEM(busdata,n,PyList_New(17));
+        PyList_SET_ITEM(busdata,n,PyList_New(enable_opf?17:13));
     }
     PyDict_SetItemString(data,"bus",busdata);
 
@@ -104,7 +106,7 @@ EXPORT bool on_init(void)
     PyDict_SetItemString(data,"gen",gendata);
     for ( size_t n = 0 ; n < ngen ; n++ )
     {
-        PyList_SET_ITEM(gendata,n,PyList_New(25));
+        PyList_SET_ITEM(gendata,n,PyList_New(enable_opf?25:21));
     }
 
     if ( enable_opf )
@@ -139,10 +141,11 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
         PyList_SET_ITEM(pyobj,10,PyLong_FromLong(obj->get_zone()));
         PyList_SET_ITEM(pyobj,11,PyFloat_FromDouble(obj->get_Vmax()));
         PyList_SET_ITEM(pyobj,12,PyFloat_FromDouble(obj->get_Vmin()));
-        PyList_SET_ITEM(pyobj,13,PyFloat_FromDouble(obj->get_lam_P()));
-        PyList_SET_ITEM(pyobj,14,PyFloat_FromDouble(obj->get_lam_Q()));
-        PyList_SET_ITEM(pyobj,15,PyFloat_FromDouble(obj->get_mu_Vmax()));
-        PyList_SET_ITEM(pyobj,16,PyFloat_FromDouble(obj->get_mu_Vmin()));
+        // TODO: add support for OPF
+        // PyList_SET_ITEM(pyobj,13,PyFloat_FromDouble(obj->get_lam_P()));
+        // PyList_SET_ITEM(pyobj,14,PyFloat_FromDouble(obj->get_lam_Q()));
+        // PyList_SET_ITEM(pyobj,15,PyFloat_FromDouble(obj->get_mu_Vmax()));
+        // PyList_SET_ITEM(pyobj,16,PyFloat_FromDouble(obj->get_mu_Vmin()));
     }
     for ( size_t n = 0 ; n < nbranch ; n++ )
     {
@@ -188,10 +191,11 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
         PyList_SET_ITEM(pyobj,18,PyFloat_FromDouble(obj->get_ramp_30()));
         PyList_SET_ITEM(pyobj,19,PyFloat_FromDouble(obj->get_ramp_q()));
         PyList_SET_ITEM(pyobj,20,PyFloat_FromDouble(obj->get_apf()));
-        PyList_SET_ITEM(pyobj,21,PyFloat_FromDouble(obj->get_mu_Pmax()));
-        PyList_SET_ITEM(pyobj,22,PyFloat_FromDouble(obj->get_mu_Pmin()));
-        PyList_SET_ITEM(pyobj,23,PyFloat_FromDouble(obj->get_mu_Qmax()));
-        PyList_SET_ITEM(pyobj,24,PyFloat_FromDouble(obj->get_mu_Qmin()));
+        // TODO: add support for OPF
+        // PyList_SET_ITEM(pyobj,21,PyFloat_FromDouble(obj->get_mu_Pmax()));
+        // PyList_SET_ITEM(pyobj,22,PyFloat_FromDouble(obj->get_mu_Pmin()));
+        // PyList_SET_ITEM(pyobj,23,PyFloat_FromDouble(obj->get_mu_Qmax()));
+        // PyList_SET_ITEM(pyobj,24,PyFloat_FromDouble(obj->get_mu_Qmin()));
     }
 
     // run solver
@@ -268,11 +272,13 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
             obj->set_ramp_30(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,18)));
             obj->set_ramp_q(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,19)));
             obj->set_apf(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,20)));
-            obj->set_mu_Pmax(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,21)));
-            obj->set_mu_Pmin(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,22)));
-            obj->set_mu_Qmax(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,23)));
-            obj->set_mu_Qmin(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,24)));
-
+            if ( enable_opf )
+            {
+                obj->set_mu_Pmax(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,21)));
+                obj->set_mu_Pmin(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,22)));
+                obj->set_mu_Qmax(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,23)));
+                obj->set_mu_Qmin(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,24)));
+            }
         }
     }
     else

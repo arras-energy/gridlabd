@@ -3,6 +3,7 @@ from pypower import runpf
 from numpy import array
 
 with_opf = False
+save_case = True
 
 def solver(pf_case):
 
@@ -12,12 +13,17 @@ def solver(pf_case):
     for name in ['bus','branch','gen']:
         data[name] = array(pf_case[name])
 
+    if save_case:
+        with open("casedata.py","w") as fh:
+            fh.write(str(save_case))
+
     # TODO: call solver
-    runpf(data)
+    _,result = runpf(data)
 
     # copy back to model
-    for name in ['bus','branch','gen']:
-        pf_case[name] = data[name].tolist()
+    if result:
+        for name in ['bus','branch','gen']:
+            pf_case[name] = data[name].tolist()
 
     print(f"solver(pf_case={pf_case})",file=sys.stderr,flush=True)
 
