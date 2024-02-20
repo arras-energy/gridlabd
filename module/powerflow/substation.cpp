@@ -243,6 +243,11 @@ int substation::init(OBJECT *parent)
 			//Flag us as pw_load connected
 			has_parent = 1;
 		}
+		else if ( gl_object_isa(parent,"bus","pypower") )
+		{
+			// TODO: link to pypower bus object
+			throw "substation does not support pypower bus linkage yet";
+		}
 		else	//Parent isn't a pw_load, so we just become a normal node - let it handle things
 		{
 			has_parent = 2;	//Flag as "normal" - let node checks sort out if we are really valid or not
