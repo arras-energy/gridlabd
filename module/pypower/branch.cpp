@@ -32,10 +32,10 @@ branch::branch(MODULE *module)
 			PT_double, "r[pu*Ohm]", get_r_offset(),
 				PT_DESCRIPTION, "resistance (p.u.)",
 
-			PT_double, "x[pu*Ohm]", get_r_offset(),
+			PT_double, "x[pu*Ohm]", get_x_offset(),
 				PT_DESCRIPTION, "reactance (p.u.)",
 
-			PT_double, "b[pu/Ohm]", get_r_offset(),
+			PT_double, "b[pu/Ohm]", get_b_offset(),
 				PT_DESCRIPTION, "total line charging susceptance (p.u.)",
 
 			PT_double, "rateA[MVA]", get_rateA_offset(),
