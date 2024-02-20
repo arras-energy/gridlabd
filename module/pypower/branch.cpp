@@ -72,6 +72,17 @@ branch::branch(MODULE *module)
 
 int branch::create(void) 
 {
+	extern branch *branchlist[MAXENT];
+	extern size_t nbranch;
+	if ( nbranch < MAXENT )
+	{
+		branchlist[nbranch++] = this;
+	}
+	else
+	{
+		throw "maximum branch entities exceeded";
+	}
+
 	return 1; /* return 1 on success, 0 on failure */
 }
 

@@ -93,6 +93,17 @@ gencost::gencost(MODULE *module)
 
 int gencost::create(void) 
 {
+	extern gencost *gencostlist[MAXENT];
+	extern size_t ngencost;
+	if ( ngencost < MAXENT )
+	{
+		gencostlist[ngencost++] = this;
+	}
+	else
+	{
+		throw "maximum gencost entities exceeded";
+	}
+
 	return 1; /* return 1 on success, 0 on failure */
 }
 
