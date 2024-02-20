@@ -89,17 +89,18 @@ gen::gen(MODULE *module)
 			PT_double, "apf", get_apf_offset(),
 				PT_DESCRIPTION, "area participation factor",
 
-			PT_double, "mu_Pmax[pu/MW]", get_mu_Pmax_offset(),
-				PT_DESCRIPTION, "Kuhn-Tucker multiplier on upper Pg limit (p.u./MW)",
+			// TODO: add support for OPF
+			// PT_double, "mu_Pmax[pu/MW]", get_mu_Pmax_offset(),
+			// 	PT_DESCRIPTION, "Kuhn-Tucker multiplier on upper Pg limit (p.u./MW)",
 
-			PT_double, "mu_Pmin[pu/MW]", get_mu_Pmin_offset(),
-				PT_DESCRIPTION, "Kuhn-Tucker multiplier on lower Pg limit (p.u./MW)",
+			// PT_double, "mu_Pmin[pu/MW]", get_mu_Pmin_offset(),
+			// 	PT_DESCRIPTION, "Kuhn-Tucker multiplier on lower Pg limit (p.u./MW)",
 
-			PT_double, "mu_Qmax[pu/MVAr]", get_mu_Qmax_offset(),
-				PT_DESCRIPTION, "Kuhn-Tucker multiplier on upper Qg limit (p.u./MVAr)",
+			// PT_double, "mu_Qmax[pu/MVAr]", get_mu_Qmax_offset(),
+			// 	PT_DESCRIPTION, "Kuhn-Tucker multiplier on upper Qg limit (p.u./MVAr)",
 
-			PT_double, "mu_Qmin[pu/MVAr]", get_mu_Qmin_offset(),
-				PT_DESCRIPTION, "Kuhn-Tucker multiplier on lower Qg limit (p.u./MVAr)",
+			// PT_double, "mu_Qmin[pu/MVAr]", get_mu_Qmin_offset(),
+			// 	PT_DESCRIPTION, "Kuhn-Tucker multiplier on lower Qg limit (p.u./MVAr)",
 
 			NULL)<1){
 				char msg[256];
