@@ -1,2 +1,5 @@
 #define CASE=39
-#include "case.glm"
+#ifexists "../case.glm"
+#define DIR=..
+#endif
+#include "${DIR:-.}/case.glm"
