@@ -1,11 +1,2 @@
 #define CASE=57
-#ifexist ../case${CASE}.py
-#system cp ../case${CASE}.py .
-#endif
-
-#input "case${CASE}.py" -t pypower
-#set savefile=case${CASE}.json
-
-#ifexist "../case${CASE}.glm"
-#on_exit 0 diff -I '^//' -q ../case${CASE}.glm case${CASE}.glm
-#endif
+#include "case.glm"
