@@ -1,18 +1,2 @@
 #define CASE=14
-#ifexist ../case${CASE}.py
-#system cp ../case${CASE}.py .
-#endif
-
-#input "case${CASE}.py" -t pypower
-#set savefile=case${CASE}.json
-
-#ifexist "../case${CASE}.glm"
-#on_exit 0 diff -I '^//' -q ../case${CASE}.glm case${CASE}.glm
-#endif
-
-clock
-{
-    timezone "PST+8PDT";
-    starttime "2020-01-01 00:00:00 PST";
-    stoptime "2021-01-01 00:00:00 PST";
-}
+#include "case.glm"
