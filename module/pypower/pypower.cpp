@@ -27,8 +27,8 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
     new bus(module);
     new branch(module);
     new gen(module);
-    // TODO: add support for OPF
-    // new gencost(module);
+    new gencost(module);
+    // new load(module);
 
     gl_global_create("pypower::version",
         PT_int32, &pypower_version, 
@@ -56,11 +56,10 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
         PT_DESCRIPTION, "Base MVA value",
         NULL);
 
-    // TODO: add support for OPF
-    // gl_global_create("pypower::enable_opf",
-    //     PT_bool, &enable_opf, 
-    //     PT_DESCRIPTION, "Flag to enable optimal powerflow (OPF) solver",
-    //     NULL);
+    gl_global_create("pypower::enable_opf",
+        PT_bool, &enable_opf, 
+        PT_DESCRIPTION, "Flag to enable optimal powerflow (OPF) solver",
+        NULL);
 
     gl_global_create("pypower::stop_on_failure",
         PT_bool, &stop_on_failure, 

@@ -25,10 +25,22 @@ load::load(MODULE *module)
 		if (gl_publish_variable(oclass,
 
 			PT_complex, "S[VA]", get_S_offset(),
-				PT_DESCRIPTION, "complex power demand (VA)",
+				PT_DESCRIPTION, "total power demand (VA)",
+
+			PT_complex, "Z[VA]", get_Z_offset(),
+				PT_DESCRIPTION, "constant impedance load (W)",
+
+			PT_complex, "I[VA]", get_I_offset(),
+				PT_DESCRIPTION, "constant current load (W)",
+
+			PT_complex, "P[VA]", get_P_offset(),
+				PT_DESCRIPTION, "constant power load (W)",
 
 			PT_complex, "V[V]", get_V_offset(),
-				PT_DESCRIPTION, "complex voltage (V)",
+				PT_DESCRIPTION, "bus voltage (V)",
+
+			PT_double, "Vn[V]", get_Vn_offset(),
+				PT_DESCRIPTION, "nominal voltage (V)",
 
 			NULL) < 1 )
 		{

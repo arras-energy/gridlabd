@@ -15,6 +15,7 @@
 #include "branch.h"
 #include "gen.h"
 #include "gencost.h"
+// #include "load.h"
 
 #define MAXENT 30000 // maximum number of bus/branch/gen/gencost entities supported
 

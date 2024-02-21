@@ -1,8 +1,8 @@
 // module/pypower/load.h
 // Copyright (C) 2024 Regents of the Leland Stanford Junior University
 
-#ifndef _BUS_H
-#define _BUS_H
+#ifndef _LOAD_H
+#define _LOAD_H
 
 #include "gridlabd.h"
 
@@ -12,7 +12,11 @@ class load : public gld_object
 public:
 	// published properties
 	GL_ATOMIC(complex,S);
+	GL_ATOMIC(complex,Z)
+	GL_ATOMIC(complex,I);
+	GL_ATOMIC(complex,P);
 	GL_ATOMIC(complex,V);
+	GL_ATOMIC(double,Vn);
 
 public:
 	// event handlers
@@ -27,4 +31,4 @@ public:
 	static load *defaults;
 };
 
-#endif // _BUS_H
+#endif // _LOAD_H
