@@ -243,9 +243,14 @@ int substation::init(OBJECT *parent)
 			//Flag us as pw_load connected
 			has_parent = 1;
 		}
-		else if ( gl_object_isa(parent,"bus","pypower") )
+		else if ( gl_object_isa(parent,"load","pypower") )
 		{
 			// TODO: link to pypower bus object
+			fetch_complex(&pPositiveSequenceVoltage,"V",parent);
+			fetch_complex(&pConstantPowerLoad,"P",parent);
+			fetch_complex(&pConstantCurrentLoad,"I",parent);
+			fetch_complex(&pConstantImpedanceLoad,"Z",parent);
+			fetch_double(&pTransNominalVoltage,"Vn",parent);
 			throw "substation does not support pypower bus linkage yet";
 		}
 		else	//Parent isn't a pw_load, so we just become a normal node - let it handle things
