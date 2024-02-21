@@ -67,22 +67,21 @@ bus::bus(MODULE *module)
 			PT_double, "Vmin", get_Vmin_offset(),
 				PT_DESCRIPTION, "minimum voltage magnitude (p.u.)",
 
-			// TODO: add support for OPF
-			// PT_double, "lam_P", get_lam_P_offset(),
-			// 	PT_DESCRIPTION, "Lagrange multiplier on real power mismatch (u/MW)",
-			// 	PT_ACCESS, PA_REFERENCE,
+			PT_double, "lam_P", get_lam_P_offset(),
+				PT_DESCRIPTION, "Lagrange multiplier on real power mismatch (u/MW)",
+				PT_ACCESS, PA_REFERENCE,
 
-			// PT_double, "lam_Q", get_lam_Q_offset(),
-			// 	PT_DESCRIPTION, "Lagrange multiplier on reactive power mismatch (u/MVAr)",
-			// 	PT_ACCESS, PA_REFERENCE,
+			PT_double, "lam_Q", get_lam_Q_offset(),
+				PT_DESCRIPTION, "Lagrange multiplier on reactive power mismatch (u/MVAr)",
+				PT_ACCESS, PA_REFERENCE,
 
-			// PT_double, "mu_Vmax", get_mu_Vmax_offset(),
-			// 	PT_DESCRIPTION, "Kuhn-Tucker multiplier on upper voltage limit (u/p.u.)",
-			// 	PT_ACCESS, PA_REFERENCE,
+			PT_double, "mu_Vmax", get_mu_Vmax_offset(),
+				PT_DESCRIPTION, "Kuhn-Tucker multiplier on upper voltage limit (u/p.u.)",
+				PT_ACCESS, PA_REFERENCE,
 
-			// PT_double, "mu_Vmin", get_mu_Vmin_offset(),
-			// 	PT_DESCRIPTION, "Kuhn-Tucker multiplier on lower voltage limit (u/p.u.)",
-			// 	PT_ACCESS, PA_REFERENCE,
+			PT_double, "mu_Vmin", get_mu_Vmin_offset(),
+				PT_DESCRIPTION, "Kuhn-Tucker multiplier on lower voltage limit (u/p.u.)",
+				PT_ACCESS, PA_REFERENCE,
 
 			NULL)<1){
 				char msg[256];
