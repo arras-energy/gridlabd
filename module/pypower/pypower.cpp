@@ -323,7 +323,7 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
     }
     else
     { 
-        return maximum_timestep > 0 ? t0+3600 : TS_NEVER;
+        return maximum_timestep > 0 ? t0+maximum_timestep : TS_NEVER;
     }
 }
 
