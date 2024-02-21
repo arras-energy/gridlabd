@@ -5,7 +5,6 @@
 
 EXPORT_CREATE(gencost);
 EXPORT_INIT(gencost);
-EXPORT_COMMIT(gencost);
 
 CLASS *gencost::oclass = NULL;
 gencost *gencost::defaults = NULL;
@@ -110,9 +109,4 @@ int gencost::create(void)
 int gencost::init(OBJECT *parent)
 {
 	return 1;
-}
-
-TIMESTAMP gencost::commit(TIMESTAMP t1, TIMESTAMP t2)
-{
-	return TS_NEVER;
 }

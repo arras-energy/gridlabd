@@ -251,7 +251,7 @@ int substation::init(OBJECT *parent)
 			fetch_complex(&pConstantCurrentLoad,"I",parent);
 			fetch_complex(&pConstantImpedanceLoad,"Z",parent);
 			fetch_double(&pTransNominalVoltage,"Vn",parent);
-			throw "substation does not support pypower bus linkage yet";
+			// throw "substation does not support pypower bus linkage yet";
 		}
 		else	//Parent isn't a pw_load, so we just become a normal node - let it handle things
 		{

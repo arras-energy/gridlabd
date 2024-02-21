@@ -5,7 +5,6 @@
 
 EXPORT_CREATE(gen);
 EXPORT_INIT(gen);
-EXPORT_COMMIT(gen);
 
 CLASS *gen::oclass = NULL;
 gen *gen::defaults = NULL;
@@ -131,9 +130,4 @@ int gen::create(void)
 int gen::init(OBJECT *parent)
 {
 	return 1;
-}
-
-TIMESTAMP gen::commit(TIMESTAMP t1, TIMESTAMP t2)
-{
-	return TS_NEVER;
 }

@@ -1,8 +1,8 @@
 // module/pypower/gencost.h
 // Copyright (C) 2024 Regents of the Leland Stanford Junior University
 
-#ifndef _gencost_H
-#define _gencost_H
+#ifndef _PYPOWER_GENCOST_H
+#define _PYPOWER_GENCOST_H
 
 #include "gridlabd.h"
 
@@ -34,7 +34,6 @@ public:
 	gencost(MODULE *module);
 	int create(void);
 	int init(OBJECT *parent);
-	TIMESTAMP commit(TIMESTAMP t1, TIMESTAMP t2);
 
 public:
 	// internal properties

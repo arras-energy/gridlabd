@@ -4,17 +4,24 @@
 #endif
 #include "${DIR:-.}/case.glm"
 
-// module powerflow;
-// object pypower.load
-// {
-//     name load_1;
-//     parent bus:0;
-//     Vn 12.5 kV;
-//     object substation
-//     {
-//         phases ABC;
-//         nominal_voltage 12.5 kV;
-//     };
-// }
+module pypower
+{
+	maximum_timestep 3600;
+}
+
+module powerflow;
+object pypower.load
+{
+    name load_1;
+    parent bus:0;
+    Vn 12.5 kV;
+    object substation
+    {
+        phases ABC;
+        nominal_voltage 12.5 kV;
+        base_power ${pypower::baseMVA};
+        power_convergence_value 0.01;
+    };
+}
 
 

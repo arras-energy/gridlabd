@@ -1,12 +1,12 @@
 // module/pypower/load.h
 // Copyright (C) 2024 Regents of the Leland Stanford Junior University
 
-#ifndef _LOAD_H
-#define _LOAD_H
+#ifndef _PYPOWER_LOAD_H
+#define _PYPOWER_LOAD_H
 
 #include "gridlabd.h"
 
-class load : public gld_object 
+class load : public gld_object
 {
 
 public:
@@ -23,7 +23,9 @@ public:
 	load(MODULE *module);
 	int create(void);
 	int init(OBJECT *parent);
-	TIMESTAMP commit(TIMESTAMP t1, TIMESTAMP t2);
+	TIMESTAMP presync(TIMESTAMP t1);
+	TIMESTAMP sync(TIMESTAMP t1);
+	TIMESTAMP postsync(TIMESTAMP t1);
 
 public:
 	// internal properties
