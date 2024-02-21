@@ -1,8 +1,8 @@
 // module/pypower/gen.h
 // Copyright (C) 2024 Regents of the Leland Stanford Junior University
 
-#ifndef _gen_H
-#define _gen_H
+#ifndef _PYPOWER_GEN_H
+#define _PYPOWER_GEN_H
 
 #include "gridlabd.h"
 
@@ -42,7 +42,6 @@ public:
 	gen(MODULE *module);
 	int create(void);
 	int init(OBJECT *parent);
-	TIMESTAMP commit(TIMESTAMP t1, TIMESTAMP t2);
 
 public:
 	// internal properties

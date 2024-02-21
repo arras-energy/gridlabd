@@ -5,7 +5,6 @@
 
 EXPORT_CREATE(bus);
 EXPORT_INIT(bus);
-EXPORT_COMMIT(bus);
 
 CLASS *bus::oclass = NULL;
 bus *bus::defaults = NULL;
@@ -104,15 +103,10 @@ int bus::create(void)
 		throw "maximum bus entities exceeded";
 	}
 
-	return 1; /* return 1 on success, 0 on failure */
+	return 1; // return 1 on success, 0 on failure
 }
 
 int bus::init(OBJECT *parent)
 {
-	return 1;
-}
-
-TIMESTAMP bus::commit(TIMESTAMP t1, TIMESTAMP t2)
-{
-	return TS_NEVER;
+	return 1; // return 1 on success, 0 on failure, 2 on retry later
 }

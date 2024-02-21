@@ -5,7 +5,6 @@
 
 EXPORT_CREATE(branch);
 EXPORT_INIT(branch);
-EXPORT_COMMIT(branch);
 
 CLASS *branch::oclass = NULL;
 branch *branch::defaults = NULL;
@@ -89,9 +88,4 @@ int branch::create(void)
 int branch::init(OBJECT *parent)
 {
 	return 1;
-}
-
-TIMESTAMP branch::commit(TIMESTAMP t1, TIMESTAMP t2)
-{
-	return TS_NEVER;
 }

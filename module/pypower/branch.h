@@ -1,8 +1,8 @@
 // module/pypower/branch.h
 // Copyright (C) 2024 Regents of the Leland Stanford Junior University
 
-#ifndef _branch_H
-#define _branch_H
+#ifndef _PYPOWER_BRANCH_H
+#define _PYPOWER_BRANCH_H
 
 #include "gridlabd.h"
 
@@ -30,7 +30,6 @@ public:
 	branch(MODULE *module);
 	int create(void);
 	int init(OBJECT *parent);
-	TIMESTAMP commit(TIMESTAMP t1, TIMESTAMP t2);
 
 public:
 	// internal properties

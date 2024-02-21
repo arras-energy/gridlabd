@@ -5,7 +5,7 @@
 
 EXPORT_CREATE(load);
 EXPORT_INIT(load);
-EXPORT_COMMIT(load);
+EXPORT_SYNC(load);
 
 CLASS *load::oclass = NULL;
 load *load::defaults = NULL;
@@ -15,7 +15,7 @@ load::load(MODULE *module)
 	if (oclass==NULL)
 	{
 		// register to receive notice for first top down. bottom up, and second top down synchronizations
-		oclass = gld_class::create(module,"load",sizeof(load),PC_AUTOLOCK|PC_OBSERVER);
+		oclass = gld_class::create(module,"load",sizeof(load),PC_PRETOPDOWN|PC_POSTTOPDOWN|PC_AUTOLOCK|PC_OBSERVER);
 		if (oclass==NULL)
 			throw "unable to register class load";
 		else
@@ -44,35 +44,53 @@ load::load(MODULE *module)
 
 			NULL) < 1 )
 		{
-				char msg[256];
-				snprintf(msg,sizeof(msg)-1, "unable to publish properties in %s",__FILE__);
-				throw msg;
+				throw "unable to publish load properties";
 		}
 	}
 }
 
 int load::create(void) 
 {
-	extern load *loadlist[MAXENT];
-	extern size_t nload;
-	if ( nload < MAXENT )
-	{
-		loadlist[nload++] = this;
-	}
-	else
-	{
-		throw "maximum load entities exceeded";
-	}
-
-	return 1; /* return 1 on success, 0 on failure */
+	return 1; // return 1 on success, 0 on failure
 }
 
-int load::init(OBJECT *parent)
+int load::init(OBJECT *parent_hdr)
 {
-	return 1;
+	bus *parent = (bus*)get_parent();
+	if ( ! parent->isa("bus","pypower") )
+	{
+		error("parent '%s' is not a pypower bus object",get_parent()->get_name());
+		return 0;
+	}
+
+	if ( Vn == 0.0 )
+	{
+		error("nominal voltage (Vn) not set");
+		return 0;
+	}
+	return 1; // return 1 on success, 0 on failure, 2 on retry later
 }
 
-TIMESTAMP load::commit(TIMESTAMP t1, TIMESTAMP t2)
+TIMESTAMP load::presync(TIMESTAMP t1)
 {
+	// copy data to parent
+	bus *parent = (bus*)get_parent();
+	complex Vpu = V / Vn;
+	S = P + ~(I + Z*Vpu)*Vpu;
+	parent->set_Pd(S.Re());
+	parent->set_Qd(S.Im());
+	return TS_NEVER;
+}
+
+TIMESTAMP load::sync(TIMESTAMP t1)
+{
+	return TS_NEVER;
+}
+
+TIMESTAMP load::postsync(TIMESTAMP t1)
+{
+	// copy data from parent
+	bus *parent = (bus*)get_parent();
+	V.SetPolar(parent->get_Vm()*Vn,parent->get_Va());
 	return TS_NEVER;
 }
