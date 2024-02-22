@@ -2,16 +2,17 @@
 #system cp ../case${CASE}.py .
 #endif
 
-#input "case${CASE}.py" -t pypower
-#set savefile=case${CASE}.json
-
-#ifexist "../case${CASE}.glm"
-#on_exit 0 diff -I '^//' -q ../case${CASE}.glm case${CASE}.glm
-#endif
-
 clock
 {
     timezone "PST+8PDT";
     starttime "2020-01-01 00:00:00 PST";
-    stoptime "2021-01-01 00:00:00 PST";
+    stoptime "2020-02-01 00:00:00 PST";
 }
+
+#input "case${CASE}.py" -t pypower
+
+#gridlabd -C "case${CASE}.glm" -D "starttime=${starttime}" -o "case${CASE}_ref.json"
+
+#set savefile=case${CASE}.json
+
+#on_exit 0 gridlabd compare case${CASE}.json case${CASE}_ref.json

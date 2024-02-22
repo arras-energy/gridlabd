@@ -7,14 +7,13 @@
 module pypower
 {
 	maximum_timestep 3600;
-    enable_opf FALSE;
 }
 
 module powerflow;
 object pypower.load
 {
     name load_1;
-    parent bus:0;
+    parent pp_bus_0;
     Vn 12.5 kV;
     object substation
     {

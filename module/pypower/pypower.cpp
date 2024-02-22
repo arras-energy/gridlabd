@@ -13,6 +13,7 @@ int32 pypower_version = 2;
 bool stop_on_failure = false;
 int32 maximum_timestep = 0; // seconds; 0 = no max ts
 enumeration solver_method = 1;
+bool save_case = false;
 
 EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
 {
@@ -38,9 +39,9 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
     gl_global_create("pypower::solver_method",
         PT_enumeration, &solver_method,
         PT_KEYWORD, "NR", (enumeration)1,
-        PT_KEYWORD, "FD-XB", (enumeration)1,
-        PT_KEYWORD, "FD-BX", (enumeration)1,
-        PT_KEYWORD, "GS", (enumeration)1,
+        PT_KEYWORD, "FD_XB", (enumeration)2,
+        PT_KEYWORD, "FD_BX", (enumeration)3,
+        PT_KEYWORD, "GS", (enumeration)4,
         PT_DESCRIPTION, "PyPower solver method to use",
         NULL
         );
@@ -64,6 +65,11 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
     gl_global_create("pypower::stop_on_failure",
         PT_bool, &stop_on_failure, 
         PT_DESCRIPTION, "Flag to stop simulation on solver failure",
+        NULL);
+
+    gl_global_create("pypower::save_case",
+        PT_bool, &save_case, 
+        PT_DESCRIPTION, "Flag to save pypower case data and results",
         NULL);
 
     // always return the first class registered
@@ -140,6 +146,16 @@ EXPORT bool on_init(void)
             PyList_SetItem(gencostdata,n,PyList_New(4));
         }
     }
+
+    // set options
+    gld_global global_verbose("verbose");
+    PyDict_SetItemString(data,"verbose",global_verbose=="TRUE"?Py_True:Py_False);
+
+    gld_global global_debug("debug");
+    PyDict_SetItemString(data,"debug",global_debug=="TRUE"?Py_True:Py_False);
+
+    PyDict_SetItemString(data,"solver_method",PyLong_FromLong(solver_method));
+    PyDict_SetItemString(data,"save_case",save_case?Py_True:Py_False);
 
     return true;
 }

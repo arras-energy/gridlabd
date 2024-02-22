@@ -15,18 +15,23 @@ def help():
     -i|--ifile <filename>    [REQUIRED] PY input file
     -o|--ofile <filename>    [OPTIONAL] GLM output file name
     -t|--type                type of input file
+    -N|--name                do not autoname objects
 """
 
 def main():
-    filename_py = ''
-    filename_glm = ''
-    py_type = ''
+    filename_py = None
+    filename_glm = None
+    py_type = 'pypower'
+    autoname = True
     try : 
-        opts, args = getopt.getopt(sys.argv[1:],"chi:o:t:",["config","help","ifile=","ofile=","type="])
+        opts, args = getopt.getopt(sys.argv[1:],
+            "chi:o:t:N",
+            ["config","help","ifile=","ofile=","type=","name"],
+            )
     except getopt.GetoptError:
         sys.exit(2)
     if not opts : 
-        print('Missing command arguments')
+        print('ERROR [py2glm.py]: missing command arguments')
         sys.exit(2)
     for opt, arg in opts:
         if opt in ("-c","--config"):
@@ -41,14 +46,37 @@ def main():
             filename_glm = arg
         elif opt in ("-t", "--type"):
             py_type = arg
+        elif opt in ("-N","--name"):
+            autoname = False
         else : 
-            error(f"{opt}={arg} is not a valid option")
+            print(f"ERROR [py2glm.py]: {opt}={arg} is not a valid option")
+            sys.exit(1)
 
-    convert(ifile=filename_py,ofile=filename_glm,py_type=py_type)
+    if not filename_py:
+        print(f"ERROR [py2glm.py]: input filename not specified")
+        sys.exit(1)
 
-def convert(ifile,ofile,py_type):
+    try:
+        convert(
+            ifile = filename_py,
+            ofile = filename_glm,
+            options = dict(
+                py_type = py_type,
+                autoname = autoname),
+            )
+    except Exception as err:
+        print(f"ERROR [py2glm.py]: {err}")
+        import traceback
+        traceback.print_exception(err,file=sys.stderr)
+        sys.exit(9)
+
+def convert(ifile,ofile,options={}):
     """Default converter is pypower case"""
-    assert(py_type in ['pypower',''])
+
+    py_type = options['py_type'] if 'py_type' in options else "pypower"
+    autoname = options['autoname'] if 'autoname' in options else True
+
+    assert(py_type in ['pypower'])
 
     modspec = util.spec_from_file_location("glm",ifile)
     modname = os.path.splitext(ifile)[0]
@@ -69,27 +97,30 @@ module pypower
         for name,spec in dict(
             # pypower properties must be in the save order as the case array columns
             bus = "bus_i type Pd Qd Gs Bs area Vm Va baseKV zone Vmax Vmin",
-            gen = "bus Pg Qg Qmax Qmin Vg mBase status Pmax Pmin Pc1 Pc2 Qc1min Qc1max Qc2min Qc2max ramp_agc ramp_10 ramp_30 ramp_q apf",
+            gen = "bus Pg Qg Qmax Qmin Vg mBase status Pmax Pmin Pc1 Pc2 Qc1min"\
+                + " Qc1max Qc2min Qc2max ramp_agc ramp_10 ramp_30 ramp_q apf",
             branch = "fbus tbus r x b rateA rateB rateC ratio angle status angmin angmax",
         ).items():
             glm.write(f"{NL}//{NL}// {name}{NL}//{NL}")
-            for line in data[name]:
+            for n,line in enumerate(data[name]):
+                oname = f"{NL}    name pp_{name}_{n};" if autoname else ""
                 glm.write(f"""object pypower.{name} 
-{{
+{{{oname}
 {NL.join([f"    {x} {line[n]};" for n,x in enumerate(spec.split())])}
 }}
 """)
         if 'gencost' in data:
             glm.write("\n//\n// gencost\n//\n")
-            for line in data['gencost']:
+            for n,line in enumerate(data['gencost']):
                 model = line[0]
                 startup = line[1]
                 shutdown = line[2]
                 count = line[3]
                 costs = line[4:]
                 assert(len(costs)==count)
+                oname = f"{NL}    name pp_gencost_{n};" if autoname else ""
                 glm.write(f"""object pypower.gencost
-{{
+{{{oname}
     model {int(model)};
     startup {startup};
     shutdown {shutdown};
