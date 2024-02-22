@@ -1,4 +1,4 @@
-#define CASE=57
+#define CASE=14
 #ifexists "../case.glm"
 #define DIR=..
 #endif
@@ -6,5 +6,5 @@
 
 module pypower
 {
-	solver_method NR;
+    enable_opf TRUE;
 }

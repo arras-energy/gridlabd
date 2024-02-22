@@ -3,3 +3,8 @@
 #define DIR=..
 #endif
 #include "${DIR:-.}/case.glm"
+
+module pypower
+{
+	solver_method FD_XB;
+}
