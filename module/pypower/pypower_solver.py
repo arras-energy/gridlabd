@@ -58,7 +58,6 @@ def solver(pf_case):
                 costdata[-1].extend(costs)
             casedata['gencost'] = array(costdata)
 
-
         if save_case:
             with open("pypower_casedata.py","w") as fh:
                 fh.write(str(casedata))
