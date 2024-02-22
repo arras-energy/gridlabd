@@ -225,14 +225,17 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
             PyList_SetItem(pyobj,24,PyFloat_FromDouble(obj->get_mu_Qmin()));
         }
     }
-    for ( size_t n = 0 ; n < ngencost ; n++ )
+    if ( gencostdata )
     {
-        gencost *obj = gencostlist[n];
-        PyObject *pyobj = PyList_GetItem(gencostdata,n);
-        PyList_SetItem(pyobj,0,PyLong_FromLong(obj->get_model()));
-        PyList_SetItem(pyobj,1,PyFloat_FromDouble(obj->get_startup()));
-        PyList_SetItem(pyobj,2,PyFloat_FromDouble(obj->get_shutdown()));
-        PyList_SetItem(pyobj,3,PyUnicode_FromString(obj->get_costs()));
+        for ( size_t n = 0 ; n < ngencost ; n++ )
+        {
+            gencost *obj = gencostlist[n];
+            PyObject *pyobj = PyList_GetItem(gencostdata,n);
+            PyList_SetItem(pyobj,0,PyLong_FromLong(obj->get_model()));
+            PyList_SetItem(pyobj,1,PyFloat_FromDouble(obj->get_startup()));
+            PyList_SetItem(pyobj,2,PyFloat_FromDouble(obj->get_shutdown()));
+            PyList_SetItem(pyobj,3,PyUnicode_FromString(obj->get_costs()));
+        }
     }
 
     // run solver
