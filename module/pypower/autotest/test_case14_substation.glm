@@ -18,10 +18,9 @@ object pypower.load
     object substation
     {
         phases ABC;
+        bustype SWING;
         nominal_voltage 12.5 kV;
         base_power ${pypower::baseMVA};
         power_convergence_value 0.01;
     };
 }
-
-

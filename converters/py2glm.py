@@ -71,12 +71,29 @@ module pypower
             bus = "bus_i type Pd Qd Gs Bs area Vm Va baseKV zone Vmax Vmin",
             gen = "bus Pg Qg Qmax Qmin Vg mBase status Pmax Pmin Pc1 Pc2 Qc1min Qc1max Qc2min Qc2max ramp_agc ramp_10 ramp_30 ramp_q apf",
             branch = "fbus tbus r x b rateA rateB rateC ratio angle status angmin angmax",
-            # gencost = "TODO"
         ).items():
+            glm.write(f"{NL}//{NL}// {name}{NL}//{NL}")
             for line in data[name]:
-                glm.write(f"""object {name} 
+                glm.write(f"""object pypower.{name} 
 {{
 {NL.join([f"    {x} {line[n]};" for n,x in enumerate(spec.split())])}
+}}
+""")
+        if 'gencost' in data:
+            glm.write("\n//\n// gencost\n//\n")
+            for line in data['gencost']:
+                model = line[0]
+                startup = line[1]
+                shutdown = line[2]
+                count = line[3]
+                costs = line[4:]
+                assert(len(costs)==count)
+                glm.write(f"""object pypower.gencost
+{{
+    model {int(model)};
+    startup {startup};
+    shutdown {shutdown};
+    costs "{','.join([str(x) for x in costs])}";
 }}
 """)
 
