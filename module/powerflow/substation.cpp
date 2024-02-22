@@ -245,13 +245,22 @@ int substation::init(OBJECT *parent)
 		}
 		else if ( gl_object_isa(parent,"load","pypower") )
 		{
-			// TODO: link to pypower bus object
 			fetch_complex(&pPositiveSequenceVoltage,"V",parent);
 			fetch_complex(&pConstantPowerLoad,"P",parent);
 			fetch_complex(&pConstantCurrentLoad,"I",parent);
 			fetch_complex(&pConstantImpedanceLoad,"Z",parent);
 			fetch_double(&pTransNominalVoltage,"Vn",parent);
-			// throw "substation does not support pypower bus linkage yet";
+			if (fabs(*pTransNominalVoltage-nominal_voltage)>0.001)
+			{
+				gl_error("pypower load bus nominal voltage (Vn %.1f V) and substation (nominal_voltage %.1f V) do not match to within 0.001 V",*pTransNominalVoltage,nominal_voltage);
+				return 0;
+			}
+			if (bustype != SWING)
+			{
+				warning("substation attached to pypower load and not a SWING bus - forcing bustype SWING");
+				bustype = SWING;
+			}
+			has_parent = 1;
 		}
 		else	//Parent isn't a pw_load, so we just become a normal node - let it handle things
 		{

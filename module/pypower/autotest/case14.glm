@@ -4,7 +4,11 @@ module pypower
     version 2;
     baseMVA 100.0;
 }
-object bus 
+
+//
+// bus
+//
+object pypower.bus 
 {
     bus_i 1.0;
     type 3.0;
@@ -20,7 +24,7 @@ object bus
     Vmax 1.06;
     Vmin 0.94;
 }
-object bus 
+object pypower.bus 
 {
     bus_i 2.0;
     type 2.0;
@@ -36,7 +40,7 @@ object bus
     Vmax 1.06;
     Vmin 0.94;
 }
-object bus 
+object pypower.bus 
 {
     bus_i 3.0;
     type 2.0;
@@ -52,7 +56,7 @@ object bus
     Vmax 1.06;
     Vmin 0.94;
 }
-object bus 
+object pypower.bus 
 {
     bus_i 4.0;
     type 1.0;
@@ -68,7 +72,7 @@ object bus
     Vmax 1.06;
     Vmin 0.94;
 }
-object bus 
+object pypower.bus 
 {
     bus_i 5.0;
     type 1.0;
@@ -84,7 +88,7 @@ object bus
     Vmax 1.06;
     Vmin 0.94;
 }
-object bus 
+object pypower.bus 
 {
     bus_i 6.0;
     type 2.0;
@@ -100,7 +104,7 @@ object bus
     Vmax 1.06;
     Vmin 0.94;
 }
-object bus 
+object pypower.bus 
 {
     bus_i 7.0;
     type 1.0;
@@ -116,7 +120,7 @@ object bus
     Vmax 1.06;
     Vmin 0.94;
 }
-object bus 
+object pypower.bus 
 {
     bus_i 8.0;
     type 2.0;
@@ -132,7 +136,7 @@ object bus
     Vmax 1.06;
     Vmin 0.94;
 }
-object bus 
+object pypower.bus 
 {
     bus_i 9.0;
     type 1.0;
@@ -148,7 +152,7 @@ object bus
     Vmax 1.06;
     Vmin 0.94;
 }
-object bus 
+object pypower.bus 
 {
     bus_i 10.0;
     type 1.0;
@@ -164,7 +168,7 @@ object bus
     Vmax 1.06;
     Vmin 0.94;
 }
-object bus 
+object pypower.bus 
 {
     bus_i 11.0;
     type 1.0;
@@ -180,7 +184,7 @@ object bus
     Vmax 1.06;
     Vmin 0.94;
 }
-object bus 
+object pypower.bus 
 {
     bus_i 12.0;
     type 1.0;
@@ -196,7 +200,7 @@ object bus
     Vmax 1.06;
     Vmin 0.94;
 }
-object bus 
+object pypower.bus 
 {
     bus_i 13.0;
     type 1.0;
@@ -212,7 +216,7 @@ object bus
     Vmax 1.06;
     Vmin 0.94;
 }
-object bus 
+object pypower.bus 
 {
     bus_i 14.0;
     type 1.0;
@@ -228,7 +232,11 @@ object bus
     Vmax 1.06;
     Vmin 0.94;
 }
-object gen 
+
+//
+// gen
+//
+object pypower.gen 
 {
     bus 1.0;
     Pg 232.4;
@@ -252,7 +260,7 @@ object gen
     ramp_q 0.0;
     apf 0.0;
 }
-object gen 
+object pypower.gen 
 {
     bus 2.0;
     Pg 40.0;
@@ -276,7 +284,7 @@ object gen
     ramp_q 0.0;
     apf 0.0;
 }
-object gen 
+object pypower.gen 
 {
     bus 3.0;
     Pg 0.0;
@@ -300,7 +308,7 @@ object gen
     ramp_q 0.0;
     apf 0.0;
 }
-object gen 
+object pypower.gen 
 {
     bus 6.0;
     Pg 0.0;
@@ -324,7 +332,7 @@ object gen
     ramp_q 0.0;
     apf 0.0;
 }
-object gen 
+object pypower.gen 
 {
     bus 8.0;
     Pg 0.0;
@@ -348,7 +356,11 @@ object gen
     ramp_q 0.0;
     apf 0.0;
 }
-object branch 
+
+//
+// branch
+//
+object pypower.branch 
 {
     fbus 1.0;
     tbus 2.0;
@@ -364,7 +376,7 @@ object branch
     angmin -360.0;
     angmax 360.0;
 }
-object branch 
+object pypower.branch 
 {
     fbus 1.0;
     tbus 5.0;
@@ -380,7 +392,7 @@ object branch
     angmin -360.0;
     angmax 360.0;
 }
-object branch 
+object pypower.branch 
 {
     fbus 2.0;
     tbus 3.0;
@@ -396,7 +408,7 @@ object branch
     angmin -360.0;
     angmax 360.0;
 }
-object branch 
+object pypower.branch 
 {
     fbus 2.0;
     tbus 4.0;
@@ -412,7 +424,7 @@ object branch
     angmin -360.0;
     angmax 360.0;
 }
-object branch 
+object pypower.branch 
 {
     fbus 2.0;
     tbus 5.0;
@@ -428,7 +440,7 @@ object branch
     angmin -360.0;
     angmax 360.0;
 }
-object branch 
+object pypower.branch 
 {
     fbus 3.0;
     tbus 4.0;
@@ -444,7 +456,7 @@ object branch
     angmin -360.0;
     angmax 360.0;
 }
-object branch 
+object pypower.branch 
 {
     fbus 4.0;
     tbus 5.0;
@@ -460,7 +472,7 @@ object branch
     angmin -360.0;
     angmax 360.0;
 }
-object branch 
+object pypower.branch 
 {
     fbus 4.0;
     tbus 7.0;
@@ -476,7 +488,7 @@ object branch
     angmin -360.0;
     angmax 360.0;
 }
-object branch 
+object pypower.branch 
 {
     fbus 4.0;
     tbus 9.0;
@@ -492,7 +504,7 @@ object branch
     angmin -360.0;
     angmax 360.0;
 }
-object branch 
+object pypower.branch 
 {
     fbus 5.0;
     tbus 6.0;
@@ -508,7 +520,7 @@ object branch
     angmin -360.0;
     angmax 360.0;
 }
-object branch 
+object pypower.branch 
 {
     fbus 6.0;
     tbus 11.0;
@@ -524,7 +536,7 @@ object branch
     angmin -360.0;
     angmax 360.0;
 }
-object branch 
+object pypower.branch 
 {
     fbus 6.0;
     tbus 12.0;
@@ -540,7 +552,7 @@ object branch
     angmin -360.0;
     angmax 360.0;
 }
-object branch 
+object pypower.branch 
 {
     fbus 6.0;
     tbus 13.0;
@@ -556,7 +568,7 @@ object branch
     angmin -360.0;
     angmax 360.0;
 }
-object branch 
+object pypower.branch 
 {
     fbus 7.0;
     tbus 8.0;
@@ -572,7 +584,7 @@ object branch
     angmin -360.0;
     angmax 360.0;
 }
-object branch 
+object pypower.branch 
 {
     fbus 7.0;
     tbus 9.0;
@@ -588,7 +600,7 @@ object branch
     angmin -360.0;
     angmax 360.0;
 }
-object branch 
+object pypower.branch 
 {
     fbus 9.0;
     tbus 10.0;
@@ -604,7 +616,7 @@ object branch
     angmin -360.0;
     angmax 360.0;
 }
-object branch 
+object pypower.branch 
 {
     fbus 9.0;
     tbus 14.0;
@@ -620,7 +632,7 @@ object branch
     angmin -360.0;
     angmax 360.0;
 }
-object branch 
+object pypower.branch 
 {
     fbus 10.0;
     tbus 11.0;
@@ -636,7 +648,7 @@ object branch
     angmin -360.0;
     angmax 360.0;
 }
-object branch 
+object pypower.branch 
 {
     fbus 12.0;
     tbus 13.0;
@@ -652,7 +664,7 @@ object branch
     angmin -360.0;
     angmax 360.0;
 }
-object branch 
+object pypower.branch 
 {
     fbus 13.0;
     tbus 14.0;
@@ -667,4 +679,43 @@ object branch
     status 1.0;
     angmin -360.0;
     angmax 360.0;
+}
+
+//
+// gencost
+//
+object pypower.gencost
+{
+    model 2;
+    startup 0.0;
+    shutdown 0.0;
+    costs "0.0430293,20.0,0.0";
+}
+object pypower.gencost
+{
+    model 2;
+    startup 0.0;
+    shutdown 0.0;
+    costs "0.25,20.0,0.0";
+}
+object pypower.gencost
+{
+    model 2;
+    startup 0.0;
+    shutdown 0.0;
+    costs "0.01,40.0,0.0";
+}
+object pypower.gencost
+{
+    model 2;
+    startup 0.0;
+    shutdown 0.0;
+    costs "0.01,40.0,0.0";
+}
+object pypower.gencost
+{
+    model 2;
+    startup 0.0;
+    shutdown 0.0;
+    costs "0.01,40.0,0.0";
 }

@@ -8,26 +8,15 @@
 
 class gencost : public gld_object 
 {
+private:
+	typedef enum {CM_UNKNOWN=0,CM_PIECEWISE=1,CM_POLYNOMIAL} COSTMODEL;
 
 public:
 	// published properties
-	GL_ATOMIC(int32,gencost_i);
-	GL_ATOMIC(enumeration,type);
-	GL_ATOMIC(double,Pd);
-	GL_ATOMIC(double,Qd);
-	GL_ATOMIC(double,Gs);
-	GL_ATOMIC(double,Bs);
-	GL_ATOMIC(int32,area);
-	GL_ATOMIC(double,baseKV);
-	GL_ATOMIC(double,Vm);
-	GL_ATOMIC(double,Va);
-	GL_ATOMIC(int32,zone);
-	GL_ATOMIC(double,Vmax);
-	GL_ATOMIC(double,Vmin);
-	GL_ATOMIC(double,lam_P);
-	GL_ATOMIC(double,lam_Q);
-	GL_ATOMIC(double,mu_Vmax);
-	GL_ATOMIC(double,mu_Vmin);
+	GL_ATOMIC(enumeration,model);
+	GL_ATOMIC(double,startup);
+	GL_ATOMIC(double,shutdown);
+	GL_ATOMIC(char1024,costs);
 
 public:
 	// event handlers

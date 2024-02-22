@@ -133,10 +133,12 @@ EXPORT bool on_init(void)
 
     if ( enable_opf )
     {
-        // TODO: required for OPF solution
-        throw "OPF not supported yet";
-        // gencostdata = PyList_New(7); 
-        // PyDict_SetItemString(data,"gencost",gencostdata);
+        gencostdata = PyList_New(ngencost); 
+        PyDict_SetItemString(data,"gencost",gencostdata);
+        for ( size_t n = 0; n < ngencost ; n++ )
+        {
+            PyList_SetItem(gencostdata,n,PyList_New(4));
+        }
     }
 
     return true;
@@ -222,6 +224,15 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
             PyList_SetItem(pyobj,23,PyFloat_FromDouble(obj->get_mu_Qmax()));
             PyList_SetItem(pyobj,24,PyFloat_FromDouble(obj->get_mu_Qmin()));
         }
+    }
+    for ( size_t n = 0 ; n < ngencost ; n++ )
+    {
+        gencost *obj = gencostlist[n];
+        PyObject *pyobj = PyList_GetItem(gencostdata,n);
+        PyList_SetItem(pyobj,0,PyLong_FromLong(obj->get_model()));
+        PyList_SetItem(pyobj,1,PyFloat_FromDouble(obj->get_startup()));
+        PyList_SetItem(pyobj,2,PyFloat_FromDouble(obj->get_shutdown()));
+        PyList_SetItem(pyobj,3,PyUnicode_FromString(obj->get_costs()));
     }
 
     // run solver

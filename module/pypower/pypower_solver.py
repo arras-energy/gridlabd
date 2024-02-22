@@ -2,10 +2,9 @@
 # Copyright (C) 2024 Regents of the Leland Stanford Junior University
 
 import os, sys
-from pypower.api import case14, ppoption, runpf
+from pypower.api import case14, ppoption, runpf, runopf
 from numpy import array
 
-with_opf = False
 save_case = False
 debug = False
 verbose = False
@@ -49,23 +48,26 @@ def solver(pf_case):
 
         # copy from model
         for name in ['bus','gen','branch']:
-            casedata[name] = array(pf_case[name])
+            if name in pf_case:
+                casedata[name] = array(pf_case[name])
+        if 'gencost' in pf_case:
+            costdata = []
+            for cost in pf_case['gencost']:
+                costs = [float(x) for x in cost[3].split(',')]
+                costdata.append([int(cost[0]),cost[1],cost[2],len(costs)])
+                costdata[-1].extend(costs)
+            casedata['gencost'] = array(costdata)
+
 
         if save_case:
             with open("pypower_casedata.py","w") as fh:
                 fh.write(str(casedata))
 
-        # TODO: call solver
-        # print(f"solver(pf_case={pf_case})",file=sys.stderr,flush=True)
-        # stdout = sys.stdout
-        # stderr = sys.stderr
-        # devnull = open("/dev/null","w")
-        # sys.stdout = devnull
-        # sys.stderr = devnull
-        results,success = runpf(casedata,options)
-        # sys.stdout = stdout
-        # sys.stderr = stderr
-        # devnull.close()
+        if 'gencost' in casedata:
+            results = runopf(casedata,options) 
+            success = results['success']
+        else:
+            results,success = runpf(casedata,options) 
 
         if save_case:
             with open("pypower_results.py","w") as fh:
@@ -84,9 +86,13 @@ def solver(pf_case):
             # print("  --> FAILED:",results,file=sys.stderr,flush=True)
             return False
 
-    except Exception as err:
+    except Exception:
 
-        print("  --> EXCEPTION:",err,file=sys.stderr,flush=True)
+        e_type,e_value,e_trace = sys.exc_info()
+        print("  --> EXCEPTION:",e_type,e_value,file=sys.stderr,flush=True)
+        if debug:
+            import traceback
+            traceback.print_tb(e_trace,file=sys.stderr)
 
         return False
 
