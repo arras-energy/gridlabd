@@ -160,85 +160,88 @@ EXPORT bool on_init(void)
     return true;
 }
 
+// conditional send (only if value differs or is not set yet)
+#define SEND(INDEX,NAME,FROM,TO) if ( PyList_GET_ITEM(pyobj,INDEX) == NULL || Py##TO##_As##FROM(PyList_GET_ITEM(pyobj,INDEX)) ) PyList_SetItem(pyobj,INDEX,Py##TO##_From##FROM(obj->get_##NAME()));
+
 EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
 {
 
-    // copy values out to solver
+    // send values out to solver
     for ( size_t n = 0 ; n < nbus ; n++ )
     {
         bus *obj = buslist[n];
         PyObject *pyobj = PyList_GetItem(busdata,n);
-        PyList_SetItem(pyobj,0,PyLong_FromLong(obj->get_bus_i()));
-        PyList_SetItem(pyobj,1,PyLong_FromLong(obj->get_type()));
-        PyList_SetItem(pyobj,2,PyFloat_FromDouble(obj->get_Pd()));
-        PyList_SetItem(pyobj,3,PyFloat_FromDouble(obj->get_Qd()));
-        PyList_SetItem(pyobj,4,PyFloat_FromDouble(obj->get_Gs()));
-        PyList_SetItem(pyobj,5,PyFloat_FromDouble(obj->get_Bs()));
-        PyList_SetItem(pyobj,6,PyLong_FromLong(obj->get_area()));
-        PyList_SetItem(pyobj,7,PyFloat_FromDouble(obj->get_Vm()));
-        PyList_SetItem(pyobj,8,PyFloat_FromDouble(obj->get_Va()));
-        PyList_SetItem(pyobj,9,PyFloat_FromDouble(obj->get_baseKV()));
-        PyList_SetItem(pyobj,10,PyLong_FromLong(obj->get_zone()));
-        PyList_SetItem(pyobj,11,PyFloat_FromDouble(obj->get_Vmax()));
-        PyList_SetItem(pyobj,12,PyFloat_FromDouble(obj->get_Vmin()));
+        SEND(0,bus_i,Double,Float)
+        SEND(1,type,Long,Long)
+        SEND(2,Pd,Double,Float)
+        SEND(3,Qd,Double,Float)
+        SEND(4,Gs,Double,Float)
+        SEND(5,Bs,Double,Float)
+        SEND(6,area,Long,Long)
+        SEND(7,Vm,Double,Float)
+        SEND(8,Va,Double,Float)
+        SEND(9,baseKV,Double,Float)
+        SEND(10,zone,Long,Long)
+        SEND(11,Vmax,Double,Float)
+        SEND(12,Vmin,Double,Float)
         if ( enable_opf )
         {
-            PyList_SetItem(pyobj,13,PyFloat_FromDouble(obj->get_lam_P()));
-            PyList_SetItem(pyobj,14,PyFloat_FromDouble(obj->get_lam_Q()));
-            PyList_SetItem(pyobj,15,PyFloat_FromDouble(obj->get_mu_Vmax()));
-            PyList_SetItem(pyobj,16,PyFloat_FromDouble(obj->get_mu_Vmin()));
+            SEND(13,lam_P,Double,Float)
+            SEND(14,lam_Q,Double,Float)
+            SEND(15,mu_Vmax,Double,Float)
+            SEND(16,mu_Vmin,Double,Float)
         }
     }
     for ( size_t n = 0 ; n < nbranch ; n++ )
     {
         branch *obj = branchlist[n];
         PyObject *pyobj = PyList_GetItem(branchdata,n);
-        PyList_SetItem(pyobj,0,PyLong_FromLong(obj->get_fbus()));
-        PyList_SetItem(pyobj,1,PyLong_FromLong(obj->get_tbus()));
-        PyList_SetItem(pyobj,2,PyFloat_FromDouble(obj->get_r()));
-        PyList_SetItem(pyobj,3,PyFloat_FromDouble(obj->get_x()));
-        PyList_SetItem(pyobj,4,PyFloat_FromDouble(obj->get_b()));
-        PyList_SetItem(pyobj,5,PyFloat_FromDouble(obj->get_rateA()));
-        PyList_SetItem(pyobj,6,PyFloat_FromDouble(obj->get_rateB()));
-        PyList_SetItem(pyobj,7,PyFloat_FromDouble(obj->get_rateC()));
-        PyList_SetItem(pyobj,8,PyFloat_FromDouble(obj->get_ratio()));
-        PyList_SetItem(pyobj,9,PyFloat_FromDouble(obj->get_angle()));
-        PyList_SetItem(pyobj,10,PyLong_FromLong(obj->get_status()));
-        PyList_SetItem(pyobj,11,PyFloat_FromDouble(obj->get_angmin()));
-        PyList_SetItem(pyobj,12,PyFloat_FromDouble(obj->get_angmax()));
+        SEND(0,fbus,Long,Long)
+        SEND(1,tbus,Long,Long)
+        SEND(2,r,Double,Float)
+        SEND(3,x,Double,Float)
+        SEND(4,b,Double,Float)
+        SEND(5,rateA,Double,Float)
+        SEND(6,rateB,Double,Float)
+        SEND(7,rateC,Double,Float)
+        SEND(8,ratio,Double,Float)
+        SEND(9,angle,Double,Float)
+        SEND(10,status,Long,Long)
+        SEND(11,angmin,Double,Float)
+        SEND(12,angmax,Double,Float)
 
     }
     for ( size_t n = 0 ; n < ngen ; n++ )
     {
         gen *obj = genlist[n];
         PyObject *pyobj = PyList_GetItem(gendata,n);
-        PyList_SetItem(pyobj,0,PyLong_FromLong(obj->get_bus()));
-        PyList_SetItem(pyobj,1,PyFloat_FromDouble(obj->get_Pg()));
-        PyList_SetItem(pyobj,2,PyFloat_FromDouble(obj->get_Qg()));
-        PyList_SetItem(pyobj,3,PyFloat_FromDouble(obj->get_Qmax()));
-        PyList_SetItem(pyobj,4,PyFloat_FromDouble(obj->get_Qmin()));
-        PyList_SetItem(pyobj,5,PyFloat_FromDouble(obj->get_Vg()));
-        PyList_SetItem(pyobj,6,PyFloat_FromDouble(obj->get_mBase()));
-        PyList_SetItem(pyobj,7,PyLong_FromLong(obj->get_status()));
-        PyList_SetItem(pyobj,8,PyFloat_FromDouble(obj->get_Pmax()));
-        PyList_SetItem(pyobj,9,PyFloat_FromDouble(obj->get_Pmin()));
-        PyList_SetItem(pyobj,10,PyFloat_FromDouble(obj->get_Pc1()));
-        PyList_SetItem(pyobj,11,PyFloat_FromDouble(obj->get_Pc2()));
-        PyList_SetItem(pyobj,12,PyFloat_FromDouble(obj->get_Qc1min()));
-        PyList_SetItem(pyobj,13,PyFloat_FromDouble(obj->get_Qc1max()));
-        PyList_SetItem(pyobj,14,PyFloat_FromDouble(obj->get_Qc2min()));
-        PyList_SetItem(pyobj,15,PyFloat_FromDouble(obj->get_Qc2max()));
-        PyList_SetItem(pyobj,16,PyFloat_FromDouble(obj->get_ramp_agc()));
-        PyList_SetItem(pyobj,17,PyFloat_FromDouble(obj->get_ramp_10()));
-        PyList_SetItem(pyobj,18,PyFloat_FromDouble(obj->get_ramp_30()));
-        PyList_SetItem(pyobj,19,PyFloat_FromDouble(obj->get_ramp_q()));
-        PyList_SetItem(pyobj,20,PyFloat_FromDouble(obj->get_apf()));
+        SEND(0,bus,Long,Long)
+        SEND(1,Pg,Double,Float)
+        SEND(2,Qg,Double,Float)
+        SEND(3,Qmax,Double,Float)
+        SEND(4,Qmin,Double,Float)
+        SEND(5,Vg,Double,Float)
+        SEND(6,mBase,Double,Float)
+        SEND(7,status,Long,Long)
+        SEND(8,Pmax,Double,Float)
+        SEND(9,Pmin,Double,Float)
+        SEND(10,Pc1,Double,Float)
+        SEND(11,Pc2,Double,Float)
+        SEND(12,Qc1min,Double,Float)
+        SEND(13,Qc1max,Double,Float)
+        SEND(14,Qc2min,Double,Float)
+        SEND(15,Qc2max,Double,Float)
+        SEND(16,ramp_agc,Double,Float)
+        SEND(17,ramp_10,Double,Float)
+        SEND(18,ramp_30,Double,Float)
+        SEND(19,ramp_q,Double,Float)
+        SEND(20,apf,Double,Float)
         if ( enable_opf )
         {
-            PyList_SetItem(pyobj,21,PyFloat_FromDouble(obj->get_mu_Pmax()));
-            PyList_SetItem(pyobj,22,PyFloat_FromDouble(obj->get_mu_Pmin()));
-            PyList_SetItem(pyobj,23,PyFloat_FromDouble(obj->get_mu_Qmax()));
-            PyList_SetItem(pyobj,24,PyFloat_FromDouble(obj->get_mu_Qmin()));
+            SEND(21,mu_Pmax,Double,Float)
+            SEND(22,mu_Pmin,Double,Float)
+            SEND(23,mu_Qmax,Double,Float)
+            SEND(24,mu_Qmin,Double,Float)
         }
     }
     if ( gencostdata )
@@ -247,17 +250,27 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
         {
             gencost *obj = gencostlist[n];
             PyObject *pyobj = PyList_GetItem(gencostdata,n);
-            PyList_SetItem(pyobj,0,PyLong_FromLong(obj->get_model()));
-            PyList_SetItem(pyobj,1,PyFloat_FromDouble(obj->get_startup()));
-            PyList_SetItem(pyobj,2,PyFloat_FromDouble(obj->get_shutdown()));
-            PyList_SetItem(pyobj,3,PyUnicode_FromString(obj->get_costs()));
+            SEND(0,model,Long,Long)
+            SEND(1,startup,Double,Float)
+            SEND(2,shutdown,Double,Float)
+            if ( PyList_GET_ITEM(pyobj,3) == NULL || strcmp((const char*)PyUnicode_DATA(PyList_GET_ITEM(pyobj,3)),obj->get_costs())!=0 )
+            {
+                PyList_SetItem(pyobj,3,PyUnicode_FromString(obj->get_costs()));
+            }
         }
     }
 
     // run solver
+    PyErr_Clear();
     PyObject *result = PyObject_CallOneArg(solver,data);
-    if ( result && Py_IsTrue(result) )
+
+    // receive results
+    if ( result && PyDict_Check(result) )
     {
+        PyObject *busdata = PyDict_GetItemString(result,"bus");
+        PyObject *branchdata = PyDict_GetItemString(result,"branch");
+        PyObject *gendata = PyDict_GetItemString(result,"gen");
+
         // copy values back from solver
         for ( size_t n = 0 ; n < nbus ; n++ )
         {
@@ -346,6 +359,7 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
         Py_DECREF(result);
     }
 
+    PyErr_Clear();
     if ( stop_on_failure )
     {
         return TS_INVALID;

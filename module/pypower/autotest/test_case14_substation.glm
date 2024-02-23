@@ -2,11 +2,10 @@
 #ifexists "../case.glm"
 #define DIR=..
 #endif
-#include "${DIR:-.}/case.glm"
 
 module pypower
 {
-	maximum_timestep 3600;
+    maximum_timestep 3600;
 }
 
 module powerflow;
@@ -24,3 +23,6 @@ object pypower.load
         power_convergence_value 0.01;
     };
 }
+
+#include "${DIR:-.}/case.glm"
+

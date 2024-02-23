@@ -88,7 +88,7 @@ def solver(pf_case):
             # print("  --> SUCCESS:",results,file=sys.stderr,flush=True)
             for name in ['bus','gen','branch']:
                 pf_case[name] = results[name].tolist()
-            return True
+            return pf_case
 
         else:
             
@@ -98,10 +98,11 @@ def solver(pf_case):
     except Exception:
 
         e_type,e_value,e_trace = sys.exc_info()
-        print("  --> EXCEPTION:",e_type,e_value,file=sys.stderr,flush=True)
+
+        print("EXCEPTION [pypower_solver.py]:",e_type,e_value,file=sys.stderr,flush=True)
         if debug:
             import traceback
-            traceback.print_tb(e_trace,file=sys.stderr)
+            traceback.print_exception(e_type,e_value,e_trace,file=sys.stderr)
 
         return False
 
