@@ -358,9 +358,12 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
     {
         Py_DECREF(result);
     }
+    else
+    {
+        PyErr_Clear();
+    }
 
-    PyErr_Clear();
-    if ( stop_on_failure )
+    if ( result == NULL && stop_on_failure )
     {
         return TS_INVALID;
     }
