@@ -100,10 +100,9 @@ gen::gen(MODULE *module)
 			PT_double, "mu_Qmin[pu/MVAr]", get_mu_Qmin_offset(),
 				PT_DESCRIPTION, "Kuhn-Tucker multiplier on lower Qg limit (p.u./MVAr)",
 
-			NULL)<1){
-				char msg[256];
-				snprintf(msg,sizeof(msg)-1, "unable to publish properties in %s",__FILE__);
-				throw msg;
+			NULL)<1)
+		{
+				throw "unable to publish gen properties";
 		}
 	}
 }

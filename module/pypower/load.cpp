@@ -82,7 +82,7 @@ int load::init(OBJECT *parent_hdr)
 
 TIMESTAMP load::presync(TIMESTAMP t1)
 {
-	// copy data to parent
+	// calculate load based on voltage and ZIP values
 	complex Vpu = V / Vn;
 	switch ( get_status() )
 	{
@@ -97,12 +97,15 @@ TIMESTAMP load::presync(TIMESTAMP t1)
 		S = complex(0,0);
 		break;
 	}
+
+	// copy load data to parent
 	if ( S.Re() != 0.0 && S.Im() != 0.0 )
 	{
 		bus *parent = (bus*)get_parent();
 		if ( parent )
 		{
-			parent->set_total_load(parent->get_total_load() + S);
+			parent->set_Pd(parent->get_Pd()+S.Re());
+			parent->set_Qd(parent->get_Qd()+S.Im());
 		}
 	}
 	return TS_NEVER;
@@ -110,12 +113,13 @@ TIMESTAMP load::presync(TIMESTAMP t1)
 
 TIMESTAMP load::sync(TIMESTAMP t1)
 {
+	exception("invalid sync call");
 	return TS_NEVER;
 }
 
 TIMESTAMP load::postsync(TIMESTAMP t1)
 {
-	// copy data from parent
+	// copy voltage data from parent
 	if ( get_status() != LS_OFFLINE )
 	{
 		bus *parent = (bus*)get_parent();

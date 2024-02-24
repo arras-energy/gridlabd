@@ -28,6 +28,9 @@ public:
 	GL_ATOMIC(char256,substation_1);
 	GL_ATOMIC(char256,substation_2);
 
+private:
+	bool is_dynamic; // true if parent is a gen otherwise false
+
 public:
 	// event handlers
 	powerplant(MODULE *module);

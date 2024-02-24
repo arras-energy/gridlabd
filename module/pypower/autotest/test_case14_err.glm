@@ -25,5 +25,4 @@ clock
 module pypower
 {
 	solver_method GS;
-	save_case TRUE;
 }

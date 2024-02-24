@@ -5,7 +5,7 @@
 
 EXPORT_CREATE(bus);
 EXPORT_INIT(bus);
-EXPORT_PRECOMMIT(bus);
+EXPORT_SYNC(bus);
 
 CLASS *bus::oclass = NULL;
 bus *bus::defaults = NULL;
@@ -15,7 +15,7 @@ bus::bus(MODULE *module)
 	if (oclass==NULL)
 	{
 		// register to receive notice for first top down. bottom up, and second top down synchronizations
-		oclass = gld_class::create(module,"bus",sizeof(bus),PC_AUTOLOCK|PC_OBSERVER);
+		oclass = gld_class::create(module,"bus",sizeof(bus),PC_PRETOPDOWN|PC_AUTOLOCK|PC_OBSERVER);
 		if (oclass==NULL)
 			throw "unable to register class bus";
 		else
@@ -25,6 +25,9 @@ bus::bus(MODULE *module)
 		if (gl_publish_variable(oclass,
 			PT_int32, "bus_i", get_bus_i_offset(),
 				PT_DESCRIPTION, "bus number (1 to 29997)",
+
+			PT_complex, "S[MVA]", get_Pd_offset(),
+				PT_DESCRIPTION, "base load demand not counting child objects, copied from Pd,Qd by default (MVA)",
 
 			PT_enumeration, "type", get_type_offset(),
 				PT_DESCRIPTION, "bus type (1 = PQ, 2 = PV, 3 = ref, 4 = isolated)",
@@ -83,10 +86,9 @@ bus::bus(MODULE *module)
 				PT_DESCRIPTION, "Kuhn-Tucker multiplier on lower voltage limit (u/p.u.)",
 				PT_ACCESS, PA_REFERENCE,
 
-			NULL)<1){
-				char msg[256];
-				snprintf(msg,sizeof(msg)-1, "unable to publish properties in %s",__FILE__);
-				throw msg;
+			NULL)<1)
+		{
+				throw "unable to publish bus properties";
 		}
 	}
 }
@@ -109,11 +111,32 @@ int bus::create(void)
 
 int bus::init(OBJECT *parent)
 {
+	// copy demand to base load if baseload not set
+	if ( S.Re() == 0.0 && S.Im() == 0.0 )
+	{
+		S.Re() = Pd;
+		S.Im() = Qd;
+	}
+
 	return 1; // return 1 on success, 0 on failure, 2 on retry later
 }
 
-TIMESTAMP bus::precommit(TIMESTAMP t0)
+TIMESTAMP bus::presync(TIMESTAMP t0)
 {
-	total_load = complex(Pd,Qd);
+	// reset to base load
+	Pd = S.Re();
+	Qd = S.Im();
+	return TS_NEVER;
+}
+
+TIMESTAMP bus::sync(TIMESTAMP t0)
+{
+	exception("invalid sync call");
+	return TS_NEVER;
+}
+
+TIMESTAMP bus::postsync(TIMESTAMP t0)
+{
+	exception("invalid postsync call");
 	return TS_NEVER;
 }

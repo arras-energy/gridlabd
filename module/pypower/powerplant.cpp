@@ -101,10 +101,21 @@ int powerplant::create(void)
 int powerplant::init(OBJECT *parent_hdr)
 {
 	gen *parent = (gen*)get_parent();
-	if ( parent && ! parent->isa("gen","pypower") )
+	if ( parent ) 
 	{
-		error("parent '%s' is not a pypower gen object",get_parent()->get_name());
-		return 0;
+		if ( parent->isa("gen","pypower") )
+		{
+			is_dynamic = TRUE;
+		}
+		else if ( parent->isa("bus","pypower") )
+		{
+			is_dynamic = FALSE;
+		}
+		else
+		{
+			error("parent '%s' is not a pypower bus or gen object",get_parent()->get_name());
+			return 0;
+		}
 	}
 
 	return 1; // return 1 on success, 0 on failure, 2 on retry later
@@ -113,11 +124,15 @@ int powerplant::init(OBJECT *parent_hdr)
 TIMESTAMP powerplant::presync(TIMESTAMP t1)
 {
 	// copy data to parent
-	// bus *parent = (bus*)get_parent();
-	// complex Vpu = V / Vn;
-	// S = P + ~(I + Z*Vpu)*Vpu;
-	// parent->set_Pd(S.Re());
-	// parent->set_Qd(S.Im());
+	if ( is_dynamic ) // gen parent
+	{
+		throw "TODO";
+	}
+	else // bus parent
+	{
+		bus *parent = (bus*)get_parent();
+		parent->set_Pd(parent->get_Pd()-operating_capacity);
+	}
 	return TS_NEVER;
 }
 
@@ -128,8 +143,14 @@ TIMESTAMP powerplant::sync(TIMESTAMP t1)
 
 TIMESTAMP powerplant::postsync(TIMESTAMP t1)
 {
-	// copy data from parent
-	// bus *parent = (bus*)get_parent();
-	// V.SetPolar(parent->get_Vm()*Vn,parent->get_Va());
+	if ( is_dynamic ) // gen parent
+	{
+		throw "TODO";
+	}
+	else
+	{
+		// copy data from parent
+		// bus *parent = (bus*)get_parent();
+	}
 	return TS_NEVER;
 }

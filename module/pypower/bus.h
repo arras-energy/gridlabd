@@ -28,9 +28,7 @@ public:
 	GL_ATOMIC(double,lam_Q);
 	GL_ATOMIC(double,mu_Vmax);
 	GL_ATOMIC(double,mu_Vmin);
-
-public:
-	GL_ATOMIC(complex,total_load);
+	GL_ATOMIC(complex,S);
 
 public:
 
@@ -38,7 +36,9 @@ public:
 	bus(MODULE *module);
 	int create(void);
 	int init(OBJECT *parent);
-	TIMESTAMP precommit(TIMESTAMP t0);
+	TIMESTAMP presync(TIMESTAMP t0);
+	TIMESTAMP sync(TIMESTAMP t0);
+	TIMESTAMP postsync(TIMESTAMP t0);
 
 public:
 	// internal properties

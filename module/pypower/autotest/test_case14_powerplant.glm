@@ -16,15 +16,14 @@ object pypower.load
 {
     parent pp_bus_2;
     Vn 12.5 kV;
-    P 21+12j;
+    P 31.7+12.7j;
     status ONLINE;
 }
 
-object pypower.load
+object pypower.powerplant
 {
     parent pp_bus_2;
-    Vn 12.5 kV;
-    P 0.7+0.7j;
+    operating_capacity 10.0;
     status ONLINE;
 }
 

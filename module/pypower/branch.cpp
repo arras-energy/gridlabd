@@ -61,10 +61,9 @@ branch::branch(MODULE *module)
 			PT_double, "angmax[deg]", get_angmax_offset(),
 				PT_DESCRIPTION, "maximum angle difference, angle(Vf) - angle(Vt) (degrees)",
 
-			NULL)<1){
-				char msg[256];
-				snprintf(msg,sizeof(msg)-1, "unable to publish properties in %s",__FILE__);
-				throw msg;
+			NULL)<1)
+		{
+				throw "unable to publish branch properties";
 		}
 	}
 }
