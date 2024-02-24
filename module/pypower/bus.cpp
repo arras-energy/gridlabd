@@ -5,6 +5,7 @@
 
 EXPORT_CREATE(bus);
 EXPORT_INIT(bus);
+EXPORT_PRECOMMIT(bus);
 
 CLASS *bus::oclass = NULL;
 bus *bus::defaults = NULL;
@@ -109,4 +110,10 @@ int bus::create(void)
 int bus::init(OBJECT *parent)
 {
 	return 1; // return 1 on success, 0 on failure, 2 on retry later
+}
+
+TIMESTAMP bus::precommit(TIMESTAMP t0)
+{
+	total_load = complex(Pd,Qd);
+	return TS_NEVER;
 }

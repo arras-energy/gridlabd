@@ -103,7 +103,7 @@ module pypower
         ).items():
             glm.write(f"{NL}//{NL}// {name}{NL}//{NL}")
             for n,line in enumerate(data[name]):
-                oname = f"{NL}    name pp_{name}_{n};" if autoname else ""
+                oname = f"{NL}    name pp_{name}_{n+1};" if autoname else ""
                 glm.write(f"""object pypower.{name} 
 {{{oname}
 {NL.join([f"    {x} {line[n]};" for n,x in enumerate(spec.split())])}

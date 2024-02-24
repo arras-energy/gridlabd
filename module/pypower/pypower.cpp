@@ -179,8 +179,10 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
         PyObject *pyobj = PyList_GetItem(busdata,n);
         SEND(0,bus_i,Double,Float)
         SEND(1,type,Long,Long)
-        SEND(2,Pd,Double,Float)
-        SEND(3,Qd,Double,Float)
+        // SEND(2,Pd,Double,Float)
+        // SEND(3,Qd,Double,Float)
+        PyList_SetItem(pyobj,2,PyFloat_FromDouble(obj->get_total_load().Re()));
+        PyList_SetItem(pyobj,3,PyFloat_FromDouble(obj->get_total_load().Im()));
         SEND(4,Gs,Double,Float)
         SEND(5,Bs,Double,Float)
         SEND(6,area,Long,Long)

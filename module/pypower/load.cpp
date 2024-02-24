@@ -42,6 +42,15 @@ load::load(MODULE *module)
 			PT_double, "Vn[V]", get_Vn_offset(),
 				PT_DESCRIPTION, "nominal voltage (V)",
 
+			PT_enumeration, "status", get_status_offset(),
+				PT_DESCRIPTION, "load status",
+				PT_KEYWORD, "OFFLINE", (enumeration)0,
+				PT_KEYWORD, "ONLINE", (enumeration)1,
+				PT_KEYWORD, "CURTAILED", (enumeration)2,
+
+			PT_double, "response[pu]", get_response_offset(),
+				PT_DESCRIPTION, "curtailment response as fractional load reduction",
+
 			NULL) < 1 )
 		{
 				throw "unable to publish load properties";
@@ -75,12 +84,26 @@ TIMESTAMP load::presync(TIMESTAMP t1)
 {
 	// copy data to parent
 	complex Vpu = V / Vn;
-	S = P + ~(I + Z*Vpu)*Vpu;
-	bus *parent = (bus*)get_parent();
-	if ( parent )
+	switch ( get_status() )
 	{
-		parent->set_Pd(S.Re());
-		parent->set_Qd(S.Im());
+	case LS_ONLINE:
+		S = P + ~(I + Z*Vpu)*Vpu;
+		break;
+	case LS_CURTAILED:		
+		S = ( P + ~(I + Z*Vpu)*Vpu ) * (1-get_response());
+		break;
+	case LS_OFFLINE:
+	default:
+		S = complex(0,0);
+		break;
+	}
+	if ( S.Re() != 0.0 && S.Im() != 0.0 )
+	{
+		bus *parent = (bus*)get_parent();
+		if ( parent )
+		{
+			parent->set_total_load(parent->get_total_load() + S);
+		}
 	}
 	return TS_NEVER;
 }
@@ -93,10 +116,17 @@ TIMESTAMP load::sync(TIMESTAMP t1)
 TIMESTAMP load::postsync(TIMESTAMP t1)
 {
 	// copy data from parent
-	bus *parent = (bus*)get_parent();
-	if ( parent ) 
+	if ( get_status() != LS_OFFLINE )
 	{
-		V.SetPolar(parent->get_Vm()*Vn,parent->get_Va());
+		bus *parent = (bus*)get_parent();
+		if ( parent ) 
+		{
+			V.SetPolar(parent->get_Vm()*Vn,parent->get_Va());
+		}
+	}
+	else
+	{
+		V = complex(0,0);
 	}
 	return TS_NEVER;
 }

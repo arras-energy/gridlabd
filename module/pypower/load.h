@@ -17,6 +17,9 @@ public:
 	GL_ATOMIC(complex,P);
 	GL_ATOMIC(complex,V);
 	GL_ATOMIC(double,Vn);
+	typedef enum {LS_OFFLINE=0, LS_ONLINE=1, LS_CURTAILED=2,} LOADSTATUS;
+	GL_ATOMIC(enumeration,status);
+	GL_ATOMIC(double,response);
 
 public:
 	// event handlers
