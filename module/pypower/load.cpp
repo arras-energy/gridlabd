@@ -57,7 +57,7 @@ int load::create(void)
 int load::init(OBJECT *parent_hdr)
 {
 	bus *parent = (bus*)get_parent();
-	if ( ! parent->isa("bus","pypower") )
+	if ( parent && ! parent->isa("bus","pypower") )
 	{
 		error("parent '%s' is not a pypower bus object",get_parent()->get_name());
 		return 0;
@@ -74,11 +74,14 @@ int load::init(OBJECT *parent_hdr)
 TIMESTAMP load::presync(TIMESTAMP t1)
 {
 	// copy data to parent
-	bus *parent = (bus*)get_parent();
 	complex Vpu = V / Vn;
 	S = P + ~(I + Z*Vpu)*Vpu;
-	parent->set_Pd(S.Re());
-	parent->set_Qd(S.Im());
+	bus *parent = (bus*)get_parent();
+	if ( parent )
+	{
+		parent->set_Pd(S.Re());
+		parent->set_Qd(S.Im());
+	}
 	return TS_NEVER;
 }
 
@@ -91,6 +94,9 @@ TIMESTAMP load::postsync(TIMESTAMP t1)
 {
 	// copy data from parent
 	bus *parent = (bus*)get_parent();
-	V.SetPolar(parent->get_Vm()*Vn,parent->get_Va());
+	if ( parent ) 
+	{
+		V.SetPolar(parent->get_Vm()*Vn,parent->get_Va());
+	}
 	return TS_NEVER;
 }
