@@ -277,19 +277,19 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
         {
             bus *obj = buslist[n];
             PyObject *pyobj = PyList_GetItem(busdata,n);
-            obj->set_bus_i(PyLong_AsLong(PyList_GET_ITEM(pyobj,0)));
-            obj->set_type(PyLong_AsLong(PyList_GET_ITEM(pyobj,1)));
-            obj->set_Pd(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,2)));
-            obj->set_Qd(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,3)));
-            obj->set_Gs(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,4)));
-            obj->set_Bs(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,5)));
-            obj->set_area(PyLong_AsLong(PyList_GET_ITEM(pyobj,6)));
+            // obj->set_bus_i(PyLong_AsLong(PyList_GET_ITEM(pyobj,0)));
+            // obj->set_type(PyLong_AsLong(PyList_GET_ITEM(pyobj,1)));
+            // obj->set_Pd(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,2)));
+            // obj->set_Qd(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,3)));
+            // obj->set_Gs(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,4)));
+            // obj->set_Bs(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,5)));
+            // obj->set_area(PyLong_AsLong(PyList_GET_ITEM(pyobj,6)));
             obj->set_Vm(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,7)));
             obj->set_Va(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,8)));
-            obj->set_baseKV(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,9)));
-            obj->set_zone(PyLong_AsLong(PyList_GET_ITEM(pyobj,10)));
-            obj->set_Vmax(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,11)));
-            obj->set_Vmin(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,12)));
+            // obj->set_baseKV(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,9)));
+            // obj->set_zone(PyLong_AsLong(PyList_GET_ITEM(pyobj,10)));
+            // obj->set_Vmax(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,11)));
+            // obj->set_Vmin(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,12)));
 
             if ( enable_opf )
             {
@@ -299,48 +299,48 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
                 obj->set_mu_Vmin(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,16)));
             }
         }
-        for ( size_t n = 0 ; n < nbranch ; n++ )
-        {
-            branch *obj = branchlist[n];
-            PyObject *pyobj = PyList_GetItem(branchdata,n);
-            obj->set_fbus(PyLong_AsLong(PyList_GET_ITEM(pyobj,0)));
-            obj->set_tbus(PyLong_AsLong(PyList_GET_ITEM(pyobj,1)));
-            obj->set_r(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,2)));
-            obj->set_x(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,3)));
-            obj->set_b(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,4)));
-            obj->set_rateA(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,5)));
-            obj->set_rateB(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,6)));
-            obj->set_rateC(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,7)));
-            obj->set_ratio(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,8)));
-            obj->set_angle(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,9)));
-            obj->set_status(PyLong_AsLong(PyList_GET_ITEM(pyobj,10)));
-            obj->set_angmin(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,11)));
-            obj->set_angmax(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,12)));
-        }
+        // for ( size_t n = 0 ; n < nbranch ; n++ )
+        // {
+        //     branch *obj = branchlist[n];
+        //     PyObject *pyobj = PyList_GetItem(branchdata,n);
+        //     obj->set_fbus(PyLong_AsLong(PyList_GET_ITEM(pyobj,0)));
+        //     obj->set_tbus(PyLong_AsLong(PyList_GET_ITEM(pyobj,1)));
+        //     obj->set_r(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,2)));
+        //     obj->set_x(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,3)));
+        //     obj->set_b(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,4)));
+        //     obj->set_rateA(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,5)));
+        //     obj->set_rateB(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,6)));
+        //     obj->set_rateC(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,7)));
+        //     obj->set_ratio(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,8)));
+        //     obj->set_angle(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,9)));
+        //     obj->set_status(PyLong_AsLong(PyList_GET_ITEM(pyobj,10)));
+        //     obj->set_angmin(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,11)));
+        //     obj->set_angmax(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,12)));
+        // }
         for ( size_t n = 0 ; n < ngen ; n++ )
         {
             gen *obj = genlist[n];
             PyObject *pyobj = PyList_GetItem(gendata,n);
-            obj->set_bus(PyLong_AsLong(PyList_GET_ITEM(pyobj,0)));
+            // obj->set_bus(PyLong_AsLong(PyList_GET_ITEM(pyobj,0)));
             obj->set_Pg(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,1)));
             obj->set_Qg(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,2)));
-            obj->set_Qmax(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,3)));
-            obj->set_Qmin(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,4)));
-            obj->set_Vg(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,5)));
-            obj->set_mBase(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,6)));
-            obj->set_status(PyLong_AsLong(PyList_GET_ITEM(pyobj,7)));
-            obj->set_Pmax(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,8)));
-            obj->set_Pmin(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,9)));
-            obj->set_Pc1(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,10)));
-            obj->set_Pc2(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,11)));
-            obj->set_Qc1min(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,12)));
-            obj->set_Qc1max(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,13)));
-            obj->set_Qc2min(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,14)));
-            obj->set_Qc2max(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,15)));
-            obj->set_ramp_agc(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,16)));
-            obj->set_ramp_10(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,17)));
-            obj->set_ramp_30(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,18)));
-            obj->set_ramp_q(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,19)));
+            // obj->set_Qmax(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,3)));
+            // obj->set_Qmin(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,4)));
+            // obj->set_Vg(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,5)));
+            // obj->set_mBase(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,6)));
+            // obj->set_status(PyLong_AsLong(PyList_GET_ITEM(pyobj,7)));
+            // obj->set_Pmax(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,8)));
+            // obj->set_Pmin(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,9)));
+            // obj->set_Pc1(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,10)));
+            // obj->set_Pc2(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,11)));
+            // obj->set_Qc1min(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,12)));
+            // obj->set_Qc1max(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,13)));
+            // obj->set_Qc2min(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,14)));
+            // obj->set_Qc2max(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,15)));
+            // obj->set_ramp_agc(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,16)));
+            // obj->set_ramp_10(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,17)));
+            // obj->set_ramp_30(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,18)));
+            // obj->set_ramp_q(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,19)));
             obj->set_apf(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,20)));
             if ( enable_opf )
             {

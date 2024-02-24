@@ -24,6 +24,40 @@ powerplant::powerplant(MODULE *module)
 		defaults = this;
 		if (gl_publish_variable(oclass,
 
+			PT_char32, "city", get_city_offset(),
+			
+			PT_char32, "state", get_state_offset(),
+			
+			PT_char32, "zipcode", get_zipcode_offset(),
+			
+			PT_char32, "country", get_country_offset(),
+			
+			PT_char32, "naics_code", get_naics_code_offset(),
+			
+			PT_char256, "naics_description", get_naics_description_offset(),
+			
+			PT_enumeration, "plant_type", get_plant_type_offset(),
+
+			PT_enumeration, "status", get_status_offset(),
+
+			PT_int32, "plant_code", get_plant_code(),
+			
+			PT_double, "operating_capacity[MW]", get_operating_capacity_offset(),
+			
+			PT_double, "summer_capacity[MW]", get_summer_capacity_offset(),
+			
+			PT_double, "winter_capacity[MW]", get_winter_capacity_offset(),
+			
+			PT_double, "capacity_factor[pu]", get_capacity_factor_offset(),
+			
+			PT_enumeration, "primary_fuel", get_primary_fuel_offset(),
+
+			PT_enumeration, "secondary_fuel", get_secondary_fuel_offset(),
+
+			PT_object, "substation_1", get_substation_1_offset(),
+
+			PT_object, "substation_2", get_substation_2_offset(),
+
 			NULL) < 1 )
 		{
 				throw "unable to publish powerplant properties";
