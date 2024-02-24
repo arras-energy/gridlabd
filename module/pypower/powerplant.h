@@ -17,17 +17,16 @@ public:
 	GL_STRING(char32,country);
 	GL_STRING(char32,naics_code);
 	GL_STRING(char256,naics_description);
-	GL_ATOMIC(enumeration,plant_type);
-	GL_ATOMIC(enumeration,status)
 	GL_ATOMIC(int32,plant_code);
+	GL_ATOMIC(set,generator);
+	GL_ATOMIC(set,fuel);
+	GL_ATOMIC(enumeration,status)
 	GL_ATOMIC(double,operating_capacity);
 	GL_ATOMIC(double,summer_capacity);
 	GL_ATOMIC(double,winter_capacity);
 	GL_ATOMIC(double,capacity_factor);
-	GL_ATOMIC(enumeration,primary_fuel);
-	GL_ATOMIC(enumeration,secondary_fuel);
-	GL_ATOMIC(object,substation_1);
-	GL_ATOMIC(object,substation_2);
+	GL_ATOMIC(char256,substation_1);
+	GL_ATOMIC(char256,substation_2);
 
 public:
 	// event handlers

@@ -36,9 +36,23 @@ powerplant::powerplant(MODULE *module)
 			
 			PT_char256, "naics_description", get_naics_description_offset(),
 			
-			PT_enumeration, "plant_type", get_plant_type_offset(),
+			PT_set, "generator", get_generator_offset(), 
+			    PT_KEYWORD, "UNKNOWN", (set)0x00000001, 
+			    PT_KEYWORD, "HT", (set)0x00000002, // hydro turbine
+			    PT_KEYWORD, "ST", (set)0x00000004, // steam turbine
+			    PT_KEYWORD, "AT", (set)0x00000008, // compressed air turbine
+			    PT_KEYWORD, "IC", (set)0x00000010, // internal combustion
+			    PT_KEYWORD, "FW", (set)0x00000020, // flywheel
+			    PT_KEYWORD, "WT", (set)0x00000040, // wind turbine
+			    PT_KEYWORD, "ES", (set)0x00000080, // energy storage inverter
+			    PT_KEYWORD, "CT", (set)0x00000100, // combustion turbine
+			    PT_KEYWORD, "PV", (set)0x00000200, // photovoltaic inverter
+			    PT_KEYWORD, "CC", (set)0x00000400, // combined cycle turbine
 
 			PT_enumeration, "status", get_status_offset(),
+				PT_KEYWORD, "OFFLINE", (enumeration)0x00,
+				PT_KEYWORD, "ONLINE", (enumeration)0x01,
+				// PT_KEYWORD, "OP", (enumeration)0x01,
 
 			PT_int32, "plant_code", get_plant_code(),
 			
@@ -50,13 +64,27 @@ powerplant::powerplant(MODULE *module)
 			
 			PT_double, "capacity_factor[pu]", get_capacity_factor_offset(),
 			
-			PT_enumeration, "primary_fuel", get_primary_fuel_offset(),
+			PT_set, "fuel", get_fuel_offset(), 
+			    PT_KEYWORD, "ELEC", (set)0x00000001, 
+			    PT_KEYWORD, "WIND", (set)0x00000002,
+			    PT_KEYWORD, "SUN", (set)0x00000004, 
+			    PT_KEYWORD, "GEO", (set)0x00000008, 
+			    PT_KEYWORD, "COKE", (set)0x00000010, 
+			    PT_KEYWORD, "WASTE", (set)0x00000020, 
+			    PT_KEYWORD, "BIO", (set)0x00000040, 
+			    PT_KEYWORD, "OIL", (set)0x00000080, 
+			    PT_KEYWORD, "UNKNOWN", (set)0x00000100, 
+			    PT_KEYWORD, "WOOD", (set)0x00000200, 
+			    PT_KEYWORD, "OTHER", (set)0x00000400, 
+			    PT_KEYWORD, "GAS", (set)0x00000800, 
+			    PT_KEYWORD, "NUC", (set)0x00001000, 
+			    PT_KEYWORD, "WATER", (set)0x00002000, 
+			    PT_KEYWORD, "COAL", (set)0x00004000, 
+			    PT_KEYWORD, "NG", (set)0x00008000, 
 
-			PT_enumeration, "secondary_fuel", get_secondary_fuel_offset(),
+			PT_char256, "substation_1", get_substation_1_offset(),
 
-			PT_object, "substation_1", get_substation_1_offset(),
-
-			PT_object, "substation_2", get_substation_2_offset(),
+			PT_char256, "substation_2", get_substation_2_offset(),
 
 			NULL) < 1 )
 		{
@@ -73,7 +101,7 @@ int powerplant::create(void)
 int powerplant::init(OBJECT *parent_hdr)
 {
 	gen *parent = (gen*)get_parent();
-	if ( ! parent->isa("gen","pypower") )
+	if ( parent && ! parent->isa("gen","pypower") )
 	{
 		error("parent '%s' is not a pypower gen object",get_parent()->get_name());
 		return 0;
