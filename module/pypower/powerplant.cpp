@@ -24,24 +24,6 @@ powerplant::powerplant(MODULE *module)
 		defaults = this;
 		if (gl_publish_variable(oclass,
 
-			PT_complex, "S[VA]", get_S_offset(),
-				PT_DESCRIPTION, "total power demand (VA)",
-
-			PT_complex, "Z[VA]", get_Z_offset(),
-				PT_DESCRIPTION, "constant impedance powerplant (W)",
-
-			PT_complex, "I[VA]", get_I_offset(),
-				PT_DESCRIPTION, "constant current powerplant (W)",
-
-			PT_complex, "P[VA]", get_P_offset(),
-				PT_DESCRIPTION, "constant power powerplant (W)",
-
-			PT_complex, "V[V]", get_V_offset(),
-				PT_DESCRIPTION, "bus voltage (V)",
-
-			PT_double, "Vn[V]", get_Vn_offset(),
-				PT_DESCRIPTION, "nominal voltage (V)",
-
 			NULL) < 1 )
 		{
 				throw "unable to publish powerplant properties";
@@ -56,29 +38,24 @@ int powerplant::create(void)
 
 int powerplant::init(OBJECT *parent_hdr)
 {
-	bus *parent = (bus*)get_parent();
+	gen *parent = (gen*)get_parent();
 	if ( ! parent->isa("gen","pypower") )
 	{
 		error("parent '%s' is not a pypower gen object",get_parent()->get_name());
 		return 0;
 	}
 
-	if ( Vn == 0.0 )
-	{
-		error("nominal voltage (Vn) not set");
-		return 0;
-	}
 	return 1; // return 1 on success, 0 on failure, 2 on retry later
 }
 
 TIMESTAMP powerplant::presync(TIMESTAMP t1)
 {
 	// copy data to parent
-	bus *parent = (bus*)get_parent();
-	complex Vpu = V / Vn;
-	S = P + ~(I + Z*Vpu)*Vpu;
-	parent->set_Pd(S.Re());
-	parent->set_Qd(S.Im());
+	// bus *parent = (bus*)get_parent();
+	// complex Vpu = V / Vn;
+	// S = P + ~(I + Z*Vpu)*Vpu;
+	// parent->set_Pd(S.Re());
+	// parent->set_Qd(S.Im());
 	return TS_NEVER;
 }
 
@@ -90,7 +67,7 @@ TIMESTAMP powerplant::sync(TIMESTAMP t1)
 TIMESTAMP powerplant::postsync(TIMESTAMP t1)
 {
 	// copy data from parent
-	bus *parent = (bus*)get_parent();
-	V.SetPolar(parent->get_Vm()*Vn,parent->get_Va());
+	// bus *parent = (bus*)get_parent();
+	// V.SetPolar(parent->get_Vm()*Vn,parent->get_Va());
 	return TS_NEVER;
 }
