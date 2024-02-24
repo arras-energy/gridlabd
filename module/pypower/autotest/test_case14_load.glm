@@ -6,22 +6,17 @@
 module pypower
 {
     maximum_timestep 3600;
+    save_case TRUE;
 }
 
 module powerflow;
 object pypower.load
 {
     name load_1;
-    parent pp_bus_0;
+    parent pp_bus_2;
     Vn 12.5 kV;
-    object substation
-    {
-        phases ABC;
-        bustype SWING;
-        nominal_voltage 12.5 kV;
-        base_power ${pypower::baseMVA};
-        power_convergence_value 0.01;
-    };
+    P 21.7+12.7j;
+    status ONLINE;
 }
 
 #include "${DIR:-.}/case.glm"
