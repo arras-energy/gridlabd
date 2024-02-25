@@ -27,6 +27,28 @@ If `enable_opf` is `TRUE`, then the OPF solver is used when `gencost` objects ar
 
 If `save_case` is `TRUE`, then the case data and solver results are stored in `pypower_casedata.py` and `pypower_results.py` files.
 
+# Integration Objects
+
+Integration objects are used to link assets and control models with `pypower` objects. An integrated object specified its parent `bus` or `gen` object and updates it as needed prior to solving the powerflow problem.
+
+## Loads
+
+Using the `load` object allows integration of one or more quasi-static load models with `bus` objects.  The `ZIP` values are used to calculate the `S` value based on the current voltage. When the load is `ONLINE`, the `S` value's real and imaginary is then added to the parent `bus` object's `Pd` and `Qd` values, respectively. When the load is `CURTAILED`, the load is reduced by the fractional quantity specified by the `response` property. When the load is `OFFLINE`, the values of `S` is zero regardless of the value of `P`.
+
+## Powerplants
+
+Using the `powerplant` objects allows integration of one or more quasi-static generator models with both `bus` and `gen` objects. When integrating with a `bus` object, the `S` value real and imaginary values are added to the `bus` properties `Pd` and `Qd`, respectively, when the plant is `ONLINE`.  
+
+When integrated with a `gen` object, both the `Pd` and `Qd` values are updated based on the powerplant's generator status and type.
+
+## Controls
+
+TODO
+
+## Custom Integrations
+
+To 
+
 # See also
 
 * [PyPower documentation](https://pypi.org/project/PYPOWER/)
