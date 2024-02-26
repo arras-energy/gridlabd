@@ -248,9 +248,15 @@ EXPORT bool on_init(void)
 // conditional send (only if value differs or is not set yet)
 #define SEND(INDEX,NAME,FROM,TO) { PyObject *py = PyList_GetItem(pyobj,INDEX); \
     if ( py == NULL || obj->get_##NAME() != Py##TO##_As##FROM(py) ) { \
-        PyList_SetItem(pyobj,INDEX,Py##TO##_From##FROM(obj->get_##NAME())); \
-        n_changes++; \
-    }}
+        PyObject *value = Py##TO##_From##FROM(obj->get_##NAME()); \
+        if ( value == NULL ) { \
+            gl_warning("pypower:on_sync(t0=%lld): unable to create value " #NAME " for data item %d",t0,INDEX); \
+        } \
+        else { \
+            PyList_SET_ITEM(pyobj,INDEX,value); \
+            Py_XDECREF(py); \
+            n_changes++; \
+}}}
 
 EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
 {
@@ -367,8 +373,8 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
         }
         result = PyObject_CallOneArg(solver,data);
 
-        // receive results
-        if ( result )
+        // receive results (if new)
+        if ( result != NULL && result != data )
         {
             if ( ! PyDict_Check(result) )
             {
