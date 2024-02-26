@@ -248,7 +248,6 @@ EXPORT bool on_init(void)
 // conditional send (only if value differs or is not set yet)
 #define SEND(INDEX,NAME,FROM,TO) { PyObject *py = PyList_GetItem(pyobj,INDEX); \
     if ( py == NULL || obj->get_##NAME() != Py##TO##_As##FROM(py) ) { \
-        Py_XDECREF(py); \
         PyList_SetItem(pyobj,INDEX,Py##TO##_From##FROM(obj->get_##NAME())); \
         n_changes++; \
     }}
@@ -362,59 +361,55 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
     static PyObject *result = NULL;
     if ( result == NULL || n_changes > 0 )
     {
-        Py_XDECREF(result);
-        try
+        if ( result != data )
         {
-            result = PyObject_CallOneArg(solver,data);
-            // receive results
-            if ( result )
+            Py_XDECREF(result);
+        }
+        result = PyObject_CallOneArg(solver,data);
+
+        // receive results
+        if ( result )
+        {
+            if ( ! PyDict_Check(result) )
             {
-                if ( ! PyDict_Check(result) )
-                {
-                    gl_error("pypower solver returned invalid result type (not a dict)");
-                    return TS_INVALID;
-                }
+                gl_error("pypower solver returned invalid result type (not a dict)");
+                return TS_INVALID;
+            }
 
-                // copy values back from solver
-                PyObject *busdata = PyDict_GetItemString(result,"bus");
-                for ( size_t n = 0 ; n < nbus ; n++ )
-                {
-                    bus *obj = buslist[n];
-                    PyObject *pyobj = PyList_GetItem(busdata,n);
-                    obj->set_Vm(PyFloat_AsDouble(PyList_GetItem(pyobj,7)));
-                    obj->set_Va(PyFloat_AsDouble(PyList_GetItem(pyobj,8)));
+            // copy values back from solver
+            PyObject *busdata = PyDict_GetItemString(result,"bus");
+            for ( size_t n = 0 ; n < nbus ; n++ )
+            {
+                bus *obj = buslist[n];
+                PyObject *pyobj = PyList_GetItem(busdata,n);
+                obj->set_Vm(PyFloat_AsDouble(PyList_GetItem(pyobj,7)));
+                obj->set_Va(PyFloat_AsDouble(PyList_GetItem(pyobj,8)));
 
-                    if ( enable_opf )
-                    {
-                        obj->set_lam_P(PyFloat_AsDouble(PyList_GetItem(pyobj,13)));
-                        obj->set_lam_Q(PyFloat_AsDouble(PyList_GetItem(pyobj,14)));
-                        obj->set_mu_Vmax(PyFloat_AsDouble(PyList_GetItem(pyobj,15)));
-                        obj->set_mu_Vmin(PyFloat_AsDouble(PyList_GetItem(pyobj,16)));
-                    }
-                }
-
-                PyObject *gendata = PyDict_GetItemString(result,"gen");
-                for ( size_t n = 0 ; n < ngen ; n++ )
+                if ( enable_opf )
                 {
-                    gen *obj = genlist[n];
-                    PyObject *pyobj = PyList_GetItem(gendata,n);
-                    obj->set_Pg(PyFloat_AsDouble(PyList_GetItem(pyobj,1)));
-                    obj->set_Qg(PyFloat_AsDouble(PyList_GetItem(pyobj,2)));
-                    obj->set_apf(PyFloat_AsDouble(PyList_GetItem(pyobj,20)));
-                    if ( enable_opf )
-                    {
-                        obj->set_mu_Pmax(PyFloat_AsDouble(PyList_GetItem(pyobj,21)));
-                        obj->set_mu_Pmin(PyFloat_AsDouble(PyList_GetItem(pyobj,22)));
-                        obj->set_mu_Qmax(PyFloat_AsDouble(PyList_GetItem(pyobj,23)));
-                        obj->set_mu_Qmin(PyFloat_AsDouble(PyList_GetItem(pyobj,24)));
-                    }
+                    obj->set_lam_P(PyFloat_AsDouble(PyList_GetItem(pyobj,13)));
+                    obj->set_lam_Q(PyFloat_AsDouble(PyList_GetItem(pyobj,14)));
+                    obj->set_mu_Vmax(PyFloat_AsDouble(PyList_GetItem(pyobj,15)));
+                    obj->set_mu_Vmin(PyFloat_AsDouble(PyList_GetItem(pyobj,16)));
                 }
             }
-        }
-        catch (...)
-        {
-            gl_error("internal pypower exception caught");
-            return TS_INVALID;
+
+            PyObject *gendata = PyDict_GetItemString(result,"gen");
+            for ( size_t n = 0 ; n < ngen ; n++ )
+            {
+                gen *obj = genlist[n];
+                PyObject *pyobj = PyList_GetItem(gendata,n);
+                obj->set_Pg(PyFloat_AsDouble(PyList_GetItem(pyobj,1)));
+                obj->set_Qg(PyFloat_AsDouble(PyList_GetItem(pyobj,2)));
+                obj->set_apf(PyFloat_AsDouble(PyList_GetItem(pyobj,20)));
+                if ( enable_opf )
+                {
+                    obj->set_mu_Pmax(PyFloat_AsDouble(PyList_GetItem(pyobj,21)));
+                    obj->set_mu_Pmin(PyFloat_AsDouble(PyList_GetItem(pyobj,22)));
+                    obj->set_mu_Qmax(PyFloat_AsDouble(PyList_GetItem(pyobj,23)));
+                    obj->set_mu_Qmin(PyFloat_AsDouble(PyList_GetItem(pyobj,24)));
+                }
+            }
         }
         PyErr_Clear();
     }
