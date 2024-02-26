@@ -27,6 +27,13 @@ public:
 	GL_ATOMIC(double,capacity_factor);
 	GL_ATOMIC(char256,substation_1);
 	GL_ATOMIC(char256,substation_2);
+	GL_ATOMIC(complex,S);
+	GL_ATOMIC(char256,controller);
+
+private:
+	PyObject *py_controller;
+	PyObject *py_args;
+	PyObject *py_kwargs;
 
 private:
 	bool is_dynamic; // true if parent is a gen otherwise false

@@ -20,6 +20,12 @@ public:
 	typedef enum {LS_OFFLINE=0, LS_ONLINE=1, LS_CURTAILED=2,} LOADSTATUS;
 	GL_ATOMIC(enumeration,status);
 	GL_ATOMIC(double,response);
+	GL_ATOMIC(char256,controller);
+
+private:
+	PyObject *py_controller;
+	PyObject *py_args;
+	PyObject *py_kwargs;
 
 public:
 	// event handlers

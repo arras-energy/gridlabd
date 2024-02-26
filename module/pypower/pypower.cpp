@@ -14,6 +14,9 @@ bool stop_on_failure = false;
 int32 maximum_timestep = 0; // seconds; 0 = no max ts
 enumeration solver_method = 1;
 bool save_case = false;
+char1024 controllers;
+PyObject *py_controllers;
+PyObject *py_globals;
 
 EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
 {
@@ -39,10 +42,10 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
 
     gl_global_create("pypower::solver_method",
         PT_enumeration, &solver_method,
-        PT_KEYWORD, "NR", (enumeration)1,
-        PT_KEYWORD, "FD_XB", (enumeration)2,
-        PT_KEYWORD, "FD_BX", (enumeration)3,
         PT_KEYWORD, "GS", (enumeration)4,
+        PT_KEYWORD, "FD_BX", (enumeration)3,
+        PT_KEYWORD, "FD_XB", (enumeration)2,
+        PT_KEYWORD, "NR", (enumeration)1,
         PT_DESCRIPTION, "PyPower solver method to use",
         NULL
         );
@@ -71,6 +74,11 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
     gl_global_create("pypower::save_case",
         PT_bool, &save_case, 
         PT_DESCRIPTION, "Flag to save pypower case data and results",
+        NULL);
+
+    gl_global_create("pypower::controllers",
+        PT_char1024, &controllers, 
+        PT_DESCRIPTION, "Python module containing controller functions",
         NULL);
 
     // always return the first class registered
@@ -102,7 +110,14 @@ EXPORT bool on_init(void)
     PyObject *module = PyImport_ImportModule("pypower_solver");
     if ( module == NULL )
     {
-        gl_error("unable to load pypower solver module");
+        if ( PyErr_Occurred() )
+        {
+            PyErr_Print();
+        }
+        else
+        {  
+            gl_error("unable to load pypower solver module (no info)");
+        }
         return false;
     }
     solver = PyObject_GetAttrString(module,"solver");
@@ -110,6 +125,66 @@ EXPORT bool on_init(void)
     {
         gl_error("unable to find pypower solver call");
         return false;
+    }
+
+    if ( controllers[0] != '\0' )
+    {
+        py_controllers = PyImport_ImportModule(controllers);
+        if ( py_controllers == NULL )
+        {
+            if ( PyErr_Occurred() )
+            {
+                PyErr_Print();
+            }
+            else
+            {  
+                gl_error("unable to load controllers module '%s'",(const char*)controllers);
+            }
+            return false;
+        }
+
+        py_globals = PyModule_GetDict(py_controllers);
+        if ( py_globals == NULL )
+        {
+            gl_error("unable to get globals in '%s'",(const char*)controllers);
+            return false;
+        }
+
+        PyObject *on_init = PyDict_GetItemString(py_globals,"on_init");
+        if ( on_init )
+        {
+            if ( ! PyCallable_Check(on_init) )
+            {
+                gl_error("%s.on_init() is not callable",(const char*)controllers);
+                Py_DECREF(on_init);
+                return false;
+            }
+            PyObject *result = PyObject_CallNoArgs(on_init);
+            if ( result == NULL )
+            {
+                if ( PyErr_Occurred() )
+                {
+                    PyErr_Print();
+                }
+                else
+                {  
+                    gl_error("%s.on_init() failed",(const char*)controllers);
+                }
+                Py_DECREF(on_init);
+                return false;
+            }
+            if ( PyBool_Check(result) && PyObject_Not(result) )
+            {
+                {  
+                    gl_error("%s.on_init() failed",(const char*)controllers);
+                }
+                Py_DECREF(on_init);
+                Py_DECREF(result);
+                return false;
+            }
+            Py_DECREF(on_init);
+            Py_DECREF(result);
+        }
     }
 
     // first time setup of arrays

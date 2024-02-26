@@ -9,24 +9,22 @@
 module pypower
 {
     maximum_timestep 3600;
+    save_case TRUE;
 }
 
 object pypower.load
 {
     parent pp_bus_2;
     Vn 12.5 kV;
-    P 31.7+12.7j;
+    P 10.0;
     status ONLINE;
 }
 
 object pypower.powerplant
 {
     parent pp_bus_2;
-    operating_capacity 10.0;
+    S 10.0;
     status ONLINE;
 }
 
 #include "${DIR:-.}/case.glm"
-
-modify pp_bus_2.Pd 0;
-modify pp_bus_2.Qd 0;
