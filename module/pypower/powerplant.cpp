@@ -42,6 +42,9 @@ powerplant::powerplant(MODULE *module)
 			PT_char256, "naics_description", get_naics_description_offset(),
 				PT_DESCRIPTION, "Powerplant NAICS description",
 			
+			PT_int32, "plant_code", get_plant_code(),
+				PT_DESCRIPTION, "Generator plant code number",
+			
 			PT_set, "generator", get_generator_offset(), 
 			    PT_KEYWORD, "UNKNOWN", (set)0x00000001, 
 			    PT_KEYWORD, "HT", (set)0x00000002, // hydro turbine
@@ -56,26 +59,6 @@ powerplant::powerplant(MODULE *module)
 			    PT_KEYWORD, "CC", (set)0x00000400, // combined cycle turbine
 				PT_DESCRIPTION, "Generator type",
 
-			PT_enumeration, "status", get_status_offset(),
-				PT_KEYWORD, "OFFLINE", (enumeration)0x00,
-				PT_KEYWORD, "ONLINE", (enumeration)0x01,
-				PT_DESCRIPTION, "Generator status",
-
-			PT_int32, "plant_code", get_plant_code(),
-				PT_DESCRIPTION, "Generator plant code number",
-			
-			PT_double, "operating_capacity[MW]", get_operating_capacity_offset(),
-				PT_DESCRIPTION, "Generator normal operating capacity (MW)",
-			
-			PT_double, "summer_capacity[MW]", get_summer_capacity_offset(),
-				PT_DESCRIPTION, "Generator summer operating capacity (MW)",
-			
-			PT_double, "winter_capacity[MW]", get_winter_capacity_offset(),
-				PT_DESCRIPTION, "Generator winter operating capacity (MW)",
-			
-			PT_double, "capacity_factor[pu]", get_capacity_factor_offset(),
-				PT_DESCRIPTION, "Generator capacity factor (pu)",
-			
 			PT_set, "fuel", get_fuel_offset(), 
 			    PT_KEYWORD, "ELEC", (set)0x00000001, 
 			    PT_KEYWORD, "WIND", (set)0x00000002,
@@ -95,6 +78,23 @@ powerplant::powerplant(MODULE *module)
 			    PT_KEYWORD, "NG", (set)0x00008000, 
 				PT_DESCRIPTION, "Generator fuel type",
 
+			PT_enumeration, "status", get_status_offset(),
+				PT_KEYWORD, "OFFLINE", (enumeration)0x00,
+				PT_KEYWORD, "ONLINE", (enumeration)0x01,
+				PT_DESCRIPTION, "Generator status",
+
+			PT_double, "operating_capacity[MW]", get_operating_capacity_offset(),
+				PT_DESCRIPTION, "Generator normal operating capacity (MW)",
+			
+			PT_double, "summer_capacity[MW]", get_summer_capacity_offset(),
+				PT_DESCRIPTION, "Generator summer operating capacity (MW)",
+			
+			PT_double, "winter_capacity[MW]", get_winter_capacity_offset(),
+				PT_DESCRIPTION, "Generator winter operating capacity (MW)",
+			
+			PT_double, "capacity_factor[pu]", get_capacity_factor_offset(),
+				PT_DESCRIPTION, "Generator capacity factor (pu)",
+			
 			PT_char256, "substation_1", get_substation_1_offset(),
 				PT_DESCRIPTION, "Substation 1 id",
 
