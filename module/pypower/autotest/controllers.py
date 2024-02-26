@@ -4,6 +4,9 @@ def on_init():
     # print("controllers init ok",file=sys.stderr)
     return True
 
+def on_sync(t,**kwargs):
+    return -1
+
 def load_control(obj,**kwargs):
     # print(obj,": load control update",kwargs,file=sys.stderr)
     return dict(t=kwargs['t']+3600, S=(15+2j))

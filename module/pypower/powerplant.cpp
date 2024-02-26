@@ -42,7 +42,7 @@ powerplant::powerplant(MODULE *module)
 			PT_char256, "naics_description", get_naics_description_offset(),
 				PT_DESCRIPTION, "Powerplant NAICS description",
 			
-			PT_int32, "plant_code", get_plant_code(),
+			PT_int16, "plant_code", get_plant_code(),
 				PT_DESCRIPTION, "Generator plant code number",
 			
 			PT_set, "generator", get_generator_offset(), 

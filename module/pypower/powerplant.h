@@ -17,7 +17,7 @@ public:
 	GL_STRING(char32,country);
 	GL_STRING(char32,naics_code);
 	GL_STRING(char256,naics_description);
-	GL_ATOMIC(int32,plant_code);
+	GL_ATOMIC(int16,plant_code);
 	GL_ATOMIC(set,generator);
 	GL_ATOMIC(set,fuel);
 	GL_ATOMIC(enumeration,status)

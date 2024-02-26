@@ -1,7 +1,7 @@
 #define CASE=14
 #ifexists "../case.glm"
 #define DIR=..
-#set pythonpath=..:${pythonpath}
+#system cp ../controllers.py .
 #endif
 
 module pypower
