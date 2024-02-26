@@ -1,9 +1,8 @@
 #define CASE=14
 #ifexists "../case.glm"
 #define DIR=..
+#set pythonpath=..:${pythonpath}
 #endif
-
-#setenv pythonpath=${DIR:-.}
 
 module pypower
 {
