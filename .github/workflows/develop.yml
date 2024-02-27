@@ -33,4 +33,3 @@ jobs:
           path: |
             validate.txt
             validate.tar.gz
-            /var/lib/systemd/coredump
