@@ -104,13 +104,13 @@ int load::init(OBJECT *parent_hdr)
 
 	if ( get_name() )
 	{
-		PyTuple_SetItem(py_args,0,PyUnicode_FromString(get_name()));
+		PyTuple_SET_ITEM(py_args,0,PyUnicode_FromString(get_name()));
 	}
 	else
 	{
 		char buffer[80];
 		snprintf(buffer,sizeof(buffer)-1,"%64s:%ld",get_oclass()->get_name(),(long)get_id());
-		PyTuple_SetItem(py_args,0,PyUnicode_FromString(buffer));
+		PyTuple_SET_ITEM(py_args,0,PyUnicode_FromString(buffer));
 	}
 	Py_complex z = {get_S().Re(), get_S().Im()};
 	PyDict_SetItemString(py_kwargs,"S",PyComplex_FromCComplex(z));

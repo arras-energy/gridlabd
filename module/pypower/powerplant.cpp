@@ -162,7 +162,7 @@ int powerplant::init(OBJECT *parent_hdr)
 
 	if ( get_name() )
 	{
-		PyTuple_SetItem(py_args,0,PyUnicode_FromString(get_name()));
+		PyTuple_SET_ITEM(py_args,0,PyUnicode_FromString(get_name()));
 	}
 	else
 	{
