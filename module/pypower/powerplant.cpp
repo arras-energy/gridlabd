@@ -168,7 +168,7 @@ int powerplant::init(OBJECT *parent_hdr)
 	{
 		char buffer[80];
 		snprintf(buffer,sizeof(buffer)-1,"%64s:%ld",get_oclass()->get_name(),(long)get_id());
-		PyTuple_SetItem(py_args,0,PyUnicode_FromString(buffer));
+		PyTuple_SET_ITEM(py_args,0,PyUnicode_FromString(buffer));
 	}
 	PyDict_SetItemString(py_kwargs,"city",PyUnicode_FromString(get_city()));
 	PyDict_SetItemString(py_kwargs,"state",PyUnicode_FromString(get_state()));

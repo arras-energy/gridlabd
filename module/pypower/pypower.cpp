@@ -218,7 +218,7 @@ EXPORT bool on_init(void)
     busdata = PyList_New(nbus);
     for ( size_t n = 0 ; n < nbus ; n++ )
     {
-        PyList_SetItem(busdata,n,PyList_New(enable_opf?17:13));
+        PyList_SET_ITEM(busdata,n,PyList_New(enable_opf?17:13));
     }
     PyDict_SetItemString(data,"bus",busdata);
 
@@ -226,14 +226,14 @@ EXPORT bool on_init(void)
     PyDict_SetItemString(data,"branch",branchdata);
     for ( size_t n = 0 ; n < nbranch ; n++ )
     {
-        PyList_SetItem(branchdata,n,PyList_New(13));
+        PyList_SET_ITEM(branchdata,n,PyList_New(13));
     }
 
     gendata = PyList_New(ngen);
     PyDict_SetItemString(data,"gen",gendata);
     for ( size_t n = 0 ; n < ngen ; n++ )
     {
-        PyList_SetItem(gendata,n,PyList_New(enable_opf?25:21));
+        PyList_SET_ITEM(gendata,n,PyList_New(enable_opf?25:21));
     }
 
     if ( enable_opf )
@@ -242,7 +242,7 @@ EXPORT bool on_init(void)
         PyDict_SetItemString(data,"gencost",gencostdata);
         for ( size_t n = 0; n < ngencost ; n++ )
         {
-            PyList_SetItem(gencostdata,n,PyList_New(4));
+            PyList_SET_ITEM(gencostdata,n,PyList_New(4));
         }
     }
 
@@ -369,9 +369,11 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
             SEND(0,model,Long,Long)
             SEND(1,startup,Double,Float)
             SEND(2,shutdown,Double,Float)
-            if ( PyList_GET_ITEM(pyobj,3) == NULL || strcmp((const char*)PyUnicode_DATA(PyList_GET_ITEM(pyobj,3)),obj->get_costs())!=0 )
+            PyObject *py = PyList_GetItem(pyobj,3);
+            if ( py == NULL || strcmp((const char*)PyUnicode_DATA(py),obj->get_costs())!=0 )
             {
-                PyList_SetItem(pyobj,3,PyUnicode_FromString(obj->get_costs()));
+                Py_XDECREF(py);
+                PyList_SET_ITEM(pyobj,3,PyUnicode_FromString(obj->get_costs()));
             }
         }
     }
