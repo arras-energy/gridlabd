@@ -1,11 +1,13 @@
 #define CASE=14
 #ifexists "../case.glm"
 #define DIR=..
-#system cp ../controllers.py .
 #endif
 
 module pypower
 {
+#ifdef DIR
+    controllers_path "${DIR}";
+#endif
     controllers "controllers";
 }
 

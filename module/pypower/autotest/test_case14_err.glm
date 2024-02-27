@@ -3,7 +3,7 @@
 #define DIR=..
 #endif
 #ifexist ../case${CASE}.py
-#system cp ../case${CASE}.py .
+#system cp ../case${CASE/e/}.py ./case${CASE}.py // cause an error
 #define DIR=..
 #endif
 

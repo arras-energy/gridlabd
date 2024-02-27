@@ -15,6 +15,7 @@ int32 maximum_timestep = 0; // seconds; 0 = no max ts
 enumeration solver_method = 1;
 bool save_case = false;
 char1024 controllers;
+char1024 controllers_path;
 PyObject *py_controllers;
 PyObject *py_globals;
 
@@ -76,6 +77,11 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
         PT_DESCRIPTION, "Flag to save pypower case data and results",
         NULL);
 
+    gl_global_create("pypower::controllers_path",
+        PT_char1024, &controllers_path, 
+        PT_DESCRIPTION, "Path to find module containing controller functions",
+        NULL);
+
     gl_global_create("pypower::controllers",
         PT_char1024, &controllers, 
         PT_DESCRIPTION, "Python module containing controller functions",
@@ -106,29 +112,16 @@ PyObject *gencostdata = NULL;
 
 EXPORT bool on_init(void)
 {
-    // import solver
-    PyObject *module = PyImport_ImportModule("pypower_solver");
-    if ( module == NULL )
-    {
-        if ( PyErr_Occurred() )
-        {
-            PyErr_Print();
-        }
-        else
-        {  
-            gl_error("unable to load pypower solver module (no info)");
-        }
-        return false;
-    }
-    solver = PyObject_GetAttrString(module,"solver");
-    if ( solver == NULL )
-    {
-        gl_error("unable to find pypower solver call");
-        return false;
-    }
-
+    // import controllers, if any
     if ( controllers[0] != '\0' )
     {
+        if ( controllers_path[0] != '\0' )
+        {
+            char buffer[2000];
+            snprintf(buffer,2000,"import sys\n"
+               "sys.path.append('%s')\n", (const char *)controllers_path);
+            PyRun_SimpleString(buffer);        
+        }
         py_controllers = PyImport_ImportModule(controllers);
         if ( py_controllers == NULL )
         {
@@ -194,6 +187,27 @@ EXPORT bool on_init(void)
             Py_DECREF(on_init);
             Py_DECREF(result);
         }
+    }
+
+    // import pypower solver
+    PyObject *module = PyImport_ImportModule("pypower_solver");
+    if ( module == NULL )
+    {
+        if ( PyErr_Occurred() )
+        {
+            PyErr_Print();
+        }
+        else
+        {  
+            gl_error("unable to load pypower solver module (no info)");
+        }
+        return false;
+    }
+    solver = PyObject_GetAttrString(module,"solver");
+    if ( solver == NULL )
+    {
+        gl_error("unable to find pypower solver call");
+        return false;
     }
 
     // first time setup of arrays
