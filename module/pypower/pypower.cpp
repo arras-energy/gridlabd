@@ -18,6 +18,7 @@ char1024 controllers;
 char1024 controllers_path;
 PyObject *py_controllers;
 PyObject *py_globals;
+PyObject *py_sync;
 
 EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
 {
@@ -143,6 +144,7 @@ EXPORT bool on_init(void)
             gl_error("unable to get globals in '%s'",(const char*)controllers);
             return false;
         }
+        Py_INCREF(py_globals);
 
         PyObject *on_init = PyDict_GetItemString(py_globals,"on_init");
         if ( on_init )
@@ -164,7 +166,6 @@ EXPORT bool on_init(void)
                 {  
                     gl_error("%s.on_init() return None (expected bool)",(const char*)controllers);
                 }
-                Py_DECREF(on_init);
                 return false;
             }
             if ( PyBool_Check(result) )
@@ -172,7 +173,6 @@ EXPORT bool on_init(void)
                 if ( ! PyObject_IsTrue(result) )
                 {
                     gl_error("%s.on_init() failed (returned False)",(const char*)controllers);
-                    Py_DECREF(on_init);
                     Py_DECREF(result);
                     return false;
                 }
@@ -180,13 +180,21 @@ EXPORT bool on_init(void)
             else
             {
                     gl_error("%s.on_init() returned non-boolean value (expected True or False)",(const char*)controllers);
-                    Py_DECREF(on_init);
                     Py_DECREF(result);
                     return false;
             }
-
-            Py_DECREF(on_init);
             Py_DECREF(result);
+        }
+
+        py_sync = PyDict_GetItemString(py_globals,"on_sync");
+        if ( py_sync )
+        {
+            if ( ! PyCallable_Check(py_sync) )
+            {
+                gl_error("%s.on_sync() is not callable",(const char*)controllers);
+                return false;
+            }
+            Py_INCREF(py_sync);
         }
     }
 
@@ -260,7 +268,7 @@ EXPORT bool on_init(void)
     return true;
 }
 
-// conditional send (only if value differs or is not set yet)
+// conditional solver send/receive (only if value differs or is not set yet)
 #define SEND(INDEX,NAME,FROM,TO) { PyObject *py = PyList_GetItem(pyobj,INDEX); \
     if ( py == NULL || obj->get_##NAME() != Py##TO##_As##FROM(py) ) { \
         PyObject *value = Py##TO##_From##FROM(obj->get_##NAME()); \
@@ -272,6 +280,12 @@ EXPORT bool on_init(void)
             Py_XDECREF(py); \
             n_changes++; \
 }}}
+
+#define RECV(NAME,INDEX,FROM,TO) { PyObject *py = PyList_GET_ITEM(pyobj,INDEX);\
+    if ( obj->get_##NAME() != Py##FROM##_As##TO(py) ) { \
+        n_changes++; \
+        obj->set_##NAME(Py##FROM##_As##TO(py)); \
+    }}
 
 EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
 {
@@ -382,8 +396,45 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
     // run solver
     PyErr_Clear();
     static PyObject *result = NULL;
+    TIMESTAMP t1 = TS_NEVER;
     if ( result == NULL || n_changes > 0 )
     {
+        // run controller on_sync, if any
+        if ( py_sync )
+        {
+            PyDict_SetItemString(data,"t",PyLong_FromLong(t0));        
+            PyErr_Clear();
+            PyObject *ts = PyObject_CallOneArg(py_sync,data);
+            if ( PyErr_Occurred() )
+            {
+                PyErr_Print();
+                return TS_INVALID;
+            }
+            if ( ts == NULL || ! PyLong_Check(ts) )
+            {
+                gl_error("%s.on_sync(data) returned value that is not a valid timestamp",(const char*)controllers);
+                Py_XDECREF(ts);
+                return TS_INVALID;
+            }
+            t1 = PyLong_AsLong(ts);
+            Py_DECREF(ts);
+            if ( t1 < 0 )
+            {
+                t1 = TS_NEVER;
+            }
+            else if ( t1 == 0 && stop_on_failure )
+            {
+                gl_error("%s.on_sync(data) halted the simulation",(const char*)controllers);
+                return TS_INVALID;
+            }
+            else if ( t1 < t0 )
+            {
+                gl_error("%s.on_sync(data) returned a timestamp earlier than sync time t0=%lld",(const char*)controllers,t0);
+                return TS_INVALID;
+            }
+        }
+
+        // run pypower solver
         if ( result != data )
         {
             Py_XDECREF(result);
@@ -398,12 +449,6 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
                 gl_error("pypower solver returned invalid result type (not a dict)");
                 return TS_INVALID;
             }
-
-#define RECV(NAME,INDEX,FROM,TO) { PyObject *py = PyList_GET_ITEM(pyobj,INDEX);\
-    if ( obj->get_##NAME() != Py##FROM##_As##TO(py) ) { \
-        n_changes++; \
-        obj->set_##NAME(Py##FROM##_As##TO(py)); \
-    }}
 
             // copy values back from solver
             n_changes = 0;
@@ -459,7 +504,8 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
         {
             return t0;
         }
-        return maximum_timestep > 0 ? t0+maximum_timestep : TS_NEVER;
+        TIMESTAMP t2 = maximum_timestep > 0 ? t0+maximum_timestep : TS_NEVER;
+        return min(t1,t2);
 
     }
 }
