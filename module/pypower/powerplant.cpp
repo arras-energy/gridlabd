@@ -15,7 +15,7 @@ powerplant::powerplant(MODULE *module)
 	if (oclass==NULL)
 	{
 		// register to receive notice for first top down. bottom up, and second top down synchronizations
-		oclass = gld_class::create(module,"powerplant",sizeof(powerplant),PC_PRETOPDOWN|PC_BOTTOMUP|PC_POSTTOPDOWN|PC_AUTOLOCK|PC_OBSERVER);
+		oclass = gld_class::create(module,"powerplant",sizeof(powerplant),PC_PRETOPDOWN|PC_BOTTOMUP|PC_AUTOLOCK|PC_OBSERVER);
 		if (oclass==NULL)
 			throw "unable to register class powerplant";
 		else
@@ -300,14 +300,7 @@ TIMESTAMP powerplant::sync(TIMESTAMP t0)
 
 TIMESTAMP powerplant::postsync(TIMESTAMP t0)
 {
-	if ( is_dynamic ) // gen parent
-	{
-		throw "TODO";
-	}
-	else
-	{
-		// copy data from parent
-		// bus *parent = (bus*)get_parent();
-	}
+	// cannot separate contribution of this powerplant to total gen Pg,Qg
+	exception("invalid postsync event requrest");
 	return TS_NEVER;
 }
