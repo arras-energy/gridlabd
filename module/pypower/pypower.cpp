@@ -399,21 +399,28 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
                 return TS_INVALID;
             }
 
+#define RECV(NAME,INDEX,FROM,TO) { PyObject *py = PyList_GET_ITEM(pyobj,INDEX);\
+    if ( obj->get_##NAME() != Py##FROM##_As##TO(py) ) { \
+        n_changes++; \
+        obj->set_##NAME(Py##FROM##_As##TO(py)); \
+    }}
+
             // copy values back from solver
+            n_changes = 0;
             PyObject *busdata = PyDict_GetItemString(result,"bus");
             for ( size_t n = 0 ; n < nbus ; n++ )
             {
                 bus *obj = buslist[n];
                 PyObject *pyobj = PyList_GetItem(busdata,n);
-                obj->set_Vm(PyFloat_AsDouble(PyList_GetItem(pyobj,7)));
-                obj->set_Va(PyFloat_AsDouble(PyList_GetItem(pyobj,8)));
+                RECV(Vm,7,Float,Double)
+                RECV(Va,8,Float,Double)
 
                 if ( enable_opf )
                 {
-                    obj->set_lam_P(PyFloat_AsDouble(PyList_GetItem(pyobj,13)));
-                    obj->set_lam_Q(PyFloat_AsDouble(PyList_GetItem(pyobj,14)));
-                    obj->set_mu_Vmax(PyFloat_AsDouble(PyList_GetItem(pyobj,15)));
-                    obj->set_mu_Vmin(PyFloat_AsDouble(PyList_GetItem(pyobj,16)));
+                    RECV(lam_P,13,Float,Double)
+                    RECV(lam_Q,14,Float,Double)
+                    RECV(mu_Vmax,15,Float,Double)
+                    RECV(mu_Vmin,16,Float,Double)
                 }
             }
 
@@ -422,15 +429,15 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
             {
                 gen *obj = genlist[n];
                 PyObject *pyobj = PyList_GetItem(gendata,n);
-                obj->set_Pg(PyFloat_AsDouble(PyList_GetItem(pyobj,1)));
-                obj->set_Qg(PyFloat_AsDouble(PyList_GetItem(pyobj,2)));
-                obj->set_apf(PyFloat_AsDouble(PyList_GetItem(pyobj,20)));
+                RECV(Pg,1,Float,Double)
+                RECV(Qg,2,Float,Double)
+                RECV(apf,20,Float,Double)
                 if ( enable_opf )
                 {
-                    obj->set_mu_Pmax(PyFloat_AsDouble(PyList_GetItem(pyobj,21)));
-                    obj->set_mu_Pmin(PyFloat_AsDouble(PyList_GetItem(pyobj,22)));
-                    obj->set_mu_Qmax(PyFloat_AsDouble(PyList_GetItem(pyobj,23)));
-                    obj->set_mu_Qmin(PyFloat_AsDouble(PyList_GetItem(pyobj,24)));
+                    RECV(mu_Pmax,21,Float,Double)
+                    RECV(mu_Pmin,22,Float,Double)
+                    RECV(mu_Qmax,23,Float,Double)
+                    RECV(mu_Qmin,24,Float,Double)
                 }
             }
         }
@@ -448,7 +455,12 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
         {
             gl_warning("pypower solver failed");
         }
+        if ( n_changes > 0 )
+        {
+            return t0;
+        }
         return maximum_timestep > 0 ? t0+maximum_timestep : TS_NEVER;
+
     }
 }
 
