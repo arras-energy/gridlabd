@@ -19,6 +19,7 @@ module_pypower_pypower_la_SOURCES += module/pypower/bus.cpp module/pypower/bus.h
 module_pypower_pypower_la_SOURCES += module/pypower/gen.cpp module/pypower/gen.h
 module_pypower_pypower_la_SOURCES += module/pypower/gencost.cpp module/pypower/gencost.h
 module_pypower_pypower_la_SOURCES += module/pypower/load.cpp module/pypower/load.h
+module_pypower_pypower_la_SOURCES += module/pypower/powerline.cpp module/pypower/powerline.h
 module_pypower_pypower_la_SOURCES += module/pypower/powerplant.cpp module/pypower/powerplant.h
 
 dist_pkgdata_DATA += module/pypower/pypower_solver.py

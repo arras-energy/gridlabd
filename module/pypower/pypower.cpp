@@ -35,6 +35,7 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
     new gencost(module);
     new load(module);
     new powerplant(module);
+    new powerline(module);
 
     gl_global_create("pypower::version",
         PT_int32, &pypower_version, 
