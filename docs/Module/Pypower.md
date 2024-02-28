@@ -50,13 +50,27 @@ the load is `OFFLINE`, the values of `S` is zero regardless of the value of
 
 ## Powerplants
 
-Using the `powerplant` objects allows integration of one or more quasi-static
+Using `powerplant` objects allows integration of one or more quasi-static
 generator models with both `bus` and `gen` objects. When integrating with a
 `bus` object, the `S` value real and imaginary values are added to the `bus`
 properties `Pd` and `Qd`, respectively, when the plant is `ONLINE`.  
 
 When integrated with a `gen` object, both the `Pd` and `Qd` values are updated
 based on the powerplant's generator status and type.
+
+## Powerlines
+
+Using `powerline` object allows composite lines to be constructed and
+assembled into `branch` objects.  A `powerline` may either have a `branch`
+parent or another `powerline` object, in which case the parent must specify
+whether its `composition` is either `SERIES` or `PARALLEL`.  When a
+`powerline` is not a composite line you must specify its `impedance` in Ohms
+per mile and its length in `miles`. Only lines with `status` values `IN` are
+assembled in the parent line. Line with `status` values `OUT` are ignored. 
+
+The `status` value, `impedance`, `length`, and `composition` may be changed at
+any time during a simulation. However, these values are only checked for
+consistency and sanity during initialization.
 
 ## Controllers
 
