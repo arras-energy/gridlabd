@@ -203,7 +203,12 @@ TIMESTAMP powerplant::presync(TIMESTAMP t0)
 	// copy data to parent
 	if ( is_dynamic ) // gen parent
 	{
-		throw "TODO";
+		if ( S.Re() != 0 || S.Im() != 0 )
+		{
+			gen *parent = (gen*)get_parent();
+			parent->set_Pg(parent->get_Pg()-S.Re());
+			parent->set_Qg(parent->get_Qg()-S.Im());
+		}
 	}
 	else // bus parent
 	{
