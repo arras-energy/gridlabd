@@ -99,7 +99,7 @@ int powerline::init(OBJECT *parent_hdr)
 
 TIMESTAMP powerline::precommit(TIMESTAMP t0)
 {
-	if ( get_parent() != NULL )
+	if ( status == PLS_IN && get_parent() != NULL )
 	{
 		if ( parent_is_branch )
 		{
