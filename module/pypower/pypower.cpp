@@ -13,6 +13,7 @@ int32 pypower_version = 2;
 bool stop_on_failure = false;
 int32 maximum_timestep = 0; // seconds; 0 = no max ts
 enumeration solver_method = 1;
+double solver_update_resolution = 1e-8;
 bool save_case = false;
 char1024 controllers;
 char1024 controllers_path;
@@ -87,6 +88,11 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
     gl_global_create("pypower::controllers",
         PT_char1024, &controllers, 
         PT_DESCRIPTION, "Python module containing controller functions",
+        NULL);
+
+    gl_global_create("pypower::solver_update_resolution",
+        PT_double, &solver_update_resolution,
+        PT_DESCRIPTION, "Minimum difference before a value is considered changed",
         NULL);
 
     // always return the first class registered
@@ -270,7 +276,7 @@ EXPORT bool on_init(void)
 
 // conditional solver send/receive (only if value differs or is not set yet)
 #define SEND(INDEX,NAME,FROM,TO) { PyObject *py = PyList_GetItem(pyobj,INDEX); \
-    if ( py == NULL || obj->get_##NAME() != Py##TO##_As##FROM(py) ) { \
+    if ( py == NULL || fabs(obj->get_##NAME()-Py##TO##_As##FROM(py)) > solver_update_resolution ) { \
         PyObject *value = Py##TO##_From##FROM(obj->get_##NAME()); \
         if ( value == NULL ) { \
             gl_warning("pypower:on_sync(t0=%lld): unable to create value " #NAME " for data item %d",t0,INDEX); \
@@ -282,15 +288,13 @@ EXPORT bool on_init(void)
 }}}
 
 #define RECV(NAME,INDEX,FROM,TO) { PyObject *py = PyList_GET_ITEM(pyobj,INDEX);\
-    if ( obj->get_##NAME() != Py##FROM##_As##TO(py) ) { \
+    if ( fabs(obj->get_##NAME()-Py##FROM##_As##TO(py)) > solver_update_resolution ) { \
         n_changes++; \
         obj->set_##NAME(Py##FROM##_As##TO(py)); \
     }}
 
 EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
 {
-    // fprintf(stderr," --> t0 = %lld\n",t0);
-
     // not a pypower model
     if ( nbus == 0 || nbranch == 0 )
     {
@@ -429,7 +433,6 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
             gl_error("%s.on_sync(data) returned a timestamp earlier than sync time t0=%lld",(const char*)controllers,t0);
             return TS_INVALID;
         }
-        // fprintf(stderr," --> t1 = %lld\n",t1);
     }
 
     // run solver
@@ -445,12 +448,12 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
         result = PyObject_CallOneArg(solver,data);
 
         // receive results (if new)
-        if ( result != NULL && result != data )
+        if ( result != NULL )
         {
             if ( ! PyDict_Check(result) )
             {
                 gl_error("pypower solver returned invalid result type (not a dict)");
-                return TS_INVALID;
+                return stop_on_failure ? TS_INVALID : TS_NEVER;
             }
 
             // copy values back from solver
@@ -505,11 +508,9 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
         }
         if ( n_changes > 0 )
         {
-            // fprintf(stderr," --> n_changes = %d\n",n_changes);
             return t0;
         }
         TIMESTAMP t2 = maximum_timestep > 0 ? t0+maximum_timestep : TS_NEVER;
-        // fprintf(stderr," --> t2 = %lld\n",t2);
         return (TIMESTAMP)min((unsigned long long)t1,(unsigned long long)t2);
 
     }
