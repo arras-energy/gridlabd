@@ -31,6 +31,12 @@ dist_pkgdata_DATA += converters/mdb-table2glm-player.py
 # omd -> glm
 dist_pkgdata_DATA += converters/omd2glm.py
 
+# py->glm
+dist_pkgdata_DATA += converters/py2glm.py
+
+# raw -> glm
+dist_pkgdata_DATA += converters/raw2glm.py
+
 # tmy3 -> glm
 dist_pkgdata_DATA += converters/tmy32glm.py
 
@@ -72,9 +78,6 @@ dist_pkgdata_DATA += converters/json2txt.py
 
 # json -> zip
 dist_pkgdata_DATA += converters/json2zip.py
-
-# py->glm
-dist_pkgdata_DATA += converters/py2glm.py
 
 # xls -> csv
 dist_pkgdata_DATA += converters/xls2csv.py
