@@ -1,11 +1,14 @@
 #define CASE=14e
 #ifexists "../case.glm"
 #define DIR=..
+#setenv PYTHONPATH=..:${PYTHONPATH}
 #endif
-#ifexist ../case${CASE}.py
-#system cp ../case${CASE/e/}.py ./case${CASE}.py // cause an error
-#define DIR=..
-#endif
+
+module pypower
+{
+    solver_method GS;
+    save_case TRUE;    
+}
 
 clock
 {
@@ -22,7 +25,3 @@ clock
 
 #on_exit 0 python3 ${DIR:-.}/check_case.py case${CASE}.json case${CASE}_ref.json pp_bus_1/Vm > gridlabd.diff
 
-module pypower
-{
-	solver_method GS;
-}
