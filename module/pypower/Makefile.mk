@@ -21,5 +21,8 @@ module_pypower_pypower_la_SOURCES += module/pypower/gencost.cpp module/pypower/g
 module_pypower_pypower_la_SOURCES += module/pypower/load.cpp module/pypower/load.h
 module_pypower_pypower_la_SOURCES += module/pypower/powerline.cpp module/pypower/powerline.h
 module_pypower_pypower_la_SOURCES += module/pypower/powerplant.cpp module/pypower/powerplant.h
+module_pypower_pypower_la_SOURCES += module/pypower/relay.cpp module/pypower/relay.h
+module_pypower_pypower_la_SOURCES += module/pypower/scada.cpp module/pypower/scada.h
+module_pypower_pypower_la_SOURCES += module/pypower/transformer.cpp module/pypower/transformer.h
 
 dist_pkgdata_DATA += module/pypower/pypower_solver.py

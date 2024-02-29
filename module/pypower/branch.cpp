@@ -81,6 +81,8 @@ int branch::create(void)
 		throw "maximum branch entities exceeded";
 	}
 
+	child_count = 0;
+
 	return 1; /* return 1 on success, 0 on failure */
 }
 

@@ -26,6 +26,9 @@ public:
 	GL_ATOMIC(double,angmax);
 
 public:
+	GL_ATOMIC(int32,child_count);
+	
+public:
 	// event handlers
 	branch(MODULE *module);
 	int create(void);

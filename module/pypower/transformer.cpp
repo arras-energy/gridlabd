@@ -1,32 +1,28 @@
-// module/pypower/powerline.cpp
+// module/pypower/transformer.cpp
 // Copyright (C) 2024 Regents of the Leland Stanford Junior University
 
 #include "pypower.h"
 
-EXPORT_CREATE(powerline);
-EXPORT_INIT(powerline);
-EXPORT_PRECOMMIT(powerline);
+EXPORT_CREATE(transformer);
+EXPORT_INIT(transformer);
+EXPORT_PRECOMMIT(transformer);
 
-CLASS *powerline::oclass = NULL;
-powerline *powerline::defaults = NULL;
+CLASS *transformer::oclass = NULL;
+transformer *transformer::defaults = NULL;
 
-powerline::powerline(MODULE *module)
+transformer::transformer(MODULE *module)
 {
 	if (oclass==NULL)
 	{
 		// register to receive notice for first top down. bottom up, and second top down synchronizations
-		oclass = gld_class::create(module,"powerline",sizeof(powerline),PC_AUTOLOCK|PC_OBSERVER);
+		oclass = gld_class::create(module,"transformer",sizeof(transformer),PC_AUTOLOCK|PC_OBSERVER);
 		if (oclass==NULL)
-			throw "unable to register class powerline";
+			throw "unable to register class transformer";
 		else
 			oclass->trl = TRL_PROVEN;
 
 		defaults = this;
 		if (gl_publish_variable(oclass,
-
-			PT_double, "length[mile]", get_length_offset(),
-				PT_REQUIRED,
-				PT_DESCRIPTION, "length (miles)",
 
 			PT_complex, "impedance[Ohm/mile]", get_impedance_offset(),
 				PT_REQUIRED,
@@ -34,35 +30,24 @@ powerline::powerline(MODULE *module)
 
 			PT_enumeration, "status", get_status_offset(),
 				PT_DEFAULT, "IN",
-				PT_KEYWORD, "IN", (enumeration)PLS_IN,
-				PT_KEYWORD, "OUT", (enumeration)PLS_OUT,
-				PT_DESCRIPTION, "line status (IN or OUT)",
-
-			PT_enumeration, "composition", get_composition_offset(),
-				PT_KEYWORD, "SERIES", (enumeration)PLC_SERIES,
-				PT_KEYWORD, "PARALLEL", (enumeration)PLC_PARALLEL,
-				PT_DESCRIPTION, "parent line composition (SERIES or PARALLEL)",
+				PT_KEYWORD, "IN", (enumeration)TS_IN,
+				PT_KEYWORD, "OUT", (enumeration)TS_OUT,
+				PT_DESCRIPTION, "transformer status (IN or OUT)",
 
 			NULL) < 1 )
 		{
-				throw "unable to publish powerline properties";
+				throw "unable to publish transformer properties";
 		}
 	}
 }
 
-int powerline::create(void) 
+int transformer::create(void) 
 {
 	parent_is_branch = false;
-	Z = complex(0,0);
-	Y = complex(0,0);
-	ratio = 1.0;
-	angle = 0.0;
-	rating = 0.0;
-	
 	return 1; // return 1 on success, 0 on failure
 }
 
-int powerline::init(OBJECT *parent_hdr)
+int transformer::init(OBJECT *parent_hdr)
 {
 	powerline *parent = (powerline*)get_parent();
 	if ( parent ) 
@@ -87,6 +72,11 @@ int powerline::init(OBJECT *parent_hdr)
 				error("parent '%s' non-zero impedance will be overwritten",get_parent()->get_name());
 				return 0;
 			}
+			if ( parent->get_composition() == powerline::PLC_PARALLEL )
+			{
+				error("parent '%s' must have series composition",get_parent()->get_name());
+				return 0;
+			}
 		}
 		else
 		{
@@ -97,25 +87,20 @@ int powerline::init(OBJECT *parent_hdr)
 	}
 	else
 	{
-		warning("powerline without parent does nothing");
+		warning("transformer without parent does nothing");
 	}
 
 	// check impedance
-	if ( impedance.Re() != 0 || impedance.Im() != 0 )
+	if ( impedance.Re() == 0 && impedance.Im() == 0 )
 	{
-		if ( length <= 0 )
-		{
-			error("line length must be positive to calculate impedance and admittance");
-			return 0;
-		}
-		Z = impedance * length;
-		Y = Z.Inv();
+		error("transformer impedance must be positive");
+		return 0;
 	}
 
 	return 1; // return 1 on success, 0 on failure, 2 on retry later
 }
 
-TIMESTAMP powerline::precommit(TIMESTAMP t0)
+TIMESTAMP transformer::precommit(TIMESTAMP t0)
 {
 	if ( get_parent() != NULL )
 	{
@@ -123,13 +108,15 @@ TIMESTAMP powerline::precommit(TIMESTAMP t0)
 		{
 			branch *parent = (branch*)get_parent();
 
-			if ( get_status() == PLS_IN )
+			if ( get_status() == TS_IN )
 			{
 				// copy status/impedance/admittance values to branch
-				parent->set_r(get_Z().Re());
-				parent->set_x(get_Z().Im());
-				parent->set_b(get_Y().Im());
-				parent->set_rateA(get_rateA());
+				parent->set_r(get_impedance().Re());
+				parent->set_x(get_impedance().Im());
+				parent->set_b(get_impedance().Inv().Im());
+				parent->set_ratio(get_turns_ratio());
+				parent->set_angle(get_phase_shift());
+				parent->set_rateA(get_rating());
 				parent->set_status(1);
 			}
 			else
@@ -137,27 +124,22 @@ TIMESTAMP powerline::precommit(TIMESTAMP t0)
 				parent->set_status(0);
 			}
 		}
-		else if ( get_status() == PLS_IN )
+		else 
 		{
 			powerline *parent = (powerline*)get_parent();
-			if ( parent->get_composition() == PLC_SERIES )
+			if ( get_status() == TS_IN )
 			{
 				// add impedance
-				complex Z = parent->get_Z() + get_Z();
+				complex Z = parent->get_Z() + get_impedance();
 				parent->set_Z(Z);
 				parent->set_Y(Z.Inv());
-				parent->set_rateA(min(parent->get_rateA(),get_rateA()));
-			}
-			else if ( parent->get_composition() == PLC_PARALLEL )
-			{
-				complex Y = parent->get_Y() + get_Y();
-				parent->set_Y(Y);
-				parent->set_Z(Y.Inv());
-				parent->set_rateA(parent->get_rateA()+get_rateA());
+				parent->set_ratio(parent->get_ratio()*get_turns_ratio());
+				parent->set_angle(parent->get_angle()+get_phase_shift());
+				parent->set_rateA(min(parent->get_rateA(),get_rating()));
 			}
 			else
 			{
-				exception("invalid powerline composition value '%d' encountered",get_composition());
+				parent->set_status(powerline::PLS_IN);
 			}
 		}
 	}

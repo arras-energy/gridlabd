@@ -18,6 +18,9 @@
 #include "load.h"
 #include "powerplant.h"
 #include "powerline.h"
+#include "relay.h"
+#include "scada.h"
+#include "transformer.h"
 
 #define MAXENT 30000 // maximum number of bus/branch/gen/gencost entities supported
 
