@@ -289,6 +289,8 @@ EXPORT bool on_init(void)
 
 EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
 {
+    // fprintf(stderr," --> t0 = %lld\n",t0);
+
     // not a pypower model
     if ( nbus == 0 || nbranch == 0 )
     {
@@ -393,52 +395,53 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
         }
     }
 
-    // run solver
-    PyErr_Clear();
-    static PyObject *result = NULL;
+    // run controller on_sync, if any
     TIMESTAMP t1 = TS_NEVER;
+    if ( py_sync )
+    {
+        PyDict_SetItemString(data,"t",PyLong_FromLong(t0));        
+        PyErr_Clear();
+        PyObject *ts = PyObject_CallOneArg(py_sync,data);
+        if ( PyErr_Occurred() )
+        {
+            PyErr_Print();
+            return TS_INVALID;
+        }
+        if ( ts == NULL || ! PyLong_Check(ts) )
+        {
+            gl_error("%s.on_sync(data) returned value that is not a valid timestamp",(const char*)controllers);
+            Py_XDECREF(ts);
+            return TS_INVALID;
+        }
+        t1 = PyLong_AsLong(ts);
+        Py_DECREF(ts);
+        if ( t1 < 0 )
+        {
+            t1 = TS_NEVER;
+        }
+        else if ( t1 == 0 && stop_on_failure )
+        {
+            gl_error("%s.on_sync(data) halted the simulation",(const char*)controllers);
+            return TS_INVALID;
+        }
+        else if ( t1 < t0 )
+        {
+            gl_error("%s.on_sync(data) returned a timestamp earlier than sync time t0=%lld",(const char*)controllers,t0);
+            return TS_INVALID;
+        }
+        // fprintf(stderr," --> t1 = %lld\n",t1);
+    }
+
+    // run solver
+    static PyObject *result = NULL;
     if ( result == NULL || n_changes > 0 )
     {
-        // run controller on_sync, if any
-        if ( py_sync )
-        {
-            PyDict_SetItemString(data,"t",PyLong_FromLong(t0));        
-            PyErr_Clear();
-            PyObject *ts = PyObject_CallOneArg(py_sync,data);
-            if ( PyErr_Occurred() )
-            {
-                PyErr_Print();
-                return TS_INVALID;
-            }
-            if ( ts == NULL || ! PyLong_Check(ts) )
-            {
-                gl_error("%s.on_sync(data) returned value that is not a valid timestamp",(const char*)controllers);
-                Py_XDECREF(ts);
-                return TS_INVALID;
-            }
-            t1 = PyLong_AsLong(ts);
-            Py_DECREF(ts);
-            if ( t1 < 0 )
-            {
-                t1 = TS_NEVER;
-            }
-            else if ( t1 == 0 && stop_on_failure )
-            {
-                gl_error("%s.on_sync(data) halted the simulation",(const char*)controllers);
-                return TS_INVALID;
-            }
-            else if ( t1 < t0 )
-            {
-                gl_error("%s.on_sync(data) returned a timestamp earlier than sync time t0=%lld",(const char*)controllers,t0);
-                return TS_INVALID;
-            }
-        }
-
         // run pypower solver
         if ( result != data )
         {
             Py_XDECREF(result);
         }
+        PyErr_Clear();
         result = PyObject_CallOneArg(solver,data);
 
         // receive results (if new)
@@ -486,9 +489,9 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
                 }
             }
         }
-        PyErr_Clear();
     }
 
+    PyErr_Clear();
     if ( result == NULL && stop_on_failure )
     {
         gl_warning("pypower solver failed");
@@ -502,10 +505,12 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
         }
         if ( n_changes > 0 )
         {
+            // fprintf(stderr," --> n_changes = %d\n",n_changes);
             return t0;
         }
         TIMESTAMP t2 = maximum_timestep > 0 ? t0+maximum_timestep : TS_NEVER;
-        return min(t1,t2);
+        // fprintf(stderr," --> t2 = %lld\n",t2);
+        return (TIMESTAMP)min((unsigned long long)t1,(unsigned long long)t2);
 
     }
 }
