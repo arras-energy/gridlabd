@@ -16,6 +16,7 @@ module pypower
     bool stop_on_failure; // Flag to stop simulation on solver failure (default is FALSE)
     bool save_case; // Flag to enable saving case data and results (default is FALSE)
     char1024 controllers; // Python module containing controller functions
+    double solver_update_resolution; // Minimum difference before a value is considered changed
 }
 ~~~
 
@@ -26,10 +27,18 @@ objects used to link the two solvers are supported by the `bus`, `branch`,
 and `gen` classes.  For details on these objects' properties, see the
 [PyPower documentation]([https://pypi.org/project/PYPOWER/).
 
-If `enable_opf` is `TRUE`, then the OPF solver is used when `gencost` objects are defined.
+If `enable_opf` is `TRUE`, then the OPF solver is used when `gencost` objects
+are defined.
 
 If `save_case` is `TRUE`, then the case data and solver results are stored in
 `pypower_casedata.py` and `pypower_results.py` files.
+
+If you have convergence iteration limit issues when larger models, try
+increasing the value of `solver_update_resolution`.  The larger this value
+is, the larger a difference between an old value and new value from the
+solver must be to be considered a change necessitating additional iteration.
+The default value is `1e-8`, which should be sufficient for most models.
+
 
 # Integration Objects
 
