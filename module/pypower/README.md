@@ -4,16 +4,19 @@ This module was developed by [David Chassin](https://github.com/dchassin) at SLA
 
 The `pypower` module provides PF and OPF solvers that are suitable for reduced-order modeling of transmission and substransmission systems.  The solvers are integrated at the module level, meaning that module event handlers initiate the powerflow solvers. The two events that are handled are the `on_init` and `on_sync` events.  In addition class-level event handlers are implemented as follows.
 
-| Class | `create` | `init` | `precommit` | `presync` | `sync` | `postsync` | `commit` |
-| ----- | :------: | :----: | :---------: | :-------: | :----: | :--------: | :------: |
-| Module | X       | X      |             |           | X [1]  |            |          | 
-| `branch` | X     | X      |             |           |        |            |          |
-| `bus` | X        | X      |             | X         |        |            |          |
-| `gen` | X        | X      |             |           |        |            |          |
-| `gencost` | X    | X      |             |           |        |            |          |
-| `load` | X       | X      |             | X         | X      | X          |          |
-| `powerline` | X  | X      | X           |           |        |            |          |
-| `powerplant` | X | X      |             | X         | X      | X          |          |
+| Class         | `create` | `init` | `precommit` | `presync` | `sync` | `postsync` | `commit` |
+| ------------- | :------: | :----: | :---------: | :-------: | :----: | :--------: | :------: |
+| Module        | X        | X      |             |           | X [1]  |            |          | 
+| `branch`      | X        | X      |             |           |        |            |          |
+| `bus`         | X        | X      |             | X         |        |            |          |
+| `gen`         | X        | X      |             |           |        |            |          |
+| `gencost`     | X        | X      |             |           |        |            |          |
+| `load`        | X        | X      |             | X         | X      | X          |          |
+| `powerline`   | X        | X      | X           |           |        |            |          |
+| `powerplant`  | X        | X      |             | X         | X      | X          |          |
+| `relay`       | X        | X      | X           |           |        |            |          |
+| `scada`       | X        | X      |             |           | X      |            |          |
+| `transformer` | X        | X      | X           |           |        |            |          |
 
 [1] Only called when `on_sync(data)` is defined in `controllers` python file. 
 
