@@ -3,7 +3,9 @@
 
 import os, sys
 from pypower.api import case14, ppoption, runpf, runopf
-from numpy import array
+from numpy import array, set_printoptions, inf
+
+set_printoptions(threshold=inf,linewidth=inf,formatter={'float':lambda x:f"{x:.6g}"})
 
 # TODO: read these values from the pf_case argument
 save_case = False
@@ -100,9 +102,8 @@ def solver(pf_case):
         e_type,e_value,e_trace = sys.exc_info()
 
         print("EXCEPTION [pypower_solver.py]:",e_type,e_value,file=sys.stderr,flush=True)
-        if debug:
-            import traceback
-            traceback.print_exception(e_type,e_value,e_trace,file=sys.stderr)
+        import traceback
+        traceback.print_exception(e_type,e_value,e_trace,file=sys.stderr)
 
         return False
 

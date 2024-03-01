@@ -36,6 +36,7 @@ bus::bus(MODULE *module)
 				PT_KEYWORD, "PV", (enumeration)2,
 				PT_KEYWORD, "REF", (enumeration)3,
 				PT_KEYWORD, "NONE", (enumeration)4,
+				PT_KEYWORD, "PQREF", (enumeration)1,
 
 			PT_double, "Pd[MW]", get_Pd_offset(),
 				PT_DESCRIPTION, "real power demand (MW)",
@@ -64,10 +65,12 @@ bus::bus(MODULE *module)
 			PT_int32, "zone", get_zone_offset(),
 				PT_DESCRIPTION, "loss zone (1-999)",
 
-			PT_double, "Vmax", get_Vmax_offset(),
+			PT_double, "Vmax[pu*V]", get_Vmax_offset(),
+				PT_DEFAULT,"1.2 pu*V",
 				PT_DESCRIPTION, "maximum voltage magnitude (p.u.)",
 
-			PT_double, "Vmin", get_Vmin_offset(),
+			PT_double, "Vmin[pu*V]", get_Vmin_offset(),
+				PT_DEFAULT,"0.8 pu*V",
 				PT_DESCRIPTION, "minimum voltage magnitude (p.u.)",
 
 			PT_double, "lam_P", get_lam_P_offset(),

@@ -5,9 +5,10 @@ import datetime
 import importlib, copy
 from importlib import util
 import csv
+from math import cos, sin
 
-
-sys.argv.extend(["-i","autotest/wecc240.raw","-o","autotest/wecc240.glm"])
+if os.path.exists("autotest/wecc240.raw") and len(sys.argv) == 1:
+    sys.argv.extend(["-i","autotest/wecc240.raw","-o","autotest/wecc240.glm"])
 
 config = {"input":"raw","output":"glm","type":[],"format":[]}
 
@@ -82,6 +83,10 @@ def convert(ifile,ofile,options={}):
         )
 
     busndx = {}
+    genndx = {}
+    branchndx = {}
+    bus_S = {}
+    bus_V = {}
     oname = options['prefix'] if 'prefix' in options and not options['prefix'] is None else os.path.splitext(os.path.basename(ofile))[0]
     with open(ofile,"w") as glm:
 
@@ -119,28 +124,38 @@ def convert(ifile,ofile,options={}):
                     print(f"// {row[0]}",file=glm);
                 
                 elif block == 'BUS_DATA':
+
                     # PSSE: id,name,baseKV,type,area,zone,Vm,Va,gen.r,gen.i,ld.r,ld.i
                     # GLM: "bus_i type Pd Qd Gs Bs area Vm Va baseKV zone Vmax Vmin",
                     bus_i = len(busndx)+1
                     busndx[row[0]] = bus_i
+                    bus_S[row[0]] = complex(0,0)
+                    Vm = float(row[7])
+                    Va = float(row[8])
+                    bus_V[row[0]] = complex(Vm*cos(Va*3.1416/180),Vm*sin(Va*3.1416/180))
+                    typemap = ['UNKNOWN','PQ','PV','REF','NONE','PQREF'] # map PSSE bus types to pypower bus types
                     print(f"""object pypower.bus 
 {{
-    name "{oname}_bus_{row[0]}"; // {row[1]}
+    name "{oname}_bus_{row[0]}"; 
+    // NAME "{row[1]}";
     bus_i {bus_i};
     baseKV {row[2]} kV;
-    type {row[3]}; // TODO: not sure about conversion of type values from PSSE to PyPower
+    type {typemap[int(row[3])]}; 
     area {row[4]};
     zone {row[5]};
-    // row[6]='{row[6]}'
+    // ROW[6] "{row[6]}";
     Vm {row[7]} kV;
     Va {row[8]} deg;
     Pd {float(row[9])-float(row[11])} MW;
     Qd {float(row[10])-float(row[12])} MVAr;
-    // 
-
 }}""",file=glm)
+
                 elif block == 'LOAD_DATA':
-                    # I,'ID',STAT,AREA,ZONE,      PL,        QL,        IP,        IQ,        YP,        YQ, OWNER,SCALE,INTRPT,  DGENP,     DGENQ, DGENF
+
+                    if not row[0] in busndx:
+                        print(f"WARNING [raw2glm.py]: load '{row[0]}' not a valid bus index")
+
+                    # PSSE: I,'ID',STAT,AREA,ZONE,      PL,        QL,        IP,        IQ,        YP,        YQ, OWNER,SCALE,INTRPT,  DGENP,     DGENQ, DGENF
                     try:
                         Z = complex(1,0)/complex(float(row[9]),float(row[10]))
                     except:
@@ -149,29 +164,90 @@ def convert(ifile,ofile,options={}):
                     P = complex(float(row[5]),float(row[6])) + complex(float(row[14]),float(row[15]))
                     response = 1 - float(row[12])
                     status = "ONLINE" if float(row[13]) == 0.0 else "CURTAILED"
+                    V = bus_V[row[0]]
+                    bus_S[row[0]] += P + V*I.conjugate()
+                    if Z.real != 0.0 and Z.imag != 0.0:
+                        bus_S[row[0]] += V.conjugate()*V/Z.conjugate()
                     print(f"""object pypower.load
 {{
     name "{oname}_load_{row[0]}"; // ID = '{row[1]}'
     parent "{oname}_bus_{row[0]}";
     status "{"ONLINE" if row[2] == 1 else "OFFLINE"}";
-    // area {row[3]}
-    // zone {row[4]}
+    // AREA "{row[3]}";
+    // ZONE "{row[4]}";
     Z {Z.real:.4g}{Z.imag:+.4g}j Ohm;
     I {I.real:.4g}{I.imag:+.4g}j A;
     P {P.real:.4g}{P.imag:+.4g}j MVA;
-    // owner {row[11]}
-    // scale {row[12]}
-    // intrpt {row[13]}
+    // OWNER "{row[11]}";
+    // SCALE "{row[12]}";
+    // INTRPT "{row[13]}";
     status {status};
     response {response};
-    // dgenf {row[16]}
+    // DGENF "{row[16]}";
 }}""",file=glm)
+
+                elif block == "GENERATOR_DATA":
+
+                    genid = int(row[0])
+                    genndx[genid] = genndx[genid]+1 if genid in genndx else 0
+                    if not row[0] in busndx:
+                        print(f"WARNING [raw2glm.py]: gen '{row[0]}' not a valid bus index")
+                    # PSSE: I,'ID',      PG,        QG,        QT,        QB,     VS,    IREG,     MBASE,     ZR,         ZX,         RT,         XT,     GTAP,STAT, RMPCT,      PT,        PB,    O1,    F1,  O2,    F2,  O3,    F3,  O4,    F4,WMOD, WPF,NREG
+                    print(f"""object pypower.gen
+{{
+    name "{oname}_gen_{row[0]}_{genndx[genid]}";
+    // ID {row[1]};
+    bus {busndx[row[0]]};
+    Pg {row[2]} MW;
+    Qg {row[3]} MVAr;
+    // QT "{row[4]}";
+    // QB "{row[5]}";
+    Vg {row[6]} pu*V;
+    // IREG "{row[7]}";
+    mBase {row[8]} MVA;
+    // ZR "{row[9]}";
+    // ZX "{row[10]}";
+    // RT "{row[11]}";
+    // XT "{row[12]}";
+    // GTAP "{row[13]}";
+    // STAT "{row[14]}";
+    // RMPCT "{row[15]}";
+    // PT "{row[16]}";
+    // PB "{row[17]}";
+    // O1 "{row[18]}";
+    // F1 "{row[19]}";
+    status IN_SERVICE;
+}}""",file=glm)
+
+                elif block == "BRANCH_DATA":
+
+                    branchid = f"{row[0]}_{row[1]}"
+                    branchndx[branchid] = branchndx[branchid]+1 if branchid in branchndx else 0
+                    if not row[0] in busndx or not row[1] in busndx:
+                        print(f"WARNING [raw2glm.py]: branch '{row[0]}' or '{row[1]}' not a valid bus index")
+
+                    # PSSE: I,     J,'CKT',     R,          X,         B,                    'N A M E'                 ,   RATE1,   RATE2,   RATE3,   
+                    print(f"""object pypower.branch
+{{
+    name "{oname}_branch_{branchid}_{branchndx[branchid]}"; 
+    fbus {busndx[row[0]]};
+    tbus {busndx[row[1]]};
+    // CKT "{row[2]}";
+    r {row[3]};
+    x {row[4]};
+    b {row[5]};
+    // NAME '{row[6]}'
+    rateA {row[7]} MVA;
+    rateB {row[8]} MVA;
+    rateC {row[9]} MVA;
+}}""",file=glm)
+
                 else:
+
                     # gen = "bus Pg Qg Qmax Qmin Vg mBase status Pmax Pmin Pc1 Pc2 Qc1min"\
                     #     + " Qc1max Qc2min Qc2max ramp_agc ramp_10 ramp_30 ramp_q apf",
                     # branch = "fbus tbus r x b rateA rateB rateC ratio angle status angmin angmax",
-                    pass
-                    # print(block,'-->',row)
+                    print(f"WARNING [raw2glm.py]: {block} block converter not implemented")
 
 if __name__ == '__main__':
     main()
