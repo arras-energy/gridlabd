@@ -27,14 +27,14 @@ load::load(MODULE *module)
 			PT_complex, "S[VA]", get_S_offset(),
 				PT_DESCRIPTION, "power demand (VA)",
 
-			PT_complex, "Z[VA]", get_Z_offset(),
-				PT_DESCRIPTION, "constant impedance load (W)",
+			PT_complex, "Z[Ohm]", get_Z_offset(),
+				PT_DESCRIPTION, "constant impedance load (Ohm)",
 
-			PT_complex, "I[VA]", get_I_offset(),
-				PT_DESCRIPTION, "constant current load (W)",
+			PT_complex, "I[A]", get_I_offset(),
+				PT_DESCRIPTION, "constant current load (A)",
 
 			PT_complex, "P[VA]", get_P_offset(),
-				PT_DESCRIPTION, "constant power load (W)",
+				PT_DESCRIPTION, "constant power load (VA)",
 
 			PT_complex, "V[V]", get_V_offset(),
 				PT_DESCRIPTION, "bus voltage (V)",
@@ -79,10 +79,13 @@ int load::init(OBJECT *parent_hdr)
 		return 0;
 	}
 
-	if ( Vn == 0.0 )
+	if ( Vn <= 0.0 )
 	{
-		error("nominal voltage (Vn) not set");
-		return 0;
+		Vn = parent->get_baseKV();
+	}
+	else if ( fabs(Vn - parent->get_baseKV()) > Vn*1e-3 )
+	{
+		warning("nominal voltage Vn differs from bus baseKV by more than 0.1%");
 	}
 
 	extern PyObject *py_globals;
