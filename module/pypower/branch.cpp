@@ -52,7 +52,9 @@ branch::branch(MODULE *module)
 			PT_double, "angle[pu]", get_angle_offset(),
 				PT_DESCRIPTION, "transformer phase shift angle (degrees)",
 
-			PT_int32, "status", get_status_offset(),
+			PT_enumeration, "status", get_status_offset(),
+				PT_KEYWORD,"OUT",(enumeration)BS_OUT,
+				PT_KEYWORD,"IN",(enumeration)BS_IN,
 				PT_DESCRIPTION, "initial branch status, 1 - in service, 0 - out of service",
 
 			PT_double, "angmin[deg]", get_angmin_offset(),

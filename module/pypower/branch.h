@@ -21,7 +21,8 @@ public:
 	GL_ATOMIC(double,rateC);
 	GL_ATOMIC(double,ratio);
 	GL_ATOMIC(double,angle);
-	GL_ATOMIC(int32,status);
+	typedef enum {BS_OUT=0,BS_IN=1} BRANCHSTATUS;
+	GL_ATOMIC(enumeration,status);
 	GL_ATOMIC(double,angmin);
 	GL_ATOMIC(double,angmax);
 

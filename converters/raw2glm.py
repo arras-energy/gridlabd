@@ -22,7 +22,6 @@ def help():
                               file name)
 """
 
-
 def main():
     filename_raw = None
     filename_glm = None
@@ -184,7 +183,10 @@ def convert(ifile,ofile,options={}):
     status {status};
     response {response};
     // DGENF "{row[16]}";
-}}""",file=glm)
+}}
+modify {oname}_bus_{row[0]}.Pd {bus_S[row[0]].real:.6g};
+modify {oname}_bus_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
+""",file=glm)
 
                 elif block == "GENERATOR_DATA":
 
@@ -240,6 +242,11 @@ def convert(ifile,ofile,options={}):
     rateA {row[7]} MVA;
     rateB {row[8]} MVA;
     rateC {row[9]} MVA;
+    ratio 1.0 pu;
+    angle 0.0 deg;
+    status IN;
+    angmin -360 deg;
+    angmax +360 deg;
 }}""",file=glm)
 
                 else:

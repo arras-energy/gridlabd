@@ -110,11 +110,11 @@ TIMESTAMP relay::precommit(TIMESTAMP t0)
 				parent->set_x(get_impedance().Im());
 				parent->set_b(get_impedance().Inv().Im());
 				parent->set_rateA(get_rating());
-				parent->set_status(1);
+				parent->set_status(branch::BS_IN);
 			}
 			else
 			{
-				parent->set_status(0);
+				parent->set_status(branch::BS_OUT);
 			}
 		}
 		else 
