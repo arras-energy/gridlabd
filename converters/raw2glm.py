@@ -22,6 +22,24 @@ def help():
                               file name)
 """
 
+E_OK = 0
+E_SYNTAX = 1
+E_MISSING = 2
+E_EXCEPTION = 9
+def error(msg,file="raw2glm.py",lineno=None,exitcode=None):
+    if lineno is None:
+        print(f"ERROR [{file}]: {msg}",file=sys.stderr,flush=True)
+    else:
+        print(f"ERROR [{file}@{lineno}]: {msg}",file=sys.stderr,flush=True)
+    if not exitcode is None:
+        sys.exit(exitcode)
+
+def warning(msg,file="raw2glm.py",lineno=None):
+    if lineno is None:
+        print(f"WARNING [{file}]: {msg}",file=sys.stderr,flush=True)
+    else:
+        print(f"WARNING [{file}@{lineno}]: {msg}",file=sys.stderr,flush=True)
+
 def main():
     filename_raw = None
     filename_glm = None
@@ -32,17 +50,16 @@ def main():
             ["config","help","ifile=","ofile=",'name='],
             )
     except getopt.GetoptError:
-        sys.exit(2)
+        sys.exit(E_MISSING)
     if not opts : 
-        print('ERROR [raw2glm.py]: missing command arguments')
-        sys.exit(2)
+        error("missing command arguments",exitcode=E_MISSING)
     for opt, arg in opts:
         if opt in ("-c","--config"):
             print(config)
-            sys.exit()
+            sys.exit(E_OK)
         elif opt in ("-h","--help"):
             print(help())
-            sys.exit()
+            sys.exit(E_OK)
         elif opt in ("-i", "--ifile"):
             filename_raw = arg
         elif opt in ("-o", "--ofile"):
@@ -50,12 +67,10 @@ def main():
         elif opt in ("-N", "--name"):
             prefix = arg
         else : 
-            print(f"ERROR [raw2glm.py]: {opt}={arg} is not a valid option")
-            sys.exit(1)
+            error("{opt}={arg} is not a valid option",exitcode=E_SYNTAX)
 
     if not filename_raw:
-        print(f"ERROR [raw2glm.py]: input filename not specified")
-        sys.exit(1)
+        error("input filename not specified",exitcode=E_MISSING)
 
     try:
         convert(
@@ -64,10 +79,10 @@ def main():
             options = dict(prefix = prefix),
             )
     except Exception as err:
-        print(f"ERROR [raw2glm.py]: {err}")
+        error(err)
         import traceback
         traceback.print_exception(err,file=sys.stderr)
-        sys.exit(9)
+        sys.exit(E_EXCEPTION)
 
 def convert(ifile,ofile,options={}):
     """Default converter PSS/E RAW file (version 34-ish)"""
@@ -84,6 +99,7 @@ def convert(ifile,ofile,options={}):
     busndx = {}
     genndx = {}
     branchndx = {}
+    xfrmndx = {}
     bus_S = {}
     bus_V = {}
     oname = options['prefix'] if 'prefix' in options and not options['prefix'] is None else os.path.splitext(os.path.basename(ofile))[0]
@@ -94,16 +110,27 @@ def convert(ifile,ofile,options={}):
 
             reader = csv.reader(raw,delimiter=',',quotechar="'")
             block = None
+            lineno = 0
+            fields = {}
+            items = lambda row: "// No fields provided"
             for values in reader:
+                lineno += 1
                 row = [x.strip() for x in values]
 
                 if row[0].startswith("@!"): # comment
-                    pass
+                    if block:
+                        fields[block] = [x.strip().replace(' ','') for x in row]
+                        fields[block][0] = fields[block][0][2:].strip()
+                    if block in fields:
+                        items = lambda row:"\n    ".join([f"// {x} = {y};" for x,y in zip(fields[block],row)])
+                    else:
+                        items = lambda row: "// No fields provided"
                 elif row[0] == '0': # system-wide data
                 
                     block = 'SYSTEM_DATA'
                     print(f"""module pypower 
 {{
+    // {block} = {row}
     version 2;
     baseMVA {row[1]};
     // {row[5]}
@@ -135,24 +162,23 @@ def convert(ifile,ofile,options={}):
                     typemap = ['UNKNOWN','PQ','PV','REF','NONE','PQREF'] # map PSSE bus types to pypower bus types
                     print(f"""object pypower.bus 
 {{
-    name "{oname}_bus_{row[0]}"; 
-    // NAME "{row[1]}";
+    name "{oname}_N_{row[0]}"; 
     bus_i {bus_i};
     baseKV {row[2]} kV;
     type {typemap[int(row[3])]}; 
     area {row[4]};
     zone {row[5]};
-    // ROW[6] "{row[6]}";
     Vm {row[7]} kV;
     Va {row[8]} deg;
     Pd {float(row[9])-float(row[11])} MW;
     Qd {float(row[10])-float(row[12])} MVAr;
+    {items(row)};
 }}""",file=glm)
 
                 elif block == 'LOAD_DATA':
 
                     if not row[0] in busndx:
-                        print(f"WARNING [raw2glm.py]: load '{row[0]}' not a valid bus index")
+                        warning(f"load '{row[0]}' not a valid bus index",ifile,lineno)
 
                     # PSSE: I,'ID',STAT,AREA,ZONE,      PL,        QL,        IP,        IQ,        YP,        YQ, OWNER,SCALE,INTRPT,  DGENP,     DGENQ, DGENF
                     try:
@@ -169,23 +195,18 @@ def convert(ifile,ofile,options={}):
                         bus_S[row[0]] += V.conjugate()*V/Z.conjugate()
                     print(f"""object pypower.load
 {{
-    name "{oname}_load_{row[0]}"; // ID = '{row[1]}'
-    parent "{oname}_bus_{row[0]}";
+    name "{oname}_L_{row[0]}";
+    parent "{oname}_N_{row[0]}";
     status "{"ONLINE" if row[2] == 1 else "OFFLINE"}";
-    // AREA "{row[3]}";
-    // ZONE "{row[4]}";
     Z {Z.real:.4g}{Z.imag:+.4g}j Ohm;
     I {I.real:.4g}{I.imag:+.4g}j A;
     P {P.real:.4g}{P.imag:+.4g}j MVA;
-    // OWNER "{row[11]}";
-    // SCALE "{row[12]}";
-    // INTRPT "{row[13]}";
     status {status};
     response {response};
-    // DGENF "{row[16]}";
+    {items(row)}
 }}
-modify {oname}_bus_{row[0]}.Pd {bus_S[row[0]].real:.6g};
-modify {oname}_bus_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
+modify {oname}_N_{row[0]}.Pd {bus_S[row[0]].real:.6g};
+modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
 """,file=glm)
 
                 elif block == "GENERATOR_DATA":
@@ -193,32 +214,18 @@ modify {oname}_bus_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
                     genid = int(row[0])
                     genndx[genid] = genndx[genid]+1 if genid in genndx else 0
                     if not row[0] in busndx:
-                        print(f"WARNING [raw2glm.py]: gen '{row[0]}' not a valid bus index")
+                        warning(f"gen '{row[0]}' not a valid bus index",ifile,lineno)
                     # PSSE: I,'ID',      PG,        QG,        QT,        QB,     VS,    IREG,     MBASE,     ZR,         ZX,         RT,         XT,     GTAP,STAT, RMPCT,      PT,        PB,    O1,    F1,  O2,    F2,  O3,    F3,  O4,    F4,WMOD, WPF,NREG
                     print(f"""object pypower.gen
 {{
-    name "{oname}_gen_{row[0]}_{genndx[genid]}";
-    // ID {row[1]};
+    name "{oname}_G_{row[0]}_{genndx[genid]}";
     bus {busndx[row[0]]};
     Pg {row[2]} MW;
     Qg {row[3]} MVAr;
-    // QT "{row[4]}";
-    // QB "{row[5]}";
     Vg {row[6]} pu*V;
-    // IREG "{row[7]}";
     mBase {row[8]} MVA;
-    // ZR "{row[9]}";
-    // ZX "{row[10]}";
-    // RT "{row[11]}";
-    // XT "{row[12]}";
-    // GTAP "{row[13]}";
-    // STAT "{row[14]}";
-    // RMPCT "{row[15]}";
-    // PT "{row[16]}";
-    // PB "{row[17]}";
-    // O1 "{row[18]}";
-    // F1 "{row[19]}";
     status IN_SERVICE;
+    {items(row)}
 }}""",file=glm)
 
                 elif block == "BRANCH_DATA":
@@ -226,37 +233,62 @@ modify {oname}_bus_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
                     branchid = f"{row[0]}_{row[1]}"
                     branchndx[branchid] = branchndx[branchid]+1 if branchid in branchndx else 0
                     if not row[0] in busndx or not row[1] in busndx:
-                        print(f"WARNING [raw2glm.py]: branch '{row[0]}' or '{row[1]}' not a valid bus index")
+                        warning(f"branch '{row[0]}' or '{row[1]}' not a valid bus index",ifile,lineno)
 
                     # PSSE: I,     J,'CKT',     R,          X,         B,                    'N A M E'                 ,   RATE1,   RATE2,   RATE3,   
                     print(f"""object pypower.branch
 {{
-    name "{oname}_branch_{branchid}_{branchndx[branchid]}"; 
+    name "{oname}_B_{branchid}_{branchndx[branchid]}"; 
     fbus {busndx[row[0]]};
     tbus {busndx[row[1]]};
-    // CKT "{row[2]}";
     r {row[3]};
     x {row[4]};
     b {row[5]};
-    // NAME '{row[6]}'
     rateA {row[7]} MVA;
     rateB {row[7]} MVA;
     rateC {row[8]} MVA;
-    // rate3 "{row[9]}";
     ratio 1.0 pu;
     angle 0.0 deg;
     status IN;
     angmin -360 deg;
     angmax +360 deg;
+    {items(row)}
 }}""",file=glm)
+
+                elif block == "TRANSFORMER_DATA":
+
+                    if row[0] in busndx and row[1] in busndx:
+                        branchid = f"{row[0]}_{row[1]}"
+                        branchndx[branchid] = branchndx[branchid]+1 if branchid in branchndx else 0
+                        xfrmid = f"{row[0]}_{row[1]}"
+                        xfrmndx[xfrmid] = xfrmndx[xfrmid]+1 if xfrmid in xfrmndx else 0
+                        print(f"""object pypower.branch
+{{
+    name "{oname}_B_{branchid}_{branchndx[branchid]}";
+    object pypower.transformer 
+    {{
+        name "{oname}_T_{xfrmid}_{xfrmndx[xfrmid]}";
+        // TODO
+    }};
+    {items(row)}
+}}""",file=glm)
+                    warning(f"{block} GLM output is TODO",ifile,lineno)
+
+                elif block in ["AREA_DATA","ZONE_DATA","OWNER_DATA","SWITCHED_SHUNT_DATA"]:
+
+                    print(f"""// {block} = {row}""",file=glm)
+
                 elif row[0] == "Q":
+
+                    print(f"""// END OF INPUT FILE {ifile}""",file=glm)
                     break
+
                 else:
 
                     # gen = "bus Pg Qg Qmax Qmin Vg mBase status Pmax Pmin Pc1 Pc2 Qc1min"\
                     #     + " Qc1max Qc2min Qc2max ramp_agc ramp_10 ramp_30 ramp_q apf",
                     # branch = "fbus tbus r x b rateA rateB rateC ratio angle status angmin angmax",
-                    print(f"WARNING [raw2glm.py]: {block} block converter not implemented")
+                    warning(f"{block} block converter not implemented",ifile,lineno)
 
 if __name__ == '__main__':
     main()
