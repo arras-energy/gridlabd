@@ -240,15 +240,17 @@ modify {oname}_bus_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
     b {row[5]};
     // NAME '{row[6]}'
     rateA {row[7]} MVA;
-    rateB {row[8]} MVA;
-    rateC {row[9]} MVA;
+    rateB {row[7]} MVA;
+    rateC {row[8]} MVA;
+    // rate3 "{row[9]}";
     ratio 1.0 pu;
     angle 0.0 deg;
     status IN;
     angmin -360 deg;
     angmax +360 deg;
 }}""",file=glm)
-
+                elif row[0] == "Q":
+                    break
                 else:
 
                     # gen = "bus Pg Qg Qmax Qmin Vg mBase status Pmax Pmin Pc1 Pc2 Qc1min"\
