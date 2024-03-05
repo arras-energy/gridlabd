@@ -32,9 +32,16 @@ to `triplex_node` objects with names starting as `N_` in the file `my-network.js
 ~~~
 $ gridlabd create_metered_loads -i=my-network.json -o=loads.glm -P='class:triplex_node,name:^N_' -C='class:triplex_load,nominal_voltage:{nominal_voltage},phases:{phases},constant_power_B:1.2+0.1jkVA'
 ~~~
+
+
+The following creates a GLM file containing a `triplex_load` objects attached
+to `triplex_node` objects with names starting as `N_` in the file `my-network.json` without specifying the power phase. The power is captured from the upstream node/triplex_node:
+
+~~~
+$ gridlabd create_metered_loads -i=my-network.json -o=loads.glm -P='class:triplex_node,name:^N_' -C='class:triplex_load,nominal_voltage:{nominal_voltage},phases:{phases},constant_power_B:1.2+0.1jkVA'
+~~~
+
 """
-
-
 
 import sys, os
 import json
