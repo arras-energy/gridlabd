@@ -7,7 +7,7 @@ Options
     -C|--childs=NAME:VALUE,...  specify child property list to assign (required)
     -N|--names=STRING           specify object naming convention (default is '{class}_{name}')
     -M|--modules=NAME,...       specify module names to use (defaults to those found)
-    -L|--link=NAME:VALUE....    specify link types (required)
+    -L|--link=NAME:VALUE,....    specify link types (required)
 
 Description
 -----------
@@ -30,7 +30,7 @@ The following creates a GLM file containing a `triplex_load` objects attached
 to `triplex_node` objects with names starting as `N_` in the file `my-network.json`:
 
 ~~~
-$ gridlabd create_metered_loads -i=my-network.json -o=loads.glm -P='class:triplex_node,name:^N_' -C='class:triplex_load,nominal_voltage:{nominal_voltage},phases:{phases},constant_power_B:1.2+0.1jkVA'
+$ gridlabd create_metered_loads -i=my-network.json -o=loads.glm -P='class:triplex_node,name:^N_' -C='class:triplex_load,nominal_voltage:{nominal_voltage},phases:{phases},constant_power:1.2+0.1jkVA'
 ~~~
 """
 
@@ -144,16 +144,27 @@ def main():
             OBJECTS[name_link]["from"] = obj
 
             for prop,value in CHILDS.items():
-                if not prop in ["class"]:
+                if prop in ["phases"]:
+                    load_phase = ''.join([x for x in 'ABC' if x in value.format(**data)])
+
+            for prop,value in CHILDS.items():
+                if not prop in ["class"] and "constant_" not in prop:
                     OBJECTS[name][prop] = value.format(**data)
                 if prop in ["phases"]:
                     OBJECTS[name_meter][prop] = value.format(**data)
                     OBJECTS[name_link][prop] = value.format(**data)
                 if prop in ["nominal_voltage"]:
                     OBJECTS[name_meter][prop] = value.format(**data)
+                if "constant_" in prop:
+                    if not prop in ["_A", "_B", "_C"] : 
+                        for i in load_phase : 
+                            OBJECTS[name][prop+'_'+i] = value.format(**data)
+                    else : 
+                        OBJECTS[name][prop+i] = value.format(**data)
             for prop,value in LINK.items():
                 if not prop in ["class"]:
                     OBJECTS[name_link][prop] = value.format(**data)
+
 
 
     if OUTPUTFILE.endswith(".glm"):
