@@ -50,7 +50,8 @@ def write_player(file, obj, node_ID, phase) :
 	file.write('object player {\n')
 	file.write('\tparent "' + obj + '";\n')
 	file.write('\tfile "' + os.path.join(folder_name,str(node_ID)) + '.csv";\n')
-	file.write(f'\tproperty constant_power_{phase};\n')
+	for p in phase : 
+		file.write(f'\tproperty constant_power_{p};\n')
 	file.write('}\n')
 
 def convert(input_files, output_file, options={}):
@@ -117,8 +118,7 @@ def convert(input_files, output_file, options={}):
 						node_phase = ''.join([x for x in 'ABC' if x in val['phases']])
 						parent = val["parent"]
 						phase_dict[node_ID]=node_phase
-				for p in node_phase : 
-					write_player(file, obj, node_ID, p)
+						write_player(file, obj, node_ID, node_phase)
 
 	new_column_names = {
 		'reading_dttm': 'timestamp',
