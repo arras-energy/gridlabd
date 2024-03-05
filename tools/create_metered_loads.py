@@ -30,7 +30,7 @@ The following creates a GLM file containing a `triplex_load` objects attached
 to `triplex_node` objects with names starting as `N_` in the file `my-network.json`:
 
 ~~~
-$ gridlabd create_metered_loads -i=my-network.json -o=loads.glm -P='class:triplex_node,name:^N_' -C='class:triplex_load,nominal_voltage:{nominal_voltage},phases:{phases},constant_power:1.2+0.1jkVA'
+$ gridlabd create_metered_loads -i=my-network.json -o=loads.glm -P='class:triplex_node,name:^N_' -C='class:triplex_load,nominal_voltage:{nominal_voltage},phases:{phases},constant_power_B:1.2+0.1jkVA'
 ~~~
 """
 
@@ -156,11 +156,13 @@ def main():
                 if prop in ["nominal_voltage"]:
                     OBJECTS[name_meter][prop] = value.format(**data)
                 if "constant_" in prop:
-                    if not prop in ["_A", "_B", "_C"] : 
+                    if "_A" in prop or "_B" in prop or "_C" in prop: 
+                        OBJECTS[name][prop] = value.format(**data)
+                        
+                    else : 
                         for i in load_phase : 
                             OBJECTS[name][prop+'_'+i] = value.format(**data)
-                    else : 
-                        OBJECTS[name][prop+i] = value.format(**data)
+                        
             for prop,value in LINK.items():
                 if not prop in ["class"]:
                     OBJECTS[name_link][prop] = value.format(**data)
