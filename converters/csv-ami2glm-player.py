@@ -144,8 +144,9 @@ def convert(input_files, output_file, options={}):
 					if load_ID==obj :
 						load_phase = ''.join([x for x in 'ABC' if x in val['phases']])
 						parent = val["parent"]
-						
-						write_player(file, obj, load_ID, load_phase)
+						for node_ID in node_ID_set : 
+							if node_ID in load_ID : 
+								write_player(file, obj, node_ID, load_phase)
 
 	new_column_names = {
 		'reading_dttm': 'timestamp',
