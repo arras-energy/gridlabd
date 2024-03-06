@@ -54,6 +54,15 @@ def write_player(file, obj, node_ID, phase) :
 		file.write(f'\tproperty constant_power_{p};\n')
 	file.write('}\n')
 
+def filter_dict_by_min_value(input_dict, patterns):
+    result_dict = {}
+    for pattern in patterns:
+        pattern_dictionary = {key: value for key, value in input_dict.items() if pattern in key}   
+        min_value = min(pattern_dictionary.values())
+        min_dict = {key: value for key, value in pattern_dictionary.items() if value == min_value}
+        result_dict.update(min_dict)
+    return list(result_dict.keys())
+
 def convert(input_files, output_file, options={}):
 
 	if type(input_files) is dict:
@@ -107,6 +116,8 @@ def convert(input_files, output_file, options={}):
 		df.to_csv(os.path.join(folder_name,os.path.basename(output_file)), index=False)
 	elif os.path.splitext(output_file)[1]=='.glm' :
 		phase_dict = {}
+		load_list = {}
+		load_list_filtered = {}
 		with open(output_file, mode='w') as file :  
 			file.write('module tape;\n')
 
@@ -115,10 +126,26 @@ def convert(input_files, output_file, options={}):
 					continue 
 				for obj,val in network["objects"].items() : 
 					if "load" in val["class"] and node_ID in obj: 
-						node_phase = ''.join([x for x in 'ABC' if x in val['phases']])
+						volts = float(val['nominal_voltage'].split(' ')[0])
+						if 'k' in val['nominal_voltage'].split(' ')[1] : 
+							load_list[obj] = volts*1000
+						elif 'M' in val['nominal_voltage'].split(' ')[1] : 
+							load_list[obj] = volts*1000000
+						else : 
+							load_list[obj] = volts
+				load_phase = ''.join([x for x in 'ABC' if x in val['phases']])
+				phase_dict[node_ID]=load_phase
+
+							
+			# Grabbing only loads on the low side of the Transformer				
+			load_list_filtered = filter_dict_by_min_value(load_list,node_ID_set)
+			for load_ID in load_list_filtered :
+				for obj, val in network["objects"].items() : 
+					if load_ID==obj :
+						load_phase = ''.join([x for x in 'ABC' if x in val['phases']])
 						parent = val["parent"]
-						phase_dict[node_ID]=node_phase
-						write_player(file, obj, node_ID, node_phase)
+						
+						write_player(file, obj, load_ID, load_phase)
 
 	new_column_names = {
 		'reading_dttm': 'timestamp',
