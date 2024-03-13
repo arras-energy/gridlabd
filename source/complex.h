@@ -248,6 +248,13 @@ public:
 		return f;
 	};
 
+	// Method: Inv
+	inline complex Inv(void)
+	{
+		double a = r*r + i*i;
+		return complex(r/a,-i/a);
+	};
+
 	// Method: Mag
 	inline double Mag(void) const /**< compute magnitude */
 	{

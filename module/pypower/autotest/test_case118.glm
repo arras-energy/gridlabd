@@ -1,0 +1,5 @@
+#define CASE=118
+#ifexists "../case.glm"
+#define DIR=..
+#endif
+#include "${DIR:-.}/case.glm"

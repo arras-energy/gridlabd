@@ -337,7 +337,14 @@ int convert_to_complex(const char *buffer, /**< a pointer to the string buffer *
 		v->SetRect(0.0, 0.0,v->Notation());
 		return 1;
 	}
-	n = sscanf(buffer,"%lg%lg%1[ijdr]%s",&a,&b,notation,unit);
+	if ( buffer[0] == '(' ) // python notation
+	{
+		n = sscanf(buffer,"(%lg%lg%1[ijdr])",&a,&b,notation);
+	}
+	else
+	{
+		n = sscanf(buffer,"%lg%lg%1[ijdr]%s",&a,&b,notation,unit);
+	}
 	if (n==1) 
 	{
 		/* only real part */

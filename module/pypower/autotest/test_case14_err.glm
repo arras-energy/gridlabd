@@ -1,0 +1,27 @@
+#define CASE=14e
+#ifexists "../case.glm"
+#define DIR=..
+#setenv PYTHONPATH=..:${PYTHONPATH}
+#endif
+
+module pypower
+{
+    solver_method GS;
+    save_case TRUE;    
+}
+
+clock
+{
+    timezone "PST+8PDT";
+    starttime "2020-01-01 00:00:00 PST";
+    stoptime "2020-02-01 00:00:00 PST";
+}
+
+#input "case${CASE}.py" -t pypower // case14e contains an error on line 33 which should detected
+
+#gridlabd -C "case${CASE}.glm" -D "starttime=${starttime}" -o "case${CASE}_ref.json" 
+
+#set savefile=case${CASE}.json
+
+#on_exit 0 python3 ${DIR:-.}/check_case.py case${CASE}.json case${CASE}_ref.json pp_bus_1/Vm > gridlabd.diff
+
