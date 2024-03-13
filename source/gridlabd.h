@@ -3487,6 +3487,13 @@ public:
 
 	// Method: get_next
 	inline GLOBALVAR* get_next(void) { if (!var) return NULL; else return var->next; };
+
+	bool operator ==(const char *str) { return strcmp((const char*)var->prop->addr,str)==0;};
+	bool operator !=(const char *str) { return strcmp((const char*)var->prop->addr,str)!=0;};
+	bool operator <(const char *str) { return strcmp((const char*)var->prop->addr,str)<0;};
+	bool operator >(const char *str) { return strcmp((const char*)var->prop->addr,str)>0;};
+	bool operator <=(const char *str) { return strcmp((const char*)var->prop->addr,str)<=0;};
+	bool operator >=(const char *str) { return strcmp((const char*)var->prop->addr,str)>=0;};
 };
 
 /* 	Class: gld_aggregate
