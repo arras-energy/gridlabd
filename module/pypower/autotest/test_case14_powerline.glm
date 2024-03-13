@@ -1,0 +1,21 @@
+#define CASE=14
+#ifexists "../case.glm"
+#define DIR=..
+#endif
+#include "${DIR:-.}/case.glm"
+
+module pypower
+{
+	maximum_timestep 3600;
+	save_case TRUE;
+}
+
+// simple copy into branch
+object powerline
+{
+	parent pp_branch_1;
+	impedance 0.01938+0.05917j mOhm/mile;
+	length 1000 mile;
+}
+
+// TODO: add more tests of different line compositions
