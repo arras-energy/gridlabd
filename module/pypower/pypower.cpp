@@ -15,6 +15,13 @@ int32 maximum_timestep = 0; // seconds; 0 = no max ts
 enumeration solver_method = 1;
 double solver_update_resolution = 1e-8;
 bool save_case = false;
+
+enum {
+    SS_INIT = 0,
+    SS_SUCCESS = 1,
+    SS_FAILED = 2,
+} solver_status;
+
 char1024 controllers;
 char1024 controllers_path;
 PyObject *py_controllers;
@@ -98,6 +105,15 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
         PT_double, &solver_update_resolution,
         PT_DESCRIPTION, "Minimum difference before a value is considered changed",
         NULL);
+
+    gl_global_create("pypower::solver_status",
+        PT_enumeration, &solver_status,
+        PT_KEYWORD, "INIT", (enumeration)SS_INIT,
+        PT_KEYWORD, "SUCCESS", (enumeration)SS_SUCCESS,
+        PT_KEYWORD, "FAILED", (enumeration)SS_FAILED,
+        PT_DESCRIPTION, "Result of the last pypower solver run",
+        NULL);
+
 
     // always return the first class registered
     return bus::oclass;
@@ -459,17 +475,20 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
                 if ( stop_on_failure )
                 {
                     gl_error("pypower solver failed");
+                    solver_status = SS_FAILED;
                     return TS_INVALID;
                 }
                 else
                 {
                     gl_warning("pypower solver failed");
+                    solver_status = SS_FAILED;
                     return TS_NEVER;
                 }
             }
             else if ( ! PyDict_Check(result) )
             {
                 gl_error("pypower solver returned invalid result type (not a dict)");
+                    solver_status = SS_FAILED;
                 return TS_INVALID;
             }
 
@@ -479,6 +498,7 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
             if ( nbus > 0 && busdata == NULL )
             {
                 gl_error("pypower solver did not return any bus data");
+                solver_status = SS_FAILED;
                 return TS_INVALID;
             }
             for ( size_t n = 0 ; n < nbus ; n++ )
@@ -501,6 +521,7 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
             if ( ngencost > 0 && gendata == NULL )
             {
                 gl_error("pypower solver did not return any gen data");
+                solver_status = SS_FAILED;
                 return TS_INVALID;
             }
             for ( size_t n = 0 ; n < ngen ; n++ )
@@ -525,6 +546,7 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
     if ( result == NULL && stop_on_failure )
     {
         gl_warning("pypower solver failed");
+        solver_status = SS_FAILED;
         return TS_INVALID;
     }
     else
@@ -532,6 +554,11 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
         if ( ! result )
         {
             gl_warning("pypower solver failed");
+            solver_status = SS_FAILED;
+        }
+        else
+        {
+            solver_status = SS_SUCCESS;
         }
         if ( n_changes > 0 )
         {
