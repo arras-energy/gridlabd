@@ -113,18 +113,27 @@ def convert(ifile,ofile,options={}):
             lineno = 0
             fields = {}
             items = lambda row: "// No fields provided"
+            rows = []
             for values in reader:
                 lineno += 1
                 row = [x.strip() for x in values]
 
                 if row[0].startswith("@!"): # comment
+                    # breakpoint()
                     if block:
-                        fields[block] = [x.strip().replace(' ','') for x in row]
-                        fields[block][0] = fields[block][0][2:].strip()
+                        if block in fields:
+                            fields[block].extend([x.strip().replace(' ','').replace('@!','') for x in row])
+                            rows.extend(list(row))
+                        else:
+                            fields[block] = [x.strip().replace(' ','') for x in row]
+                            rows = list(row)
+                        if fields[block][0].startswith("@!"):
+                            fields[block][0] = fields[block][0][2:].strip()
                     if block in fields:
                         items = lambda row:"\n    ".join([f"// {x} = {y};" for x,y in zip(fields[block],row)])
                     else:
                         items = lambda row: "// No fields provided"
+
                 elif row[0] == '0': # system-wide data
                 
                     block = 'SYSTEM_DATA'
@@ -257,11 +266,16 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
 
                 elif block == "TRANSFORMER_DATA":
 
-                    if row[0] in busndx and row[1] in busndx:
-                        branchid = f"{row[0]}_{row[1]}"
+                    if len(rows) > 0 and rows[0][0] == '@':
+                        rows = []
+                    if len(rows) < len(fields[block]):
+                        rows.extend(row)
+                    elif rows[0] in busndx and rows[1] in busndx:
+                        branchid = f"{rows[0]}_{rows[1]}"
                         branchndx[branchid] = branchndx[branchid]+1 if branchid in branchndx else 0
-                        xfrmid = f"{row[0]}_{row[1]}"
+                        xfrmid = f"{rows[0]}_{rows[1]}"
                         xfrmndx[xfrmid] = xfrmndx[xfrmid]+1 if xfrmid in xfrmndx else 0
+                        rowd = dict(zip(fields[block],rows))
                         print(f"""object pypower.branch
 {{
     name "{oname}_B_{branchid}_{branchndx[branchid]}";
@@ -269,10 +283,12 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
     {{
         name "{oname}_T_{xfrmid}_{xfrmndx[xfrmid]}";
         // TODO
+        impedance {rowd['R1-2']}+{rowd['X1-2']}j Ohm;
+        status IN;
     }};
-    {items(row)}
+    {items(rows)}
 }}""",file=glm)
-                    warning(f"{block} GLM output is TODO",ifile,lineno)
+                        rows = []
 
                 elif block in ["AREA_DATA","ZONE_DATA","OWNER_DATA","SWITCHED_SHUNT_DATA"]:
 
