@@ -34,9 +34,6 @@ dist_pkgdata_DATA += converters/omd2glm.py
 # py->glm
 dist_pkgdata_DATA += converters/py2glm.py
 
-# raw -> glm
-dist_pkgdata_DATA += converters/raw2glm.py
-
 # tmy3 -> glm
 dist_pkgdata_DATA += converters/tmy32glm.py
 
