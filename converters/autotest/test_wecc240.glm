@@ -1,0 +1,14 @@
+#ifexist ../wecc240.raw
+#define DIR=..
+#endif
+
+#input "${DIR:-.}/wecc240.raw"
+
+#ifexist ../wecc240.glm
+#on_exit 0 diff -I '^//' ../wecc240.glm wecc240.glm > gridlabd.diff
+#endif
+
+module pypower
+{
+    save_case TRUE;
+}

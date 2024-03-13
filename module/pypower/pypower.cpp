@@ -45,6 +45,10 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
     new load(module);
     new powerplant(module);
     new powerline(module);
+    new relay(module);
+#warning "scada.cpp not implemented"
+    // new scada(module);
+    new transformer(module);
 
     gl_global_create("pypower::version",
         PT_int32, &pypower_version, 
