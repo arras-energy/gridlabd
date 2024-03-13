@@ -166,7 +166,11 @@ public:
 	//	return r;
 	//};
 #endif
-
+	inline complex Inv(void)
+	{
+		double a = r*r + i*i;
+		return complex(r/a,-i/a);
+	};
 	inline complex operator - (void) /**< change sign */
 	{
 		return complex(-r,-i,f);

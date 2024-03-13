@@ -1,0 +1,30 @@
+#define CASE=14
+#ifexists "../case.glm"
+#define DIR=..
+#endif
+
+// #set debug=TRUE
+// #set suppress_repeat_messages=FALSE
+
+module pypower
+{
+    maximum_timestep 3600;
+    save_case TRUE;
+}
+
+object pypower.load
+{
+    parent pp_bus_2;
+    Vn 12.5 kV;
+    P 10.0;
+    status ONLINE;
+}
+
+object pypower.powerplant
+{
+    parent pp_bus_2;
+    S 10.0;
+    status ONLINE;
+}
+
+#include "${DIR:-.}/case.glm"

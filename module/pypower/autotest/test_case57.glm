@@ -1,0 +1,10 @@
+#define CASE=57
+#ifexists "../case.glm"
+#define DIR=..
+#endif
+#include "${DIR:-.}/case.glm"
+
+module pypower
+{
+	solver_method NR;
+}
