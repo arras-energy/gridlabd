@@ -24,9 +24,9 @@ transformer::transformer(MODULE *module)
 		defaults = this;
 		if (gl_publish_variable(oclass,
 
-			PT_complex, "impedance[Ohm/mile]", get_impedance_offset(),
+			PT_complex, "impedance[Ohm]", get_impedance_offset(),
 				PT_REQUIRED,
-				PT_DESCRIPTION, "line impedance (Ohm/mile)",
+				PT_DESCRIPTION, "transformer impedance (Ohm)",
 
 			PT_enumeration, "status", get_status_offset(),
 				PT_DEFAULT, "IN",
