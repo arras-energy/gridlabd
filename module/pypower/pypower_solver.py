@@ -94,7 +94,7 @@ def solver(pf_case):
 
         else:
             
-            # print("  --> FAILED:",results,file=sys.stderr,flush=True)
+            print("  --> FAILED:",results,file=sys.stderr,flush=True)
             return False
 
     except Exception:

@@ -454,15 +454,33 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
         // receive results (if new)
         if ( result != NULL )
         {
-            if ( ! PyDict_Check(result) )
+            if ( result == Py_False )
+            {
+                if ( stop_on_failure )
+                {
+                    gl_error("pypower solver failed");
+                    return TS_INVALID;
+                }
+                else
+                {
+                    gl_warning("pypower solver failed");
+                    return TS_NEVER;
+                }
+            }
+            else if ( ! PyDict_Check(result) )
             {
                 gl_error("pypower solver returned invalid result type (not a dict)");
-                return stop_on_failure ? TS_INVALID : TS_NEVER;
+                return TS_INVALID;
             }
 
             // copy values back from solver
             n_changes = 0;
             PyObject *busdata = PyDict_GetItemString(result,"bus");
+            if ( nbus > 0 && busdata == NULL )
+            {
+                gl_error("pypower solver did not return any bus data");
+                return TS_INVALID;
+            }
             for ( size_t n = 0 ; n < nbus ; n++ )
             {
                 bus *obj = buslist[n];
@@ -480,6 +498,11 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
             }
 
             PyObject *gendata = PyDict_GetItemString(result,"gen");
+            if ( ngencost > 0 && gendata == NULL )
+            {
+                gl_error("pypower solver did not return any gen data");
+                return TS_INVALID;
+            }
             for ( size_t n = 0 ; n < ngen ; n++ )
             {
                 gen *obj = genlist[n];
