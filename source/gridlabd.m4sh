@@ -119,7 +119,15 @@ elif test "x$1" = "xvalgrind" ; then :
 fi
 
 AS_IF([test -f "${GLD_ETC}/gridlabd.rc"],
-  [. ${GLD_ETC}/gridlabd.rc],
+  [. "${GLD_ETC}/gridlabd.rc"],
+  [])
+
+AS_IF([test -f "${HOME}/.gridlabd/gridlabd.rc"],
+  [. "${HOME}/.gridlabd/gridlabd.rc"],
+  [])
+
+AS_IF([test -f "./gridlabd.rc"],
+  [. "./gridlabd.rc"],
   [])
 
 AS_IF([test "x$1" = "xshell"],
@@ -127,7 +135,7 @@ AS_IF([test "x$1" = "xshell"],
   [])
 
 AS_IF([test -f "${GLD_ETC}/$1.py"],
-  [export PYTHONPATH=$GLD_ETC; python3 -m "$@" ; exit $?],
+  [export PYTHONPATH="$GLD_ETC"; python3 -m "$@" ; exit $?],
   [])
 
 AS_IF([test -x "${GLD_BIN}/gridlabd-$1"],
