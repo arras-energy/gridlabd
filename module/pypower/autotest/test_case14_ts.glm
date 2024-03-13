@@ -1,0 +1,11 @@
+#define CASE=14
+#ifexists "../case.glm"
+#define DIR=..
+#endif
+#include "${DIR:-.}/case.glm"
+
+module pypower
+{
+	solver_method GS;
+	maximum_timestep 3600;
+}

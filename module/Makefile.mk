@@ -9,6 +9,7 @@ include module/market/Makefile.mk
 include module/mysql/Makefile.mk
 include module/optimize/Makefile.mk 
 include module/powerflow/Makefile.mk
+include module/pypower/Makefile.mk
 include module/reliability/Makefile.mk
 include module/residential/Makefile.mk
 include module/resilience/Makefile.mk

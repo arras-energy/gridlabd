@@ -34,6 +34,7 @@ Pillow,2,,9.3.0
 Pillow,,,9.3.0
 PyGithub,2,,1.54.1
 pymysql,,,1.0.2
+PYPOWER,,,5.1.16
 pyproj,,,3.4.0
 pysolar,,,0.9
 pytz,2,,
