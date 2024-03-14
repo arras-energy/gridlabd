@@ -114,6 +114,7 @@ def convert(ifile,ofile,options={}):
             fields = {}
             items = lambda row: "// No fields provided"
             rows = []
+            rowd = []
             for values in reader:
                 lineno += 1
                 row = [x.strip() for x in values]
@@ -123,10 +124,12 @@ def convert(ifile,ofile,options={}):
                     if block:
                         if block in fields:
                             fields[block].extend([x.strip().replace(' ','').replace('@!','') for x in row])
-                            rows.extend(list(row))
+                            row[0] = row[0][2:].strip()
+                            rows.append(list(row))
                         else:
                             fields[block] = [x.strip().replace(' ','') for x in row]
-                            rows = list(row)
+                            row[0] = row[0][2:].strip()
+                            rows = [list(row)]
                         if fields[block][0].startswith("@!"):
                             fields[block][0] = fields[block][0][2:].strip()
                     if block in fields:
@@ -162,7 +165,7 @@ def convert(ifile,ofile,options={}):
 
                     # PSSE: id,name,baseKV,type,area,zone,Vm,Va,gen.r,gen.i,ld.r,ld.i
                     # GLM: "bus_i type Pd Qd Gs Bs area Vm Va baseKV zone Vmax Vmin",
-                    bus_i = len(busndx)+1
+                    bus_i = len(busndx)
                     busndx[row[0]] = bus_i
                     bus_S[row[0]] = complex(0,0)
                     Vm = float(row[7])
@@ -265,34 +268,35 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
 }}""",file=glm)
 
                 elif block == "TRANSFORMER_DATA":
-
-                    if len(rows) > 0 and rows[0][0] == '@':
-                        rows = []
-                    if len(rows) < len(fields[block]):
-                        rows.extend(row)
-                    elif rows[0] in busndx and rows[1] in busndx:
-                        branchid = f"{rows[0]}_{rows[1]}"
-                        if not branchid in branchndx:
-                            branchndx[branchid] = branchndx[branchid]+1 if branchid in branchndx else 0
-                            print(f"""object pypower.branch
+                    # breakpoint()
+                    if len(rowd) < len(rows):
+                        rowd.append(dict(zip(rows[len(rowd)][:len(row)],row)))
+                    if ( len(rowd) == len(rows)-1 and float(rowd[0]['K']) == 0 ) or ( len(rowd) == len(rows) and float(rowd[0]['K']) > 0 ): # rowd[0]['I'] in busndx and rowd[0]['J'] in busndx:
+                        branchid = f"{rowd[0]['I']}_{rowd[0]['J']}"
+                        branchndx[branchid] = branchndx[branchid]+1 if branchid in branchndx else 0
+                        xfrmid = f"{rowd[0]['I']}_{rowd[0]['J']}"
+                        xfrmndx[xfrmid] = xfrmndx[xfrmid]+1 if xfrmid in xfrmndx else 0
+                        x = []
+                        for y in rowd:
+                            x.extend(list(y.values()))
+                        print(f"""object pypower.branch
 {{
     name "{oname}_B_{branchid}_{branchndx[branchid]}";
+    fbus {busndx[rowd[0]['I']]};
+    tbus {busndx[rowd[0]['J']]};
+    object pypower.transformer
+    {{
+        name "{oname}_T_{xfrmid}_{xfrmndx[xfrmid]}";
+        impedance {rowd[1]['R1-2']}+{rowd[1]['X1-2']}j Ohm;
+        status IN;
+    }};
     angmin -360 deg;
     angmax +360 deg;
-}}
-""",file=glm)
-                        xfrmid = f"{rows[0]}_{rows[1]}"
-                        xfrmndx[xfrmid] = xfrmndx[xfrmid]+1 if xfrmid in xfrmndx else 0
-                        rowd = dict(zip(fields[block],rows))
-                        print(f"""object pypower.transformer
-{{
-    parent "{oname}_B_{branchid}_{branchndx[branchid]}";
-    name "{oname}_T_{xfrmid}_{xfrmndx[xfrmid]}";
-    impedance {rowd['R1-2']}+{rowd['X1-2']}j Ohm;
-    status IN;
-    {items(rows)}
+    {items(x)}
 }}""",file=glm)
-                        rows = []
+                        rowd = []
+                    # else:
+                    #     warning(f"transformer {xfrmid} refers to busses that do not exist",ifile,lineno)
 
                 elif block in ["AREA_DATA","ZONE_DATA","OWNER_DATA","SWITCHED_SHUNT_DATA"]:
 
