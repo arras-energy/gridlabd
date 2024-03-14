@@ -27209,6 +27209,7 @@ object pypower.branch
 }
 
 object pypower.transformer
+{
     parent "wecc240_B_1001_1002_0";
     name "wecc240_T_1001_1002_0";
     impedance 1.10000E-2+100.00j Ohm;

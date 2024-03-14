@@ -285,6 +285,7 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
                         xfrmndx[xfrmid] = xfrmndx[xfrmid]+1 if xfrmid in xfrmndx else 0
                         rowd = dict(zip(fields[block],rows))
                         print(f"""object pypower.transformer
+{{
     parent "{oname}_B_{branchid}_{branchndx[branchid]}";
     name "{oname}_T_{xfrmid}_{xfrmndx[xfrmid]}";
     impedance {rowd['R1-2']}+{rowd['X1-2']}j Ohm;
