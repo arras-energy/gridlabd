@@ -272,20 +272,23 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
                         rows.extend(row)
                     elif rows[0] in busndx and rows[1] in busndx:
                         branchid = f"{rows[0]}_{rows[1]}"
-                        branchndx[branchid] = branchndx[branchid]+1 if branchid in branchndx else 0
+                        if not branchid in branchndx:
+                            branchndx[branchid] = branchndx[branchid]+1 if branchid in branchndx else 0
+                            print(f"""object pypower.branch
+{{
+    name "{oname}_B_{branchid}_{branchndx[branchid]}";
+    angmin -360 deg;
+    angmax +360 deg;
+}}
+""",file=glm)
                         xfrmid = f"{rows[0]}_{rows[1]}"
                         xfrmndx[xfrmid] = xfrmndx[xfrmid]+1 if xfrmid in xfrmndx else 0
                         rowd = dict(zip(fields[block],rows))
-                        print(f"""object pypower.branch
-{{
-    name "{oname}_B_{branchid}_{branchndx[branchid]}";
-    object pypower.transformer 
-    {{
-        name "{oname}_T_{xfrmid}_{xfrmndx[xfrmid]}";
-        // TODO
-        impedance {rowd['R1-2']}+{rowd['X1-2']}j Ohm;
-        status IN;
-    }};
+                        print(f"""object pypower.transformer
+    parent "{oname}_B_{branchid}_{branchndx[branchid]}";
+    name "{oname}_T_{xfrmid}_{xfrmndx[xfrmid]}";
+    impedance {rowd['R1-2']}+{rowd['X1-2']}j Ohm;
+    status IN;
     {items(rows)}
 }}""",file=glm)
                         rows = []
