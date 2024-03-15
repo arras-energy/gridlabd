@@ -8,7 +8,12 @@
 #on_exit 0 diff -I '^//' ../wecc240.glm wecc240.glm > gridlabd.diff
 #endif
 
+//#option debug
+#option verbose
+
 module pypower
 {
     save_case TRUE;
+    save_format CSV;
 }
+

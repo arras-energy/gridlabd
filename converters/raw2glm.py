@@ -115,6 +115,7 @@ def convert(ifile,ofile,options={}):
             items = lambda row: "// No fields provided"
             rows = []
             rowd = []
+            ocount = {}
             for values in reader:
                 lineno += 1
                 row = [x.strip() for x in values]
@@ -165,7 +166,7 @@ def convert(ifile,ofile,options={}):
 
                     # PSSE: id,name,baseKV,type,area,zone,Vm,Va,gen.r,gen.i,ld.r,ld.i
                     # GLM: "bus_i type Pd Qd Gs Bs area Vm Va baseKV zone Vmax Vmin",
-                    bus_i = len(busndx)
+                    bus_i = len(busndx)+1
                     busndx[row[0]] = bus_i
                     bus_S[row[0]] = complex(0,0)
                     Vm = float(row[7])
@@ -268,39 +269,39 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
 }}""",file=glm)
 
                 elif block == "TRANSFORMER_DATA":
-                    # breakpoint()
+
                     if len(rowd) < len(rows):
                         rowd.append(dict(zip(rows[len(rowd)][:len(row)],row)))
-                    if ( len(rowd) == len(rows)-1 and float(rowd[0]['K']) == 0 ) or ( len(rowd) == len(rows) and float(rowd[0]['K']) > 0 ): # rowd[0]['I'] in busndx and rowd[0]['J'] in busndx:
+                    if float(rowd[0]['K']) > 0:
+                        warning("three winding transformers are not supported",ifile,lineno)
+                    if ( len(rowd) == len(rows)-1 and float(rowd[0]['K']) == 0 ) or ( len(rowd) == len(rows) and float(rowd[0]['K']) > 0 ): 
                         branchid = f"{rowd[0]['I']}_{rowd[0]['J']}"
                         branchndx[branchid] = branchndx[branchid]+1 if branchid in branchndx else 0
                         xfrmid = f"{rowd[0]['I']}_{rowd[0]['J']}"
                         xfrmndx[xfrmid] = xfrmndx[xfrmid]+1 if xfrmid in xfrmndx else 0
-                        x = []
-                        for y in rowd:
-                            x.extend(list(y.values()))
+                        rd = []
+                        for r in rowd:
+                            rd.extend([f"""    // {x.replace(' ','').strip("'")} "{y}";""" for x,y in r.items()])
+                        rd = "\n".join(rd)
                         print(f"""object pypower.branch
 {{
     name "{oname}_B_{branchid}_{branchndx[branchid]}";
     fbus {busndx[rowd[0]['I']]};
     tbus {busndx[rowd[0]['J']]};
+    status IN;
     object pypower.transformer
     {{
         name "{oname}_T_{xfrmid}_{xfrmndx[xfrmid]}";
-        impedance {rowd[1]['R1-2']}+{rowd[1]['X1-2']}j Ohm;
+        impedance {float(rowd[1]['R1-2']):.6g}+{float(rowd[1]['X1-2']):.6g}j Ohm;
+        turns_ratio {float(rowd[3]['NOMV2'])/float(rowd[2]['NOMV1']):.4g} pu;
+        phase_shift {float(rowd[2]['ANG1']):.3g} deg;
         status IN;
     }};
     angmin -360 deg;
     angmax +360 deg;
-    {items(x)}
+{rd}
 }}""",file=glm)
                         rowd = []
-                    # else:
-                    #     warning(f"transformer {xfrmid} refers to busses that do not exist",ifile,lineno)
-
-                elif block in ["AREA_DATA","ZONE_DATA","OWNER_DATA","SWITCHED_SHUNT_DATA"]:
-
-                    print(f"""// {block} = {row}""",file=glm)
 
                 elif row[0] == "Q":
 
@@ -309,10 +310,20 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
 
                 else:
 
-                    # gen = "bus Pg Qg Qmax Qmin Vg mBase status Pmax Pmin Pc1 Pc2 Qc1min"\
-                    #     + " Qc1max Qc2min Qc2max ramp_agc ramp_10 ramp_30 ramp_q apf",
-                    # branch = "fbus tbus r x b rateA rateB rateC ratio angle status angmin angmax",
-                    warning(f"{block} block converter not implemented",ifile,lineno)
+                    oclass = f"""psse_{block.replace("_DATA","").lower()}"""
+                    if block not in ocount:
+                        ocount[block] = ocount[block]+1 if block in ocount else 0
+                        print(f"class {oclass} {{ // runtime definition",file=glm)
+                        for field in fields[block][1:]:
+                            ftype = 'char1024' if field[0] == "'" else 'double'
+                            print(f"""    {ftype} {field.replace("'","")};""",file=glm)
+                        print("}",file=glm)
+                        warning(f"""GLM class {oclass} defined at runtime, invalid model linkage very likely""",ifile,lineno)
+                    print(f"""object {oclass} {{ 
+    name "{oname}_{oclass.upper()}_{row[0]}";""",file=glm)
+                    for name,value in zip(fields[block][1:],row[1:]):
+                        print(f"""    {name.replace("'","")} "{value}";""",file=glm)
+                    print(f"""}}""",file=glm)
 
 if __name__ == '__main__':
     main()

@@ -34,6 +34,13 @@ transformer::transformer(MODULE *module)
 				PT_KEYWORD, "OUT", (enumeration)TS_OUT,
 				PT_DESCRIPTION, "transformer status (IN or OUT)",
 
+			PT_double, "turns_ratio[pu]", get_turns_ratio_offset(),
+				PT_REQUIRED,
+				PT_DESCRIPTION, "coil turns ratio (pu)",
+
+			PT_double, "phase_shift[deg]", get_phase_shift_offset(),
+				PT_DESCRIPTION, "transformer phase shift (deg) - use 30 for DY or YD transformers",
+
 			NULL) < 1 )
 		{
 				throw "unable to publish transformer properties";
@@ -59,28 +66,14 @@ int transformer::init(OBJECT *parent_hdr)
 			int32 n_children = parent->get_child_count();
 			if ( n_children > 0 )
 			{
-				error("parent '%s' cannot accept more than one child component",get_parent()->get_name());
+				error("branch '%s' cannot accept more than one child component",get_parent()->get_name());
 				return 0;
 			}
 			parent->set_child_count(n_children+1);
 		}
-		else if ( parent->isa("powerline","pypower") )
-		{
-			if ( ( parent->get_impedance().Re() != 0 || parent->get_impedance().Im() != 0 ) 
-				&& ( parent->get_length() > 0 ) )
-			{
-				error("parent '%s' non-zero impedance will be overwritten",get_parent()->get_name());
-				return 0;
-			}
-			if ( parent->get_composition() == powerline::PLC_PARALLEL )
-			{
-				error("parent '%s' must have series composition",get_parent()->get_name());
-				return 0;
-			}
-		}
 		else
 		{
-			error("parent '%s' is not a pypower branch or powerline",get_parent()->get_name());
+			error("parent '%s' is not a pypower branch",get_parent()->get_name());
 			return 0;
 		}
 
@@ -95,6 +88,19 @@ int transformer::init(OBJECT *parent_hdr)
 	{
 		error("transformer impedance must be positive");
 		return 0;
+	}
+
+	// check ratio
+	if ( get_turns_ratio() <= 0 )
+	{
+		error("turns ratio must be strictly positive");
+		return 0;
+	}
+
+	// check angle
+	if ( fabs(get_phase_shift()) > 360 )
+	{
+		warning("phase shift value %.4lg seems unlikely to be valid",get_phase_shift());
 	}
 
 	return 1; // return 1 on success, 0 on failure, 2 on retry later
@@ -122,24 +128,6 @@ TIMESTAMP transformer::precommit(TIMESTAMP t0)
 			else
 			{
 				parent->set_status(branch::BS_OUT);
-			}
-		}
-		else 
-		{
-			powerline *parent = (powerline*)get_parent();
-			if ( get_status() == TS_IN )
-			{
-				// add impedance
-				complex Z = parent->get_Z() + get_impedance();
-				parent->set_Z(Z);
-				parent->set_Y(Z.Inv());
-				parent->set_ratio(parent->get_ratio()*get_turns_ratio());
-				parent->set_angle(parent->get_angle()+get_phase_shift());
-				parent->set_rateA(min(parent->get_rateA(),get_rating()));
-			}
-			else
-			{
-				parent->set_status(powerline::PLS_IN);
 			}
 		}
 	}
