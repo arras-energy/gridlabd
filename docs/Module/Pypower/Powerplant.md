@@ -27,11 +27,50 @@ class powerplant {
 
 # Description
 
-TODO
+Generating units are implemented as `powerplant` objects and requires a parent
+`bus` or `gen` object. Each `powerplant` adds its value of `S` to the parent
+object's generation output real and reactive power. If the parent object is a
+`gen` object, the values of `S.real` and `S.imag` are added to `Pg` and `Qg`,
+respectively. If the parent object is a `bus` object, the values are
+subtracted from `Pd` and `Qd`, respectively. These updates are completed
+during the `presync` event.
+
+During the `sync` event, changed values returned by the `controller` function
+are applied to the object, and the next update is schedule at the time `t`
+returned by the controller.  Note that unlike the `load` object, `powerplant`
+objects do force iteration if no value of `t` is returned.
 
 # Example
 
-TODO
+The following example implements a 10 kW generator turn turns on only in the
+second half of each hour.
+
+`example.glm`:
+~~~
+#input "case14.py" -t pypower
+module pypower
+{
+    controllers "controllers";
+}
+object pypower.powerplant
+{
+    parent pp_bus_2;
+    status ONLINE;
+    controller "powerplant_control";
+}
+~~~
+
+`controllers.py`:
+~~~
+def powerplant_control(obj,**kwargs):
+    # print(f"powerplant_control({obj})",kwargs,file=sys.stderr)
+    if kwargs['t']%3600 < 1800 and kwargs['S'].real != 0: # turn off plant in first half-hour
+        return dict(S=(0j))
+    elif kwargs['t']%3600 >= 1800 and kwargs['S'].real == 0: # turn on plant in second half-hour
+        return dict(S=(10+0j))
+    else: # no change -- advance to next 1/2 hour when a change is anticipated
+        return dict(t=(int(kwargs['t']/1800)+1)*1800)
+~~~
 
 # See Also
 

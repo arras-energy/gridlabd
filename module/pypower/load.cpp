@@ -82,8 +82,13 @@ int load::init(OBJECT *parent_hdr)
 	if ( Vn <= 0.0 )
 	{
 		Vn = parent->get_baseKV();
+		if ( Vn == 0.0 )
+		{
+			error("nominal voltage not specified or inferred from bus");
+			return 0;
+		}
 	}
-	else if ( fabs(Vn - parent->get_baseKV()) > Vn*1e-3 )
+	else if ( parent->get_baseKV() > 0 && fabs(Vn - parent->get_baseKV()) > Vn*1e-3 )
 	{
 		warning("nominal voltage Vn differs from bus baseKV by more than 0.1%");
 	}
@@ -141,7 +146,7 @@ TIMESTAMP load::presync(TIMESTAMP t0)
 	if ( status != LS_OFFLINE )
 	{
 		S = P + Vpu * ~I;
-		if ( Z.Re() != 0 && Z.Im() != 0 )
+		if ( Z.Re() != 0 || Z.Im() != 0 )
 		{
 			S += (~Vpu*Vpu) / ~Z;
 		}
@@ -167,6 +172,7 @@ TIMESTAMP load::presync(TIMESTAMP t0)
 TIMESTAMP load::sync(TIMESTAMP t0)
 {
 	TIMESTAMP t1 = TS_NEVER;
+	int nchanges = 0;
 	if ( py_controller )
 	{
 		Py_complex z = {get_S().Re(), get_S().Im()};
@@ -223,6 +229,7 @@ TIMESTAMP load::sync(TIMESTAMP t0)
 						repr = PyObject_Str(value);
 						const char *data = PyUnicode_AsUTF8(repr);
 						prop.from_string(data);
+						nchanges++;
 						Py_DECREF(repr);
 					}
 					else
@@ -239,7 +246,7 @@ TIMESTAMP load::sync(TIMESTAMP t0)
 			Py_DECREF(result);
 		}
 	}
-	return t1;
+	return nchanges > 0 && t1 == TS_NEVER ? t0 : t1;
 }
 
 TIMESTAMP load::postsync(TIMESTAMP t0)

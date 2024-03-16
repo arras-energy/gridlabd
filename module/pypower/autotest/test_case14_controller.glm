@@ -9,13 +9,13 @@ module pypower
     controllers_path "${DIR}";
 #endif
     controllers "controllers";
+    stop_on_failure FALSE;
 }
 
 object pypower.load
 {
     parent pp_bus_2;
     Vn 12.5 kV;
-    P 10.0;
     status ONLINE;
     controller "load_control";
 }
@@ -23,7 +23,6 @@ object pypower.load
 object pypower.powerplant
 {
     parent pp_bus_2;
-    S 10.0;
     status ONLINE;
     controller "powerplant_control";
 }

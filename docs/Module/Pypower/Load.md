@@ -37,8 +37,8 @@ angle `Va` are copied to the load voltage `V`.
 
 # Example
 
-The following example implements a constant power load with a power factor of
-0.995 that turns on only in the second half of each hour.
+The following example implements a constant power load at 10kW that turns on
+only in the second half of each hour.
 
 `example.glm`:
 ~~~
@@ -58,10 +58,10 @@ object pypower.load
 `controllers.py`:
 ~~~
 def load_control(obj,**kwargs):
-    if kwargs['t']%3600 < 1800 and P != 0: # turn off load in first half-hour
-        return dict(P=0,Q=0)
-    elif kwargs['t']%3600 >= 1800 and P == 0: # turn on load in second half-hour
-        return dict(P=10,Q=0.1)
+    if kwargs['t']%3600 < 1800 and kwargs['P'] != 0: # turn off load in first half-hour
+        return dict(P=0) # omitted 't' causes iteration
+    elif kwargs['t']%3600 >= 1800 and kwargs['P'] == 0: # turn on load in second half-hour
+        return dict(P=10) # omitted 't' causes iteration
     else: # no change -- advance to next 1/2 hour when a change is anticipated
         return dict(t=(int(kwargs['t']/1800)+1)*1800)
 ~~~

@@ -206,8 +206,8 @@ TIMESTAMP powerplant::presync(TIMESTAMP t0)
 		if ( S.Re() != 0 || S.Im() != 0 )
 		{
 			gen *parent = (gen*)get_parent();
-			parent->set_Pg(parent->get_Pg()-S.Re());
-			parent->set_Qg(parent->get_Qg()-S.Im());
+			parent->set_Pg(parent->get_Pg()+S.Re());
+			parent->set_Qg(parent->get_Qg()+S.Im());
 		}
 	}
 	else // bus parent
