@@ -280,21 +280,26 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
                         xfrmid = f"{rowd[0]['I']}_{rowd[0]['J']}"
                         xfrmndx[xfrmid] = xfrmndx[xfrmid]+1 if xfrmid in xfrmndx else 0
                         rd = []
-                        for r in rowd:
-                            rd.extend([f"""    // {x.replace(' ','').strip("'")} "{y}";""" for x,y in r.items()])
+                        dd = {}
+                        for n,r in enumerate(rowd):
+                            rd.append(f"""    // ROW {n}:""")
+                            rd.extend([f"""    //   {x.replace(' ','').strip("'")} "{y}";""" for x,y in r.items()])
+                            dd.update(r)
                         rd = "\n".join(rd)
                         print(f"""object pypower.branch
 {{
     name "{oname}_B_{branchid}_{branchndx[branchid]}";
-    fbus {busndx[rowd[0]['I']]};
-    tbus {busndx[rowd[0]['J']]};
+    fbus {busndx[dd['I']]};
+    tbus {busndx[dd['J']]};
     status IN;
     object pypower.transformer
     {{
         name "{oname}_T_{xfrmid}_{xfrmndx[xfrmid]}";
-        impedance {float(rowd[1]['R1-2']):.6g}+{float(rowd[1]['X1-2']):.6g}j Ohm;
-        turns_ratio {float(rowd[3]['NOMV2'])/float(rowd[2]['NOMV1']):.4g} pu;
-        phase_shift {float(rowd[2]['ANG1']):.3g} deg;
+        impedance {float(dd['R1-2']):.6g}+{float(dd['X1-2']):.6g}j Ohm;
+        phase_shift {float(dd['ANG1']):.5g} deg;
+        rated_power {float(dd['SBASE1-2']):.5g} MVA;
+        primary_voltage {float(dd['NOMV1']):.5g} kV;
+        secondary_voltage {float(dd['NOMV2']):.5g} kV;
         status IN;
     }};
     angmin -360 deg;
@@ -318,7 +323,7 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
                             ftype = 'char1024' if field[0] == "'" else 'double'
                             print(f"""    {ftype} {field.replace("'","")};""",file=glm)
                         print("}",file=glm)
-                        warning(f"""GLM class {oclass} defined at runtime, invalid model linkage very likely""",ifile,lineno)
+                        warning(f"""GLM class {oclass} defined at runtime, incomplete model conversion possible""",ifile,lineno)
                     print(f"""object {oclass} {{ 
     name "{oname}_{oclass.upper()}_{row[0]}";""",file=glm)
                     for name,value in zip(fields[block][1:],row[1:]):
