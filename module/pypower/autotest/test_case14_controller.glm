@@ -9,7 +9,6 @@ module pypower
     controllers_path "${DIR}";
 #endif
     controllers "controllers";
-    stop_on_failure FALSE;
 }
 
 object pypower.load
