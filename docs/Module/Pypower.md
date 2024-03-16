@@ -256,4 +256,4 @@ specify in second of the Unix epoch.
 # See also
 
 * [PyPower documentation](https://pypi.org/project/PYPOWER/)
-* [[/Converters/Import/PyPower_cases]]
+* [[/Converters/Import/Pypower_cases]]
