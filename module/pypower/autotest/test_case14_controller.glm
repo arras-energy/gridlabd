@@ -26,4 +26,11 @@ object pypower.powerplant
     controller "powerplant_control";
 }
 
+object pypower.relay
+{
+    parent pp_branch_1;
+    status CLOSED;
+    controller "relay_control";
+}
+
 #include "${DIR:-.}/case.glm"
