@@ -28,6 +28,20 @@ transformer::transformer(MODULE *module)
 				PT_REQUIRED,
 				PT_DESCRIPTION, "transformer impedance (Ohm)",
 
+			PT_double, "susceptance[S]", get_susceptance_offset(),
+				PT_DEFAULT, "0 S",
+
+			PT_double, "rated_power[MVA]", get_rated_power_offset(),
+				PT_REQUIRED,
+				PT_DESCRIPTION, "transformer power rating (MVA)",
+
+			PT_double, "tap_ratio[pu]", get_tap_ratio_offset(),
+				PT_DEFAULT, "1 pu",
+				PT_DESCRIPTION, "off-nominal turns ratio",
+
+			PT_double, "phase_shift[deg]", get_phase_shift_offset(),
+				PT_DESCRIPTION, "transformer phase shift (deg) - use 30 for DY or YD transformers",
+
 			PT_enumeration, "status", get_status_offset(),
 				PT_DEFAULT, "IN",
 				PT_KEYWORD, "IN", (enumeration)TS_IN,
@@ -43,58 +57,61 @@ transformer::transformer(MODULE *module)
 
 int transformer::create(void) 
 {
-	parent_is_branch = false;
 	return 1; // return 1 on success, 0 on failure
 }
 
 int transformer::init(OBJECT *parent_hdr)
 {
-	powerline *parent = (powerline*)get_parent();
-	if ( parent ) 
+
+	// check impedance
+	if ( impedance.Re() <= 0 && impedance.Im() == 0 )
+	{
+		error("transformer impedance must be positive");
+		return 0;
+	}
+
+	// check susceptance
+	if ( susceptance < 0 )
+	{
+		error("transformer susceptance cannot be negative");
+		return 0;
+	}
+
+	// check angle
+	if ( fabs(get_phase_shift()) > 360 )
+	{
+		warning("phase shift value %.4lg seems unlikely to be valid",get_phase_shift());
+	}
+
+	branch *parent = (branch*)get_parent();
+	if ( parent )
 	{
 		if ( parent->isa("branch","pypower") )
 		{
-			branch *parent = (branch*)get_parent();
-			parent_is_branch = true;
 			int32 n_children = parent->get_child_count();
 			if ( n_children > 0 )
 			{
-				error("parent '%s' cannot accept more than one child component",get_parent()->get_name());
+				error("branch '%s' cannot accept more than one child component",get_parent()->get_name());
 				return 0;
 			}
 			parent->set_child_count(n_children+1);
 		}
-		else if ( parent->isa("powerline","pypower") )
-		{
-			if ( ( parent->get_impedance().Re() != 0 || parent->get_impedance().Im() != 0 ) 
-				&& ( parent->get_length() > 0 ) )
-			{
-				error("parent '%s' non-zero impedance will be overwritten",get_parent()->get_name());
-				return 0;
-			}
-			if ( parent->get_composition() == powerline::PLC_PARALLEL )
-			{
-				error("parent '%s' must have series composition",get_parent()->get_name());
-				return 0;
-			}
-		}
 		else
 		{
-			error("parent '%s' is not a pypower branch or powerline",get_parent()->get_name());
+			error("parent '%s' is not a pypower branch",get_parent()->get_name());
 			return 0;
 		}
-
+		parent->set_ratio(get_tap_ratio());
+		parent->set_angle(get_phase_shift());
+		parent->set_r(get_impedance().Re());
+		parent->set_x(get_impedance().Im());
+		parent->set_b(get_susceptance());
+		parent->set_rateA(get_rated_power());
+		parent->set_status(get_status() == TS_IN ? branch::BS_IN : branch::BS_OUT);
 	}
 	else
 	{
-		warning("transformer without parent does nothing");
-	}
-
-	// check impedance
-	if ( impedance.Re() == 0 && impedance.Im() == 0 )
-	{
-		error("transformer impedance must be positive");
-		return 0;
+		warning("transformer without parent branch does nothing");
 	}
 
 	return 1; // return 1 on success, 0 on failure, 2 on retry later
@@ -104,44 +121,21 @@ TIMESTAMP transformer::precommit(TIMESTAMP t0)
 {
 	if ( get_parent() != NULL )
 	{
-		if ( parent_is_branch )
-		{
-			branch *parent = (branch*)get_parent();
+		branch *parent = (branch*)get_parent();
 
-			if ( get_status() == TS_IN )
-			{
-				// copy status/impedance/admittance values to branch
-				parent->set_r(get_impedance().Re());
-				parent->set_x(get_impedance().Im());
-				parent->set_b(get_impedance().Inv().Im());
-				parent->set_ratio(get_turns_ratio());
-				parent->set_angle(get_phase_shift());
-				parent->set_rateA(get_rating());
-				parent->set_status(branch::BS_IN);
-			}
-			else
-			{
-				parent->set_status(branch::BS_OUT);
-			}
-		}
-		else 
+		// check tap ratio
+		if ( get_tap_ratio() <= 0 )
 		{
-			powerline *parent = (powerline*)get_parent();
-			if ( get_status() == TS_IN )
-			{
-				// add impedance
-				complex Z = parent->get_Z() + get_impedance();
-				parent->set_Z(Z);
-				parent->set_Y(Z.Inv());
-				parent->set_ratio(parent->get_ratio()*get_turns_ratio());
-				parent->set_angle(parent->get_angle()+get_phase_shift());
-				parent->set_rateA(min(parent->get_rateA(),get_rating()));
-			}
-			else
-			{
-				parent->set_status(powerline::PLS_IN);
-			}
+			error("tap ratio must be positive");
+			return TS_INVALID;
 		}
+		else if ( get_tap_ratio() < 0.8 || get_tap_ratio() > 1.2 )
+		{
+			warning("tap ratio outside reasonable range of 0.8 to 1.2");
+		}
+		parent->set_ratio(get_tap_ratio());
+
+		parent->set_status(get_status() == TS_IN ? branch::BS_IN : branch::BS_OUT);
 	}
 	return TS_NEVER;
 }

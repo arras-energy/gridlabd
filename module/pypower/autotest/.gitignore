@@ -2,5 +2,6 @@ case*.glm
 case*.json
 case*_ref.json
 gridlabd.diff
-pypower_casedata.py
-pypower_results.py
+*casedata*.*
+*results*.*
+*failed*.*
