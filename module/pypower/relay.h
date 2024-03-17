@@ -10,17 +10,21 @@ class relay : public gld_object
 {
 
 public:
+
 	// published properties
 	GL_ATOMIC(char256,controller);
 	typedef enum {RS_CLOSED=0,RS_OPEN=1} RELAYSTATUS;
 	GL_ATOMIC(enumeration,status);
 
 private:
+
+	// python controller function
 	PyObject *py_controller;
 	PyObject *py_args;
 	PyObject *py_kwargs;
 
 public:
+
 	// event handlers
 	relay(MODULE *module);
 	int create(void);
@@ -30,6 +34,7 @@ public:
 	TIMESTAMP postsync(TIMESTAMP t1) { return TS_NEVER;};
 
 public:
+	
 	// internal properties
 	static CLASS *oclass;
 	static relay *defaults;

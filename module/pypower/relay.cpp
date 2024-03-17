@@ -71,54 +71,51 @@ int relay::init(OBJECT *parent_hdr)
 	if ( controller[0] == '\0' )
 	{
 		warning("relay has no controller");
+		return 1;
 	}
-	else if ( py_globals != NULL )
+	if ( py_globals == NULL )
 	{
-		py_controller = PyDict_GetItemString(py_globals,controller);
-		if ( py_controller == NULL )
-		{
-			error("pypower controller '%s' is not found",(const char *)controller);
-			return 0;			
-		}
-		if ( ! PyCallable_Check(py_controller) )
-		{
-			Py_DECREF(py_controller);
-			error("pypower controller '%s' is not callable",(const char *)controller);
-			return 0;
-		}
-
-		if ( get_name() )
-		{
-			PyTuple_SET_ITEM(py_args,0,PyUnicode_FromString(get_name()));
-		}
-		else
-		{
-			char buffer[80];
-			snprintf(buffer,sizeof(buffer)-1,"%64s:%ld",get_oclass()->get_name(),(long)get_id());
-			PyTuple_SET_ITEM(py_args,0,PyUnicode_FromString(buffer));
-		}
-
-		PyDict_SetItemString(py_kwargs,"tbus",PyLong_FromLong(parent->get_tbus()));
-		PyDict_SetItemString(py_kwargs,"r",PyFloat_FromDouble(parent->get_r()));
-		PyDict_SetItemString(py_kwargs,"x",PyFloat_FromDouble(parent->get_x()));
-		PyDict_SetItemString(py_kwargs,"b",PyFloat_FromDouble(parent->get_b()));
-		PyDict_SetItemString(py_kwargs,"rateA",PyFloat_FromDouble(parent->get_rateA()));
-		PyDict_SetItemString(py_kwargs,"rateB",PyFloat_FromDouble(parent->get_rateB()));
-		PyDict_SetItemString(py_kwargs,"rateC",PyFloat_FromDouble(parent->get_rateC()));
-		PyDict_SetItemString(py_kwargs,"ratio",PyFloat_FromDouble(parent->get_ratio()));
-		PyDict_SetItemString(py_kwargs,"angle",PyFloat_FromDouble(parent->get_angle()));
-		PyDict_SetItemString(py_kwargs,"status",PyLong_FromLong(parent->get_status()));
-		PyDict_SetItemString(py_kwargs,"angmin",PyFloat_FromDouble(parent->get_angmin()));
-		PyDict_SetItemString(py_kwargs,"angmax",PyFloat_FromDouble(parent->get_angmax()));
-		PyDict_SetItemString(py_kwargs,"controller",PyUnicode_FromString(get_controller()));
-		PyDict_SetItemString(py_kwargs,"t",PyFloat_FromDouble((double)gl_globalclock));
+		error("unable to find global controllers");
+		return 0;
 	}
-	else
+	py_controller = PyDict_GetItemString(py_globals,controller);
+	if ( py_controller == NULL )
 	{
-		error("unable to find global controllers file");
+		error("pypower controller '%s' is not found",(const char *)controller);
+		return 0;			
+	}
+	if ( ! PyCallable_Check(py_controller) )
+	{
+		Py_DECREF(py_controller);
+		error("pypower controller '%s' is not callable",(const char *)controller);
 		return 0;
 	}
 
+	if ( get_name() )
+	{
+		PyTuple_SET_ITEM(py_args,0,PyUnicode_FromString(get_name()));
+	}
+	else
+	{
+		char buffer[80];
+		snprintf(buffer,sizeof(buffer)-1,"%64s:%ld",get_oclass()->get_name(),(long)get_id());
+		PyTuple_SET_ITEM(py_args,0,PyUnicode_FromString(buffer));
+	}
+
+	PyDict_SetItemString(py_kwargs,"tbus",PyLong_FromLong(parent->get_tbus()));
+	PyDict_SetItemString(py_kwargs,"r",PyFloat_FromDouble(parent->get_r()));
+	PyDict_SetItemString(py_kwargs,"x",PyFloat_FromDouble(parent->get_x()));
+	PyDict_SetItemString(py_kwargs,"b",PyFloat_FromDouble(parent->get_b()));
+	PyDict_SetItemString(py_kwargs,"rateA",PyFloat_FromDouble(parent->get_rateA()));
+	PyDict_SetItemString(py_kwargs,"rateB",PyFloat_FromDouble(parent->get_rateB()));
+	PyDict_SetItemString(py_kwargs,"rateC",PyFloat_FromDouble(parent->get_rateC()));
+	PyDict_SetItemString(py_kwargs,"ratio",PyFloat_FromDouble(parent->get_ratio()));
+	PyDict_SetItemString(py_kwargs,"angle",PyFloat_FromDouble(parent->get_angle()));
+	PyDict_SetItemString(py_kwargs,"status",PyLong_FromLong(parent->get_status()));
+	PyDict_SetItemString(py_kwargs,"angmin",PyFloat_FromDouble(parent->get_angmin()));
+	PyDict_SetItemString(py_kwargs,"angmax",PyFloat_FromDouble(parent->get_angmax()));
+	PyDict_SetItemString(py_kwargs,"controller",PyUnicode_FromString(get_controller()));
+	PyDict_SetItemString(py_kwargs,"t",PyFloat_FromDouble((double)gl_globalclock));
 
 	return 1; // return 1 on success, 0 on failure, 2 on retry later
 }

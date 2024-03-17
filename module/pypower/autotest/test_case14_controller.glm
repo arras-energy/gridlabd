@@ -33,4 +33,10 @@ object pypower.relay
     controller "relay_control";
 }
 
+object pypower.scada
+{
+    point pp_bus_3.Va;
+    point pp_bus_4.Va;
+    record TRUE;
+}
 #include "${DIR:-.}/case.glm"

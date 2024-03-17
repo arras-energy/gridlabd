@@ -6,6 +6,7 @@ def on_init():
 
 def on_sync(data):
     # print(f"controllers sync called, data={data}",file=sys.stderr)
+    # print(scada,historian,file=sys.stderr)
     return (int(data['t']/3600)+1)*3600 # advance to top of next hour
 
 def load_control(obj,**kwargs):
