@@ -53,5 +53,3 @@ object powerline
 	    length 2000 mile;
 	};
 }
-
-#set savefile=${modelname/glm/json}
