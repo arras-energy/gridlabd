@@ -37,7 +37,7 @@ transformer::transformer(MODULE *module)
 
 			PT_double, "tap_ratio[pu]", get_tap_ratio_offset(),
 				PT_DEFAULT, "1 pu",
-				PT_DESCRIPTION, "off-normal turns ratio",
+				PT_DESCRIPTION, "off-nominal turns ratio",
 
 			PT_double, "phase_shift[deg]", get_phase_shift_offset(),
 				PT_DESCRIPTION, "transformer phase shift (deg) - use 30 for DY or YD transformers",
@@ -71,20 +71,10 @@ int transformer::init(OBJECT *parent_hdr)
 	}
 
 	// check susceptance
-	if ( susceptance.Re() < 0 )
+	if ( susceptance < 0 )
 	{
 		error("transformer susceptance cannot be negative");
 		return 0;
-	}
-
-	// check tap ratio
-	if ( get_tap_ratio() <= 0 )
-	{
-		error("tap ratio must be positive");
-	}
-	else if ( get_tap_ratio() < 0.8 || get_tap_ratio() > 1.2 )
-	{
-		warning("tap ratio outside reasonable range of 0.8 to 1.2");
 	}
 
 	// check angle
@@ -132,7 +122,19 @@ TIMESTAMP transformer::precommit(TIMESTAMP t0)
 	if ( get_parent() != NULL )
 	{
 		branch *parent = (branch*)get_parent();
+
+		// check tap ratio
+		if ( get_tap_ratio() <= 0 )
+		{
+			error("tap ratio must be positive");
+			return TS_INVALID;
+		}
+		else if ( get_tap_ratio() < 0.8 || get_tap_ratio() > 1.2 )
+		{
+			warning("tap ratio outside reasonable range of 0.8 to 1.2");
+		}
 		parent->set_ratio(get_tap_ratio());
+
 		parent->set_status(get_status() == TS_IN ? branch::BS_IN : branch::BS_OUT);
 	}
 	return TS_NEVER;

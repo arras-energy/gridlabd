@@ -298,8 +298,6 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
         impedance {float(dd['R1-2']):.6g}+{float(dd['X1-2']):.6g}j Ohm;
         phase_shift {float(dd['ANG1']):.5g} deg;
         rated_power {float(dd['SBASE1-2']):.5g} MVA;
-        primary_voltage {float(dd['NOMV1']):.5g} kV;
-        secondary_voltage {float(dd['NOMV2']):.5g} kV;
         status IN;
     }};
     angmin -360 deg;
