@@ -25,3 +25,12 @@ def powerplant_control(obj,**kwargs):
         return dict(S=(10+0j))
     else: # no change -- advance to next 1/2 hour when a change is anticipated
         return dict(t=(int(kwargs['t']/1800)+1)*1800)
+
+def relay_control(obj,**kwargs):
+    print(f"relay_control({obj})",kwargs,file=sys.stderr)
+    if kwargs['t']%3600 < 1800 and kwargs['status'] != 0: # open the relay in first half-hour
+        return dict(status=0)
+    elif kwargs['t']%3600 >= 1800 and kwargs['status'] == 0: # close the relay in second half-hour
+        return dict(status=1)
+    else: # no change -- advance to next 1/2 hour when a change is anticipated
+        return dict(t=(int(kwargs['t']/1800)+1)*1800)
