@@ -35,14 +35,14 @@ scada::scada(MODULE *module)
 		defaults = this;
 		if (gl_publish_variable(oclass,
 
+			PT_method, "point", get_point_offset(),
+				PT_DESCRIPTION, "Enable access to point specified as object <name>:<property>",
+
 			PT_bool, "write", get_write_ok_offset(),
 				PT_DESCRIPTION, "Enable write to point",
 
 			PT_bool, "record", get_record_on_offset(),
 				PT_DESCRIPTION, "Enable recording of point to historian",
-
-			PT_method, "point", get_point_offset(),
-				PT_DESCRIPTION, "Enable access to point specified as object <name>:<property>",
 
 			NULL) < 1 )
 		{
@@ -204,7 +204,8 @@ int scada::point(char *buffer, size_t len)
 		int pos = strlen(point_names);
 		len = strlen(buffer);
 		point_names = (char*)realloc(point_names,pos+len+2);
-		return snprintf(point_names+pos,len+1,",%s",buffer);
+		snprintf(point_names+pos,len+1,"%s%s",pos>0?",":"",buffer);
+		return len;
 	}
 	else
 	{
