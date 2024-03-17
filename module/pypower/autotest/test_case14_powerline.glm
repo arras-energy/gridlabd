@@ -10,12 +10,48 @@ module pypower
 	save_case TRUE;
 }
 
-// simple copy into branch
 object powerline
 {
 	parent pp_branch_1;
 	impedance 0.01938+0.05917j mOhm/mile;
+    susceptance 0.0528 mS/mile;
 	length 1000 mile;
 }
 
-// TODO: add more tests of different line compositions
+object powerline 
+{
+	parent pp_branch_2;
+	composition SERIES;
+	object powerline 
+	{
+	    impedance 0.05403+0.22304j mOhm/mile;
+	    susceptance 0.0492 mS/mile;
+	    length 500 mile;
+	};
+	object powerline 
+	{
+	    impedance 0.05403+0.22304j mOhm/mile;
+	    susceptance 0.0492 mS/mile;
+	    length 500 mile;
+	};
+}
+
+object powerline 
+{
+	parent pp_branch_3;
+	composition PARALLEL;
+	object powerline 
+	{
+	    impedance 0.04699+0.19797j mOhm/mile;
+	    susceptance 0.0438 mS/mile;
+	    length 2000 mile;
+	};
+	object powerline 
+	{
+	    impedance 0.04699+0.19797j mOhm/mile;
+	    susceptance 0.0438 mS/mile;
+	    length 2000 mile;
+	};
+}
+
+#set savefile=${modelname/glm/json}
