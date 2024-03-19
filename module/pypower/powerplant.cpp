@@ -42,7 +42,7 @@ powerplant::powerplant(MODULE *module)
 			PT_char256, "naics_description", get_naics_description_offset(),
 				PT_DESCRIPTION, "Powerplant NAICS description",
 			
-			PT_int16, "plant_code", get_plant_code(),
+			PT_char32, "plant_code", get_plant_code_offset(),
 				PT_DESCRIPTION, "Generator plant code number",
 			
 			PT_set, "generator", get_generator_offset(), 
@@ -176,6 +176,7 @@ int powerplant::init(OBJECT *parent_hdr)
 	PyDict_SetItemString(py_kwargs,"country",PyUnicode_FromString(get_country()));
 	PyDict_SetItemString(py_kwargs,"naics_code",PyUnicode_FromString(get_naics_code()));
 	PyDict_SetItemString(py_kwargs,"naics_description",PyUnicode_FromString(get_naics_description()));
+	PyDict_SetItemString(py_kwargs,"plant_code",PyUnicode_FromString(get_plant_code()));
 	PyDict_SetItemString(py_kwargs,"generator",PyLong_FromLong(get_generator()));
 	PyDict_SetItemString(py_kwargs,"fuel",PyLong_FromLong(get_fuel()));
 	PyDict_SetItemString(py_kwargs,"operating_capacity",PyFloat_FromDouble(get_operating_capacity()));
