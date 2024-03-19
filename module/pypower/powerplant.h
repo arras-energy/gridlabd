@@ -9,15 +9,14 @@
 class powerplant : public gld_object
 {
 
-	char buffer[1024];
 public:
 	// published properties
-	GL_ATOMIC(char32,city);
-	GL_ATOMIC(char32,state);
-	GL_ATOMIC(char32,zipcode);
-	GL_ATOMIC(char32,country);
-	GL_ATOMIC(char32,naics_code);
-	GL_ATOMIC(char256,naics_description);
+	GL_STRING(char32,city);
+	GL_STRING(char32,state);
+	GL_STRING(char32,zipcode);
+	GL_STRING(char32,country);
+	GL_STRING(char32,naics_code);
+	GL_STRING(char256,naics_description);
 	GL_ATOMIC(int16,plant_code);
 	GL_ATOMIC(set,generator);
 	GL_ATOMIC(set,fuel);
