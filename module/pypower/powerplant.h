@@ -9,7 +9,6 @@
 class powerplant : public gld_object
 {
 
-	char buffer[1024];
 public:
 	// published properties
 	GL_ATOMIC(char32,city);
