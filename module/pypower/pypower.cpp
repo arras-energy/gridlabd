@@ -12,9 +12,26 @@ double base_MVA = 100.0;
 int32 pypower_version = 2;
 bool stop_on_failure = false;
 int32 maximum_timestep = 0; // seconds; 0 = no max ts
-enumeration solver_method = 1;
-double solver_update_resolution = 1e-8;
+typedef enum {
+    PPSM_NR = 1, // Newton-Raphson
+    PPSM_FDXB = 2, // Fast-decoupled XB method
+    PPSM_FDBX = 3, // Fast-decoupled BX method
+    PPSM_GS = 4, // Gauss-Seidel
+} PYPOWERSOLVERMETHOD;
+enumeration solver_method = PPSM_NR;
+int32 maximum_iterations = 0; // default to pypower default for solver_method
+double solution_tolerance = 0; // default to pypower default
+double solver_update_resolution = 1e-8; 
 bool save_case = false;
+bool enforce_q_limits = false;
+bool use_dc_powerflow = false;
+typedef enum {
+    PPSF_CSV = 0, // CSV files
+    PPSF_JSON = 1, // JSON file
+    PPSF_PY = 2, // PyPower case file
+} PYPOWERSAVEFORMAT;
+enumeration save_format = PPSF_CSV;
+const char *save_formats[] = {"csv","json","py"};
 
 enum {
     SS_INIT = 0,
@@ -45,6 +62,9 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
     new load(module);
     new powerplant(module);
     new powerline(module);
+    new relay(module);
+    new scada(module);
+    new transformer(module);
 
     gl_global_create("pypower::version",
         PT_int32, &pypower_version, 
@@ -102,6 +122,16 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
         PT_DESCRIPTION, "Minimum difference before a value is considered changed",
         NULL);
 
+    gl_global_create("pypower::maximum_iterations",
+        PT_int32, &maximum_iterations,
+        PT_DESCRIPTION, "Maximum iterations (0 defaults to pypower default for solver_method)",
+        NULL);
+
+    gl_global_create("pypower::solution_tolerance",
+        PT_double, &solution_tolerance,
+        PT_DESCRIPTION, "Solver convergence error tolerante (0 defaults to pypower default)",
+        NULL);
+
     gl_global_create("pypower::solver_status",
         PT_enumeration, &solver_status,
         PT_KEYWORD, "INIT", (enumeration)SS_INIT,
@@ -110,6 +140,23 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
         PT_DESCRIPTION, "Result of the last pypower solver run",
         NULL);
 
+    gl_global_create("pypower::enforce_q_limits",
+        PT_bool, &enforce_q_limits,
+        PT_DESCRIPTION, "Enable enforcement of reactive power limits",
+        NULL);
+
+    gl_global_create("pypower::use_dc_powerflow",
+        PT_bool, &use_dc_powerflow,
+        PT_DESCRIPTION, "Enable use of DC powerflow solution",
+        NULL);
+
+    gl_global_create("pypower::save_format",
+        PT_enumeration, &save_format,
+        PT_KEYWORD, "CSV", (enumeration)PPSF_CSV,
+        PT_KEYWORD, "JSON", (enumeration)PPSF_JSON,
+        PT_KEYWORD, "PY", (enumeration)PPSF_PY,
+        PT_DESCRIPTION, "Save case format",
+        NULL);
 
     // always return the first class registered
     return bus::oclass;
@@ -279,13 +326,36 @@ EXPORT bool on_init(void)
 
     // set options
     gld_global global_verbose("verbose");
-    PyDict_SetItemString(data,"verbose",global_verbose=="TRUE"?Py_True:Py_False);
+    PyDict_SetItemString(data,"verbose",global_verbose.get_bool()?Py_True:Py_False);
 
     gld_global global_debug("debug");
-    PyDict_SetItemString(data,"debug",global_debug=="TRUE"?Py_True:Py_False);
+    PyDict_SetItemString(data,"debug",global_debug.get_bool()?Py_True:Py_False);
 
     PyDict_SetItemString(data,"solver_method",PyLong_FromLong(solver_method));
+    if ( maximum_iterations > 0 && solver_method > 0 && solver_method <= 4 )
+    {
+        const char *name[] = {
+            "maximum_iterations_nr",
+            "maximum_iterations_fd",
+            "maximum_iterations_fd",
+            "maximum_iterations_gs",
+        };
+        PyDict_SetItemString(data,name[solver_method-1],PyLong_FromLong(maximum_iterations));
+    }
+    if ( solution_tolerance > 0.0 )
+    {
+        PyDict_SetItemString(data,"solution_tolerance",PyFloat_FromDouble(solution_tolerance));
+    }
+    PyDict_SetItemString(data,"enforce_q_limits",enforce_q_limits?Py_True:Py_False);
+    PyDict_SetItemString(data,"use_dc_powerflow",use_dc_powerflow?Py_True:Py_False);
     PyDict_SetItemString(data,"save_case",save_case?Py_True:Py_False);
+    PyDict_SetItemString(data,"save_format",PyUnicode_FromString((const char*)save_formats[save_format]));
+    char buffer[1025];
+    if ( gl_global_getvar("modelname",buffer,sizeof(buffer)-1) )
+    {
+        *strrchr(buffer,'.')='\0';
+        PyDict_SetItemString(data,"modelname",PyUnicode_FromString(buffer));
+    }
 
     return true;
 }
@@ -484,7 +554,8 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
             else if ( ! PyDict_Check(result) )
             {
                 gl_error("pypower solver returned invalid result type (not a dict)");
-                    solver_status = SS_FAILED;
+                fprintf(stderr," result = %s\n", PyBytes_AS_STRING(PyUnicode_AsEncodedString(PyObject_Repr(result),"utf-8","~E~")));
+                solver_status = SS_FAILED;
                 return TS_INVALID;
             }
 
