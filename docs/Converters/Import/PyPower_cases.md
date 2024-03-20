@@ -1,4 +1,4 @@
-[[/Converters/Import/Ami_data]] -- AMI data import
+[[/Converters/Import/Pypower_cases]] -- PyPower case input
 
 # Synopsis
 

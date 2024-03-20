@@ -139,20 +139,6 @@ updates it as needed prior to solving the powerflow problem.
 
 ## Loads
 
-~~~
-class load {
-    complex S[VA]; // power demand (VA)
-    complex Z[Ohm]; // constant impedance load (Ohm)
-    complex I[A]; // constant current load (A)
-    complex P[VA]; // constant power load (VA)
-    complex V[V]; // bus voltage (V)
-    double Vn[V]; // nominal voltage (V)
-    enumeration {CURTAILED=2, ONLINE=1, OFFLINE=0} status; // load status
-    double response[pu]; // curtailment response as fractional load reduction
-    char256 controller; // controller python function name
-}
-~~~
-
 Using the `load` object allows integration of one or more quasi-static load
 models with `bus` objects.  The `ZIP` values are used to calculate the `S`
 value based on the current voltage. When the load is `ONLINE`, the `S`
@@ -164,29 +150,6 @@ the load is `OFFLINE`, the values of `S` is zero regardless of the value of
 
 ## Powerplants
 
-~~~
-class powerplant {
-    char32 city; // City in which powerplant is located
-    char32 state; // State in which powerplant is located
-    char32 zipcode; // Zipcode in which powerplant is located
-    char32 country; // Country in which powerplant is located
-    char32 naics_code; // Powerplant NAICS code
-    char256 naics_description; // Powerplant NAICS description
-    int16 plant_code; // Generator plant code number
-    set {CC=1024, PV=512, CT=256, ES=128, WT=64, FW=32, IC=16, AT=8, ST=4, HT=2, UNKNOWN=1} generator; // Generator type
-    set {NG=32768, COAL=16384, WATER=8192, NUC=4096, GAS=2048, OTHER=1024, WOOD=512, UNKNOWN=256, OIL=128, BIO=64, WASTE=32, COKE=16, GEO=8, SUN=4, WIND=2, ELEC=1} fuel; // Generator fuel type
-    enumeration {ONLINE=1, OFFLINE=0} status; // Generator status
-    double operating_capacity[MW]; // Generator normal operating capacity (MW)
-    double summer_capacity[MW]; // Generator summer operating capacity (MW)
-    double winter_capacity[MW]; // Generator winter operating capacity (MW)
-    double capacity_factor[pu]; // Generator capacity factor (pu)
-    char256 substation_1; // Substation 1 id
-    char256 substation_2; // Substation 2 id
-    complex S[VA]; // power generation (VA)
-    char256 controller; // controller python function name
-}
-~~~
-
 Using `powerplant` objects allows integration of one or more quasi-static
 generator models with both `bus` and `gen` objects. When integrating with a
 `bus` object, the `S` value real and imaginary values are added to the `bus`
@@ -197,16 +160,7 @@ based on the powerplant's generator status and type.
 
 ## Powerlines
 
-~~~
-class powerline {
-    double length[mile]; // (REQUIRED) length (miles)
-    complex impedance[Ohm/mile]; // (REQUIRED) line impedance (Ohm/mile)
-    enumeration {OUT=0, IN=1} status; // line status (IN or OUT)
-    enumeration {PARALLEL=2, SERIES=1} composition; // parent line composition (SERIES or PARALLEL)
-}
-~~~
-
-Using `powerline` object allows composite lines to be constructed and
+Using `powerline` objects allows composite lines to be constructed and
 assembled into `branch` objects.  A `powerline` may either have a `branch`
 parent or another `powerline` object, in which case the parent must specify
 whether its `composition` is either `SERIES` or `PARALLEL`.  When a
@@ -217,6 +171,21 @@ assembled in the parent line. Line with `status` values `OUT` are ignored.
 The `status` value, `impedance`, `length`, and `composition` may be changed at
 any time during a simulation. However, these values are only checked for
 consistency and sanity during initialization.
+
+## Transformers
+
+Transformers are `branch` objects with `status`, `tap_ratio` and `phase_shift`
+updated at every `sync` event. The transformer `rated_power` controls the
+`branch` property `rateA`. In addition the `r`, `x`, `b`, values of the
+`branch` are set at initialization using the `impedance` and `susceptance`
+transformer properties.
+
+## Relays
+
+The `relay` object is a `branch` object that is controlled using the `status`
+property. When the `status` is `OPEN` the `branch` object's `status` is
+`OUT`. Otherwise it is `IN`. The `relay` object can define a `controller`
+function to allow various control strategies to be implemented in Python.
 
 ## Controllers
 
@@ -237,9 +206,9 @@ If the `on_init` function is defined in the Python `controllers` module, it
 will be called when the simulation is initialized. Note that many `gridlabd`
 module functions are not available until after initialization is completed.
 
-Any `load` or `powerplant` object may specify a `controller` property. When
-this property is defined, the corresponding controller function will be
-called if it is defined in the `controllers` module.
+Any `load`, `powerplant`, and `relay` object may specify a `controller`
+property. When this property is defined, the corresponding controller
+function will be called if it is defined in the `controllers` module.
 
 Controller functions use the following call/return prototype
 
@@ -253,7 +222,24 @@ is any valid property of the calling object. A special return name `t` is
 used to specify the time at which the controller is to be called again,
 specify in second of the Unix epoch.
 
+## SCADA
+
+The `scada` object is used to access properties of objects in the
+`controllers` module using the global `scada`. Any number of `scada` points
+may be added using the `point` method, using the object name and property
+separated by a dot. When the `write` property is `TRUE` the `scada` object
+will copy back values that have changed. If the `record` property is `TRUE`,
+the `controllers` module will have a global `historian` which records are
+past values of the `scada` global.
+
 # See also
 
 * [PyPower documentation](https://pypi.org/project/PYPOWER/)
-* [[/Converters/Import/PyPower_cases]]
+* [[/Module/Pypower/Load]]
+* [[/Module/Pypower/Powerline]]
+* [[/Module/Pypower/Powerplant]]
+* [[/Module/Pypower/Relay]]
+* [[/Module/Pypower/Scada]]
+* [[/Module/Pypower/Transformer]]
+* [[/Converters/Import/Pypower_cases]]
+* [[/Converters/Import/Psse_models]]
