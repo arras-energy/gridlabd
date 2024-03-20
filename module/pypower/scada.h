@@ -6,19 +6,33 @@
 
 #include "gridlabd.h"
 
+DECL_METHOD(scada,point);
+
 class scada : public gld_object 
 {
 
 public:
-	// published properties
-	GL_ATOMIC(complex,V);
-	GL_ATOMIC(double,Vm);
-	GL_ATOMIC(double,Va);
-	GL_ATOMIC(complex,I);
-	GL_ATOMIC(complex,S);
 
-private:
-	bool parent_is_branch;
+	// published properties
+	GL_ATOMIC(bool,write_ok);
+	GL_ATOMIC(bool,record_on);
+	// typedef enum {DF_RAW,DF_STRING} DATAFORMAT;
+	// GL_ATOMIC(enumeration,dataformat);
+	GL_METHOD(scada,point);
+
+public:
+
+	// python controller function
+	PyObject *py_controller;
+	PyObject *py_scada;
+	PyObject *py_historian;
+
+	// property list
+	gld_property **point_list;
+	char **name_list;
+	size_t n_points;
+	size_t max_points;
+	char *point_names;
 
 public:
 
@@ -26,11 +40,11 @@ public:
 	scada(MODULE *module);
 	int create(void);
 	int init(OBJECT *parent);
-	TIMESTAMP presync(TIMESTAMP t0);
-	TIMESTAMP sync(TIMESTAMP t0);
-	TIMESTAMP postsync(TIMESTAMP t0);
+	TIMESTAMP precommit(TIMESTAMP t0);
+	TIMESTAMP commit(TIMESTAMP t0, TIMESTAMP t1);
 
 public:
+
 	// internal properties
 	static CLASS *oclass;
 	static scada *defaults;

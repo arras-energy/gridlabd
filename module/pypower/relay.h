@@ -10,27 +10,31 @@ class relay : public gld_object
 {
 
 public:
+
 	// published properties
-	GL_ATOMIC(complex,impedance);
-	GL_ATOMIC(double,rating);
-	typedef enum {RS_OUT=0,RS_IN=1} RELAYSTATUS;
+	GL_ATOMIC(char256,controller);
+	typedef enum {RS_CLOSED=0,RS_OPEN=1} RELAYSTATUS;
 	GL_ATOMIC(enumeration,status);
 
-public:
-	GL_ATOMIC(complex,Z);
-	GL_ATOMIC(complex,Y);
+private:
+
+	// python controller function
+	PyObject *py_controller;
+	PyObject *py_args;
+	PyObject *py_kwargs;
 
 public:
-	bool parent_is_branch;
 
-public:
 	// event handlers
 	relay(MODULE *module);
 	int create(void);
 	int init(OBJECT *parent);
-	TIMESTAMP precommit(TIMESTAMP t1);
+	TIMESTAMP presync(TIMESTAMP t1) { return TS_NEVER;};
+	TIMESTAMP sync(TIMESTAMP t1);
+	TIMESTAMP postsync(TIMESTAMP t1) { return TS_NEVER;};
 
 public:
+	
 	// internal properties
 	static CLASS *oclass;
 	static relay *defaults;
