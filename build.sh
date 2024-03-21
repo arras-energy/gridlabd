@@ -90,6 +90,9 @@ while [ $# -gt 0 ]; do
 			fi
 			VERIFY="-T 0 --validate"
 			;;
+		--ignore )
+			export MAKEFLAGS="$MAKEFLAGS -i"
+			;;
 		--install )
 			VERIFY="--version=all"
 			TARGET="$TARGET install"
@@ -115,9 +118,9 @@ while [ $# -gt 0 ]; do
 			PROCS=$(echo $1 | cut -f2 -d=)
 			test "$PROCS" = "--parallel" && PROCS=3
 			if nproc --help 1>/dev/null 2>&1 ; then
-				MAKEFLAGS=-j$(($(nproc)*$PROCS))
+				export MAKEFLAGS="$MAKEFLAGS -j$(($(nproc)*$PROCS))"
 			elif sysctl -a 1>/dev/null 2>&1 ; then
-				MAKEFLAGS=-j$(($(sysctl -n hw.ncpu)*$PROCS))
+				export MAKEFLAGS="$MAKEFLAGS -j$(($(sysctl -n hw.ncpu)*$PROCS))"
 			else
 				error "unable to determine the number of available CPUs"
 			fi
@@ -138,7 +141,7 @@ while [ $# -gt 0 ]; do
 done
 mkdir -p /usr/local/opt/gridlabd || error "you do not have permission to create /usr/local/opt/gridlabd"
 autoconf --version 1>/dev/null 2>&1 || error "autoconf not installed. Did you run setup.sh?"
-test "$(autoconf --version 2>/dev/null | head -n 1 | grep -o '[^ ]*$')" = "2.71" || error "autoconf version 2.71 required. Did you run setup.sh?"
+test "$(autoconf --version 2>/dev/null | head -n 1 | grep -o '[^ ]*$')" '>' "2.70" || error "autoconf version 2.71 or later required. Did you run setup.sh?"
 git --version 1>/dev/null 2>&1 || error "you must install git to build GridLAB-D"
 test -f $SRCDIR/configure.ac || error "you must build from the source directory where configure.ac is located"
 test -f $HOME/.gridlabd/bin/activate || error "$HOME/.gridlabd is not found. Run setup.sh again."
