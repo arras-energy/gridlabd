@@ -101,8 +101,8 @@ powerplant::powerplant(MODULE *module)
 			PT_char256, "substation_2", get_substation_2_offset(),
 				PT_DESCRIPTION, "Substation 2 id",
 
-			PT_complex, "S[VA]", get_S_offset(),
-				PT_DESCRIPTION, "power generation (VA)",
+			PT_complex, "S[MVA]", get_S_offset(),
+				PT_DESCRIPTION, "power generation (MVA)",
 
 			PT_char256, "controller", get_controller_offset(),
 				PT_DESCRIPTION,"controller python function name",
@@ -279,7 +279,10 @@ TIMESTAMP powerplant::sync(TIMESTAMP t0)
 					{
 						repr = PyObject_Str(value);
 						const char *data = PyUnicode_AsUTF8(repr);
-						prop.from_string(data);
+						if ( prop.from_string(data) < 0 )
+						{
+							warning("controller return value %s='%s' is not accepted",name,data);
+						}
 						Py_DECREF(repr);
 					}
 					else

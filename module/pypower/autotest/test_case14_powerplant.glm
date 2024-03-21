@@ -12,11 +12,19 @@ module pypower
     save_case TRUE;
 }
 
+module tape
+{
+    csv_header_type NAME;
+}
+
 object pypower.load
 {
     parent pp_bus_2;
     Vn 12.5 kV;
-    P 10.0;
+    object player
+    {
+        file "${modelname/powerplant.glm/load}_pp_bus_2.csv";
+    };
     status ONLINE;
 }
 
@@ -28,3 +36,11 @@ object pypower.powerplant
 }
 
 #include "${DIR:-.}/case.glm"
+
+object recorder
+{
+    parent pp_bus_2;
+    property S,Pd,Qd,Gs,Bs,Vm,Va;
+    interval 3600;
+    file "${modelname/.glm/}_pp_bus_2_record.csv";
+}
