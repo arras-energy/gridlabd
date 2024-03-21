@@ -90,6 +90,9 @@ while [ $# -gt 0 ]; do
 			fi
 			VERIFY="-T 0 --validate"
 			;;
+		--ignore )
+			export MAKEFLAGS="$MAKEFLAGS -i"
+			;;
 		--install )
 			VERIFY="--version=all"
 			TARGET="$TARGET install"
@@ -115,9 +118,9 @@ while [ $# -gt 0 ]; do
 			PROCS=$(echo $1 | cut -f2 -d=)
 			test "$PROCS" = "--parallel" && PROCS=3
 			if nproc --help 1>/dev/null 2>&1 ; then
-				MAKEFLAGS=-j$(($(nproc)*$PROCS))
+				export MAKEFLAGS="$MAKEFLAGS -j$(($(nproc)*$PROCS))"
 			elif sysctl -a 1>/dev/null 2>&1 ; then
-				MAKEFLAGS=-j$(($(sysctl -n hw.ncpu)*$PROCS))
+				export MAKEFLAGS="$MAKEFLAGS -j$(($(sysctl -n hw.ncpu)*$PROCS))"
 			else
 				error "unable to determine the number of available CPUs"
 			fi
