@@ -44,3 +44,7 @@ object recorder
     interval 3600;
     file "${modelname/.glm/}_pp_bus_2_record.csv";
 }
+
+#ifdef ../${modelname/.glm/}_pp_bus_2_record.csv
+#on_exit 0 diff ../${modelname/.glm/}_pp_bus_2_record.csv ${modelname/.glm/}_pp_bus_2_record.csv > gridlabd.diff
+#endif
