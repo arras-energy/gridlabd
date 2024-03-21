@@ -23,7 +23,7 @@ object pypower.load
     Vn 12.5 kV;
     object player
     {
-        file "${DIR:-.}/${modelname/powerplant.glm/load}_pp_bus_2.csv";
+        file "${DIR:-.}/test_case14_load_pp_bus_2.csv";
     };
     status ONLINE;
 }
@@ -46,5 +46,5 @@ object recorder
 }
 
 #ifdef ../${modelname/.glm/}_pp_bus_2_record.csv
-#on_exit 0 diff ../${modelname/.glm/}_pp_bus_2_record.csv ${modelname/.glm/}_pp_bus_2_record.csv > gridlabd.diff
+#on_exit 0 diff ../test_case14_powerplant_pp_bus_2_record.csv ${modelname/.glm/}_pp_bus_2_record.csv > gridlabd.diff
 #endif

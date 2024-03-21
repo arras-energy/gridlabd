@@ -201,6 +201,11 @@ int powerplant::init(OBJECT *parent_hdr)
 
 TIMESTAMP powerplant::presync(TIMESTAMP t0)
 {
+	if ( get_status() == 0 )
+	{
+		return TS_NEVER;
+	}
+
 	// copy data to parent
 	if ( is_dynamic ) // gen parent
 	{

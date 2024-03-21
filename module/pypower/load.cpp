@@ -139,6 +139,11 @@ int load::init(OBJECT *parent_hdr)
 
 TIMESTAMP load::presync(TIMESTAMP t0)
 {
+	if ( get_status() == 0 )
+	{
+		return TS_NEVER;
+	}
+
 	// calculate load based on voltage and ZIP values
 	complex Vpu = V / Vn;
 	S = complex(0,0);
