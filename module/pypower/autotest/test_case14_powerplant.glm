@@ -42,7 +42,7 @@ object recorder
     parent pp_bus_2;
     property S,Pd,Qd,Gs,Bs,Vm,Va;
     interval 3600;
-    file "${modelname/.glm/}_pp_bus_2_record.csv";
+    file "test_case14_powerplant_pp_bus_2_record.csv";
 }
 
 #ifdef ../${modelname/.glm/}_pp_bus_2_record.csv
