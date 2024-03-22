@@ -181,7 +181,7 @@ def convert(ifile,ofile,options={}):
     type {typemap[int(row[3])]}; 
     area {row[4]};
     zone {row[5]};
-    Vm {row[7]} kV;
+    Vm {row[7]} pu*V;
     Va {row[8]} deg;
     Pd {float(row[9])-float(row[11])} MW;
     Qd {float(row[10])-float(row[12])} MVAr;
