@@ -24,8 +24,8 @@ load::load(MODULE *module)
 		defaults = this;
 		if (gl_publish_variable(oclass,
 
-			PT_complex, "S[VA]", get_S_offset(),
-				PT_DESCRIPTION, "power demand (VA)",
+			PT_complex, "S[MVA]", get_S_offset(),
+				PT_DESCRIPTION, "power demand (MVA)",
 
 			PT_complex, "Z[Ohm]", get_Z_offset(),
 				PT_DESCRIPTION, "constant impedance load (Ohm)",
@@ -33,14 +33,14 @@ load::load(MODULE *module)
 			PT_complex, "I[A]", get_I_offset(),
 				PT_DESCRIPTION, "constant current load (A)",
 
-			PT_complex, "P[VA]", get_P_offset(),
-				PT_DESCRIPTION, "constant power load (VA)",
+			PT_complex, "P[MVA]", get_P_offset(),
+				PT_DESCRIPTION, "constant power load (MVA)",
 
-			PT_complex, "V[V]", get_V_offset(),
+			PT_complex, "V[pu*V]", get_V_offset(),
 				PT_DESCRIPTION, "bus voltage (V)",
 
-			PT_double, "Vn[V]", get_Vn_offset(),
-				PT_DESCRIPTION, "nominal voltage (V)",
+			PT_double, "Vn[kV]", get_Vn_offset(),
+				PT_DESCRIPTION, "nominal voltage (kV)",
 
 			PT_enumeration, "status", get_status_offset(),
 				PT_DESCRIPTION, "load status",
@@ -139,6 +139,11 @@ int load::init(OBJECT *parent_hdr)
 
 TIMESTAMP load::presync(TIMESTAMP t0)
 {
+	if ( get_status() == 0 )
+	{
+		return TS_NEVER;
+	}
+
 	// calculate load based on voltage and ZIP values
 	complex Vpu = V / Vn;
 	S = complex(0,0);
@@ -228,7 +233,10 @@ TIMESTAMP load::sync(TIMESTAMP t0)
 					{
 						repr = PyObject_Str(value);
 						const char *data = PyUnicode_AsUTF8(repr);
-						prop.from_string(data);
+						if ( prop.from_string(data) < 0 )
+						{
+							warning("controller return value %s='%s' is not accepted",name,data);
+						}
 						nchanges++;
 						Py_DECREF(repr);
 					}
