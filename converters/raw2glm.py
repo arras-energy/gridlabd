@@ -252,6 +252,8 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
                     print(f"""object pypower.branch
 {{
     name "{oname}_B_{branchid}_{branchndx[branchid]}"; 
+    from "{oname}_N_{row[0]}";
+    to "{oname}_N_{row[1]}";
     fbus {busndx[row[0]]};
     tbus {busndx[row[1]]};
     r {row[3]};
