@@ -22,6 +22,12 @@ branch::branch(MODULE *module)
 
 		defaults = this;
 		if (gl_publish_variable(oclass,
+			PT_object, "from", get_from_offset(),
+				PT_DESCRIPTION, "from bus name",
+
+			PT_object, "to", get_to_offset(),
+				PT_DESCRIPTION, "to bus name",
+				
 			PT_int32, "fbus", get_fbus_offset(),
 				PT_DESCRIPTION, "from bus number",
 
@@ -90,5 +96,40 @@ int branch::create(void)
 
 int branch::init(OBJECT *parent)
 {
+	// automatic bus lookup
+	if ( get_fbus() == 0 )
+	{
+		bus *f = (bus*)get_from();
+		if ( f->isa("bus","pypower") )
+		{
+			if ( f->get_bus_i() == 0 )
+			{
+				return 2; // defer until bus is initialized
+			}
+			set_fbus(f->get_bus_i());
+		}
+		else
+		{
+			error("from object '%s' is not a pypower bus",f->get_name());
+			return 0;
+		}
+	}
+	if ( get_tbus() == 0 )
+	{
+		bus *t = (bus*)get_to();
+		if ( t->isa("bus","pypower") )
+		{
+			if ( t->get_bus_i() == 0 )
+			{
+				return 2; // defer until bus is initialized
+			}
+			set_tbus(t->get_bus_i());
+		}
+		else
+		{
+			error("from object '%s' is not a pypower bus",t->get_name());
+			return 0;
+		}
+	}
 	return 1;
 }

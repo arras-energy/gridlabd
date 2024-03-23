@@ -10,6 +10,8 @@ EXPORT_SYNC(bus);
 CLASS *bus::oclass = NULL;
 bus *bus::defaults = NULL;
 
+static int last_i = 0;
+
 bus::bus(MODULE *module)
 {
 	if (oclass==NULL)
@@ -114,6 +116,12 @@ int bus::create(void)
 
 int bus::init(OBJECT *parent)
 {
+	// automatic id number generation
+	if ( get_bus_i() == 0 )
+	{
+		set_bus_i(++last_i);
+	}
+
 	// copy demand to base load if baseload not set
 	if ( S.Re() == 0.0 && S.Im() == 0.0 )
 	{
