@@ -13,7 +13,7 @@ CLASS *bus::oclass = NULL;
 bus *bus::defaults = NULL;
 
 static int last_i = 0;
-char256 bus::timestamp_format = "%Y-%m-%d %H:%M:%S%z"; // RFC-822/ISO8601 standard timestamp
+char256 bus::timestamp_format = ""; // "%Y-%m-%d %H:%M:%S%z"; // RFC-822/ISO8601 standard timestamp
 
 bus::bus(MODULE *module)
 {
@@ -246,36 +246,26 @@ bool bus::load_weather()
 		return false;
 	}
 	char buffer[1024];
-	int lineno = 0;
-	while ( !feof(fp) && fgets(buffer,sizeof(buffer)-1,fp) != NULL )
+	
+	for ( int lineno = 0 ; !feof(fp) && fgets(buffer,sizeof(buffer)-1,fp) != NULL ; lineno++ )
 	{
-		struct tm t;
-		char *data = NULL;
-		data = strptime(buffer,timestamp_format[0]=='\0'?"%Y-%m-%d %H:%M:%S%z":timestamp_format,&t);
-		if ( lineno++ > 0 && data == NULL )
+		char *data = strchr(buffer,',');
+		if ( data == NULL || ! isdigit(buffer[0]) )
 		{
-			error("%s@%d: unable to parse '%24s' using format '%s'",(const char*)get_weather_file(),lineno,
-				buffer,(const char*)timestamp_format);
+			// no/bad data -- ignore line
+			continue;
+		}
+		*data++ = '\0';
+		gld_clock t(buffer);
+		if ( ! t.is_valid() )
+		{
+			error("%s@%d: timestamp '%s' is not valid",(const char*)get_weather_file(),lineno,buffer);
 			result = false;
 			break;
 		}
-		time_t tu = mktime(&t);
+		time_t tu = (TIMESTAMP)t;
 		if ( get_weather_resolution() > 0 && tu % (long long)get_weather_resolution() == 0 )
 		{
-			while ( isspace(*data) && *data != '\0' )
-			{
-				data++;
-			}
-			if ( data[0] != ',' )
-			{
-				error("%s@%d: missing comma separator after timestamp",(const char*)get_weather_file(),lineno);
-				result = false;
-				break;
-			}
-			else
-			{
-				data++;
-			}
 			if ( ! add_weather(tu,data) )
 			{
 				error("%s@%d: weather data read failed",(const char*)get_weather_file(),lineno);
