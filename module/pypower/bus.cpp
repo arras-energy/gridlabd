@@ -247,7 +247,6 @@ bool bus::load_weather()
 	}
 	char buffer[1024];
 	int lineno = 0;
-	char utc[] = "UTC";
 	while ( !feof(fp) && fgets(buffer,sizeof(buffer)-1,fp) != NULL )
 	{
 		struct tm t;
