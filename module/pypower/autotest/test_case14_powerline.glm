@@ -7,7 +7,6 @@
 module pypower
 {
 	maximum_timestep 3600;
-	save_case TRUE;
 }
 
 object powerline

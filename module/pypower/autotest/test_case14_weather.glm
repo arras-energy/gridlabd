@@ -6,13 +6,11 @@
 
 module pypower
 {
-	solver_method GS;
-	save_case TRUE;
+	solver_method NR;
 }
 
 modify pp_bus_1.weather_file ${DIR:-.}/test_case14_weather.csv;
 modify pp_bus_1.weather_variables Sh,Sn,Sg,Wd,Ws,Td,Tw,RH,PW;
-modify pp_bus_1.timestamp_format %Y-%m-%d %H:%M:%S%z;
 
 module tape
 {
