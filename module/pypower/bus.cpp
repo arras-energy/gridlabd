@@ -13,6 +13,7 @@ CLASS *bus::oclass = NULL;
 bus *bus::defaults = NULL;
 
 static int last_i = 0;
+char256 bus::timestamp_format = "%Y-%m-%d %H:%M:%S%z"; // RFC-822/ISO8601 standard timestamp
 
 bus::bus(MODULE *module)
 {
@@ -103,10 +104,6 @@ bus::bus(MODULE *module)
 				PT_DEFAULT, "3600 s",
 				PT_DESCRIPTION, "Weather time downsampling resolution (s)",
 
-			PT_char1024, "timestamp_format", get_timestamp_format_offset(),
-				PT_DEFAULT, "%Y-%m-%d %H:%M:%S%z",
-				PT_DESCRIPTION, "Weather timestamp format",
-
 			PT_double, "Sn[W/m^2]", get_Sn_offset(),
 				PT_DESCRIPTION, "Solar direct normal irradiance (W/m^2)",
 
@@ -141,6 +138,11 @@ bus::bus(MODULE *module)
 		{
 				throw "unable to publish bus properties";
 		}
+
+	    gl_global_create("pypower::timestamp_format",
+	        PT_char256, &timestamp_format, 
+	        PT_DESCRIPTION, "Format for weather file timestamps ('' is RFC822/ISO8601)",
+	        NULL);
 	}
 }
 
@@ -245,29 +247,20 @@ bool bus::load_weather()
 	}
 	char buffer[1024];
 	int lineno = 0;
-	char oldtz[32];
-	strcpy(oldtz,getenv("TZ")?getenv("TZ"):"");
+	char utc[] = "UTC";
 	while ( !feof(fp) && fgets(buffer,sizeof(buffer)-1,fp) != NULL )
 	{
 		struct tm t;
-		setenv("TZ","UTC",1);
-		char *data = strptime(buffer,get_timestamp_format(),&t);
-		if ( oldtz[0] == '\0' )
-		{
-			unsetenv("TZ");
-		}
-		else
-		{
-			setenv("TZ",oldtz,1);
-		}
+		char *data = NULL;
+		data = strptime(buffer,timestamp_format[0]=='\0'?"%Y-%m-%d %H:%M:%S%z":timestamp_format,&t);
 		if ( lineno++ > 0 && data == NULL )
 		{
 			error("%s@%d: unable to parse '%24s' using format '%s'",(const char*)get_weather_file(),lineno,
-				buffer,(const char*)get_timestamp_format());
+				buffer,(const char*)timestamp_format);
 			result = false;
 			break;
 		}
-		time_t tu = timegm(&t);
+		time_t tu = mktime(&t);
 		if ( get_weather_resolution() > 0 && tu % (long long)get_weather_resolution() == 0 )
 		{
 			while ( isspace(*data) && *data != '\0' )

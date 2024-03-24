@@ -8,6 +8,9 @@
 
 class bus : public gld_object 
 {
+public:
+
+	static char256 timestamp_format;
 
 public:
 	// published properties
@@ -32,7 +35,6 @@ public:
 	GL_ATOMIC(char1024,weather_file);
 	GL_ATOMIC(char1024,weather_variables);
 	GL_ATOMIC(double,weather_resolution);
-	GL_ATOMIC(char32,timestamp_format);
 
 	GL_ATOMIC(double,Sh);
 	GL_ATOMIC(double,Sn);
