@@ -8,6 +8,9 @@
 
 class bus : public gld_object 
 {
+public:
+
+	static char256 timestamp_format;
 
 public:
 	// published properties
@@ -29,6 +32,35 @@ public:
 	GL_ATOMIC(double,mu_Vmax);
 	GL_ATOMIC(double,mu_Vmin);
 	GL_ATOMIC(complex,S);
+	GL_ATOMIC(char1024,weather_file);
+	GL_ATOMIC(char1024,weather_variables);
+	GL_ATOMIC(double,weather_resolution);
+
+	GL_ATOMIC(double,Sh);
+	GL_ATOMIC(double,Sn);
+	GL_ATOMIC(double,Sg);
+	GL_ATOMIC(double,Wd);
+	GL_ATOMIC(double,Ws);
+	GL_ATOMIC(double,Td);
+	GL_ATOMIC(double,Tw);
+	GL_ATOMIC(double,RH);
+	GL_ATOMIC(double,PW);
+	GL_ATOMIC(double,HI);
+#define N_WEATHERDATA 10 // adjust if adding more weather data items
+
+private:
+
+	bool load_weather(void);
+	bool add_weather(TIMESTAMP t,char *buffer);
+	bool get_weather(TIMESTAMP t);
+
+	typedef struct s_weatherdata {
+		TIMESTAMP t;
+		double value[N_WEATHERDATA];
+		struct s_weatherdata *next;
+	} WEATHERDATA;
+	gld_property *weather_mapper[N_WEATHERDATA];
+	WEATHERDATA *first, *last, *current;
 
 public:
 
@@ -39,6 +71,7 @@ public:
 	TIMESTAMP presync(TIMESTAMP t0);
 	TIMESTAMP sync(TIMESTAMP t0);
 	TIMESTAMP postsync(TIMESTAMP t0);
+	TIMESTAMP precommit(TIMESTAMP t0);
 
 public:
 	// internal properties

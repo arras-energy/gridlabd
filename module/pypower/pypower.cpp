@@ -65,6 +65,7 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
     new relay(module);
     new scada(module);
     new transformer(module);
+    new weather(module);
 
     gl_global_create("pypower::version",
         PT_int32, &pypower_version, 

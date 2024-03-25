@@ -6,6 +6,5 @@
 
 module pypower
 {
-	solver_method GS;
 	maximum_timestep 3600;
 }

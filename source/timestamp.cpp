@@ -1234,17 +1234,20 @@ TIMESTAMP convert_to_timestamp(const char *value)
 	char tz[5]="";
 	double t;
 	char unit[4]="s";
+	char tzs[2]="+";
 	if (*value=='\'' || *value=='"') value++;
 
-	/* ISO8601 support */
-	if ( sscanf(value,"%4hu-%2hu-%2huT%2hu:%2hu:%lf%hd:%hu",&Y,&m,&d,&H,&M,&s,&tzh,&tzm) > 6 
-		|| ( sscanf(value,"%4hu-%2hu-%2huT%2hu:%2hu:%lf%c",&Y,&m,&d,&H,&M,&s,tz) == 7 && strcmp(tz,"Z")==0) )
+	/* ISO8601/RFC822 support */
+	if ( sscanf(value,"%4hu-%2hu-%2hu%*[ T]%2hu:%2hu:%lf%1[-+]%02hu%*[^0-9]%02hu",&Y,&m,&d,&H,&M,&s,tzs,&tzh,&tzm) == 9 
+		|| ( sscanf(value,"%4hu-%2hu-%2huT%2hu:%2hu:%lf%1[Z]",&Y,&m,&d,&H,&M,&s,tz) == 7 && strcmp(tz,"Z")==0) )
 	{
 		S = (unsigned short)s;
 		unsigned int ns = (s-S)*1e9;
 		DATETIME dt = {Y,m,d,H,M,S,ns,0};
-		dt.tzoffset = (tzh*60+tzm)*60;
-		return mkdatetime(&dt);
+		dt.tzoffset = 0;
+		dt.is_dst = 0;
+		strcpy(dt.tz,"UTC");
+		return mkdatetime(&dt) - (tzh*60+tzm) * (tzs[0]=='-'?-60:60);
 	}
 
 	/* scan ISO format date/time */
