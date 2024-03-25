@@ -20,20 +20,20 @@
 #include "property.h"
 
 typedef enum {
-	RT_INVALID=-1,	/**< used to flag bad random types */
-	RT_DEGENERATE,	/**< degenerate distribution (Dirac delta function); double only_value */
-	RT_UNIFORM,		/**< uniform distribution; double minimum_value, double maximum_value */
-	RT_NORMAL,		/**< normal distribution; double arithmetic_mean, double arithmetic_stdev */
-	RT_LOGNORMAL,	/**< log-normal distribution; double geometric_mean, double geometric_stdev */
-	RT_BERNOULLI,	/**< Bernoulli distribution; double probability_of_observing_1 */
-	RT_PARETO,		/**< Pareto distribution; double minimum_value, double gamma_scale */
-	RT_EXPONENTIAL, /**< exponential distribution; double coefficient, double k_scale */
-	RT_SAMPLED,		/**< sampled distribution; unsigned number_of_samples, double samples[n_samples] */
-	RT_RAYLEIGH,	/**< Rayleigh distribution; double sigma */
-	RT_WEIBULL,		/**< Weibull distribution; double lambda, double k */
-	RT_GAMMA,		/**< Gamma distribution; double alpha, double beta */
-	RT_BETA,		/**< Beta distribution; double alpha, double beta */
-	RT_TRIANGLE,	/**< Triangle distribution; double a, double b */
+	RT_INVALID=-1,    /**< used to flag bad random types */
+	RT_DEGENERATE=0,  /**< degenerate distribution (Dirac delta function); double only_value */
+	RT_UNIFORM=1,     /**< uniform distribution; double minimum_value, double maximum_value */
+	RT_NORMAL=2,      /**< normal distribution; double arithmetic_mean, double arithmetic_stdev */
+	RT_LOGNORMAL=3,   /**< log-normal distribution; double geometric_mean, double geometric_stdev */
+	RT_BERNOULLI=4,   /**< Bernoulli distribution; double probability_of_observing_1 */
+	RT_PARETO=5,      /**< Pareto distribution; double minimum_value, double gamma_scale */
+	RT_EXPONENTIAL=6, /**< exponential distribution; double coefficient, double k_scale */
+	RT_SAMPLED=7,     /**< sampled distribution; unsigned number_of_samples, double samples[n_samples] */
+	RT_RAYLEIGH=8,    /**< Rayleigh distribution; double sigma */
+	RT_WEIBULL=9,     /**< Weibull distribution; double lambda, double k */
+	RT_GAMMA=10,      /**< Gamma distribution; double alpha, double beta */
+	RT_BETA=11,       /**< Beta distribution; double alpha, double beta */
+	RT_TRIANGLE=12,   /**< Triangle distribution; double a, double b */
 } RANDOMTYPE;
 
 typedef struct s_correlation CORRELATION;

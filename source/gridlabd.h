@@ -3714,7 +3714,7 @@ int dllkill() { return do_kill(NULL); }
  */
 #define EXPORT_CREATE_C(X,C) EXPORT int create_##X(OBJECT **obj, OBJECT *parent) \
 {	try { *obj = gl_create_object(C::oclass); \
-	if ( *obj != NULL ) { C *my = OBJECTDATA(*obj,C); \
+	if ( *obj != NULL ) { class C *my = OBJECTDATA(*obj,class C); \
 		gl_set_parent(*obj,parent); (*obj)->flags|=module_message_flags; return my->create(); \
 	} else return 0; } CREATE_CATCHALL(X); }
 
@@ -3731,7 +3731,7 @@ int dllkill() { return do_kill(NULL); }
 	See <EXPORT_INIT>.
  */
 #define EXPORT_INIT_C(X,C) EXPORT int init_##X(OBJECT *obj, OBJECT *parent) \
-{	try { if (obj!=NULL) return OBJECTDATA(obj,C)->init(parent); else return 0; } \
+{	try { if (obj!=NULL) return OBJECTDATA(obj,class C)->init(parent); else return 0; } \
 	INIT_CATCHALL(X); }
 
 /*	Define: EXPORT_INIT(class)
@@ -3747,8 +3747,8 @@ int dllkill() { return do_kill(NULL); }
 	See <EXPORT_COMMIT>.
  */
 #define EXPORT_COMMIT_C(X,C) EXPORT TIMESTAMP commit_##X(OBJECT *obj, TIMESTAMP t1, TIMESTAMP t2) \
-{	C *my = OBJECTDATA(obj,C); try { return obj!=NULL ? my->commit(t1,t2) : TS_NEVER; } \
-	T_CATCHALL(C,commit); }
+{	class C *my = OBJECTDATA(obj,class C); try { return obj!=NULL ? my->commit(t1,t2) : TS_NEVER; } \
+	T_CATCHALL(class C,commit); }
 
 /*	Define: EXPORT_COMMIT(class)
 
@@ -3763,7 +3763,7 @@ int dllkill() { return do_kill(NULL); }
 	See <EXPORT_NOTIFY>.
  */
 #define EXPORT_NOTIFY_C(X,C) EXPORT int notify_##X(OBJECT *obj, int notice, PROPERTY *prop, const char *value) \
-{	C *my = OBJECTDATA(obj,C); try { if ( obj!=NULL ) { \
+{	class C *my = OBJECTDATA(obj,class C); try { if ( obj!=NULL ) { \
 	switch (notice) { \
 	case NM_POSTUPDATE: return my->postnotify(prop,value); \
 	case NM_PREUPDATE: return my->prenotify(prop,value); \
@@ -3783,7 +3783,7 @@ int dllkill() { return do_kill(NULL); }
 	See <EXPORT_SYNC>.
  */
 #define EXPORT_SYNC_C(X,C) EXPORT TIMESTAMP sync_##X(OBJECT *obj, TIMESTAMP t0, PASSCONFIG pass) { \
-	try { TIMESTAMP t1=TS_NEVER; C *p=OBJECTDATA(obj,C); \
+	try { TIMESTAMP t1=TS_NEVER; class C *p=OBJECTDATA(obj,class C); \
 	switch (pass) { \
 	case PC_PRETOPDOWN: t1 = p->presync(t0); break; \
 	case PC_BOTTOMUP: t1 = p->sync(t0); break; \
@@ -3806,7 +3806,7 @@ int dllkill() { return do_kill(NULL); }
 	See <EXPORT_ISA>.
  */
 #define EXPORT_ISA_C(X,C) EXPORT int isa_##X(OBJECT *obj, CLASSNAME name) { \
-	return ( obj!=0 && name!=0 ) ? OBJECTDATA(obj,C)->isa(name) : 0; }
+	return ( obj!=0 && name!=0 ) ? OBJECTDATA(obj,class C)->isa(name) : 0; }
 
 /*	Define: EXPORT_ISA(class)
 
@@ -3821,7 +3821,7 @@ int dllkill() { return do_kill(NULL); }
 	See <EXPORT_PLC>.
  */
 #define EXPORT_PLC_C(X,C) EXPORT TIMESTAMP plc_##X(OBJECT *obj, TIMESTAMP t1) { \
-	try { return OBJECTDATA(obj,C)->plc(t1); } \
+	try { return OBJECTDATA(obj,class C)->plc(t1); } \
 	T_CATCHALL(plc,X); }
 
 /*	Define: EXPORT_PLC(class)
@@ -3837,7 +3837,7 @@ int dllkill() { return do_kill(NULL); }
 	See <EXPORT_PRECOMMIT>.
  */
 #define EXPORT_PRECOMMIT_C(X,C) EXPORT int precommit_##X(OBJECT *obj, TIMESTAMP t1) \
-{	C *my = OBJECTDATA(obj,C); try { return obj!=NULL ? my->precommit(t1) : 0; } \
+{	class C *my = OBJECTDATA(obj,class C); try { return obj!=NULL ? my->precommit(t1) : 0; } \
 	T_CATCHALL(C,precommit); }
 
 /*	Define: EXPORT_PRECOMMIT(class)
@@ -3853,8 +3853,8 @@ int dllkill() { return do_kill(NULL); }
 	See <EXPORT_FINALIZE>.
  */
 #define EXPORT_FINALIZE_C(X,C) EXPORT int finalize_##X(OBJECT *obj) \
-{	C *my = OBJECTDATA(obj,C); try { return obj!=NULL ? my->finalize() : 0; } \
-	T_CATCHALL(C,finalize); }
+{	class C *my = OBJECTDATA(obj,class C); try { return obj!=NULL ? my->finalize() : 0; } \
+	T_CATCHALL(class C,finalize); }
 
 /*	Define: EXPORT_FINALIZE(class)
 
@@ -3869,7 +3869,7 @@ int dllkill() { return do_kill(NULL); }
 	See <EXPORT_NOTIFY_PROP>.
  */
 #define EXPORT_NOTIFY_C_P(X,C,P) EXPORT int notify_##X##_##P(OBJECT *obj, const char *value) \
-{	C *my = OBJECTDATA(obj,C); try { if ( obj!=NULL ) { \
+{	class C *my = OBJECTDATA(obj,class C); try { if ( obj!=NULL ) { \
 	return my->notify_##P(value); \
 	} else return 0; } \
 	T_CATCHALL(X,notify_##P); return 1; }
@@ -3887,7 +3887,7 @@ int dllkill() { return do_kill(NULL); }
 	See <EXPORT_LOADMETHOD>.
  */
 #define EXPORT_LOADMETHOD_C(X,C,N) EXPORT int loadmethod_##X##_##N(OBJECT *obj, ...) \
-{	C *my = OBJECTDATA(obj,C); try { if ( obj!=NULL ) { \
+{	class C *my = OBJECTDATA(obj,class C); try { if ( obj!=NULL ) { \
 	va_list args; va_start(args,obj); char *value = va_arg(args,char*); size_t size = va_arg(args,size_t); \
 	return my->N(value,size); va_end(args); \
 	} else return 0; } \
@@ -3913,7 +3913,7 @@ int dllkill() { return do_kill(NULL); }
 	See <EXPORT_METHOD>.
  */
 #define EXPORT_METHOD_C(X,C,N) DECL_METHOD(X,N) \
-		{	C *my = OBJECTDATA(obj,C); try { if ( obj!=NULL ) { \
+		{	class C *my = OBJECTDATA(obj,class C); try { if ( obj!=NULL ) { \
 			va_list args; va_start(args,obj); char *value = va_arg(args,char*); size_t size = va_arg(args,size_t); \
 			return my->N(value,size); va_end(args); \
 			} else return 0; } \
@@ -3930,7 +3930,7 @@ int dllkill() { return do_kill(NULL); }
 
 	This macro is used to implement a destroy function of a class.
  */
-#define EXPORT_DESTROY_C(X,N) EXPORT void destroy_##X(OBJECT *obj) { OBJECTDATA(obj,N)->destroy(); free(obj); }
+#define EXPORT_DESTROY_C(X,C) EXPORT void destroy_##X(OBJECT *obj) { OBJECTDATA(obj,class C)->destroy(); free(obj); }
 #define EXPORT_DESTROY(C) EXPORT_DESTROY_C(C,C)
 
 #endif

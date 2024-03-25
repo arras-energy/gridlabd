@@ -15,7 +15,7 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
 
     INIT_MMF(human);
 
-    new random(module);
+    new class random(module);
 
     // always return the first class registered
     return random::oclass;
