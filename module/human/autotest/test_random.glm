@@ -1,4 +1,6 @@
 
+#set randomseed=1
+
 class test
 {
 	double x;
