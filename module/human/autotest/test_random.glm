@@ -36,7 +36,7 @@ object human.random
 	point "human_${N}.y";
 }
 #ifexists ../test_random.glm
-#on_exit 0 diff ../test_random_record_${N}.csv test_random_record_${N}.csv 
+#on_exit 0 diff ../test_random_record_${N}.csv test_random_record_${N}.csv >> gridlabd.diff
 #endif
 
 #done
