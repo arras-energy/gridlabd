@@ -138,11 +138,6 @@ bus::bus(MODULE *module)
 		{
 				throw "unable to publish bus properties";
 		}
-
-	    gl_global_create("pypower::timestamp_format",
-	        PT_char256, &timestamp_format, 
-	        PT_DESCRIPTION, "Format for weather file timestamps ('' is RFC822/ISO8601)",
-	        NULL);
 	}
 }
 
