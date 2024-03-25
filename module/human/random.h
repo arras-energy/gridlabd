@@ -22,8 +22,9 @@ public:
 	GL_ATOMIC(double,lower_limit);
 	GL_ATOMIC(double,upper_limit);
 	typedef enum {
-		LM_CLAMP = 0,
-		LM_RETRY = 1,
+		LM_NONE = 0,
+		LM_CLAMP = 1,
+		LM_RETRY = 2,
 	} LIMITMETHOD;
 	GL_ATOMIC(enumeration,limit_method);
 	GL_ATOMIC(double,refresh_rate);

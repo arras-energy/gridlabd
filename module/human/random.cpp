@@ -28,18 +28,18 @@ random::random(MODULE *module)
 		if (gl_publish_variable(oclass,
 
 			PT_enumeration, "type", get_type_offset(),
-				PT_KEYWORD, "DEGENERATE", (enumeration)RT_DEGENERATE,
-				PT_KEYWORD, "UNIFORM", (enumeration)RT_UNIFORM,
-				PT_KEYWORD, "NORMAL", (enumeration)RT_NORMAL,
-				PT_KEYWORD, "LOGNORMAL", (enumeration)RT_LOGNORMAL,
-				PT_KEYWORD, "BERNOULLI", (enumeration)RT_BERNOULLI,
-				PT_KEYWORD, "PARETO", (enumeration)RT_PARETO,
-				PT_KEYWORD, "EXPONENTIAL", (enumeration)RT_EXPONENTIAL,
-				PT_KEYWORD, "RAYLEIGH", (enumeration)RT_RAYLEIGH,
-				PT_KEYWORD, "RT_WEIBULL", (enumeration)RT_WEIBULL,
-				PT_KEYWORD, "RT_GAMMA", (enumeration)RT_GAMMA,
-				PT_KEYWORD, "RT_BETA", (enumeration)RT_BETA,
 				PT_KEYWORD, "RT_TRIANGLE", (enumeration)RT_TRIANGLE,
+				PT_KEYWORD, "RT_BETA", (enumeration)RT_BETA,
+				PT_KEYWORD, "RT_GAMMA", (enumeration)RT_GAMMA,
+				PT_KEYWORD, "RT_WEIBULL", (enumeration)RT_WEIBULL,
+				PT_KEYWORD, "RAYLEIGH", (enumeration)RT_RAYLEIGH,
+				PT_KEYWORD, "EXPONENTIAL", (enumeration)RT_EXPONENTIAL,
+				PT_KEYWORD, "PARETO", (enumeration)RT_PARETO,
+				PT_KEYWORD, "BERNOULLI", (enumeration)RT_BERNOULLI,
+				PT_KEYWORD, "LOGNORMAL", (enumeration)RT_LOGNORMAL,
+				PT_KEYWORD, "NORMAL", (enumeration)RT_NORMAL,
+				PT_KEYWORD, "UNIFORM", (enumeration)RT_UNIFORM,
+				PT_KEYWORD, "DEGENERATE", (enumeration)RT_DEGENERATE,
 				PT_DESCRIPTION, "Distribution type to be used to generate values",
 
 			PT_double, "a", get_a_offset(),
@@ -55,8 +55,9 @@ random::random(MODULE *module)
 				PT_DESCRIPTION, "The upper limit for generated values",
 
 			PT_enumeration, "limit_method", get_limit_method_offset(),
-				PT_KEYWORD, "CLAMP", (enumeration)LM_CLAMP,
 				PT_KEYWORD, "RETRY", (enumeration)LM_RETRY,
+				PT_KEYWORD, "CLAMP", (enumeration)LM_CLAMP,
+				PT_KEYWORD, "NONE", (enumeration)LM_NONE,
 				PT_DESCRIPTION, "Method to use to enforce limits",
 
 			PT_double, "refresh_rate[s]", get_refresh_rate_offset(),
@@ -101,22 +102,28 @@ TIMESTAMP random::precommit(TIMESTAMP t0)
 		unsigned int *state = &(my()->rng_state);
 Retry:
 		double x = gl_pseudorandomvalue((RANDOMTYPE)get_type(),state,a,b);
-		if ( limit_method == LM_CLAMP )
+		switch ( limit_method )
 		{
+		case LM_CLAMP:
 			x = min(upper_limit,max(lower_limit,x));
-		}
-		else if ( x < lower_limit || x > upper_limit )
-		{
-			retry++;
-			if ( retry < limit_retries )
+			break;
+		case LM_RETRY:
+			if ( x < lower_limit || x > upper_limit )
 			{
-				goto Retry;
+				retry++;
+				if ( retry < limit_retries )
+				{
+					goto Retry;
+				}
+				else
+				{
+					warning("RETRY limit reached, returning the CLAMP result instead");
+					x = min(upper_limit,max(lower_limit,x));
+				}
 			}
-			else
-			{
-				warning("RETRY limit reached, return the CLAMP result instead");
-				x = min(upper_limit,max(lower_limit,x));
-			}
+			break;
+		default:
+			break;
 		}
 		point_list[n]->setp(x);
 	}
