@@ -14,7 +14,7 @@ module tape
 
 module human;
 
-#for N in 0 1
+#for N in 0 1 2
 object test
 {
 	name human_${N};
