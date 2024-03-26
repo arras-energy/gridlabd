@@ -14,13 +14,13 @@ module tape
 
 module behavior;
 
-#for N in 0 1 2
+#for LIMITS in NONE CLAMP RETRY
 object test
 {
-	name behavior_${N};
+	name behavior_${LIMITS};
 	object recorder
 	{
-		file "test_random_record_${N}.csv";
+		file "test_random_${LIMITS}.csv";
 		property x,y;
 		interval 3600;
 	};
@@ -33,12 +33,12 @@ object behavior.random
 	refresh_rate 1h;
 	lower_limit -1;
 	upper_limit +1;
-	limit_method ${N};
-	point "behavior_${N}.x";
-	point "behavior_${N}.y";
+	limit_method ${LIMITS};
+	point "behavior_${LIMITS}.x";
+	point "behavior_${LIMITS}.y";
 }
 #ifexists ../test_random.glm
-#on_exit 0 diff ../test_random_record_${N}.csv test_random_record_${N}.csv >> gridlabd.diff
+#on_exit 0 diff ../test_random_${LIMITS}.csv test_random_${LIMITS}.csv >> gridlabd.diff
 #endif
 
 #done
