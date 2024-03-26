@@ -1,8 +1,8 @@
-// module/human/random.h
+// module/behavior/random.h
 // Copyright (C) 2024 Regents of the Leland Stanford Junior University
 
-#ifndef _HUMAN_RANDOM_H
-#define _HUMAN_RANDOM_H
+#ifndef _BEHAVIOR_RANDOM_H
+#define _BEHAVIOR_RANDOM_H
 
 #include "gridlabd.h"
 
@@ -52,4 +52,4 @@ public:
 	static random *defaults;
 };
 
-#endif // _HUMAN_RANDOM_H
+#endif // _BEHAVIOR_RANDOM_H

@@ -12,12 +12,12 @@ module tape
 	csv_header_type NAME;
 }
 
-module human;
+module behavior;
 
 #for N in 0 1 2
 object test
 {
-	name human_${N};
+	name behavior_${N};
 	object recorder
 	{
 		file "test_random_record_${N}.csv";
@@ -25,7 +25,7 @@ object test
 		interval 3600;
 	};
 }
-object human.random
+object behavior.random
 {
 	type NORMAL;
 	a 0;
@@ -34,8 +34,8 @@ object human.random
 	lower_limit -1;
 	upper_limit +1;
 	limit_method ${N};
-	point "human_${N}.x";
-	point "human_${N}.y";
+	point "behavior_${N}.x";
+	point "behavior_${N}.y";
 }
 #ifexists ../test_random.glm
 #on_exit 0 diff ../test_random_record_${N}.csv test_random_record_${N}.csv >> gridlabd.diff

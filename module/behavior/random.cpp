@@ -1,7 +1,7 @@
-// module/human/random.cpp
+// module/behavior/random.cpp
 // Copyright (C) 2024 Regents of the Leland Stanford Junior University
 
-#include "human.h"
+#include "behavior.h"
 
 EXPORT_CREATE(random);
 EXPORT_INIT(random);

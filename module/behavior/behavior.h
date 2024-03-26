@@ -1,4 +1,4 @@
-// module/human/human.h
+// module/behavior/behavior.h
 // Copyright (C) 2024 Regents of the Leland Stanford Junior University
 
 #ifndef _PYPOWER_H

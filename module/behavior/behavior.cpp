@@ -1,9 +1,9 @@
-// module/human/human.cpp
+// module/behavior/behavior.cpp
 // Copyright (C) 2024 Regents of the Leland Stanford Junior University
 
 #define DLMAIN
 
-#include "human.h"
+#include "behavior.h"
 
 EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
 {
@@ -13,7 +13,7 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
         return NULL;
     }
 
-    INIT_MMF(human);
+    INIT_MMF(behavior);
 
     new class random(module);
 
