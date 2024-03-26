@@ -1,9 +1,9 @@
-[[/Module/Human/Random]] - 
+[[/Module/Behavior/Random]] - 
 
 # Synopsis
 
 ~~~
-module human
+module Behavior
 {
 	set {QUIET=65536, WARNING=131072, DEBUG=262144, VERBOSE=524288} message_flags; // module message control flags
 	int32 retry_limit; // limit on the number of sampling retries when RETRY limits are in effect
@@ -44,7 +44,7 @@ Using `limit_method RETRY` can affect performance when the limits constrain the 
 # Example
 
 ~~~
-module human;
+module Behavior;
 class test
 {
 	double x;
@@ -54,7 +54,7 @@ object test
 {
 	name human_1;
 }
-object human.random
+object behavior.random
 {
 	type NORMAL;
 	a 0;
@@ -69,6 +69,6 @@ object human.random
 
 # See also
 
-* [[/Module/Human]]
-* [[/Module/Human/Inclusive]]
-* [[/Module/Human/Random]]
+* [[/Module/Behavior]]
+* [[/Module/Behavior/Inclusive]]
+* [[/Module/Behavior/Random]]
