@@ -13,5 +13,6 @@ module_behavior_behavior_la_LIBADD =
 
 module_behavior_behavior_la_SOURCES =
 module_behavior_behavior_la_SOURCES += module/behavior/behavior.cpp module/behavior/behavior.h
+module_behavior_behavior_la_SOURCES += module/behavior/system.cpp module/behavior/system.h
 
 module_behavior_behavior_la_SOURCES += module/behavior/random.cpp module/behavior/random.h

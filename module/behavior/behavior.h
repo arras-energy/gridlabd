@@ -12,5 +12,6 @@
 #include "gridlabd.h"
 
 #include "random.h"
+#include "system.h"
 
 #endif
