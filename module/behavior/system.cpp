@@ -13,8 +13,6 @@ EXPORT_METHOD(system,Z);
 CLASS *system::oclass = NULL;
 class system *system::defaults = NULL;
 
-int32 system::limit_retries = 1000;
-
 system::system(MODULE *module)
 {
 	if (oclass==NULL)
