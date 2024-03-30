@@ -1,4 +1,4 @@
-[[/Module/Behavior/Random]] - 
+[[/Module/Behavior/Random]] - Random continuous behavior
 
 # Synopsis
 
@@ -70,5 +70,3 @@ object behavior.random
 # See also
 
 * [[/Module/Behavior]]
-* [[/Module/Behavior/Inclusive]]
-* [[/Module/Behavior/Random]]

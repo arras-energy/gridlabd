@@ -30,7 +30,7 @@ system::system(MODULE *module)
 		if (gl_publish_variable(oclass,
 
 			PT_double, "sigma", get_sigma_offset(),
-				PT_DESCRIPTION, "System activity",
+				PT_DESCRIPTION, "System entropy",
 
 			PT_double, "tau", get_tau_offset(),
 				PT_DESCRIPTION, "System activity",
