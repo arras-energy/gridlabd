@@ -42,18 +42,23 @@ system::system(MODULE *module)
 				PT_DESCRIPTION, "State value",
 
 			PT_double, "sigma", get_sigma_offset(),
+				PT_ACCESS, PA_REFERENCE,
 				PT_DESCRIPTION, "System entropy",
 
 			PT_method, "p", get_p_offset(),
-				PT_DESCRIPTION, "State probability",
+				PT_ACCESS, PA_REFERENCE,
+				PT_DESCRIPTION, "State probabilities",
 
 			PT_double, "Z", get_Z_offset(),
+				PT_ACCESS, PA_REFERENCE,
 				PT_DESCRIPTION, "State partition function",
 
 			PT_double, "Navg", get_Navg_offset(),
+				PT_ACCESS, PA_REFERENCE,
 				PT_DESCRIPTION, "Average number of devices in system",
 
 			PT_double, "Uavg", get_Uavg_offset(),
+				PT_ACCESS, PA_REFERENCE,
 				PT_DESCRIPTION, "Average device value in system",
 
 			PT_method, "device", get_device_offset(),
