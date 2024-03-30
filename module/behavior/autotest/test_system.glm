@@ -1,0 +1,23 @@
+module behavior;
+
+#for T in 10 1 0.1 0.01 1e-5 1e-10
+object system
+{
+    tau ${T};
+    N 100;
+    mu 1.0;
+    u 1.0,2.0;
+    u 3.0,1.0;
+}
+
+object system
+{
+    tau -${T};
+    N 100;
+    mu 1.0;
+    u 1.0,2.0;
+    u 3.0,1.0;
+}
+#done
+
+#set savefile=test_system.json
