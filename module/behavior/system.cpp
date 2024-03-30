@@ -39,7 +39,7 @@ system::system(MODULE *module)
 				PT_DESCRIPTION, "Number of devices",
 
 			PT_method, "u", get_u_offset(),
-				PT_DESCRIPTION, "State value",
+				PT_DESCRIPTION, "State values",
 
 			PT_double, "sigma", get_sigma_offset(),
 				PT_ACCESS, PA_REFERENCE,
