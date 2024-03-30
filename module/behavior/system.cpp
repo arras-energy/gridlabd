@@ -167,6 +167,12 @@ void system::update(void)
 	{
 		Z = 0;
 	}
+
+	for ( int n = 0 ; n < n_points ; n++ )
+	{
+		double x = 0 ; // TODO: calculate random value of x based on system properties
+		point_list[n].setp(x);
+	}
 }
 
 TIMESTAMP system::precommit(TIMESTAMP t0)
