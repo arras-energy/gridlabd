@@ -8,11 +8,11 @@ module behavior {
     double system_resolution; // Resolution of system properties
 }
 class system {
-    double sigma; // System entropy
     double tau; // System activity
     double mu; // Asset potential
     int64 N; // Number of devices
     method u; // State value
+    double sigma; // System entropy
     method p; // State probability
     double Z; // State partition function
     double Navg; // Average number of devices in system

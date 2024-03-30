@@ -29,9 +29,6 @@ system::system(MODULE *module)
 		defaults = this;
 		if (gl_publish_variable(oclass,
 
-			PT_double, "sigma", get_sigma_offset(),
-				PT_DESCRIPTION, "System entropy",
-
 			PT_double, "tau", get_tau_offset(),
 				PT_DESCRIPTION, "System activity",
 
@@ -43,6 +40,9 @@ system::system(MODULE *module)
 
 			PT_method, "u", get_u_offset(),
 				PT_DESCRIPTION, "State value",
+
+			PT_double, "sigma", get_sigma_offset(),
+				PT_DESCRIPTION, "System entropy",
 
 			PT_method, "p", get_p_offset(),
 				PT_DESCRIPTION, "State probability",
