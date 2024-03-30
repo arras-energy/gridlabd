@@ -102,6 +102,7 @@ void system::update(void)
 	Z = 0.0;
 	Navg = 0.0;
 	Uavg = 0.0;
+	sigma = 0.0;
 	double u_min = 0;
 	bool zero_tau = ( fabs(tau) <= resolution );
 	if ( ! zero_tau )
@@ -142,6 +143,10 @@ void system::update(void)
 			double x = probs[n];
 			Navg += N*x;
 			Uavg += values[n]*x;
+			if ( probs[n] > 0 )
+			{
+				sigma += -probs[n]*log(probs[n]);
+			}
 		}
 	}
 	if ( zero_tau )
@@ -153,6 +158,10 @@ void system::update(void)
 				probs[n] = 1;
 				Navg += N;
 				Uavg += values[n];
+				if ( probs[n] > 0 )
+				{
+					sigma += -probs[n]*log(probs[n]);
+				}
 				Z++;
 			}
 		}
@@ -163,6 +172,7 @@ void system::update(void)
 	}
 	Navg = round(Navg/Z/resolution)*resolution;
 	Uavg = round(Uavg/Z/resolution)*resolution;
+	sigma = round(sigma/resolution)*resolution;
 	if ( zero_tau )
 	{
 		Z = 0;
