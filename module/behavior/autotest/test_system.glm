@@ -9,7 +9,6 @@ object system
     u 1.0,2.0;
     u 3.0,1.0;
 }
-
 object system
 {
     tau -${T};

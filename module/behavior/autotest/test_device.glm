@@ -8,7 +8,6 @@ object system
     mu 1.0;
     u 0,1;
 }
-
 class device
 {
 	double x;
