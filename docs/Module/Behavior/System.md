@@ -44,11 +44,20 @@ the total entropy of the connected systems.
 
 The follow analogies to thermodynamics are used in the generalization of the model:
 
-* *value* `u`: This is equivalent to energy
-* *activity* `tau`: This is equivalent to absolute temperature
-* *asset potential* `mu`: This is equivalent to chemical potential
+* *number of devices* `N`: This is equivalent to the number of particles.
+* *value* `u`: This is equivalent to energy.
+* *activity* `tau`: This is equivalent to absolute temperature.
+* *asset potential* `mu`: This is equivalent to chemical potential.
 
-Two types of properties can be updated by a system model based on the probability `p`:
+The values of `sigma`, `p`, `Z`, `Navg`, and `Uavg` are updated anytime the
+system updates. The values of the state probabilities `p` is given in the
+same order that values `u` are given. The values `Z` is the normalization
+factor for the probabilities when `tau != 0`. When `tau == 0`, `Z` is a count
+of the states with non-zero probabilities. The values of `Navg` and `Uavg`
+are computed based on the state probabilities `p`.
+
+Two types of properties can be updated by a system model based on the state
+probability `p`:
 
 * `enumeration`: The specified property is assigned the state index number in `u`.
 
