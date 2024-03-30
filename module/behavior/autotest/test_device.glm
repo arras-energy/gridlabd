@@ -4,7 +4,7 @@ object system
 {
 	name "system_0";
     tau 1;
-    N 10;
+    N 20;
     mu 1.0;
     u 0,1;
 }
@@ -12,15 +12,23 @@ object system
 class device
 {
 	double x;
+	enumeration {OFF=0,ON=1} s;
 }
 
 #for DEV in ${RANGE 0,10}
-
 object device
 {
 	name "device_${DEV}";
 }
 modify system_0.device "device_${DEV}.x";
+#done
+
+#for DEV in ${RANGE 11,20}
+object device
+{
+	name "device_${DEV}";
+}
+modify system_0.device "device_${DEV}.s";
 #done
 
 #set savefile=test_device.json

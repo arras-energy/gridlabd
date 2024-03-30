@@ -168,10 +168,35 @@ void system::update(void)
 		Z = 0;
 	}
 
-	for ( int n = 0 ; n < n_points ; n++ )
+	for ( size_t n = 0 ; n < n_points ; n++ )
 	{
-		double x = 0 ; // TODO: calculate random value of x based on system properties
-		point_list[n].setp(x);
+		gld_property *prop = point_list[n];
+		double r = gl_random_uniform(&(prop->get_object()->rng_state),0,1);
+		double rs = 0.0;
+		int s;
+		for ( s = 0 ; s < n_values ; s++ )
+		{
+			rs += probs[s];
+			if ( r <= rs )
+			{
+				break;
+			}
+		}
+		if ( s == n_values )
+		{
+			s = n_values - 1;
+		}
+		switch ( prop->get_type() )
+		{
+		case PT_enumeration:
+			prop->setp(s);
+			break;
+		case PT_double:
+			prop->setp(values[s]);
+			break;
+		default:
+			break;
+		}
 	}
 }
 
@@ -297,9 +322,9 @@ int system::device(char *buffer, size_t len)
 			error("memory allocation failure");
 			return 0;
 		}
-		if ( point_list[n_points]->get_type() != PT_double )
+		if ( point_list[n_points]->get_type() != PT_double && point_list[n_points]->get_type() != PT_enumeration )
 		{
-			error("target point is not a double-type value");
+			error("target point is not a double or enumeration value");
 			return 0;
 		}
 		n_points++;
