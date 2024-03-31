@@ -24,6 +24,7 @@ public:
 	GL_ATOMIC(double,tau);
 	GL_ATOMIC(double,mu);
 	GL_ATOMIC(double,N);
+	GL_ATOMIC(double,N0);
 	GL_ATOMIC(double,Z);
 	GL_ATOMIC(double,Navg);
 	GL_ATOMIC(double,Uavg);
