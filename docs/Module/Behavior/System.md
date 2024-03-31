@@ -11,10 +11,13 @@ class system {
     double tau; // System activity
     double mu; // Asset potential
     int64 N; // Number of devices
+    int64 N0; // Number of sites
     method u; // State value
     double sigma; // System entropy
+    double U; // Total value of states
     method p; // State probability
     double Z; // State partition function
+    double F; // Free value
     double Navg; // Average number of devices in system
     double Uavg; // Average device value in system
     method device; // Property of device connected to this system

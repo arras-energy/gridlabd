@@ -8,6 +8,7 @@ EXPORT_INIT(system);
 EXPORT_PRECOMMIT(system);
 EXPORT_METHOD(system,u);
 EXPORT_METHOD(system,p);
+EXPORT_METHOD(system,q);
 EXPORT_METHOD(system,device);
 
 CLASS *system::oclass = NULL;
@@ -44,25 +45,49 @@ system::system(MODULE *module)
 			PT_method, "u", get_u_offset(),
 				PT_DESCRIPTION, "State values",
 
+			PT_double, "U", get_U_offset(),
+				PT_OUTPUT,
+				PT_DESCRIPTION, "Total value of all states",
+
 			PT_double, "sigma", get_sigma_offset(),
-				PT_ACCESS, PA_REFERENCE,
+				PT_OUTPUT,
 				PT_DESCRIPTION, "System entropy",
 
 			PT_method, "p", get_p_offset(),
-				PT_ACCESS, PA_REFERENCE,
+				PT_OUTPUT,
 				PT_DESCRIPTION, "State probabilities",
 
+			PT_method, "q", get_q_offset(),
+				PT_OUTPUT,
+				PT_DESCRIPTION, "State quantities",
+
 			PT_double, "Z", get_Z_offset(),
-				PT_ACCESS, PA_REFERENCE,
+				PT_OUTPUT,
 				PT_DESCRIPTION, "State partition function",
 
-			PT_double, "Navg", get_Navg_offset(),
-				PT_ACCESS, PA_REFERENCE,
-				PT_DESCRIPTION, "Average number of devices in system",
+			PT_double, "F", get_F_offset(),
+				PT_OUTPUT,
+				PT_DESCRIPTION, "Free value",
 
-			PT_double, "Uavg", get_Uavg_offset(),
-				PT_ACCESS, PA_REFERENCE,
-				PT_DESCRIPTION, "Average device value in system",
+			PT_double, "P", get_P_offset(),
+				PT_OUTPUT,
+				PT_DESCRIPTION, "Internal price",
+
+			PT_double, "Q", get_Q_offset(),
+				PT_OUTPUT,
+				PT_DESCRIPTION, "Total quantity",
+
+			PT_double, "Nexp", get_Nexp_offset(),
+				PT_OUTPUT,
+				PT_DESCRIPTION, "Expected number of devices",
+
+			PT_double, "Uexp", get_Uexp_offset(),
+				PT_OUTPUT,
+				PT_DESCRIPTION, "Expected device value",
+
+			PT_double, "Qexp", get_Qexp_offset(),
+				PT_OUTPUT,
+				PT_DESCRIPTION, "Expected quantity",
 
 			PT_method, "device", get_device_offset(),
 				PT_DESCRIPTION, "Property of device connected to this system",
@@ -84,6 +109,7 @@ int system::create(void)
 	n_values = 0;
 	values = NULL;
 	probs = NULL;
+	quants = NULL;
 
 	n_points = 0;
 	max_points = 1024;
@@ -108,9 +134,10 @@ int system::init(OBJECT *parent)
 void system::update(void)
 {
 	Z = 0.0;
-	Navg = 0.0;
-	Uavg = 0.0;
+	Nexp = 0.0;
+	Uexp = 0.0;
 	sigma = 0.0;
+	Qexp = 0.0;
 	double u_min = 0;
 	bool zero_tau = ( fabs(tau) <= resolution );
 	if ( ! zero_tau )
@@ -149,10 +176,11 @@ void system::update(void)
 		else
 		{
 			double x = probs[n];
-			Navg += N*x;
-			Uavg += values[n]*x;
-			if ( probs[n] > 0 )
+			if ( x > 0 )
 			{
+				Nexp += N*x;
+				Uexp += values[n]*x;
+				Qexp += quants[n]*x;
 				sigma += -probs[n]*log(probs[n]);
 			}
 		}
@@ -161,11 +189,12 @@ void system::update(void)
 	{
 		for ( int n = 0 ; n < n_values ; n++ )
 		{
-			if ( values[n] == u_min )
+			if ( fabs(values[n]-u_min) < resolution )
 			{
 				probs[n] = 1;
-				Navg += N;
-				Uavg += values[n];
+				Nexp += N;
+				Uexp += values[n];
+				Qexp += quants[n];
 				if ( probs[n] > 0 )
 				{
 					sigma += -probs[n]*log(probs[n]);
@@ -178,14 +207,20 @@ void system::update(void)
 	{
 		probs[n] = round(probs[n]/Z/resolution)*resolution;
 	}
-	Navg = round(Navg/Z/resolution)*resolution;
-	Uavg = round(Uavg/Z/resolution)*resolution;
+	Nexp /= Z;
+	Uexp /= Z;
+	Qexp /= Z;
+	Nexp = round(Nexp/Z/resolution)*resolution;
+	Uexp = round(Uexp/Z/resolution)*resolution;
+	Qexp = round(Qexp/Z/resolution)*resolution;
 	sigma = round(sigma/resolution)*resolution;
 	if ( zero_tau )
 	{
 		Z = 0;
 	}
 
+	Q = n_points > 0 ? 0.0 : round(N*Qexp/resolution)*resolution;
+	U = n_points > 0 ? 0.0 : round(N*Uexp/resolution)*resolution;
 	for ( size_t n = 0 ; n < n_points ; n++ )
 	{
 		gld_property *prop = point_list[n];
@@ -204,6 +239,8 @@ void system::update(void)
 		{
 			s = n_values - 1;
 		}
+		Q += quants[s];
+		U += values[s];
 		switch ( prop->get_type() )
 		{
 		case PT_enumeration:
@@ -216,6 +253,8 @@ void system::update(void)
 			break;
 		}
 	}
+	F = round((U-tau*sigma)/resolution)*resolution;
+	P = ( Q != 0.0 ? round(-U/Q/resolution)*resolution : 0.0);
 }
 
 TIMESTAMP system::precommit(TIMESTAMP t0)
@@ -249,6 +288,7 @@ int system::u(char *buffer, size_t len)
 		{
 			values = (double*)realloc(values,(n_values+1)*(sizeof(*values)));
 			probs = (double*)realloc(probs,(n_values+1)*(sizeof(*values)));
+			quants = (double*)realloc(quants,(n_values+1)*(sizeof(*values)));
 			if ( values == NULL || probs == NULL )
 			{
 				exception("memory allocation error reallocating values buffer");
@@ -300,8 +340,7 @@ int system::p(char *buffer, size_t len)
 			}
 			else
 			{
-				error("too many probabilities for %d states",n);
-				return -1;
+				error("state %d does not have a defined value for probability %g",n,atof(next));
 			}
 		}
 		return strlen(buffer);
@@ -313,6 +352,53 @@ int system::p(char *buffer, size_t len)
 		for ( int n = 0 ; n < n_values && sz < len ; n++ )
 		{
 			sz += snprintf(buffer+sz,len-sz+1,"%s%g",sz>0?",":"",probs[n]);
+		}
+		return sz;
+	}
+}
+
+int system::q(char *buffer, size_t len)
+{
+	if ( buffer == NULL )
+	{
+		// get size of output buffer needed
+		len = 0;
+		for ( int n = 0 ; n < n_values ; n++ )
+		{
+			int sz = snprintf(NULL,0,"%g",quants[n]);
+			if ( sz < 0 )
+			{
+				return -1;
+			}
+			len += sz + 1;
+		}
+		return len;
+	}
+	else if ( len == 0 )
+	{
+		// read data from buffer
+		char *next=NULL, *last=NULL;
+		int n = 0;
+		while ( (next=strtok_r(next?NULL:buffer,",",&last)) != NULL )
+		{
+			if ( n < n_values )
+			{
+				quants[n++] = atof(next);
+			}
+			else
+			{
+				error("state %d does not have a defined value for quantity %g",n,atof(next));
+			}
+		}
+		return strlen(buffer);
+	}
+	else
+	{
+		// write data to buffer
+		size_t sz = 0;
+		for ( int n = 0 ; n < n_values && sz < len ; n++ )
+		{
+			sz += snprintf(buffer+sz,len-sz+1,"%s%g",sz>0?",":"",quants[n]);
 		}
 		return sz;
 	}

@@ -8,7 +8,7 @@
 
 DECL_METHOD(system,u);
 DECL_METHOD(system,p);
-DECL_METHOD(system,Z);
+DECL_METHOD(system,q);
 DECL_METHOD(system,device);
 
 class system : public gld_object 
@@ -23,13 +23,19 @@ public:
 	GL_ATOMIC(double,sigma);
 	GL_ATOMIC(double,tau);
 	GL_ATOMIC(double,mu);
-	GL_ATOMIC(double,N);
-	GL_ATOMIC(double,N0);
+	GL_ATOMIC(int64,N);
+	GL_ATOMIC(int64,N0);
+	GL_ATOMIC(double,U);
 	GL_ATOMIC(double,Z);
-	GL_ATOMIC(double,Navg);
-	GL_ATOMIC(double,Uavg);
+	GL_ATOMIC(double,F);
+	GL_ATOMIC(double,P);
+	GL_ATOMIC(double,Q);
+	GL_ATOMIC(double,Nexp);
+	GL_ATOMIC(double,Uexp);
+	GL_ATOMIC(double,Qexp);
 	GL_METHOD(system,u);
 	GL_METHOD(system,p);
+	GL_METHOD(system,q);
 	GL_METHOD(system,device);
 
 private:
@@ -37,6 +43,7 @@ private:
 	// internal variables
 	double *values;
 	double *probs;
+	double *quants;
 	int n_values;
 
 	gld_property **point_list;

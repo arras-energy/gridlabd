@@ -8,6 +8,7 @@ object system
     mu 1.0;
     u 1.0,2.0;
     u 3.0,1.0;
+    q -1,0,1,0;
 }
 object system
 {
@@ -16,6 +17,7 @@ object system
     mu 1.0;
     u 1.0,2.0;
     u 3.0,1.0;
+    q -1,0,1,0;
 }
 #done
 
