@@ -45,6 +45,12 @@ system::system(MODULE *module)
 			PT_method, "u", get_u_offset(),
 				PT_DESCRIPTION, "State values",
 
+			PT_method, "q", get_q_offset(),
+				PT_DESCRIPTION, "State quantities",
+
+			PT_method, "device", get_device_offset(),
+				PT_DESCRIPTION, "Property of device connected to this system",
+
 			PT_double, "U", get_U_offset(),
 				PT_OUTPUT,
 				PT_DESCRIPTION, "Total value of all states",
@@ -56,10 +62,6 @@ system::system(MODULE *module)
 			PT_method, "p", get_p_offset(),
 				PT_OUTPUT,
 				PT_DESCRIPTION, "State probabilities",
-
-			PT_method, "q", get_q_offset(),
-				PT_OUTPUT,
-				PT_DESCRIPTION, "State quantities",
 
 			PT_double, "Z", get_Z_offset(),
 				PT_OUTPUT,
@@ -89,8 +91,13 @@ system::system(MODULE *module)
 				PT_OUTPUT,
 				PT_DESCRIPTION, "Expected quantity",
 
-			PT_method, "device", get_device_offset(),
-				PT_DESCRIPTION, "Property of device connected to this system",
+			PT_double, "chi", get_chi_offset(),
+				PT_OUTPUT,
+				PT_DESCRIPTION, "Price susceptibility",
+
+			PT_double, "Cp", get_Cp_offset(),
+				PT_OUTPUT,
+				PT_DESCRIPTION, "Value capacity",
 
 			NULL)<1)
 		{
@@ -106,7 +113,7 @@ system::system(MODULE *module)
 
 int system::create(void) 
 {
-	n_values = 0;
+	n_states = 0;
 	values = NULL;
 	probs = NULL;
 	quants = NULL;
@@ -122,7 +129,7 @@ int system::create(void)
 
 int system::init(OBJECT *parent)
 {
-	if ( n_values < 2 )
+	if ( n_states < 2 )
 	{
 		error("there must be at least 2 state values u specified");
 		return 0;
@@ -138,16 +145,20 @@ void system::update(void)
 	Uexp = 0.0;
 	sigma = 0.0;
 	Qexp = 0.0;
+	chi = 0.0;
+	Cp = 0.0;
 	double u_min = 0;
 	bool zero_tau = ( fabs(tau) <= resolution );
 	if ( ! zero_tau )
 	{
-		for ( int n = 0 ; n < n_values ; n++ )
+		for ( int n = 0 ; n < n_states ; n++ )
 		{
-			double x = round(exp((N*mu-values[n])/tau)/resolution)*resolution;
-			if ( isfinite(x) && ! isnan(x) && x >= resolution && x < 1/resolution )
+			double y = N*mu-values[n];
+			double x = exp(y);
+			if ( isfinite(x) && ! isnan(x) ) // && x >= resolution ) // && x < 1/resolution )
 			{
 				probs[n] = x;
+				Cp += y*x;
 				Z += x;
 			}
 			else
@@ -155,13 +166,13 @@ void system::update(void)
 				probs[n] = 0.0;
 			}
 		}
-		if ( fabs(Z) < resolution )
-		{
-			zero_tau = true;
-			Z = 0;
-		}
+		// if ( fabs(Z) < resolution )
+		// {
+		// 	zero_tau = true;
+		// 	Z = 0;
+		// }
 	}
-	for ( int n = 0 ; n < n_values ; n++ )
+	for ( int n = 0 ; n < n_states ; n++ )
 	{
 		if ( zero_tau && tau >= 0 )
 		{
@@ -181,13 +192,12 @@ void system::update(void)
 				Nexp += N*x;
 				Uexp += values[n]*x;
 				Qexp += quants[n]*x;
-				sigma += -probs[n]*log(probs[n]);
 			}
 		}
 	}
 	if ( zero_tau )
 	{
-		for ( int n = 0 ; n < n_values ; n++ )
+		for ( int n = 0 ; n < n_states ; n++ )
 		{
 			if ( fabs(values[n]-u_min) < resolution )
 			{
@@ -195,21 +205,33 @@ void system::update(void)
 				Nexp += N;
 				Uexp += values[n];
 				Qexp += quants[n];
-				if ( probs[n] > 0 )
-				{
-					sigma += -probs[n]*log(probs[n]);
-				}
 				Z++;
 			}
 		}
 	}
-	for ( int n = 0 ; n < n_values ; n++ )
+	for ( int n = 0 ; n < n_states ; n++ )
 	{
 		probs[n] = round(probs[n]/Z/resolution)*resolution;
+		if ( probs[n] > 0 )
+		{
+			sigma += -probs[n]*log(probs[n]);
+		}
 	}
 	Nexp /= Z;
 	Uexp /= Z;
 	Qexp /= Z;
+	if ( ! zero_tau )
+	{
+		if ( N > 0 )
+		{
+			chi = round(Qexp/(N*tau)/resolution)*resolution;
+		}
+		double tauZ = tau * Z;
+		if ( fabs(tauZ) > resolution )
+		{
+			Cp = round(N * Uexp *Cp / (tauZ*tauZ) / resolution)*resolution;
+		}
+	}
 	Nexp = round(Nexp/Z/resolution)*resolution;
 	Uexp = round(Uexp/Z/resolution)*resolution;
 	Qexp = round(Qexp/Z/resolution)*resolution;
@@ -227,7 +249,7 @@ void system::update(void)
 		double r = gl_random_uniform(&(prop->get_object()->rng_state),0,1);
 		double rs = 0.0;
 		int s;
-		for ( s = 0 ; s < n_values ; s++ )
+		for ( s = 0 ; s < n_states ; s++ )
 		{
 			rs += probs[s];
 			if ( r <= rs )
@@ -235,9 +257,9 @@ void system::update(void)
 				break;
 			}
 		}
-		if ( s == n_values )
+		if ( s == n_states )
 		{
-			s = n_values - 1;
+			s = n_states - 1;
 		}
 		Q += quants[s];
 		U += values[s];
@@ -247,7 +269,7 @@ void system::update(void)
 			prop->setp(s);
 			break;
 		case PT_double:
-			prop->setp(values[s]);
+			prop->setp(quants[s]);
 			break;
 		default:
 			break;
@@ -269,7 +291,7 @@ int system::u(char *buffer, size_t len)
 	{
 		// get size of output buffer needed
 		len = 0;
-		for ( int n = 0 ; n < n_values ; n++ )
+		for ( int n = 0 ; n < n_states ; n++ )
 		{
 			int sz = snprintf(NULL,0,"%g",values[n]);
 			if ( sz < 0 )
@@ -286,15 +308,15 @@ int system::u(char *buffer, size_t len)
 		char *next=NULL, *last=NULL;
 		while ( (next=strtok_r(next?NULL:buffer,",",&last)) != NULL )
 		{
-			values = (double*)realloc(values,(n_values+1)*(sizeof(*values)));
-			probs = (double*)realloc(probs,(n_values+1)*(sizeof(*values)));
-			quants = (double*)realloc(quants,(n_values+1)*(sizeof(*values)));
+			values = (double*)realloc(values,(n_states+1)*(sizeof(*values)));
+			probs = (double*)realloc(probs,(n_states+1)*(sizeof(*values)));
+			quants = (double*)realloc(quants,(n_states+1)*(sizeof(*values)));
 			if ( values == NULL || probs == NULL )
 			{
 				exception("memory allocation error reallocating values buffer");
 			}
-			values[n_values] = atof(next);
-			n_values++;
+			values[n_states] = atof(next);
+			n_states++;
 		}
 		return strlen(buffer);
 	}
@@ -302,7 +324,7 @@ int system::u(char *buffer, size_t len)
 	{
 		// write data to buffer
 		size_t sz = 0;
-		for ( int n = 0 ; n < n_values && sz < len ; n++ )
+		for ( int n = 0 ; n < n_states && sz < len ; n++ )
 		{
 			sz += snprintf(buffer+sz,len-sz+1,"%s%g",sz>0?",":"",values[n]);
 		}
@@ -316,7 +338,7 @@ int system::p(char *buffer, size_t len)
 	{
 		// get size of output buffer needed
 		len = 0;
-		for ( int n = 0 ; n < n_values ; n++ )
+		for ( int n = 0 ; n < n_states ; n++ )
 		{
 			int sz = snprintf(NULL,0,"%g",probs[n]);
 			if ( sz < 0 )
@@ -334,7 +356,7 @@ int system::p(char *buffer, size_t len)
 		int n = 0;
 		while ( (next=strtok_r(next?NULL:buffer,",",&last)) != NULL )
 		{
-			if ( n < n_values )
+			if ( n < n_states )
 			{
 				probs[n++] = atof(next);
 			}
@@ -349,7 +371,7 @@ int system::p(char *buffer, size_t len)
 	{
 		// write data to buffer
 		size_t sz = 0;
-		for ( int n = 0 ; n < n_values && sz < len ; n++ )
+		for ( int n = 0 ; n < n_states && sz < len ; n++ )
 		{
 			sz += snprintf(buffer+sz,len-sz+1,"%s%g",sz>0?",":"",probs[n]);
 		}
@@ -363,7 +385,7 @@ int system::q(char *buffer, size_t len)
 	{
 		// get size of output buffer needed
 		len = 0;
-		for ( int n = 0 ; n < n_values ; n++ )
+		for ( int n = 0 ; n < n_states ; n++ )
 		{
 			int sz = snprintf(NULL,0,"%g",quants[n]);
 			if ( sz < 0 )
@@ -381,7 +403,7 @@ int system::q(char *buffer, size_t len)
 		int n = 0;
 		while ( (next=strtok_r(next?NULL:buffer,",",&last)) != NULL )
 		{
-			if ( n < n_values )
+			if ( n < n_states )
 			{
 				quants[n++] = atof(next);
 			}
@@ -396,7 +418,7 @@ int system::q(char *buffer, size_t len)
 	{
 		// write data to buffer
 		size_t sz = 0;
-		for ( int n = 0 ; n < n_values && sz < len ; n++ )
+		for ( int n = 0 ; n < n_states && sz < len ; n++ )
 		{
 			sz += snprintf(buffer+sz,len-sz+1,"%s%g",sz>0?",":"",quants[n]);
 		}

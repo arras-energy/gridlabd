@@ -3,7 +3,7 @@ module behavior;
 object system
 {
 	name "system_0";
-    tau 1;
+    tau 0.1;
     N 20;
     mu 1.0;
     u 0,1;
