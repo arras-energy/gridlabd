@@ -33,6 +33,8 @@ public:
 	GL_ATOMIC(double,Nexp);
 	GL_ATOMIC(double,Uexp);
 	GL_ATOMIC(double,Qexp);
+	GL_ATOMIC(double,chi);
+	GL_ATOMIC(double,Cp);
 	GL_METHOD(system,u);
 	GL_METHOD(system,p);
 	GL_METHOD(system,q);
@@ -44,7 +46,7 @@ private:
 	double *values;
 	double *probs;
 	double *quants;
-	int n_values;
+	int n_states;
 
 	gld_property **point_list;
 	char **name_list;
