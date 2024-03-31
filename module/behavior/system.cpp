@@ -38,6 +38,9 @@ system::system(MODULE *module)
 			PT_int64, "N", get_N_offset(),
 				PT_DESCRIPTION, "Number of devices",
 
+			PT_int64, "N0", get_N0_offset(),
+				PT_DESCRIPTION, "Number of sites",
+
 			PT_method, "u", get_u_offset(),
 				PT_DESCRIPTION, "State values",
 
