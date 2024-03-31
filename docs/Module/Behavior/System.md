@@ -12,21 +12,27 @@ class system {
     double mu; // Asset potential
     int64 N; // Number of devices
     int64 N0; // Number of sites
-    method u; // State value
-    double sigma; // System entropy
-    double U; // Total value of states
-    method p; // State probability
-    double Z; // State partition function
-    double F; // Free value
-    double Navg; // Average number of devices in system
-    double Uavg; // Average device value in system
+    method u; // State values
+    method q; // State quantities
     method device; // Property of device connected to this system
+    double U; // (OUTPUT) Total value of all states
+    double sigma; // (OUTPUT) System entropy
+    method p; // (OUTPUT) State probabilities
+    double Z; // (OUTPUT) State partition function
+    double F; // (OUTPUT) Free value
+    double P; // (OUTPUT) Internal price
+    double Q; // (OUTPUT) Total quantity
+    double Nexp; // (OUTPUT) Expected number of devices
+    double Uexp; // (OUTPUT) Expected device value
+    double Qexp; // (OUTPUT) Expected quantity
+    double chi; // (OUTPUT) Price susceptibility (dQ/dP)
+    double Cp; // (OUTPUT) Value capacity (dU/dtau)
 }
 ~~~
 
 # Description
 
-The `system` object implements a statistical mechanics-based model of the
+The `system` object implements a statistical mechanics-inspired model of the
 aggregate properties of systems of devices that behave in accordance with
 principles that are analogous to those in thermodynamics, i.e.,
 
@@ -38,9 +44,9 @@ to the system minus the value removed from it. When two system are connected,
 the total internal value of the combined system is the sum of the internal
 values of the separate systems.
 
-3. When two separate systems at equilibrium are connected, then when they come
-to equilibrium the sum of their separate entropies is less than or equal to
-the total entropy of the connected systems.
+3. When two separate systems at internal equilibrium are connected, then when
+they come to equilibrium the sum of their separate entropies at equilibrium
+is less than or equal to the total entropy of the connected systems.
 
 4. The system's entropy approaches a constant value as the system's activity
 `tau` approach zero.
@@ -51,20 +57,21 @@ The follow analogies to thermodynamics are used in the generalization of the mod
 * *value* `u`: This is equivalent to energy.
 * *activity* `tau`: This is equivalent to absolute temperature.
 * *asset potential* `mu`: This is equivalent to chemical potential.
+* *quantity* `q` is equivalent to magnetic moment.
+* *price* `P` is equivalent to magnetic field.
 
-The values of `sigma`, `p`, `Z`, `Navg`, and `Uavg` are updated anytime the
-system updates. The values of the state probabilities `p` is given in the
-same order that values `u` are given. The values `Z` is the normalization
-factor for the probabilities when `tau != 0`. When `tau == 0`, `Z` is a count
-of the states with non-zero probabilities. The values of `Navg` and `Uavg`
-are computed based on the state probabilities `p`.
+The values of outputs are updated anytime the system updates. The values of
+the state probabilities `p` and quantities `q` is given in the same order
+that values `u` are given and must be specified after `u` is specified. The
+value `Z` is the normalization factor for the probabilities when `tau != 0`.
+When `tau == 0`, `Z` is a count of the states with non-zero probabilities.
 
-Two types of properties can be updated by a system model based on the state
-probability `p`:
+Two types of `device` properties can be updated by a system model based on the
+state probability `p`:
 
 * `enumeration`: The specified property is assigned the state index number in `u`.
 
-* `double`: The specified property is assigned the value of the state `u`.
+* `double`: The specified property is assigned the value of the quantity `q`.
 
 # Example
 
