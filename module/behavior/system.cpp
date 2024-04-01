@@ -99,6 +99,15 @@ system::system(MODULE *module)
 				PT_OUTPUT,
 				PT_DESCRIPTION, "Value capacity",
 
+			PT_object, "connection", get_connection_offset(),
+				PT_DESCRIPTION, "Connection to another system",
+
+			PT_enumeration, "connection_type", get_connection_type_offset(),
+				PT_KEYWORD, "ASSET", (enumeration)ASSET,
+				PT_KEYWORD, "VALUE", (enumeration)VALUE,
+				PT_KEYWORD, "NONE", (enumeration)NONE,
+				PT_DESCRIPTION, "Type of connection (tau or tau+mu)",
+
 			NULL)<1)
 		{
 				throw "unable to publish system properties";
@@ -124,6 +133,7 @@ int system::create(void)
 	name_list = (char **)malloc(sizeof(char*)*max_points);
 	point_names = (char*)malloc(1);
 	point_names[0] = '\0';
+	add_system(this);
 	return 1; // return 1 on success, 0 on failure
 }
 
@@ -132,6 +142,11 @@ int system::init(OBJECT *parent)
 	if ( n_states < 2 )
 	{
 		error("there must be at least 2 state values u specified");
+		return 0;
+	}
+	if ( connection != NULL && ! gl_object_isa(connection,"system","behavior") )
+	{
+		error("connection must be to another behavior system object");
 		return 0;
 	}
 	update();

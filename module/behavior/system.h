@@ -39,6 +39,9 @@ public:
 	GL_METHOD(system,p);
 	GL_METHOD(system,q);
 	GL_METHOD(system,device);
+	GL_ATOMIC(object,connection);
+	typedef enum {NONE,VALUE,ASSET} CONNECTIONTYPE;
+	GL_ATOMIC(enumeration,connection_type);
 
 private:
 
@@ -54,7 +57,7 @@ private:
 	size_t max_points;
 	char *point_names;
 
-private:
+public:
 
 	// internal functions
 	void update(void);

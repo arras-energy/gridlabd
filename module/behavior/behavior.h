@@ -14,4 +14,6 @@
 #include "random.h"
 #include "system.h"
 
+void add_system(class system *);
+
 #endif
