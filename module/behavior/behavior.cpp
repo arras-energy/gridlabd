@@ -22,6 +22,45 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
     return random::oclass;
 }
 
+class system **system_list = NULL;
+size_t n_systems = 0;
+void add_system(class system *sys)
+{
+    system_list = (class system**)realloc(system_list,sizeof(*system_list)*(n_systems+1));
+    system_list[n_systems++] = sys;
+}
+
+EXPORT TIMESTAMP on_precommit(TIMESTAMP t0)
+{
+    double C = 0;
+    double N = 0;
+    double M = 0;
+    double T = 0;
+    for ( size_t n = 0 ; n < n_systems ; n++ )
+    {
+        class system *sys = system_list[n];
+        fprintf(stderr,"system %lu: Cp = %g, N = %lld\n",n,sys->get_Cp(),sys->get_N());
+        C += sys->get_Cp();
+        N += sys->get_N();
+    }
+    for ( size_t n = 0 ; n < n_systems ; n++ )
+    {
+        class system *sys = system_list[n];
+        fprintf(stderr,"system %lu: T = %g, M = %g\n",n,sys->get_tau(),sys->get_mu());
+        T += sys->get_Cp() / C * sys->get_tau();
+        M += sys->get_N() / N * sys->get_mu();
+    }
+    fprintf(stderr,"C = %g, T = %g, M = %g\n",C,T,M);
+    for ( size_t n = 0 ; n < n_systems ; n++ )
+    {
+        class system *sys = system_list[n];
+        sys->set_tau(T);
+        sys->set_mu(M);
+        sys->update();
+    }
+    return TS_NEVER;
+}
+
 EXPORT int do_kill(void*)
 {
     // if global memory needs to be released, this is a good time to do it
