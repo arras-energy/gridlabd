@@ -16,6 +16,7 @@ class system : public gld_object
 
 public:
 	static double resolution;
+	int group_id;
 
 public:
 
