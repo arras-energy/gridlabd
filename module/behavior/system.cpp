@@ -122,6 +122,8 @@ system::system(MODULE *module)
 
 int system::create(void) 
 {
+	group_id = 0;
+	
 	n_states = 0;
 	values = NULL;
 	probs = NULL;
