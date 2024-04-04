@@ -1,7 +1,7 @@
 set -x
 alias INSTALL=''
 
-INSTALL error () { echo "ERROR [darwin_23-x86_64.sh]: $*" > /dev/stderr ; exit 1 ; }
+INSTALL error () { echo "ERROR [$(basename $0)]: $*" > /dev/stderr ; exit 1 ; }
 INSTALL PYTHON_VERSION=3.10
 INSTALL PYTHON_VENV=${HOME:-/tmp}/.gridlabd
 INSTALL PYTHON_EXEC=$PYTHON_VENV/bin/python$PYTHON_VERSION
@@ -67,9 +67,9 @@ if ! mysql_config --libs >/dev/null 2>&1 ; then
     fi
 fi
 
-# install autoconf 2.71 as required
-if [ "$(autoconf --version | head -n 1 | cut -f4 -d' ')" != "2.71" ] ; then
-    (cd /tmp ; curl -sL https://ftpmirror.gnu.org/autoconf/autoconf-2.71.tar.gz | tar xz )
-    (cd /tmp/autoconf-2.71 ; ./configure ; make ; make install)
-    test "$(autoconf --version | head -n 1 | cut -f4 -d' ')" = "2.71" || error "autoconf installation failed"
+# install autoconf 2.72 as required
+if [ "$(autoconf --version | head -n 1 | cut -f4 -d' ')" != "2.72" ] ; then
+    (cd /tmp ; curl -sL https://ftpmirror.gnu.org/autoconf/autoconf-2.72.tar.gz | tar xz )
+    (cd /tmp/autoconf-2.72 ; ./configure ; make ; make install)
+    test "$(autoconf --version | head -n 1 | cut -f4 -d' ')" = "2.72" || error "autoconf installation failed"
 fi
