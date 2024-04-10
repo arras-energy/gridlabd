@@ -1,7 +1,7 @@
 set -x
 alias INSTALL=''
 
-INSTALL error () { echo "ERROR [darwin_20-x86_64.sh]: $*" > /dev/stderr ; exit 1 ; }
+INSTALL error () { echo "ERROR [$(basename $0)]: $*" > /dev/stderr ; exit 1 ; }
 INSTALL PYTHON_VERSION=3.10
 INSTALL PYTHON_VENV=${HOME:-/tmp}/.gridlabd
 INSTALL PYTHON_EXEC=$PYTHON_VENV/bin/python$PYTHON_VERSION
@@ -51,7 +51,7 @@ INSTALL "$PYTHON_EXEC" -m pip install --upgrade pip || error "pip update failed"
 INSTALL brew install autoconf libffi zlib pkg-config xz gdbm tcl-tk
 
 # install required tools
-INSTALL brew install automake libtool gnu-sed gawk gettext
+INSTALL brew install automake libtool gnu-sed gawk
 
 clang -v >/dev/null || error "you have not installed clang. Use 'xcode-select --install' to install command line build tools."
 
