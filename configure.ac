@@ -45,7 +45,7 @@ m4_define([versionname], sbuild_m4_esyscmd_s([build-aux/version.sh --name]))
 m4_define([pkginstall], sbuild_m4_esyscmd_s([build-aux/version.sh --install]))
 m4_define([pkgorigin],sbuild_m4_esyscmd_s([git rev-parse --abbrev-ref HEAD]))
 
-AC_PREREQ([2.71])
+AC_PREREQ([2.72])
 AC_INIT([pkgname],[pkgversion],[gridlabd@gmail.com],[pkg])
 AC_CONFIG_SRCDIR([source/gridlabd.h])
 AC_CONFIG_HEADERS([source/config.h])
@@ -527,6 +527,14 @@ AS_IF([test "x$MYSQL" != "xno"],
 
             # Define HAVE_MYSQL
             AC_DEFINE([HAVE_MYSQL], [1], [Define when you have MySQL])
+
+            # Add brew paths for Darwin systems
+            AS_CASE([$host_os],
+            [darwin*], [
+                BREW_PREFIX=$(brew --prefix)
+                MYSQL_LDFLAGS="$MYSQL_LDFLAGS -L${BREW_PREFIX}/opt/openssl/lib -L${BREW_PREFIX}/lib"
+                MYSQL_CPPFLAGS="$MYSQL_CPPFLAGS -I${BREW_PREFIX}/opt/openssl/include -I${BREW_PREFIX}/include"
+            ])
     ],
     [HAVE_MYSQL=no])
 
