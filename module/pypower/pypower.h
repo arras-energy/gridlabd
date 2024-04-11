@@ -22,6 +22,6 @@
 #include "scada.h"
 #include "transformer.h"
 
-#define MAXENT 30000 // maximum number of bus/branch/gen/gencost entities supported
+#define MAXENT 100000 // maximum number of bus/branch/gen/gencost entities supported
 
 #endif
