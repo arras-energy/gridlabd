@@ -59,6 +59,7 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
     new branch(module);
     new gen(module);
     new gencost(module);
+    new geodata(module);
     new load(module);
     new powerplant(module);
     new powerline(module);

@@ -1,0 +1,37 @@
+#define CASE=14
+#ifexists "../case.glm"
+#define DIR=..
+#endif
+
+// #set debug=TRUE
+// #set suppress_repeat_messages=FALSE
+
+module pypower
+{
+    maximum_timestep 3600;
+    save_case TRUE;
+}
+
+object pypower.geodata
+{
+    file "${DIR:-.}/test_case14_geodata_Pd.csv";
+    target "bus:Pd";
+}
+
+#include "${DIR:-.}/case.glm"
+
+module tape
+{
+    csv_header_type NAME;
+}
+
+object tape.recorder
+{
+    parent "pp_bus_2";
+    file "test_case14_geodata_pp_bus_2_record.csv";
+    property "Pd";
+}
+
+#ifexists "../test_case14_geodata_pp_bus_2_record.csv"
+#on_exit 0 diff ../test_case14_geodata_pp_bus_2_record.csv test_case14_geodata_pp_bus_2_record.csv > gridlabd.diff
+#endif

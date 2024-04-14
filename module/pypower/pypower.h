@@ -15,6 +15,7 @@
 #include "branch.h"
 #include "gen.h"
 #include "gencost.h"
+#include "geodata.h"
 #include "load.h"
 #include "powerplant.h"
 #include "powerline.h"
