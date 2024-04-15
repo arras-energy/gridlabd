@@ -261,7 +261,7 @@ bool geodata::load_geodata(const char *file)
 
 	// read data
 	char line[65536*16];
-	size_t max_data = 4096;
+	size_t max_data = 0;
 	for ( size_t line_no = 0 ; ! feof(fp) && ! ferror(fp) && fgets(line,sizeof(line)-1,fp) != NULL ; line_no++ )
 	{
 		if ( n_locations == 0 ) // first line contains locations
@@ -309,7 +309,7 @@ bool geodata::load_geodata(const char *file)
 			int row = line_no - 1;
 			if ( row >= (int)max_data )
 			{
-				max_data += 4096;
+				max_data = ( max_data == 0 ? 8784 : max_data*2 );
 				data = (GEODATA*)realloc(data,sizeof(GEODATA)*max_data);
 			}
 			while ( (next=strtok_r(next?NULL:line,",",&last)) != NULL )
