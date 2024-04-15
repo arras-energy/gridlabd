@@ -157,23 +157,35 @@ TIMESTAMP geodata::precommit(TIMESTAMP t0)
 
 bool geodata::add_target(OBJECT *obj,const char *propname)
 {
-	int location = find_location(obj->latitude,obj->longitude);
-	if ( location < 0 )
-	{
-		warning("object '%s' location cannot be found in geodata file",(const char *)get_object(obj)->get_name());
-		return true;
-	}
 	gld_property *prop = new gld_property(obj,propname);
 	if ( ! prop->is_valid() )
 	{
 		return false;
+	}
+
+	int location = find_location(obj->latitude,obj->longitude);
+	if ( location < 0 )
+	{
+		warning("ignoring object '%s', location cannot be found in geodata file",(const char *)get_object(obj)->get_name());
+		return true;
+	}
+
+	double *value = (double*)prop->get_addr();
+	// fprintf(stderr,"geodata::add_target(obj='%s',propname='%s'): value@%p = %.4g\n",obj->name,propname,value,*value);
+	for ( size_t n = 0 ; n < locations[location].n_values ; n++ )
+	{
+		if ( locations[location].values[n] == value )
+		{
+			warning("ignoring duplicate reference to object '%s.%s'",(const char *)get_object(obj)->get_name(),propname);
+			return true;
+		}
 	}
 	if ( locations[location].n_values >= locations[location].max_values )
 	{
 		locations[location].max_values *= 2;
 		locations[location].values = (double**)realloc(locations[location].values,sizeof(double*)*locations[location].max_values);
 	}
-	locations[location].values[locations[location].n_values++] = (double*)prop->get_addr();
+	locations[location].values[locations[location].n_values++] = value;
 	return true;
 }
 
@@ -210,6 +222,11 @@ size_t geodata::find_location(double lat, double lon)
 	return best_loc;
 }
 
+TIMESTAMP geodata::get_time()
+{
+	return cur_data < n_data ? data[cur_data].timestamp : TS_NEVER;
+}
+
 double geodata::get_value(size_t location)
 {
 	return data[cur_data].value[location];
@@ -225,28 +242,32 @@ bool geodata::set_time(TIMESTAMP t0)
 	}
 
 	// look for data
+	// fprintf(stderr,"getodata::set_time(TIMESTAMP t0=%lld): current data row %zu at time %lld\n",t0,cur_data,get_time());
 	while ( get_time() < t0 && cur_data < n_data )
 	{
 		cur_data++;
+		// fprintf(stderr,"getodata::set_time(TIMESTAMP t0=%lld): advancing to data row %zu at time %lld\n",t0,cur_data,get_time());
+	}
+	if ( get_time() == TS_NEVER )
+	{
+		// fprintf(stderr,"getodata::set_time(TIMESTAMP t0=%lld): end of data\n",t0);
+		return true;
 	}
 
 	// copy data
 	for ( size_t location = 0 ; location < n_locations ; location++ )
 	{
 		GEOCODE &geocode = locations[location];
+		double value = get_value(location);
 		for ( size_t n = 0 ; n < geocode.n_values ; n++ )
 		{
-			*geocode.values[n] = get_value(location);
+			// fprintf(stderr,"getodata::set_time(TIMESTAMP t0=%lld): updating value %.4g@%p to %.4g for time %lld from location '%s' to target %ld\n",t0,*(geocode.values[n]),geocode.values[n],value,get_time(),locations[location].hash,n);
+			*(geocode.values[n]) = value;
 		}
 	}
 
 	// return exact match time
 	return get_time() == t0;
-}
-
-TIMESTAMP geodata::get_time()
-{
-	return cur_data < n_data ? data[cur_data].timestamp : TS_NEVER;
 }
 
 bool geodata::load_geodata(const char *file)
@@ -306,8 +327,7 @@ bool geodata::load_geodata(const char *file)
 		{
 			char *next=NULL, *last=NULL;
 			int location = -1;
-			int row = line_no - 1;
-			if ( row >= (int)max_data )
+			if ( n_data >= max_data )
 			{
 				max_data = ( max_data == 0 ? 8784 : max_data*2 );
 				data = (GEODATA*)realloc(data,sizeof(GEODATA)*max_data);
@@ -322,23 +342,24 @@ bool geodata::load_geodata(const char *file)
 						error("(%s:%ld) invalid timestamp '%s'",file,line_no,next);
 						return false;
 					}
-					data[row].timestamp = dt.get_timestamp();
-					data[row].value = (double*)malloc(sizeof(double)*n_locations);
+					data[n_data].timestamp = dt.get_timestamp();
+					data[n_data].value = (double*)malloc(sizeof(double)*n_locations);
 				}
 				else if ( location < (int)n_locations ) // new column
 				{
-					if ( sscanf(next,"%lf",&(data[row].value[location])) != 1 )
+					if ( sscanf(next,"%lf",&(data[n_data].value[location])) != 1 )
 					{
 						error("(%s:%ld) invalid float value '%s'",file,line_no,next);
 					}
 				}
-				else // overrun columnup
+				else // overrun column
 				{
 					error("(%s:%ld) unexpected extra data (location %ld > n_locations %ld)",file,line_no,location,n_locations);
 					return false;
 				}
 				location++;
-			}			
+			}	
+			n_data++;		
 		}
 	}
 	return true;

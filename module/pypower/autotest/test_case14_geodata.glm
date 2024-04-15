@@ -4,7 +4,7 @@
 #endif
 
 // #set debug=TRUE
-// #set suppress_repeat_messages=FALSE
+#set suppress_repeat_messages=FALSE
 
 module pypower
 {
@@ -16,13 +16,13 @@ module pypower
 
 modify pp_bus_1.latitude 38.5;
 modify pp_bus_1.longitude -122.5;
-modify pp_bus_2.latitude 37.5;
-modify pp_bus_2.longitude -122.5;
+modify pp_bus_4.latitude 37.5;
+modify pp_bus_4.longitude -122.5;
 
 object pypower.geodata
 {
     file "${DIR:-.}/test_case14_geodata_Pd.csv";
-    target "bus::Pd";
+    target "pp_bus_1.Pd,pp_bus_4.Pd";
 }
 
 module tape
@@ -32,10 +32,12 @@ module tape
 
 object tape.recorder
 {
-    parent "pp_bus_2";
-    file "test_case14_geodata_pp_bus_2_record.csv";
+    parent "pp_bus_4";
+    file "test_case14_geodata_pp_bus_4_record.csv";
     property "Pd";
 }
+
+#set savefile=${modelname/.glm/.json}
 
 #ifexists "../test_case14_geodata_pp_bus_2_record.csv"
 #on_exit 0 diff ../test_case14_geodata_pp_bus_2_record.csv test_case14_geodata_pp_bus_2_record.csv > gridlabd.diff
