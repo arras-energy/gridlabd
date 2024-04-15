@@ -62,7 +62,7 @@ int geodata::init(OBJECT *parent)
 	// get geodata target
 	char classname[65];
 	char propname[65];
-	if ( sscanf(get_target(),"%[^:]:%[^\n]",classname,propname) != 2 )
+	if ( sscanf(get_target(),"%[^:]::%[^\n]",classname,propname) != 2 )
 	{
 		error("target '%s' is not", get_target()[0]=='\0'?"specified":"valid");
 		return 0;

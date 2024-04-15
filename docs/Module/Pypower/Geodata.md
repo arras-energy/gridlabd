@@ -35,7 +35,7 @@ values of `Pd` is all object of class `bus`.
 object pypower.geodata
 {
     file "geodata_Pd.csv";
-    target "bus:Pd";
+    target "bus::Pd";
 }
 ~~~
 

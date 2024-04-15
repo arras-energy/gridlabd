@@ -15,7 +15,7 @@ module pypower
 object pypower.geodata
 {
     file "${DIR:-.}/test_case14_geodata_Pd.csv";
-    target "bus:Pd";
+    target "bus::Pd";
 }
 
 #include "${DIR:-.}/case.glm"
