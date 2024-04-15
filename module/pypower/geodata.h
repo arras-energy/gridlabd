@@ -22,9 +22,9 @@ public:
 		char hash[16];
 		double latitude;
 		double longitude;
-		gld_property **properties;
-		size_t max_properties; // size of properties
-		size_t n_properties; // last properties
+		double **values;
+		size_t max_values; // size of values
+		size_t n_values; // last value
 	} GEOCODE;
 
 public:
@@ -52,10 +52,10 @@ private:
 private:
 
 	// private methods
-	bool load(const char *file);
-	bool set(TIMESTAMP timestamp);
-	TIMESTAMP peek();
-	TIMESTAMP get();
+	bool add_target(OBJECT *obj,const char *propname);
+	bool load_geodata(const char *file);
+	bool set_time(TIMESTAMP timestamp);
+	TIMESTAMP get_time();
 	
 public:
 
@@ -63,7 +63,7 @@ public:
 	geodata(MODULE *module);
 	int create(void);
 	int init(OBJECT *parent);
-	int precommit(TIMESTAMP t0);
+	TIMESTAMP precommit(TIMESTAMP t0);
 
 public:
 

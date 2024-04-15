@@ -59,69 +59,122 @@ int geodata::create(void)
 
 int geodata::init(OBJECT *parent)
 {
-	// get geodata target
-	char classname[65];
-	char propname[65];
-	if ( sscanf(get_target(),"%[^:]::%[^\n]",classname,propname) != 2 )
-	{
-		error("target '%s' is not", get_target()[0]=='\0'?"specified":"valid");
-		return 0;
-	}
-
-	// check target class
-	CLASS *oclass;
-	for ( oclass = gl_class_get_first() ; oclass != NULL && oclass->module == this_module ; oclass = oclass->next )
-	{
-		if ( strcmp(oclass->name,classname) == 0 && strcmp(oclass->module->name,"pypower") == 0 )
-		{
-			break;
-		}
-	}
-	if ( oclass == NULL )
-	{
-		error("class '%s' is not valid",classname);
-		return 0;
-	}
-
 	// load locations
-	if ( ! load(get_file()) )
+	if ( ! load_geodata(get_file()) )
 	{
 		error("unable to load geodata file '%s'",(const char*)get_file());
+		return 0;
 	}
 
-	// find objects at locations
-	for ( OBJECT *obj = gl_object_get_first() ; obj != NULL ; obj = obj->next )
+	// get targets
+	if ( get_target()[0] == '\0' )
 	{
-		if ( obj->oclass == oclass && ! isnan(obj->latitude) && ! isnan(obj->longitude) )
+		error("target is not specified");
+		return 0;
+	}
+	char *next=NULL, *last=NULL;
+	char buffer[strlen(get_target())+1];
+ 	strcpy(buffer,get_target());
+	while ( (next=strtok_r(next?NULL:buffer,",",&last)) != NULL )
+	{
+		// get geodata targets
+		char classname[65];
+		char objname[65];
+		char propname[65];
+		if ( sscanf(next,"%[^:]::%[^\n]",classname,propname) == 2 )
 		{
-			int location = find_location(obj->latitude,obj->longitude);
-			if ( location < 0 )
+			// check target class
+			CLASS *oclass;
+			for ( oclass = gl_class_get_first() ; oclass != NULL && oclass->module == this_module ; oclass = oclass->next )
 			{
-				continue;
+				if ( strcmp(oclass->name,classname) == 0 && strcmp(oclass->module->name,"pypower") == 0 )
+				{
+					break;
+				}
 			}
-			GEOCODE &geocode = locations[location];
-			if ( geocode.n_properties >= geocode.max_properties )
+			if ( oclass == NULL )
 			{
-				geocode.max_properties *= 2;
-				geocode.properties = (gld_property**)realloc(geocode.properties,sizeof(gld_property*)*geocode.max_properties);
-			}
-			gld_property *prop = new gld_property(obj,propname);
-			if ( ! prop->is_valid() )
-			{
-				error("unable to find property '%s' in object '%s'",prop->get_name(),(const char*)(get_object(obj)->get_name()));
+				error("class '%s' is not valid",classname);
 				return 0;
 			}
-			geocode.properties[geocode.n_properties++] = prop;
+
+			// find objects at locations
+			for ( OBJECT *obj = gl_object_get_first() ; obj != NULL ; obj = obj->next )
+			{
+				if ( obj->oclass == oclass )
+				{
+					if ( ! isnan(obj->latitude) && ! isnan(obj->longitude) )
+					{
+						if ( ! add_target(obj,propname) )
+						{
+							error("unable to find property '%s' in object '%s'",propname,(const char*)(get_object(obj)->get_name()));
+							return 0;
+						}
+					}
+					else
+					{
+						warning("object '%s' does not have any geodata to locate it",(const char*)get_object(obj)->get_name());
+					}
+				}
+			}
+		}
+		else if ( sscanf(next,"%[^.].%[^\n]",objname,propname) == 2 )
+		{
+			OBJECT *obj = get_object(objname)->my();
+			if ( obj == NULL )
+			{
+				error("object '%s' not found",objname);
+				return 0;
+			}
+			if ( ! isnan(obj->latitude) && ! isnan(obj->longitude) )
+			{
+				if ( ! add_target(obj,propname) )
+				{
+					error("unable to find property '%s' in object '%s'",propname,objname);
+					return 0;
+				}
+			}
+			else
+			{
+				warning("object '%s' does not have any geodata to locate it",objname);
+			}
+		}
+		else
+		{
+			error("target '%s' is not valid",next);
+			return 0;
 		}
 	}
 
 	return 1;
 }
 
-int geodata::precommit(TIMESTAMP t0)
+TIMESTAMP geodata::precommit(TIMESTAMP t0)
 {
-	set(t0);
-	return get();
+	set_time(t0);
+	return get_time();
+}
+
+bool geodata::add_target(OBJECT *obj,const char *propname)
+{
+	int location = find_location(obj->latitude,obj->longitude);
+	if ( location < 0 )
+	{
+		warning("object '%s' location cannot be found in geodata file",(const char *)get_object(obj)->get_name());
+		return true;
+	}
+	gld_property *prop = new gld_property(obj,propname);
+	if ( ! prop->is_valid() )
+	{
+		return false;
+	}
+	if ( locations[location].n_values >= locations[location].max_values )
+	{
+		locations[location].max_values *= 2;
+		locations[location].values = (double**)realloc(locations[location].values,sizeof(double*)*locations[location].max_values);
+	}
+	locations[location].values[locations[location].n_values++] = (double*)prop->get_addr();
+	return true;
 }
 
 size_t geodata::find_location(const char *geocode,bool exact)
@@ -154,7 +207,7 @@ size_t geodata::find_location(double lat, double lon)
 			best_d2 = d2;
 		}
 	}
-	return location;
+	return best_loc;
 }
 
 double geodata::get_value(size_t location)
@@ -162,7 +215,7 @@ double geodata::get_value(size_t location)
 	return data[cur_data].value[location];
 }
 
-bool geodata::set(TIMESTAMP t0)
+bool geodata::set_time(TIMESTAMP t0)
 {
 	// end of data check
 	if ( t0 == TS_NEVER )
@@ -172,7 +225,7 @@ bool geodata::set(TIMESTAMP t0)
 	}
 
 	// look for data
-	while ( get() < t0 && cur_data < n_data )
+	while ( get_time() < t0 && cur_data < n_data )
 	{
 		cur_data++;
 	}
@@ -181,23 +234,22 @@ bool geodata::set(TIMESTAMP t0)
 	for ( size_t location = 0 ; location < n_locations ; location++ )
 	{
 		GEOCODE &geocode = locations[location];
-		double value = get_value(location);
-		for ( size_t property = 0 ; property < geocode.n_properties ; property++ )
+		for ( size_t n = 0 ; n < geocode.n_values ; n++ )
 		{
-			geocode.properties[property]->setp(value);
+			*geocode.values[n] = get_value(location);
 		}
 	}
 
 	// return exact match time
-	return get() == t0;
+	return get_time() == t0;
 }
 
-TIMESTAMP geodata::get()
+TIMESTAMP geodata::get_time()
 {
 	return cur_data < n_data ? data[cur_data].timestamp : TS_NEVER;
 }
 
-bool geodata::load(const char *file)
+bool geodata::load_geodata(const char *file)
 {
 	// open geodata file
 	FILE *fp = fopen((const char*)get_file(),"r");
@@ -243,9 +295,9 @@ bool geodata::load(const char *file)
 						error("geocode '%s' is not valid",next);
 					}
 					strncpy(locations[n_locations].hash,next,sizeof(locations[n_locations].hash)-1);
-					locations[n_locations].max_properties = 8;
-					locations[n_locations].properties = (gld_property**)malloc(sizeof(gld_property*)*locations[n_locations].max_properties);
-					locations[n_locations].n_properties = 0;
+					locations[n_locations].max_values = 8;
+					locations[n_locations].values = (double**)malloc(sizeof(double*)*locations[n_locations].max_values);
+					locations[n_locations].n_values = 0;
 					n_locations++;
 				}
 			}
@@ -254,28 +306,28 @@ bool geodata::load(const char *file)
 		{
 			char *next=NULL, *last=NULL;
 			int location = -1;
-			data = (GEODATA*)malloc(sizeof(double)*max_data);
+			int row = line_no - 1;
+			if ( row >= (int)max_data )
+			{
+				max_data += 4096;
+				data = (GEODATA*)realloc(data,sizeof(GEODATA)*max_data);
+			}
 			while ( (next=strtok_r(next?NULL:line,",",&last)) != NULL )
 			{
 				if ( location < 0 ) // new line
 				{
-					if ( line_no-1 >= max_data )
-					{
-						max_data += 4096;
-						data = (GEODATA*)realloc(data,sizeof(double)*max_data);
-					}
 					gld_clock dt(next);
 					if ( ! dt.is_valid() )
 					{
 						error("(%s:%ld) invalid timestamp '%s'",file,line_no,next);
 						return false;
 					}
-					data[line_no-1].timestamp = dt.get_timestamp();
-					data[line_no-1].value = (double*)malloc(sizeof(double)*n_locations);
+					data[row].timestamp = dt.get_timestamp();
+					data[row].value = (double*)malloc(sizeof(double)*n_locations);
 				}
 				else if ( location < (int)n_locations ) // new column
 				{
-					if ( sscanf(next,"%lf",&(data[line_no-1].value[location])) != 1 )
+					if ( sscanf(next,"%lf",&(data[row].value[location])) != 1 )
 					{
 						error("(%s:%ld) invalid float value '%s'",file,line_no,next);
 					}
