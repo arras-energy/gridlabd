@@ -1,0 +1,50 @@
+#define CASE=14
+#ifexists "../case.glm"
+#define DIR=..
+#endif
+
+// #set debug=TRUE
+#set suppress_repeat_messages=FALSE
+
+module pypower
+{
+    maximum_timestep 3600;
+    save_case TRUE;
+}
+
+#include "${DIR:-.}/case.glm"
+
+modify pp_bus_2.latitude 38.5;
+modify pp_bus_2.longitude -122.5;
+
+object pypower.load
+{
+    name "load_2";    
+    parent "pp_bus_2";
+    latitude 38.5;
+    longitude -122.5;
+    Vn 12.5 kV;
+    status ONLINE;
+}
+
+object pypower.geodata
+{
+    file "${DIR:-.}/test_case14_geodata_P.csv";
+    target "load_2.P";
+}
+
+module tape
+{
+    csv_header_type NAME;
+}
+
+object tape.recorder
+{
+    parent "load_2";
+    file "test_case14_geodata_load_2_record.csv";
+    property "P";
+}
+
+#ifexists "../test_case14_geodata_load_2_record.csv"
+#on_exit 0 diff ../test_case14_geodata_load_2_record.csv test_case14_geodata_load_2_record.csv > gridlabd.diff
+#endif
