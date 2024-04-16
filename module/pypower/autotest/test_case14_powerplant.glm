@@ -16,6 +16,11 @@ module tape
     csv_header_type NAME;
 }
 
+module tape
+{
+    csv_header_type NAME;
+}
+
 object pypower.load
 {
     parent pp_bus_2;
