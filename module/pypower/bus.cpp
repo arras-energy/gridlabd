@@ -41,9 +41,11 @@ bus::bus(MODULE *module)
 				PT_KEYWORD, "PQREF", (enumeration)1,
 
 			PT_double, "Pd[MW]", get_Pd_offset(),
+				PT_OUTPUT,
 				PT_DESCRIPTION, "real power demand (MW)",
 
 			PT_double, "Qd[MVAr]", get_Qd_offset(),
+				PT_OUTPUT,
 				PT_DESCRIPTION, "reactive power demand (MVAr)",
 
 			PT_double, "Gs[MW]", get_Gs_offset(),

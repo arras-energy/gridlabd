@@ -7621,13 +7621,13 @@ int GldLoader::process_macro(char *line, int size, char *_filename, int linenum)
 	}
 	else if (strncmp(line,"#if",3)==0)
 	{
-		char left[1024], op[4];
+		char left[1024], op[8];
 		const char *value;
 		char right[1024];
-		if ( sscanf(line+4,"\"%1023[^\"]\" %3[!<>=] \"%1023[^\"]\"",left,op,right) < 3
-			&& sscanf(line+4,"%1023[^!<>= \t] %3[!<>=] \"%1023[^\"]\"",left,op,right) < 3
-			&& sscanf(line+4,"\"%1023[^\"]\" %3[!<>=] %1023s",left,op,right) < 3
-			&& sscanf(line+4,"%1023[^!<>= \t] %3[!<>=] %1023s",left,op,right) < 3 )
+		if ( sscanf(line+4,"\"%1023[^\"]\" %7[!<>=inot_] \"%1023[^\"]\"",left,op,right) < 3
+			&& sscanf(line+4,"%1023[^!<>= \t] %7[!<>=inot_] \"%1023[^\"]\"",left,op,right) < 3
+			&& sscanf(line+4,"\"%1023[^\"]\" %7[!<>=inot_] %1023s",left,op,right) < 3
+			&& sscanf(line+4,"%1023[^!<>= \t] %7[!<>=inot_] %1023s",left,op,right) < 3 )
 		{
 			syntax_error(filename,linenum,"#if macro statement syntax error");
 			strcpy(line,"\n");
@@ -7651,6 +7651,8 @@ int GldLoader::process_macro(char *line, int size, char *_filename, int linenum)
 		else if (strcmp(op,"<=")==0) { if (!(strcmp(value,right)<=0)) suppress|=(1<<nesting); }
 		else if (strcmp(op,"==")==0) { if (!(strcmp(value,right)==0)) suppress|=(1<<nesting); }
 		else if (strcmp(op,"!=")==0) { if (!(strcmp(value,right)!=0)) suppress|=(1<<nesting); }
+		else if (strcmp(op,"in")==0) { if (!(strstr(value,right)!=NULL)) suppress|=(1<<nesting);}
+		else if (strcmp(op,"not_in")==0) { if (!(strstr(value,right)==NULL)) suppress|=(1<<nesting);}
 		else
 		{
 			syntax_error(filename,linenum,"operator %s is not recognized",op);
