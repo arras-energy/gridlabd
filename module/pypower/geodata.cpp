@@ -34,8 +34,8 @@ geodata::geodata(MODULE *module)
 			PT_char1024, "file", get_file_offset(),
 				PT_DESCRIPTION, "geodata file name",
 
-			PT_char256, "target", get_target_offset(),
-				PT_DESCRIPTION, "geodata target class and property, e.g., CLASS:PROPERTY",
+			PT_char1024, "target", get_target_offset(),
+				PT_DESCRIPTION, "geodata target class and property, e.g., CLASS::PROPERTY or OBJECT.PROPERTY",
 
 			NULL)<1)
 		{

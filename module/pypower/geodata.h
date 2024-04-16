@@ -31,7 +31,7 @@ public:
 
 	// published properties
 	GL_ATOMIC(char1024,file);
-	GL_ATOMIC(char256,target);
+	GL_ATOMIC(char1024,target);
 
 public:
 
