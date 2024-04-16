@@ -14,15 +14,23 @@ module pypower
 
 #include "${DIR:-.}/case.glm"
 
-modify pp_bus_1.latitude 38.5;
-modify pp_bus_1.longitude -122.5;
-modify pp_bus_4.latitude 37.5;
-modify pp_bus_4.longitude -122.5;
+modify pp_bus_2.latitude 38.5;
+modify pp_bus_2.longitude -122.5;
+
+object pypower.load
+{
+    name "load_2";    
+    parent "pp_bus_2";
+    latitude 38.5;
+    longitude -122.5;
+    Vn 12.5 kV;
+    status ONLINE;
+}
 
 object pypower.geodata
 {
-    file "${DIR:-.}/test_case14_geodata_Pd.csv";
-    target "pp_bus_1.Pd,pp_bus_4.Pd";
+    file "${DIR:-.}/test_case14_geodata_P.csv";
+    target "load_2.P";
 }
 
 module tape
@@ -32,13 +40,11 @@ module tape
 
 object tape.recorder
 {
-    parent "pp_bus_4";
-    file "test_case14_geodata_pp_bus_4_record.csv";
-    property "Pd";
+    parent "load_2";
+    file "test_case14_geodata_load_2_record.csv";
+    property "P";
 }
 
-#set savefile=${modelname/.glm/.json}
-
-#ifexists "../test_case14_geodata_pp_bus_2_record.csv"
-#on_exit 0 diff ../test_case14_geodata_pp_bus_2_record.csv test_case14_geodata_pp_bus_2_record.csv > gridlabd.diff
+#ifexists "../test_case14_geodata_load_2_record.csv"
+#on_exit 0 diff ../test_case14_geodata_load_2_record.csv test_case14_geodata_load_2_record.csv > gridlabd.diff
 #endif

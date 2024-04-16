@@ -26,16 +26,25 @@ timestamp,9mugye,9mupxg
 
 Only double values may be applied using `geodata`.
 
+# Caveat
+
+Some object properties are updated after the `precommit` event that processes
+geodata. Consequently, any geodata written to these objects will be
+overwritten by subsequent events processed by those objects. This is notably
+true for `bus` and `branch` objects. If you want to change power injections, 
+you should process geodata for the child objects that update them, e.g., `load`,
+`powerplant`, or `powerline`.
+
 # Example
 
-The following example applies the values in the file `geodata_Pd.csv` to the
-values of `Pd` is all object of class `bus`.
+The following example applies the values in the file `geodata_load_P.csv` to the
+values of `P` is all object of class `load`.
 
 ~~~
 object pypower.geodata
 {
-    file "geodata_Pd.csv";
-    target "bus::Pd";
+    file "geodata_load_P.csv";
+    target "load::P";
 }
 ~~~
 
