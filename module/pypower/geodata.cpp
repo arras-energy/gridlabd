@@ -162,6 +162,10 @@ bool geodata::add_target(OBJECT *obj,const char *propname)
 	{
 		return false;
 	}
+	if ( prop->get_flags()&PF_OUTPUT )
+	{
+		warning("writing to '%s' output '%s' may not work as expected",(const char*)get_object(obj)->get_name(),propname);
+	}
 
 	int location = find_location(obj->latitude,obj->longitude);
 	if ( location < 0 )
@@ -171,7 +175,6 @@ bool geodata::add_target(OBJECT *obj,const char *propname)
 	}
 
 	double *value = (double*)prop->get_addr();
-	// fprintf(stderr,"geodata::add_target(obj='%s',propname='%s'): value@%p = %.4g\n",obj->name,propname,value,*value);
 	for ( size_t n = 0 ; n < locations[location].n_values ; n++ )
 	{
 		if ( locations[location].values[n] == value )
