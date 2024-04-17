@@ -45,6 +45,8 @@ m4_define([versionname], sbuild_m4_esyscmd_s([build-aux/version.sh --name]))
 m4_define([pkginstall], sbuild_m4_esyscmd_s([build-aux/version.sh --install]))
 m4_define([pkgorigin],sbuild_m4_esyscmd_s([git rev-parse --abbrev-ref HEAD]))
 
+# Set minimum autoconf version, cannot be conditional
+# Build.sh will handle validation of later version for Darwin 23 and later
 AC_PREREQ([2.71])
 AC_INIT([pkgname],[pkgversion],[gridlabd@gmail.com],[pkg])
 AC_CONFIG_SRCDIR([source/gridlabd.h])
