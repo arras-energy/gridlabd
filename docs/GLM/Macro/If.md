@@ -14,7 +14,19 @@ GLM:
 
 # Description
 
-The `#if` macro introduces a conditional section of a GLM file.  The `#else` and `#endif` macros are used to introduce the alternative section and terminate the conditional section.
+The `#if` macro introduces a conditional section of a GLM file.  The `#else`
+and `#endif` macros are used to introduce the alternative section and
+terminate the conditional section.
+
+Valid comparisons are
+	* ==
+	* !=
+	* <
+	* <=
+	* >
+	* >=
+	* in
+	* not_in
 
 # Examples
 

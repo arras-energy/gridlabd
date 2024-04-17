@@ -41,7 +41,7 @@
 
 // TODO: this doesn't work on github actions because of a host-based file sync problem
 //       keep_progress is set under these circumstances so we use this to avoid this check
-#if ${github_actions:-no}==no
+#if ${github_actions:-no} == no
 #ifexist "../test_geodata.txt"
 #on_exit 0 diff -I '^#' ../test_geodata.txt test_geodata.txt > gridlabd.diff
 #endif

@@ -1,0 +1,53 @@
+
+#set randomseed=1
+
+class test
+{
+	double x;
+	double y;
+}
+
+module tape
+{
+	csv_header_type NAME;
+}
+
+module behavior;
+
+#for LIMITS in NONE CLAMP RETRY
+object test
+{
+	name behavior_${LIMITS};
+	object recorder
+	{
+		file "test_random_${LIMITS}.csv";
+		property x,y;
+		interval 3600;
+	};
+}
+object behavior.random
+{
+	type NORMAL;
+	a 0;
+	b 1;
+	refresh_rate 1h;
+	lower_limit -1;
+	upper_limit +1;
+	limit_method ${LIMITS};
+	point "behavior_${LIMITS}.x";
+	point "behavior_${LIMITS}.y";
+}
+#ifexists ../test_random.glm
+#on_exit 0 diff ../test_random_${LIMITS}.csv test_random_${LIMITS}.csv >> gridlabd.diff
+#endif
+
+#done
+
+clock
+{
+	timezone PST+8PDT;
+	starttime "2020-01-01 00:00:00 PST";
+	stoptime "2021-01-01 00:00:00 PST";
+}
+
+#set savefile=${modelname/.glm/.json}

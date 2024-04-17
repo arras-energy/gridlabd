@@ -9,7 +9,11 @@
 module pypower
 {
     maximum_timestep 3600;
-    save_case TRUE;
+}
+
+module tape
+{
+    csv_header_type NAME;
 }
 
 module tape
