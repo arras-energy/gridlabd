@@ -42,7 +42,7 @@ static int group(int *groups, enumeration type, int n=-1)
             {
                 groups[n] = group(groups,type,n);
             }
-            fprintf(stderr,"type %d group[%lu] = %d\n",int(type),n,groups[n]);
+            // fprintf(stderr,"type %d group[%lu] = %d\n",int(type),n,groups[n]);
         }
         return n_groups;
     }
@@ -89,18 +89,18 @@ EXPORT TIMESTAMP on_precommit(TIMESTAMP t0)
     for ( size_t n = 0 ; n < n_systems ; n++ )
     {
         class system *sys = system_list[n];
-        fprintf(stderr,"system %lu: Cp = %g, N = %lld\n",n,sys->get_Cp(),sys->get_N());
+        // fprintf(stderr,"system %lu: Cp = %g, N = %lld\n",n,sys->get_Cp(),sys->get_N());
         C += sys->get_Cp();
         N += sys->get_N();
     }
     for ( size_t n = 0 ; n < n_systems ; n++ )
     {
         class system *sys = system_list[n];
-        fprintf(stderr,"system %lu: T = %g, M = %g\n",n,sys->get_tau(),sys->get_mu());
+        // fprintf(stderr,"system %lu: T = %g, M = %g\n",n,sys->get_tau(),sys->get_mu());
         T += sys->get_Cp() / C * sys->get_tau();
         M += sys->get_N() / N * sys->get_mu();
     }
-    fprintf(stderr,"C = %g, T = %g, M = %g\n",C,T,M);
+    // fprintf(stderr,"C = %g, T = %g, M = %g\n",C,T,M);
     for ( size_t n = 0 ; n < n_systems ; n++ )
     {
         class system *sys = system_list[n];
