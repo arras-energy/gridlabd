@@ -1,6 +1,7 @@
 dist_pkgdata_DATA += tools/create_childs.py
 dist_pkgdata_DATA += tools/create_ductbank.py
 dist_pkgdata_DATA += tools/create_filter.py
+dist_pkgdata_DATA += tools/create_metered_loads.py
 dist_pkgdata_DATA += tools/create_meters.py
 dist_pkgdata_DATA += tools/create_player.py
 dist_pkgdata_DATA += tools/create_poles.py

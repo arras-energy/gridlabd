@@ -1,0 +1,7 @@
+case*.glm
+case*.json
+case*_ref.json
+gridlabd.diff
+*casedata*.*
+*results*.*
+*failed*.*

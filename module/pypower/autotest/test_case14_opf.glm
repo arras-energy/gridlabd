@@ -1,0 +1,10 @@
+#define CASE=14
+#ifexists "../case.glm"
+#define DIR=..
+#endif
+#include "${DIR:-.}/case.glm"
+
+module pypower
+{
+    enable_opf TRUE;
+}

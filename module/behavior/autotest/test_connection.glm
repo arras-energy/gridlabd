@@ -1,0 +1,25 @@
+module behavior;
+
+object system
+{
+	name "system_0";
+    tau 0.1;
+    N 20;
+    mu 1.0;
+    u 0,1;
+    q -1,1;
+}
+
+object system
+{
+	name "system_1";
+	tau 0.05;
+	N 10;
+	mu 0.1;
+	u 0,1;
+	q -1,1;
+	connection "system_0";
+	connection_type VALUE;
+}
+
+#set savefile=test_connection.json

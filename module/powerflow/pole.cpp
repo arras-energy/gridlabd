@@ -575,23 +575,29 @@ TIMESTAMP pole::postsync(TIMESTAMP t0) ////
             down_time = gl_globalclock;
             verbose("down_time = %lld", down_time);
         }
-
-        // // M = a * V^2 + b * V + c
-        // // TODO
-        // pole_stress_polynomial_a = pole_moment_per_wind + equipment_moment_nowind + wire_moment_nowind;
-        // pole_stress_polynomial_b = 0.0;
-        // pole_stress_polynomial_c = wire_tension;
-
-        TIMESTAMP next_event = pole_status == PS_FAILED ? down_time + (int)(repair_time*3600) : TS_NEVER;
-        verbose("next_event = %lld", next_event); //// should return repair time
         recalc = false;
-        return stop_on_pole_failure && pole_status == PS_FAILED ? TS_INVALID : next_event;
 	}
     else
     {
         verbose("no pole recalculation flagged");
-        return TS_NEVER;
     }
+
+    if ( pole_status == PS_FAILED )
+    {
+        if ( stop_on_pole_failure )
+        {
+            return TS_INVALID;
+        }
+        TIMESTAMP next_event = down_time + (int)(repair_time*3600);
+        if ( t0 == next_event )
+        {
+            return TS_NEVER;
+        }
+        verbose("next_event = %lld", next_event); //// should return repair time
+        return next_event;
+
+    }
+    return TS_NEVER;
 }
 
 TIMESTAMP pole::commit(TIMESTAMP t1, TIMESTAMP t2)

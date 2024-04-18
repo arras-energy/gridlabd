@@ -3,12 +3,14 @@ include module/assert/Makefile.mk
 include module/climate/Makefile.mk
 include module/commercial/Makefile.mk
 include module/generators/Makefile.mk
+include module/behavior/Makefile.mk
 include module/industrial/Makefile.mk
 include module/influxdb/Makefile.mk
 include module/market/Makefile.mk
 include module/mysql/Makefile.mk
 include module/optimize/Makefile.mk 
 include module/powerflow/Makefile.mk
+include module/pypower/Makefile.mk
 include module/reliability/Makefile.mk
 include module/residential/Makefile.mk
 include module/resilience/Makefile.mk

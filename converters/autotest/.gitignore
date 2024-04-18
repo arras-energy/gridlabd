@@ -9,3 +9,6 @@ solver_nr_profile.csv
 table2glm_input_noclass.glm
 table2glm_input_noname.glm
 table2glm_input.glm
+*_casedata*.*
+*_results*.*
+*_failed*.*
