@@ -11,6 +11,8 @@ class branch : public gld_object
 
 public:
 	// published properties
+	GL_ATOMIC(object,from);
+	GL_ATOMIC(object,to);
 	GL_ATOMIC(int32,fbus);
 	GL_ATOMIC(int32,tbus);
 	GL_ATOMIC(double,r);
