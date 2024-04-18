@@ -235,6 +235,7 @@ past values of the `scada` global.
 # See also
 
 * [PyPower documentation](https://pypi.org/project/PYPOWER/)
+* [[/Module/Pypower/Geodata]]
 * [[/Module/Pypower/Load]]
 * [[/Module/Pypower/Powerline]]
 * [[/Module/Pypower/Powerplant]]
