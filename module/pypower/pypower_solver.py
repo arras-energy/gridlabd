@@ -59,6 +59,32 @@ def write_case(data,filename):
                     for row in value.tolist():
                         writer.writerow(row)
 
+def jsonify(data):
+    if type(data) is dict:
+        result = {}
+        for x,y in data.items():
+            if type(y) in [int,str,float,bool]:
+                result[x] = y
+            elif hasattr(y,"tolist"):
+                if x in ["bus","branch","gen"]:
+                    result[x] = f"{modelname.replace(os.getcwd(),'.')}_results_{x}.csv"
+                else:
+                    result[x] = y.tolist()
+            elif type(y) in [list,dict]:
+                result[x] = jsonify(x)
+    elif type(data) is list:
+        result = []
+        for x in data:
+            if type(y) in [int,str,float,bool]:
+                result.append(y)
+            elif hasattr(y,"tolist"):
+                result.append(y.tolist())
+            elif type(y) in [list,dict]:
+                result.append(jsonify(x))
+    # print(result,file=sys.stderr,flush=True)
+    else:
+        result = data
+    return result
 
 def solver(pf_case):
 
@@ -129,12 +155,29 @@ def solver(pf_case):
         # save results to file
         if save_case:
             write_case(results,f"{modelname}_results.{save_format}")
+            with open(f"{modelname}_results_solver.json","w") as fh:
+                
+                json.dump(jsonify(results),fh,indent=2) 
 
         # copy back to model
         if success:
 
+            # # compute residual power taken up by the swing bus
+            # for n,refbus in enumerate([x for x in results['bus'] if x[1]==3]):
+            #     P,Q = 0,0
+            #     for branch in [x for x in results['branch'] if refbus[1] in x[0:2]]:
+            #         if refbus[1] == branch[0]: # from
+            #             P -= branch[13]
+            #             Q -= branch[14]
+            #         else: # to
+            #             P += branch[15]
+            #             Q += branch[15]
+            #     results['bus'][n,2] = P
+            #     results['bus'][n,3] = Q
+            #     # print(P,Q,results['bus'],file=sys.stderr)
             for name in ['bus','gen','branch']:
                 pf_case[name] = results[name].tolist()
+
             return pf_case
 
         if not save_case:
