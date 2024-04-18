@@ -203,8 +203,8 @@ int scada::point(char *buffer, size_t len)
 		// copy name to list of names
 		int pos = strlen(point_names);
 		len = strlen(buffer);
-		point_names = (char*)realloc(point_names,pos+len+2);
-		snprintf(point_names+pos,len+1,"%s%s",pos>0?",":"",buffer);
+		point_names = (char*)realloc(point_names,pos+len+3);
+		snprintf(point_names+pos,len+2,"%s%s",pos>0?",":"",buffer);
 		return len;
 	}
 	else

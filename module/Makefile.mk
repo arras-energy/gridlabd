@@ -3,6 +3,7 @@ include module/assert/Makefile.mk
 include module/climate/Makefile.mk
 include module/commercial/Makefile.mk
 include module/generators/Makefile.mk
+include module/behavior/Makefile.mk
 include module/industrial/Makefile.mk
 include module/influxdb/Makefile.mk
 include module/market/Makefile.mk
