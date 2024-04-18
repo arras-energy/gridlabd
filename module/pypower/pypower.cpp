@@ -525,6 +525,7 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
 
     // run solver
     static PyObject *result = NULL;
+    complex power_mismatch = 0;
     if ( result == NULL || n_changes > 0 )
     {
         // run pypower solver
@@ -584,6 +585,18 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
                     RECV(mu_Vmax,15,Float,Double)
                     RECV(mu_Vmin,16,Float,Double)
                 }
+
+                power_mismatch += complex(Pd,Qd);
+            }
+
+            PyObject *branchdata = PyDict_GetItemString(result,"branch");
+            for ( size_t n = 0 ; n < nbranch ; n++ )
+            {
+                branch &line = branchdata[n];
+                complex Z(branch.r,branch.x);
+                bus &fbus = bus[line.fbus];
+                bus &tbus = bus[line.tbus];
+                power_mismatch += Vm*Z*(~Z);
             }
 
             PyObject *gendata = PyDict_GetItemString(result,"gen");
