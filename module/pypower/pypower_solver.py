@@ -162,19 +162,6 @@ def solver(pf_case):
         # copy back to model
         if success:
 
-            # # compute residual power taken up by the swing bus
-            # for n,refbus in enumerate([x for x in results['bus'] if x[1]==3]):
-            #     P,Q = 0,0
-            #     for branch in [x for x in results['branch'] if refbus[1] in x[0:2]]:
-            #         if refbus[1] == branch[0]: # from
-            #             P -= branch[13]
-            #             Q -= branch[14]
-            #         else: # to
-            #             P += branch[15]
-            #             Q += branch[15]
-            #     results['bus'][n,2] = P
-            #     results['bus'][n,3] = Q
-            #     # print(P,Q,results['bus'],file=sys.stderr)
             for name in ['bus','gen','branch']:
                 pf_case[name] = results[name].tolist()
 

@@ -32,6 +32,7 @@ typedef enum {
 } PYPOWERSAVEFORMAT;
 enumeration save_format = PPSF_CSV;
 const char *save_formats[] = {"csv","json","py"};
+double total_loss = 0;
 
 enum {
     SS_INIT = 0,
@@ -158,6 +159,12 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
         PT_KEYWORD, "JSON", (enumeration)PPSF_JSON,
         PT_KEYWORD, "PY", (enumeration)PPSF_PY,
         PT_DESCRIPTION, "Save case format",
+        NULL);
+
+    gl_global_create("pypower::total_loss",
+        PT_double, &total_loss,
+        PT_UNITS, "MW",
+        PT_DESCRIPTION, "System-wide line losses",
         NULL);
 
     // always return the first class registered
@@ -525,7 +532,6 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
 
     // run solver
     static PyObject *result = NULL;
-    complex power_mismatch = 0;
     if ( result == NULL || n_changes > 0 )
     {
         // run pypower solver
@@ -585,18 +591,34 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
                     RECV(mu_Vmax,15,Float,Double)
                     RECV(mu_Vmin,16,Float,Double)
                 }
-
-                power_mismatch += complex(Pd,Qd);
+                obj->V.SetPolar(obj->get_Vm(),obj->get_Va());
             }
 
-            PyObject *branchdata = PyDict_GetItemString(result,"branch");
             for ( size_t n = 0 ; n < nbranch ; n++ )
             {
-                branch &line = branchdata[n];
-                complex Z(branch.r,branch.x);
-                bus &fbus = bus[line.fbus];
-                bus &tbus = bus[line.tbus];
-                power_mismatch += Vm*Z*(~Z);
+                branch *line = branchlist[n];
+                size_t fbus_id = line->get_fbus()-1;
+                size_t tbus_id = line->get_tbus()-1;
+                if ( fbus_id < 0 || fbus_id >= nbus )
+                {
+                    gl_warning("pypower::on_sync(): from bus %d on branch %d is not valid",fbus_id,n);
+                }
+                else if ( tbus_id < 0 || tbus_id >= nbus )
+                {
+                    gl_warning("pypower::on_sync(): to bus %d on branch %d is not valid",tbus_id,n);
+                }
+                else
+                {
+                    complex Z(line->get_r(),line->get_x());
+                    bus *fbus = buslist[fbus_id];
+                    bus *tbus = buslist[tbus_id];
+                    complex DV = fbus->V - tbus->V;
+                    complex current = DV / Z;
+                    line->set_current(current*base_MVA);
+                    double loss = (DV * ~current).Mag() / base_MVA;
+                    line->set_loss(loss);
+                    total_loss += loss;
+                }
             }
 
             PyObject *gendata = PyDict_GetItemString(result,"gen");

@@ -69,6 +69,12 @@ branch::branch(MODULE *module)
 			PT_double, "angmax[deg]", get_angmax_offset(),
 				PT_DESCRIPTION, "maximum angle difference, angle(Vf) - angle(Vt) (degrees)",
 
+			PT_complex, "current[A]", get_current_offset(),
+				PT_DESCRIPTION, "line current (A)",
+
+			PT_double, "loss[MW]", get_loss_offset(),
+				PT_DESCRIPTION, "line loss (MW)",
+
 			NULL)<1)
 		{
 				throw "unable to publish branch properties";
