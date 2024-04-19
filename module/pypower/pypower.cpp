@@ -33,6 +33,7 @@ typedef enum {
 enumeration save_format = PPSF_CSV;
 const char *save_formats[] = {"csv","json","py"};
 double total_loss = 0;
+double generation_shortfall = 0;
 
 enum {
     SS_INIT = 0,
@@ -165,6 +166,12 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
         PT_double, &total_loss,
         PT_UNITS, "MW",
         PT_DESCRIPTION, "System-wide line losses",
+        NULL);
+
+    gl_global_create("pypower::generation_shortfall",
+        PT_double, &generation_shortfall,
+        PT_UNITS, "MW",
+        PT_DESCRIPTION, "System-wide generation shortfall",
         NULL);
 
     // always return the first class registered
@@ -628,6 +635,7 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
                 solver_status = SS_FAILED;
                 return TS_INVALID;
             }
+            generation_shortfall = 0;
             for ( size_t n = 0 ; n < ngen ; n++ )
             {
                 gen *obj = genlist[n];
@@ -642,6 +650,7 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
                     RECV(mu_Qmax,23,Float,Double)
                     RECV(mu_Qmin,24,Float,Double)
                 }
+                generation_shortfall += max(obj->get_Pg() - obj->get_Pmax(),0.0);
             }
         }
     }
