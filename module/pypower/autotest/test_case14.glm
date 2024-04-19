@@ -9,5 +9,3 @@ module pypower
 	solver_method GS;
 	save_case TRUE;
 }
-
-modify pp_gen_1.Pmax 100 MW;
