@@ -10,6 +10,43 @@ class powerplant : public gld_object
 {
 
 public:
+
+	typedef enum {
+		GT_UNDEFINED 			= 0x0000,
+		GT_UNKNOWN 				= 0x0001,
+		GT_HYDROTURBINE 		= 0x0002,
+		GT_STEAMTURBINE			= 0x0004,
+		GT_COMPRESSEDAIR		= 0x0080,
+		GT_INTERNALCOMBUSTION 	= 0x0010,
+		GT_FLYWHEEL				= 0x0020,
+		GT_WINDTURBINE			= 0x0040,
+		GT_ENERGYSTORAGE		= 0x0080,
+		GT_COMBUSTIONTURBINE 	= 0x0100,
+		GT_PHOTOVOLTAIC			= 0x0200,
+		GT_COMBINEDCYCLE		= 0x0400,
+	} GENERATORTYPE;
+
+	typedef enum {
+		FT_UNDEFINED	= 0x00000000,
+		FT_ELECTRICITY 	= 0x00000001, 
+		FT_WIND 		= 0x00000002,
+		FT_SUN 			= 0x00000004, 
+		FT_GEOTHERMAL 	= 0x00000008, 
+		FT_COKE 		= 0x00000010, 
+		FT_WASTE 		= 0x00000020, 
+		FT_BIOMASS 		= 0x00000040, 
+		FT_OIL 			= 0x00000080, 
+		FT_UNKNOWN 		= 0x00000100, 
+		FT_WOOD 		= 0x00000200, 
+		FT_OTHER 		= 0x00000400, 
+		FT_GAS 			= 0x00000800, 
+		FT_NUCLEAR 		= 0x00001000, 
+		FT_WATER 		= 0x00002000,
+		FT_COAL 		= 0x00004000, 
+		FT_NATURALGAS 	= 0x00008000, 
+	} FUELTYPE;
+
+public:
 	// published properties
 	GL_ATOMIC(char32,city);
 	GL_ATOMIC(char32,state);
@@ -27,6 +64,10 @@ public:
 	GL_ATOMIC(double,capacity_factor);
 	GL_ATOMIC(char256,substation_1);
 	GL_ATOMIC(char256,substation_2);
+	GL_ATOMIC(double,storage_capacity);
+	GL_ATOMIC(double,charging_capacity);
+	GL_ATOMIC(double,storage_efficiency);
+	GL_ATOMIC(double,state_of_charge);
 	GL_ATOMIC(complex,S);
 	GL_ATOMIC(char256,controller);
 
@@ -43,9 +84,10 @@ public:
 	powerplant(MODULE *module);
 	int create(void);
 	int init(OBJECT *parent);
-	TIMESTAMP presync(TIMESTAMP t1);
-	TIMESTAMP sync(TIMESTAMP t1);
-	TIMESTAMP postsync(TIMESTAMP t1);
+	TIMESTAMP precommit(TIMESTAMP t0);
+	TIMESTAMP presync(TIMESTAMP t0);
+	TIMESTAMP sync(TIMESTAMP t0);
+	TIMESTAMP postsync(TIMESTAMP t0);
 
 public:
 	// internal properties

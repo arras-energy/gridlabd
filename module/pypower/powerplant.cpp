@@ -5,6 +5,7 @@
 
 EXPORT_CREATE(powerplant);
 EXPORT_INIT(powerplant);
+EXPORT_PRECOMMIT(powerplant);
 EXPORT_SYNC(powerplant);
 
 CLASS *powerplant::oclass = NULL;
@@ -100,6 +101,18 @@ powerplant::powerplant(MODULE *module)
 
 			PT_char256, "substation_2", get_substation_2_offset(),
 				PT_DESCRIPTION, "Substation 2 id",
+
+			PT_double, "storage_capacity[MWh]", get_storage_capacity_offset(),
+				PT_DESCRIPTION, "Energy storage capacity (MWh)",
+
+			PT_double, "charging_capacity[MW]", get_charging_capacity_offset(),
+				PT_DESCRIPTION, "Energy storage charging capacity (MW)",
+
+			PT_double, "storage_efficiency[pu]", get_storage_efficiency_offset(),
+				PT_DESCRIPTION, "Energy storage round-trip efficiency (pu)",
+
+			PT_double, "state_of_charge[pu]", get_state_of_charge_offset(),
+				PT_DESCRIPTION, "Energy storage state of charge (pu)",
 
 			PT_complex, "S[MVA]", get_S_offset(),
 				PT_DESCRIPTION, "power generation (MVA)",
@@ -199,6 +212,11 @@ int powerplant::init(OBJECT *parent_hdr)
 	return 1; // return 1 on success, 0 on failure, 2 on retry later
 }
 
+TIMESTAMP powerplant::precommit(TIMESTAMP t0)
+{
+	// TODO: handle energy storage update
+	return TS_NEVER;
+}
 TIMESTAMP powerplant::presync(TIMESTAMP t0)
 {
 	if ( get_status() == 0 )
