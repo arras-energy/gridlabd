@@ -44,4 +44,4 @@ modify pp_bus_1.weather_variables Sh,Sn,Sg,Wd,Ws,Td,Tw,RH,PW;
 
 # See also
 
-- [[/Module/Pypower.md]]
+- [[/Module/Pypower]]
