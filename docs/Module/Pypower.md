@@ -233,10 +233,7 @@ specify in second of the Unix epoch.
 
 When the controller module is loaded, the built-in `gridlabd` module is added
 to the globals to provide access to the main instance of `gridlabd` and its
-support methods. **Do not import `gridlabd`** as this will create a new
-instance of `gridlabd` and overwrite built-in module, thereby eliminating
-access to it. You may use `import gridlabd as other` to preserve access to
-the built-in module.
+support methods. You do not need to import `gridlabd`.
 
 For more information on the `gridlabd` main module, see [[/Module/Python]] and
 [[/Module/Python/Property]].
