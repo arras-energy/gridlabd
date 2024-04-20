@@ -63,6 +63,10 @@ private:
 	WEATHERDATA *first, *last, *current;
 
 public:
+	
+	complex V;
+
+public:
 
 	// event handlers
 	bus(MODULE *module);
