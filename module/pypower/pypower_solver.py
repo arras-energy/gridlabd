@@ -25,7 +25,7 @@ modelname = "pypower"
 csv_headers = {
     "bus" : "bus_i,type,Pd,Qd,Gs,Bs,area,Vm,Va,baseKV,zone,Vmax,Vmin,lam_P,lam_Q,mu_Vmax,mu_Vmin",
     "branch" : "fbus,tbus,r,x,b,rateA,rateB,rateC,ratio,angle,status,angmin,angmax,Pfrom,Qfrom,Pto,Qto,mu_Sfrom,mu_Sto,mu_angmin,mu_angmax",
-    "gen" : "bus,Pg,Qb,Qmax,Qmin,Vg,mBase,status,Pmax,Pmin,Pc1,Pc2,Qc1min,Qc1max,Qc2min,Qc2max,ramp_agc,ramp_10,ramp_30,ramp_q,apf,mu_Pmax,mu_Pmin,mu_Qmax,mu_Qmin",
+    "gen" : "bus,Pg,Qg,Qmax,Qmin,Vg,mBase,status,Pmax,Pmin,Pc1,Pc2,Qc1min,Qc1max,Qc2min,Qc2max,ramp_agc,ramp_10,ramp_30,ramp_q,apf,mu_Pmax,mu_Pmin,mu_Qmax,mu_Qmin",
     "gencost" : "model,startup,shutdown,parameters",
 }
 
@@ -162,19 +162,6 @@ def solver(pf_case):
         # copy back to model
         if success:
 
-            # # compute residual power taken up by the swing bus
-            # for n,refbus in enumerate([x for x in results['bus'] if x[1]==3]):
-            #     P,Q = 0,0
-            #     for branch in [x for x in results['branch'] if refbus[1] in x[0:2]]:
-            #         if refbus[1] == branch[0]: # from
-            #             P -= branch[13]
-            #             Q -= branch[14]
-            #         else: # to
-            #             P += branch[15]
-            #             Q += branch[15]
-            #     results['bus'][n,2] = P
-            #     results['bus'][n,3] = Q
-            #     # print(P,Q,results['bus'],file=sys.stderr)
             for name in ['bus','gen','branch']:
                 pf_case[name] = results[name].tolist()
 
