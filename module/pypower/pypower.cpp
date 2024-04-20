@@ -48,6 +48,7 @@ PyObject *py_globals;
 PyObject *py_precommit;
 PyObject *py_sync;
 PyObject *py_commit;
+PyObject *py_term;
 PyObject *py_module;
 
 EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
@@ -242,7 +243,7 @@ EXPORT bool on_init(void)
         {
             if ( ! PyCallable_Check(on_init) )
             {
-                gl_error("%s.on_init() is not callable",(const char*)controllers);
+                gl_error("%s.on_init is not callable",(const char*)controllers);
                 Py_DECREF(on_init);
                 return false;
             }
@@ -282,7 +283,7 @@ EXPORT bool on_init(void)
         {
             if ( ! PyCallable_Check(py_precommit) )
             {
-                gl_error("%s.on_precommit() is not callable",(const char*)controllers);
+                gl_error("%s.on_precommit is not callable",(const char*)controllers);
                 return false;
             }
             Py_INCREF(py_precommit);
@@ -293,7 +294,7 @@ EXPORT bool on_init(void)
         {
             if ( ! PyCallable_Check(py_sync) )
             {
-                gl_error("%s.on_sync() is not callable",(const char*)controllers);
+                gl_error("%s.on_sync is not callable",(const char*)controllers);
                 return false;
             }
             Py_INCREF(py_sync);
@@ -304,7 +305,18 @@ EXPORT bool on_init(void)
         {
             if ( ! PyCallable_Check(py_commit) )
             {
-                gl_error("%s.on_commit() is not callable",(const char*)controllers);
+                gl_error("%s.on_commit is not callable",(const char*)controllers);
+                return false;
+            }
+            Py_INCREF(py_commit);
+        }
+
+        py_term = PyDict_GetItemString(py_globals,"on_term");
+        if ( py_term )
+        {
+            if ( ! PyCallable_Check(py_term) )
+            {
+                gl_error("%s.on_term is not callable",(const char*)controllers);
                 return false;
             }
             Py_INCREF(py_commit);
@@ -990,6 +1002,30 @@ EXPORT int on_commit(TIMESTAMP t0)
     }
 
     return 1;
+}
+
+EXPORT void on_term(void)
+{
+    PyObject *on_term = PyDict_GetItemString(py_globals,"on_term");
+    if ( on_term == NULL)
+    {
+        return;
+    }
+    PyErr_Clear();
+    PyObject *result = PyObject_CallNoArgs(py_term);
+    if ( PyErr_Occurred() )
+    {
+        PyErr_Print();
+        return;
+    }
+    if ( result != NULL && result != Py_None )
+    {
+        gl_warning("ignored return value from on_term()");
+    }
+    if ( result )
+    {
+        Py_DECREF(result);
+    }
 }
 
 EXPORT int do_kill(void*)
