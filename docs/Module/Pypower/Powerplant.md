@@ -40,6 +40,17 @@ are applied to the object, and the next update is schedule at the time `t`
 returned by the controller.  Note that unlike the `load` object, `powerplant`
 objects do force iteration if no value of `t` is returned.
 
+Note the following:
+
+1. `gen` objects are dispatchable -- the values of `Pg` and `Qg` may be
+updated after the powerflow solution is updated. As a result, only
+dispatchable resources should use a `gen` parent object.
+
+2. `bus` objects are non-dispatchable -- the values of `Pd` and `Qd`
+will not be changed following the powerflow solution. As a result, only
+non-dispatchable resources should use a `bus` parent object. The applies
+particularly to wind, solar, and batteries.
+
 # Example
 
 The following example implements a 10 kW generator turn turns on only in the
