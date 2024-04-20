@@ -215,6 +215,18 @@ If the `on_init` function is defined in the Python `controllers` module, it
 will be called when the simulation is initialized. Note that many `gridlabd`
 module functions are not available until after initialization is completed.
 
+In addition, the following event handlers are supported:
+
+* `on_precommit(dict:data) --> dict`: Called when the clock advances before
+  the main solver is called.
+
+* `on_sync(dict:data) --> dict`: Called each time the main solver is called.
+
+* `on_commit(dict:data) --> dict`: Called after the last time the main solver
+  is called.
+
+* `on_term() --> None`: Called when the simulation is done.
+
 Any `load`, `powerplant`, and `relay` object may specify a `controller`
 property. When this property is defined, the corresponding controller
 function will be called if it is defined in the `controllers` module.
