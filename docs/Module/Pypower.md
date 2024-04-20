@@ -217,19 +217,22 @@ module functions are not available until after initialization is completed.
 
 In addition, the following event handlers are supported:
 
-* `on_precommit(dict:data) --> dict`: Called when the clock advances before
-  the main solver is called.
+* `on_precommit(dict:data) --> int`: Called when the clock advances before
+  the main solver is called. 
 
-* `on_sync(dict:data) --> dict`: Called each time the main solver is called.
+* `on_sync(dict:data) --> int`: Called each time the main solver is called.
 
-* `on_commit(dict:data) --> dict`: Called after the last time the main solver
+* `on_commit(dict:data) --> int`: Called after the last time the main solver
   is called.
 
 * `on_term() --> None`: Called when the simulation is done.
 
 Any `load`, `powerplant`, and `relay` object may specify a `controller`
 property. When this property is defined, the corresponding controller
-function will be called if it is defined in the `controllers` module.
+function will be called if it is defined in the `controllers` module. The
+return value is a unix timestamp in seconds of epoch indicating the time of
+the next event, if any. Otherwise, it should return `gridlabd.NEVER` or
+`gridlabd.INVALID` to indicate an error.
 
 Controller functions use the following call/return prototype
 
