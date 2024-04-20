@@ -16,7 +16,7 @@ public:
 		GT_UNKNOWN 				= 0x0001,
 		GT_HYDROTURBINE 		= 0x0002,
 		GT_STEAMTURBINE			= 0x0004,
-		GT_COMPRESSEDAIR		= 0x0080,
+		GT_COMPRESSEDAIR		= 0x0008,
 		GT_INTERNALCOMBUSTION 	= 0x0010,
 		GT_FLYWHEEL				= 0x0020,
 		GT_WINDTURBINE			= 0x0040,
@@ -30,7 +30,7 @@ public:
 		FT_UNDEFINED	= 0x00000000,
 		FT_ELECTRICITY 	= 0x00000001, 
 		FT_WIND 		= 0x00000002,
-		FT_SUN 			= 0x00000004, 
+		FT_SOLAR		= 0x00000004, 
 		FT_GEOTHERMAL 	= 0x00000008, 
 		FT_COKE 		= 0x00000010, 
 		FT_WASTE 		= 0x00000020, 
@@ -78,6 +78,7 @@ private:
 
 private:
 	bool is_dynamic; // true if parent is a gen otherwise false
+	TIMESTAMP last_t;
 
 public:
 	// event handlers

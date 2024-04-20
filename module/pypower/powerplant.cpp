@@ -47,36 +47,36 @@ powerplant::powerplant(MODULE *module)
 				PT_DESCRIPTION, "Generator plant code number",
 			
 			PT_set, "generator", get_generator_offset(), 
-			    PT_KEYWORD, "UNKNOWN", (set)0x00000001, 
-			    PT_KEYWORD, "HT", (set)0x00000002, // hydro turbine
-			    PT_KEYWORD, "ST", (set)0x00000004, // steam turbine
-			    PT_KEYWORD, "AT", (set)0x00000008, // compressed air turbine
-			    PT_KEYWORD, "IC", (set)0x00000010, // internal combustion
-			    PT_KEYWORD, "FW", (set)0x00000020, // flywheel
-			    PT_KEYWORD, "WT", (set)0x00000040, // wind turbine
-			    PT_KEYWORD, "ES", (set)0x00000080, // energy storage inverter
-			    PT_KEYWORD, "CT", (set)0x00000100, // combustion turbine
-			    PT_KEYWORD, "PV", (set)0x00000200, // photovoltaic inverter
-			    PT_KEYWORD, "CC", (set)0x00000400, // combined cycle turbine
+			    PT_KEYWORD, "UNKNOWN", (set)GT_UNKNOWN, 
+			    PT_KEYWORD, "HT", (set)GT_HYDROTURBINE,
+			    PT_KEYWORD, "ST", (set)GT_STEAMTURBINE,
+			    PT_KEYWORD, "AT", (set)GT_COMPRESSEDAIR,
+			    PT_KEYWORD, "IC", (set)GT_INTERNALCOMBUSTION,
+			    PT_KEYWORD, "FW", (set)GT_FLYWHEEL,
+			    PT_KEYWORD, "WT", (set)GT_WINDTURBINE,
+			    PT_KEYWORD, "ES", (set)GT_ENERGYSTORAGE,
+			    PT_KEYWORD, "CT", (set)GT_COMBUSTIONTURBINE,
+			    PT_KEYWORD, "PV", (set)GT_PHOTOVOLTAIC,
+			    PT_KEYWORD, "CC", (set)GT_COMBINEDCYCLE,
 				PT_DESCRIPTION, "Generator type",
 
 			PT_set, "fuel", get_fuel_offset(), 
-			    PT_KEYWORD, "ELEC", (set)0x00000001, 
-			    PT_KEYWORD, "WIND", (set)0x00000002,
-			    PT_KEYWORD, "SUN", (set)0x00000004, 
-			    PT_KEYWORD, "GEO", (set)0x00000008, 
-			    PT_KEYWORD, "COKE", (set)0x00000010, 
-			    PT_KEYWORD, "WASTE", (set)0x00000020, 
-			    PT_KEYWORD, "BIO", (set)0x00000040, 
-			    PT_KEYWORD, "OIL", (set)0x00000080, 
-			    PT_KEYWORD, "UNKNOWN", (set)0x00000100, 
-			    PT_KEYWORD, "WOOD", (set)0x00000200, 
-			    PT_KEYWORD, "OTHER", (set)0x00000400, 
-			    PT_KEYWORD, "GAS", (set)0x00000800, 
-			    PT_KEYWORD, "NUC", (set)0x00001000, 
-			    PT_KEYWORD, "WATER", (set)0x00002000, 
-			    PT_KEYWORD, "COAL", (set)0x00004000, 
-			    PT_KEYWORD, "NG", (set)0x00008000, 
+			    PT_KEYWORD, "ELEC", (set)FT_ELECTRICITY, 
+			    PT_KEYWORD, "WIND", (set)FT_WIND,
+			    PT_KEYWORD, "SUN", (set)FT_SOLAR, 
+			    PT_KEYWORD, "GEO", (set)FT_GEOTHERMAL, 
+			    PT_KEYWORD, "COKE", (set)FT_COKE, 
+			    PT_KEYWORD, "WASTE", (set)FT_WASTE, 
+			    PT_KEYWORD, "BIO", (set)FT_BIOMASS, 
+			    PT_KEYWORD, "OIL", (set)FT_OIL, 
+			    PT_KEYWORD, "UNKNOWN", (set)FT_UNKNOWN, 
+			    PT_KEYWORD, "WOOD", (set)FT_WOOD, 
+			    PT_KEYWORD, "OTHER", (set)FT_OTHER, 
+			    PT_KEYWORD, "GAS", (set)FT_GAS, 
+			    PT_KEYWORD, "NUC", (set)FT_NUCLEAR, 
+			    PT_KEYWORD, "WATER", (set)FT_WATER, 
+			    PT_KEYWORD, "COAL", (set)FT_COAL, 
+			    PT_KEYWORD, "NG", (set)FT_NATURALGAS, 
 				PT_DESCRIPTION, "Generator fuel type",
 
 			PT_enumeration, "status", get_status_offset(),
@@ -109,6 +109,7 @@ powerplant::powerplant(MODULE *module)
 				PT_DESCRIPTION, "Energy storage charging capacity (MW)",
 
 			PT_double, "storage_efficiency[pu]", get_storage_efficiency_offset(),
+				PT_DEFAULT, "1 pu",
 				PT_DESCRIPTION, "Energy storage round-trip efficiency (pu)",
 
 			PT_double, "state_of_charge[pu]", get_state_of_charge_offset(),
@@ -132,6 +133,7 @@ int powerplant::create(void)
 	py_controller = NULL;
 	py_args = PyTuple_New(1);
 	py_kwargs = PyDict_New();
+	last_t = 0;
 
 	return 1; // return 1 on success, 0 on failure
 }
@@ -144,6 +146,10 @@ int powerplant::init(OBJECT *parent_hdr)
 		if ( parent->isa("gen","pypower") )
 		{
 			is_dynamic = TRUE;
+			if ( get_storage_capacity() > 0 )
+			{
+				warning("energy storage devices cannot be dynamically dispatchable (parent is a generator)");
+			}
 		}
 		else if ( parent->isa("bus","pypower") )
 		{
@@ -214,7 +220,36 @@ int powerplant::init(OBJECT *parent_hdr)
 
 TIMESTAMP powerplant::precommit(TIMESTAMP t0)
 {
-	// TODO: handle energy storage update
+	if ( last_t > 0 && get_storage_capacity() > 0 )
+	{
+		double Dt = double(t0-last_t)/3600.0;
+		
+		double DE = S.Re();
+		if ( DE > get_charging_capacity() )
+		{
+			DE = get_charging_capacity();
+		}
+		else if ( DE < -get_charging_capacity() )
+		{
+			DE = -get_charging_capacity();
+		}
+
+		double Et = get_storage_capacity()*get_state_of_charge() + DE*Dt*get_storage_efficiency();
+		if ( Et > get_storage_capacity() )
+		{
+			set_state_of_charge(1.0);
+		}
+		else if ( Et < 0 )
+		{
+			set_state_of_charge(0.0);
+		}
+		else
+		{
+			set_state_of_charge(Et/get_storage_capacity());
+		}
+	}
+	last_t = t0;
+
 	return TS_NEVER;
 }
 TIMESTAMP powerplant::presync(TIMESTAMP t0)
