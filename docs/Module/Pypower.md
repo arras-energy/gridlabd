@@ -231,6 +231,16 @@ is any valid property of the calling object. A special return name `t` is
 used to specify the time at which the controller is to be called again,
 specify in second of the Unix epoch.
 
+When the controller module is loaded, the built-in `gridlabd` module is added
+to the globals to provide access to the main instance of `gridlabd` and its
+support methods. **Do not import `gridlabd`** as this will create a new
+instance of `gridlabd` and overwrite built-in module, thereby eliminating
+access to it. You may use `import gridlabd as other` to preserve access to
+the built-in module.
+
+For more information on the `gridlabd` main module, see [[/Module/Python]] and
+[[/Module/Python/Property]].
+
 ## SCADA
 
 The `scada` object is used to access properties of objects in the
@@ -263,5 +273,7 @@ The `weather` object is used to read weather data from a weather file.
 * [[/Module/Pypower/Scada]]
 * [[/Module/Pypower/Weather]]
 * [[/Module/Pypower/Transformer]]
+* [[/Module/Python]]
+* [[/Module/Python/Property]]
 * [[/Converters/Import/Pypower_cases]]
 * [[/Converters/Import/Psse_models]]
