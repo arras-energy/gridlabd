@@ -48,6 +48,7 @@ PyObject *py_globals;
 PyObject *py_precommit;
 PyObject *py_sync;
 PyObject *py_commit;
+PyObject *py_module;
 
 EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
 {
@@ -225,6 +226,9 @@ EXPORT bool on_init(void)
             return false;
         }
 
+        PyObject_SetAttrString(py_controllers,"gridlabd",callback->python.main);
+        Py_INCREF(callback->python.main);
+
         py_globals = PyModule_GetDict(py_controllers);
         if ( py_globals == NULL )
         {
@@ -305,7 +309,6 @@ EXPORT bool on_init(void)
             }
             Py_INCREF(py_commit);
         }
-
     }
 
     // import pypower solver

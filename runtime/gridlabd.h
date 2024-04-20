@@ -1420,6 +1420,7 @@ typedef struct s_callbacks {
 	} version;
 	int (*call_external_callback)(const char*, void *);
 	struct {
+		PyObject *main;
 		PyObject *(*import)(const char *module, const char *path);
 		bool (*call)(PyObject *pModule, const char *method, const char *vargsfmt, va_list varargs, void *result);
 	} python;
@@ -1671,6 +1672,17 @@ inline TIMESTAMP gl_enduse_sync(enduse *e, TIMESTAMP t1)
 {
 	return callback->enduse.sync(e,PC_BOTTOMUP,*(callback->global_clock),t1);
 }
+
+inline PyObject gl_python_import(const char *module, const char *path)
+{
+	return callback->import(module,path);
+}
+
+inline bool gl_python_call(PyObject *pModule, const char *method, const char *vargsfmt, va_list varargs, void *result)
+{
+	return callback->call(pModule,method,vargsfmt,varargs,result);
+}
+
 
 // DOUBLE ARRAY IMPLEMENTATION
 #define BYREF 0x01
