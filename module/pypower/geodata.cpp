@@ -283,6 +283,10 @@ bool geodata::load_geodata(const char *file)
 		return false;
 	}
 
+	// get start and stop date/time
+	gld_clock start(gld_global("starttime").get_string());
+	gld_clock stop(gld_global("stoptime").get_string());
+
 	// read data
 	char line[65536*16];
 	size_t max_data = 0;
@@ -299,6 +303,7 @@ bool geodata::load_geodata(const char *file)
 					if ( strcmp(next,"timestamp") != 0 )
 					{
 						error("column 0 must be 'timestamp', but found '%s' instead",next);
+						fclose(fp);
 						return false;
 					}
 					locations = (GEOCODE*)malloc(sizeof(GEOCODE)*max_locations);
@@ -317,6 +322,8 @@ bool geodata::load_geodata(const char *file)
 					if ( ! geocode_decode(&locations[n_locations].latitude,&locations[n_locations].longitude,next) )
 					{
 						error("geocode '%s' is not valid",next);
+						fclose(fp);
+						return false;
 					}
 					strncpy(locations[n_locations].hash,next,sizeof(locations[n_locations].hash)-1);
 					locations[n_locations].max_values = 8;
@@ -343,7 +350,17 @@ bool geodata::load_geodata(const char *file)
 					if ( ! dt.is_valid() )
 					{
 						error("(%s:%ld) invalid timestamp '%s'",file,line_no,next);
+						fclose(fp);
 						return false;
+					}
+					if ( dt < start )
+					{
+						break; // skip this line
+					}
+					else if ( dt > stop )
+					{
+						fclose(fp);
+						return true; 
 					}
 					data[n_data].timestamp = dt.get_timestamp();
 					data[n_data].value = (double*)malloc(sizeof(double)*n_locations);
@@ -353,82 +370,37 @@ bool geodata::load_geodata(const char *file)
 					if ( sscanf(next,"%lf",&(data[n_data].value[location])) != 1 )
 					{
 						error("(%s:%ld) invalid float value '%s'",file,line_no,next);
+						fclose(fp);
+						return false;
 					}
 				}
 				else // overrun column
 				{
 					error("(%s:%ld) unexpected extra data (location %ld > n_locations %ld)",file,line_no,location,n_locations);
+					fclose(fp);
 					return false;
 				}
 				location++;
-			}	
-			n_data++;		
+			}
+			if ( location == n_locations )
+			{
+				n_data++;
+			}
+			else if ( location >= 0 )
+			{
+				error("(%s:%ld) missing data (location %ld < n_locations %ld)",file,line_no,location,n_locations);
+				fclose(fp);
+				return false;
+			}
+			else
+			{
+				// skipping this line
+			}
 		}
 	}
+	fclose(fp);
 	return true;
 }
-
-// static const char *geocode_encode(char *buffer, int len, double lat, double lon, int resolution)
-// {
-// 	if ( len < resolution+1 )
-// 	{
-// 		output_warning("geocode_encode(buffer=%p, len=%d, lat=%g, lon=%g, resolution=%d): buffer too small for specified resolution, result truncated", 
-// 			buffer, len, lat, lon, resolution);
-// 		resolution = len-1;
-// 	}
-// 	double lat_interval[] = {-90,90};
-// 	double lon_interval[] = {-180,180};
-// 	char *geohash = buffer;
-// 	geohash[0] = '\0';
-// 	int bits[] = {16,8,4,2,1};
-// 	int bit = 0;
-// 	int ch = '\0';
-// 	bool even = true;
-// 	int i = 0;
-// 	while ( i < resolution )
-// 	{
-// 		if ( even )
-// 		{
-// 			double mid = (lon_interval[0]+lon_interval[1])/2;
-// 			if ( lon > mid )
-// 			{
-// 				ch |= bits[bit];
-// 				lon_interval[0] = mid;
-// 			}
-// 			else
-// 			{
-// 				lon_interval[1] = mid;
-// 			}
-// 		}
-// 		else
-// 		{
-// 			double mid = (lat_interval[0]+lat_interval[1])/2;
-// 			if ( lat > mid )
-// 			{
-// 				ch |= bits[bit];
-// 				lat_interval[0] = mid;
-// 			}
-// 			else
-// 			{
-// 				lat_interval[1] = mid;
-// 			}
-// 		}
-// 		even = !even;
-// 		if ( bit < 4 )
-// 		{
-// 			bit += 1;
-// 		}
-// 		else
-// 		{
-// 			*geohash++ = geocode_decodemap[ch];
-// 			i++;
-// 			bit = 0;
-// 			ch = 0;
-// 		}
-// 	}
-// 	*geohash++ = '\0';
-// 	return buffer;
-// }
 
 static bool geocode_decode(double *lat, double *lon, const char *code)
 {
