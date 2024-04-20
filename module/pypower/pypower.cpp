@@ -32,6 +32,8 @@ typedef enum {
 } PYPOWERSAVEFORMAT;
 enumeration save_format = PPSF_CSV;
 const char *save_formats[] = {"csv","json","py"};
+double total_loss = 0;
+double generation_shortfall = 0;
 
 enum {
     SS_INIT = 0,
@@ -43,7 +45,11 @@ char1024 controllers;
 char1024 controllers_path;
 PyObject *py_controllers;
 PyObject *py_globals;
+PyObject *py_precommit;
 PyObject *py_sync;
+PyObject *py_commit;
+PyObject *py_term;
+PyObject *py_module;
 
 EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
 {
@@ -160,6 +166,18 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
         PT_DESCRIPTION, "Save case format",
         NULL);
 
+    gl_global_create("pypower::total_loss",
+        PT_double, &total_loss,
+        PT_UNITS, "MW",
+        PT_DESCRIPTION, "System-wide line losses",
+        NULL);
+
+    gl_global_create("pypower::generation_shortfall",
+        PT_double, &generation_shortfall,
+        PT_UNITS, "MW",
+        PT_DESCRIPTION, "System-wide generation shortfall",
+        NULL);
+
     // always return the first class registered
     return bus::oclass;
 }
@@ -209,6 +227,9 @@ EXPORT bool on_init(void)
             return false;
         }
 
+        PyObject_SetAttrString(py_controllers,"gridlabd",callback->python.main);
+        Py_INCREF(callback->python.main);
+
         py_globals = PyModule_GetDict(py_controllers);
         if ( py_globals == NULL )
         {
@@ -222,7 +243,7 @@ EXPORT bool on_init(void)
         {
             if ( ! PyCallable_Check(on_init) )
             {
-                gl_error("%s.on_init() is not callable",(const char*)controllers);
+                gl_error("%s.on_init is not callable",(const char*)controllers);
                 Py_DECREF(on_init);
                 return false;
             }
@@ -257,15 +278,48 @@ EXPORT bool on_init(void)
             Py_DECREF(result);
         }
 
+        py_precommit = PyDict_GetItemString(py_globals,"on_precommit");
+        if ( py_precommit )
+        {
+            if ( ! PyCallable_Check(py_precommit) )
+            {
+                gl_error("%s.on_precommit is not callable",(const char*)controllers);
+                return false;
+            }
+            Py_INCREF(py_precommit);
+        }
+
         py_sync = PyDict_GetItemString(py_globals,"on_sync");
         if ( py_sync )
         {
             if ( ! PyCallable_Check(py_sync) )
             {
-                gl_error("%s.on_sync() is not callable",(const char*)controllers);
+                gl_error("%s.on_sync is not callable",(const char*)controllers);
                 return false;
             }
             Py_INCREF(py_sync);
+        }
+
+        py_commit = PyDict_GetItemString(py_globals,"on_commit");
+        if ( py_commit )
+        {
+            if ( ! PyCallable_Check(py_commit) )
+            {
+                gl_error("%s.on_commit is not callable",(const char*)controllers);
+                return false;
+            }
+            Py_INCREF(py_commit);
+        }
+
+        py_term = PyDict_GetItemString(py_globals,"on_term");
+        if ( py_term )
+        {
+            if ( ! PyCallable_Check(py_term) )
+            {
+                gl_error("%s.on_term is not callable",(const char*)controllers);
+                return false;
+            }
+            Py_INCREF(py_commit);
         }
     }
 
@@ -367,7 +421,7 @@ EXPORT bool on_init(void)
     if ( py == NULL || fabs(obj->get_##NAME()-Py##TO##_As##FROM(py)) > solver_update_resolution ) { \
         PyObject *value = Py##TO##_From##FROM(obj->get_##NAME()); \
         if ( value == NULL ) { \
-            gl_warning("pypower:on_sync(t0=%lld): unable to create value " #NAME " for data item %d",t0,INDEX); \
+            gl_warning("pypower:on_*(t0=%lld): unable to create value " #NAME " for data item %d",t0,INDEX); \
         } \
         else { \
             PyList_SET_ITEM(pyobj,INDEX,value); \
@@ -380,6 +434,166 @@ EXPORT bool on_init(void)
         n_changes++; \
         obj->set_##NAME(Py##FROM##_As##TO(py)); \
     }}
+
+#define SENDX(INDEX,NAME,FROM,TO) { PyObject *py = PyList_GetItem(pyobj,INDEX); \
+    if ( py == NULL || fabs(obj->get_##NAME()-Py##TO##_As##FROM(py)) > solver_update_resolution ) { \
+        PyObject *value = Py##TO##_From##FROM(obj->get_##NAME()); \
+        if ( value == NULL ) { \
+            gl_warning("pypower:on_*(t0=%lld): unable to create value " #NAME " for data item %d",t0,INDEX); \
+        } \
+        else { \
+            PyList_SET_ITEM(pyobj,INDEX,value); \
+            Py_XDECREF(py); \
+}}}
+
+#define RECVX(NAME,INDEX,FROM,TO) { PyObject *py = PyList_GET_ITEM(pyobj,INDEX);\
+    if ( fabs(obj->get_##NAME()-Py##FROM##_As##TO(py)) > solver_update_resolution ) { \
+        obj->set_##NAME(Py##FROM##_As##TO(py)); \
+    }}
+
+EXPORT TIMESTAMP on_precommit(TIMESTAMP t0)
+{
+    // not a pypower model
+    if ( nbus == 0 || nbranch == 0 )
+    {
+        return TS_NEVER;
+    }
+
+    // send values out to solver
+    for ( size_t n = 0 ; n < nbus ; n++ )
+    {
+        bus *obj = buslist[n];
+        PyObject *pyobj = PyList_GetItem(busdata,n);
+        SENDX(0,bus_i,Double,Float)
+        SENDX(1,type,Long,Long)
+        SENDX(2,Pd,Double,Float)
+        SENDX(3,Qd,Double,Float)
+        SENDX(4,Gs,Double,Float)
+        SENDX(5,Bs,Double,Float)
+        SENDX(6,area,Long,Long)
+        SENDX(7,Vm,Double,Float)
+        SENDX(8,Va,Double,Float)
+        SENDX(9,baseKV,Double,Float)
+        SENDX(10,zone,Long,Long)
+        SENDX(11,Vmax,Double,Float)
+        SENDX(12,Vmin,Double,Float)
+        if ( enable_opf )
+        {
+            SENDX(13,lam_P,Double,Float)
+            SENDX(14,lam_Q,Double,Float)
+            SENDX(15,mu_Vmax,Double,Float)
+            SENDX(16,mu_Vmin,Double,Float)
+        }
+    }
+    for ( size_t n = 0 ; n < nbranch ; n++ )
+    {
+        branch *obj = branchlist[n];
+        PyObject *pyobj = PyList_GetItem(branchdata,n);
+        SENDX(0,fbus,Long,Long)
+        SENDX(1,tbus,Long,Long)
+        SENDX(2,r,Double,Float)
+        SENDX(3,x,Double,Float)
+        SENDX(4,b,Double,Float)
+        SENDX(5,rateA,Double,Float)
+        SENDX(6,rateB,Double,Float)
+        SENDX(7,rateC,Double,Float)
+        SENDX(8,ratio,Double,Float)
+        SENDX(9,angle,Double,Float)
+        SENDX(10,status,Long,Long)
+        SENDX(11,angmin,Double,Float)
+        SENDX(12,angmax,Double,Float)
+
+    }
+    for ( size_t n = 0 ; n < ngen ; n++ )
+    {
+        gen *obj = genlist[n];
+        PyObject *pyobj = PyList_GetItem(gendata,n);
+        SENDX(0,bus,Long,Long)
+        SENDX(1,Pg,Double,Float)
+        SENDX(2,Qg,Double,Float)
+        SENDX(3,Qmax,Double,Float)
+        SENDX(4,Qmin,Double,Float)
+        SENDX(5,Vg,Double,Float)
+        SENDX(6,mBase,Double,Float)
+        SENDX(7,status,Long,Long)
+        SENDX(8,Pmax,Double,Float)
+        SENDX(9,Pmin,Double,Float)
+        SENDX(10,Pc1,Double,Float)
+        SENDX(11,Pc2,Double,Float)
+        SENDX(12,Qc1min,Double,Float)
+        SENDX(13,Qc1max,Double,Float)
+        SENDX(14,Qc2min,Double,Float)
+        SENDX(15,Qc2max,Double,Float)
+        SENDX(16,ramp_agc,Double,Float)
+        SENDX(17,ramp_10,Double,Float)
+        SENDX(18,ramp_30,Double,Float)
+        SENDX(19,ramp_q,Double,Float)
+        SENDX(20,apf,Double,Float)
+        if ( enable_opf )
+        {
+            SENDX(21,mu_Pmax,Double,Float)
+            SENDX(22,mu_Pmin,Double,Float)
+            SENDX(23,mu_Qmax,Double,Float)
+            SENDX(24,mu_Qmin,Double,Float)
+        }
+    }
+    if ( gencostdata )
+    {
+        for ( size_t n = 0 ; n < ngencost ; n++ )
+        {
+            gencost *obj = gencostlist[n];
+            PyObject *pyobj = PyList_GetItem(gencostdata,n);
+            SENDX(0,model,Long,Long)
+            SENDX(1,startup,Double,Float)
+            SENDX(2,shutdown,Double,Float)
+            PyObject *py = PyList_GetItem(pyobj,3);
+            if ( py == NULL || strcmp((const char*)PyUnicode_DATA(py),obj->get_costs())!=0 )
+            {
+                Py_XDECREF(py);
+                PyList_SET_ITEM(pyobj,3,PyUnicode_FromString(obj->get_costs()));
+            }
+        }
+    }
+
+    // run controller on_precommit, if any
+    TIMESTAMP t1 = TS_NEVER;
+    if ( py_precommit )
+    {
+        PyDict_SetItemString(data,"t",PyLong_FromLong(t0));        
+        PyErr_Clear();
+        PyObject *ts = PyObject_CallOneArg(py_precommit,data);
+        if ( PyErr_Occurred() )
+        {
+            PyErr_Print();
+            return TS_INVALID;
+        }
+        if ( ts == NULL || ! PyLong_Check(ts) )
+        {
+            gl_error("%s.on_precommit(data) returned value that is not a valid timestamp",(const char*)controllers);
+            Py_XDECREF(ts);
+            return TS_INVALID;
+        }
+        t1 = PyLong_AsLong(ts);
+        Py_DECREF(ts);
+        if ( t1 < 0 )
+        {
+            t1 = TS_NEVER;
+        }
+        else if ( t1 == 0 && stop_on_failure )
+        {
+            gl_error("%s.on_precommit(data) halted the simulation",(const char*)controllers);
+            return TS_INVALID;
+        }
+        else if ( t1 < t0 )
+        {
+            gl_error("%s.on_precommit(data) returned a timestamp earlier than precommit time t0=%lld",(const char*)controllers,t0);
+            return TS_INVALID;
+        }
+    }
+
+    TIMESTAMP t2 = maximum_timestep > 0 ? t0+maximum_timestep : TS_NEVER;
+    return (TIMESTAMP)min((unsigned long long)t1,(unsigned long long)t2);
+}
 
 EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
 {
@@ -584,6 +798,34 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
                     RECV(mu_Vmax,15,Float,Double)
                     RECV(mu_Vmin,16,Float,Double)
                 }
+                obj->V.SetPolar(obj->get_Vm(),obj->get_Va());
+            }
+
+            for ( size_t n = 0 ; n < nbranch ; n++ )
+            {
+                branch *line = branchlist[n];
+                size_t fbus_id = line->get_fbus()-1;
+                size_t tbus_id = line->get_tbus()-1;
+                if ( fbus_id < 0 || fbus_id >= nbus )
+                {
+                    gl_warning("pypower::on_sync(): from bus %d on branch %d is not valid",fbus_id,n);
+                }
+                else if ( tbus_id < 0 || tbus_id >= nbus )
+                {
+                    gl_warning("pypower::on_sync(): to bus %d on branch %d is not valid",tbus_id,n);
+                }
+                else
+                {
+                    complex Z(line->get_r(),line->get_x());
+                    bus *fbus = buslist[fbus_id];
+                    bus *tbus = buslist[tbus_id];
+                    complex DV = fbus->V - tbus->V;
+                    complex current = DV / Z;
+                    line->set_current(current*base_MVA);
+                    double loss = (DV * ~current).Mag() / base_MVA;
+                    line->set_loss(loss);
+                    total_loss += loss;
+                }
             }
 
             PyObject *gendata = PyDict_GetItemString(result,"gen");
@@ -593,6 +835,7 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
                 solver_status = SS_FAILED;
                 return TS_INVALID;
             }
+            generation_shortfall = 0;
             for ( size_t n = 0 ; n < ngen ; n++ )
             {
                 gen *obj = genlist[n];
@@ -607,6 +850,7 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
                     RECV(mu_Qmax,23,Float,Double)
                     RECV(mu_Qmin,24,Float,Double)
                 }
+                generation_shortfall += max(obj->get_Pg() - obj->get_Pmax(),0.0);
             }
         }
     }
@@ -636,6 +880,150 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
         TIMESTAMP t2 = maximum_timestep > 0 ? t0+maximum_timestep : TS_NEVER;
         return (TIMESTAMP)min((unsigned long long)t1,(unsigned long long)t2);
 
+    }
+}
+
+EXPORT int on_commit(TIMESTAMP t0)
+{
+    // not a pypower model
+    if ( nbus == 0 || nbranch == 0 )
+    {
+        return 1;
+    }
+
+    // send values out to solver
+    for ( size_t n = 0 ; n < nbus ; n++ )
+    {
+        bus *obj = buslist[n];
+        PyObject *pyobj = PyList_GetItem(busdata,n);
+        SENDX(0,bus_i,Double,Float)
+        SENDX(1,type,Long,Long)
+        SENDX(2,Pd,Double,Float)
+        SENDX(3,Qd,Double,Float)
+        SENDX(4,Gs,Double,Float)
+        SENDX(5,Bs,Double,Float)
+        SENDX(6,area,Long,Long)
+        SENDX(7,Vm,Double,Float)
+        SENDX(8,Va,Double,Float)
+        SENDX(9,baseKV,Double,Float)
+        SENDX(10,zone,Long,Long)
+        SENDX(11,Vmax,Double,Float)
+        SENDX(12,Vmin,Double,Float)
+        if ( enable_opf )
+        {
+            SENDX(13,lam_P,Double,Float)
+            SENDX(14,lam_Q,Double,Float)
+            SENDX(15,mu_Vmax,Double,Float)
+            SENDX(16,mu_Vmin,Double,Float)
+        }
+    }
+    for ( size_t n = 0 ; n < nbranch ; n++ )
+    {
+        branch *obj = branchlist[n];
+        PyObject *pyobj = PyList_GetItem(branchdata,n);
+        SENDX(0,fbus,Long,Long)
+        SENDX(1,tbus,Long,Long)
+        SENDX(2,r,Double,Float)
+        SENDX(3,x,Double,Float)
+        SENDX(4,b,Double,Float)
+        SENDX(5,rateA,Double,Float)
+        SENDX(6,rateB,Double,Float)
+        SENDX(7,rateC,Double,Float)
+        SENDX(8,ratio,Double,Float)
+        SENDX(9,angle,Double,Float)
+        SENDX(10,status,Long,Long)
+        SENDX(11,angmin,Double,Float)
+        SENDX(12,angmax,Double,Float)
+
+    }
+    for ( size_t n = 0 ; n < ngen ; n++ )
+    {
+        gen *obj = genlist[n];
+        PyObject *pyobj = PyList_GetItem(gendata,n);
+        SENDX(0,bus,Long,Long)
+        SENDX(1,Pg,Double,Float)
+        SENDX(2,Qg,Double,Float)
+        SENDX(3,Qmax,Double,Float)
+        SENDX(4,Qmin,Double,Float)
+        SENDX(5,Vg,Double,Float)
+        SENDX(6,mBase,Double,Float)
+        SENDX(7,status,Long,Long)
+        SENDX(8,Pmax,Double,Float)
+        SENDX(9,Pmin,Double,Float)
+        SENDX(10,Pc1,Double,Float)
+        SENDX(11,Pc2,Double,Float)
+        SENDX(12,Qc1min,Double,Float)
+        SENDX(13,Qc1max,Double,Float)
+        SENDX(14,Qc2min,Double,Float)
+        SENDX(15,Qc2max,Double,Float)
+        SENDX(16,ramp_agc,Double,Float)
+        SENDX(17,ramp_10,Double,Float)
+        SENDX(18,ramp_30,Double,Float)
+        SENDX(19,ramp_q,Double,Float)
+        SENDX(20,apf,Double,Float)
+        if ( enable_opf )
+        {
+            SENDX(21,mu_Pmax,Double,Float)
+            SENDX(22,mu_Pmin,Double,Float)
+            SENDX(23,mu_Qmax,Double,Float)
+            SENDX(24,mu_Qmin,Double,Float)
+        }
+    }
+    if ( gencostdata )
+    {
+        for ( size_t n = 0 ; n < ngencost ; n++ )
+        {
+            gencost *obj = gencostlist[n];
+            PyObject *pyobj = PyList_GetItem(gencostdata,n);
+            SENDX(0,model,Long,Long)
+            SENDX(1,startup,Double,Float)
+            SENDX(2,shutdown,Double,Float)
+            PyObject *py = PyList_GetItem(pyobj,3);
+            if ( py == NULL || strcmp((const char*)PyUnicode_DATA(py),obj->get_costs())!=0 )
+            {
+                Py_XDECREF(py);
+                PyList_SET_ITEM(pyobj,3,PyUnicode_FromString(obj->get_costs()));
+            }
+        }
+    }
+
+    // run controller on_commit, if any
+    if ( py_commit )
+    {
+        PyDict_SetItemString(data,"t",PyLong_FromLong(t0));        
+        PyErr_Clear();
+        PyObject *ts = PyObject_CallOneArg(py_commit,data);
+        if ( PyErr_Occurred() )
+        {
+            PyErr_Print();
+            return 0;
+        }
+        Py_DECREF(ts);
+    }
+
+    return 1;
+}
+
+EXPORT void on_term(void)
+{
+    if ( py_term == NULL)
+    {
+        return;
+    }
+    PyErr_Clear();
+    PyObject *result = PyObject_CallNoArgs(py_term);
+    if ( PyErr_Occurred() )
+    {
+        PyErr_Print();
+        return;
+    }
+    if ( result != NULL && result != Py_None )
+    {
+        gl_warning("ignored return value from on_term()");
+    }
+    if ( result )
+    {
+        Py_DECREF(result);
     }
 }
 
