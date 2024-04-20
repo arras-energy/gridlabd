@@ -1006,8 +1006,7 @@ EXPORT int on_commit(TIMESTAMP t0)
 
 EXPORT void on_term(void)
 {
-    PyObject *on_term = PyDict_GetItemString(py_globals,"on_term");
-    if ( on_term == NULL)
+    if ( py_term == NULL)
     {
         return;
     }
