@@ -284,8 +284,8 @@ bool geodata::load_geodata(const char *file)
 	}
 
 	// get start and stop date/time
-	gld_clock start(gld_global("starttime").get_string());
-	gld_clock stop(gld_global("stoptime").get_string());
+	gld_clock start(gld_global("starttime").get_timestamp());
+	gld_clock stop(gld_global("stoptime").get_timestamp());
 
 	// read data
 	char line[65536*16];
@@ -382,7 +382,7 @@ bool geodata::load_geodata(const char *file)
 				}
 				location++;
 			}
-			if ( location == n_locations )
+			if ( location == (int)n_locations )
 			{
 				n_data++;
 			}
