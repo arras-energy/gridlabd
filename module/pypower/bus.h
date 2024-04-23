@@ -13,6 +13,17 @@ public:
 	static char256 timestamp_format;
 
 public:
+	typedef struct s_sensitivity
+	{
+		double *value; 
+		double *source;
+		double slope;
+		char cutoff_test;
+		double cutoff_value;
+		struct s_sensitivity *next;
+	} SENSITIVITY;
+
+public:
 	// published properties
 	GL_ATOMIC(int32,bus_i);
 	GL_ATOMIC(enumeration,type);
@@ -63,6 +74,7 @@ private:
 	} WEATHERDATA;
 	gld_property *weather_mapper[N_WEATHERDATA];
 	WEATHERDATA *first, *last, *current;
+	SENSITIVITY *sensitivity_list;
 
 public:
 	

@@ -161,6 +161,7 @@ int bus::create(void)
 
 	// initialize weather data
 	current = first = last = NULL;
+	sensitivity_list = NULL;
 
 	return 1; // return 1 on success, 0 on failure
 }
@@ -187,6 +188,58 @@ int bus::init(OBJECT *parent)
 		return 0;
 	}
 
+	char buffer[strlen(weather_sensitivity)+1];
+	strcpy(buffer,weather_sensitivity);
+	char *next=NULL, *last=NULL;
+	// fprintf(stderr,"weather_sensitivity = '%s'\n",(const char*)get_weather_sensitivity());
+	while ( (next=strtok_r(next?NULL:buffer,";",&last)) != NULL )
+	{
+		char propname[65], varname[65], cutoff_test='>';
+		double cutoff_value=-INFINITY, slope_value;
+		// PROP: VAR[ REL VAL],SLOPE
+		// fprintf(stderr,"next = '%s'\n",next);
+		if ( sscanf(next,"%64[^:]:%64[^<>]%c%lf,%lf",propname,varname,&cutoff_test,&cutoff_value,&slope_value) == 5 
+			|| sscanf(next,"%64[^:]:%64[^,],%lf",propname,varname,&slope_value) == 3 )
+		{
+			// fprintf(stderr,"sensitivity: %s += %s * %lf if %s %c %lf else 0\n",propname,varname,slope_value,varname,cutoff_test,cutoff_value);
+			gld_property value(my(),propname);
+			if ( ! value.is_valid() )
+			{
+				error("weather_sensitivity value '%s' is not valid",propname);
+				return 0;
+			}
+			else if ( value.get_type() != PT_double )
+			{
+				error("weather_sensitivity value '%s' is not a double",propname);
+				return 0;
+			}
+			gld_property source(my(),varname);
+			if ( ! source.is_valid() )
+			{
+				error("weather_sensitivity source '%s' is not valid",varname);
+				return 0;
+			}
+			else if ( source.get_type() != PT_double )
+			{
+				error("weather_sensitivity source '%s' is not a double",varname);
+				return 0;
+			}
+			SENSITIVITY *sensitivity = new SENSITIVITY;
+			sensitivity->value = (double*)value.get_addr();
+			sensitivity->source = (double*)source.get_addr();
+			sensitivity->slope = slope_value;
+			sensitivity->cutoff_test = cutoff_test;
+			sensitivity->cutoff_value = cutoff_value;
+			sensitivity->next = sensitivity_list;
+			sensitivity_list = sensitivity;
+		}
+		else
+		{
+			error("weather_sensitivity '%s' in not valid",next);
+			return 0;
+		}
+	}
+
 	return 1; // return 1 on success, 0 on failure, 2 on retry later
 }
 
@@ -202,6 +255,19 @@ TIMESTAMP bus::presync(TIMESTAMP t0)
 	// reset to base load
 	Pd = S.Re();
 	Qd = S.Im();
+
+	// adjust load with sensitivity
+	for ( SENSITIVITY *sensitivity = sensitivity_list ; sensitivity != NULL ; sensitivity = sensitivity->next )
+	{
+		if ( sensitivity->cutoff_test == '<' && (*sensitivity->source) < sensitivity->cutoff_value )
+		{
+			*(sensitivity->value) += (*sensitivity->source) * sensitivity->slope;
+		}
+		else if ( sensitivity->cutoff_test == '>' && (*sensitivity->source) > sensitivity->cutoff_value )
+		{
+			*(sensitivity->value) += (*sensitivity->source) * sensitivity->slope;
+		}
+	}
 
 	return TS_NEVER;
 }
