@@ -253,28 +253,17 @@ TIMESTAMP bus::precommit(TIMESTAMP t0)
 	for ( SENSITIVITY *sensitivity = sensitivity_list ; sensitivity != NULL ; sensitivity = sensitivity->next )
 	{
 		*(sensitivity->value) -= sensitivity->last_adjustment;
-		switch ( sensitivity->cutoff_test )
+		if ( ( sensitivity->cutoff_test == '<' && *sensitivity->source < sensitivity->cutoff_value )
+			|| (sensitivity->cutoff_test == '>' && *sensitivity->source > sensitivity->cutoff_value )
+			|| sensitivity->cutoff_test == '@'
+			)
 		{
-		case '<':
-		case '>':
-		case '@':
-			if ( (*sensitivity->source) < sensitivity->cutoff_value 
-				|| (*sensitivity->source) > sensitivity->cutoff_value 
-				|| sensitivity->cutoff_test == '@'
-				)
-			{
-				sensitivity->last_adjustment = (*sensitivity->source - sensitivity->cutoff_value) * sensitivity->slope;
-				*(sensitivity->value) += sensitivity->last_adjustment;
-			}
-			else
-			{
-				sensitivity->last_adjustment = 0.0;
-			}
-			break;
-		default:
-			error("'%c' is not a valid cutoff test",sensitivity->cutoff_test);
-			return TS_INVALID;
-			break;
+			sensitivity->last_adjustment = (*sensitivity->source - sensitivity->cutoff_value) * sensitivity->slope;
+			*(sensitivity->value) += sensitivity->last_adjustment;
+		}
+		else
+		{
+			sensitivity->last_adjustment = 0.0;
 		}
 	}
 
