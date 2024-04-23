@@ -74,7 +74,9 @@ private:
 	} WEATHERDATA;
 	gld_property *weather_mapper[N_WEATHERDATA];
 	WEATHERDATA *first, *last, *current;
+
 	SENSITIVITY *sensitivity_list;
+	complex DS;
 
 public:
 	

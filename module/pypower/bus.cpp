@@ -32,7 +32,7 @@ bus::bus(MODULE *module)
 				PT_DESCRIPTION, "bus number (1 to 29997)",
 
 			PT_complex, "S[MVA]", get_Pd_offset(),
-				PT_DESCRIPTION, "base load demand not counting child objects, copied from Pd,Qd by default (MVA)",
+				PT_DESCRIPTION, "base load demand not counting child objects, including weather sensitivities, copied to Pd,Qd by default (MVA)",
 
 			PT_enumeration, "type", get_type_offset(),
 				PT_DESCRIPTION, "bus type (1 = PQ, 2 = PV, 3 = ref, 4 = isolated)",
@@ -194,8 +194,8 @@ int bus::init(OBJECT *parent)
 	// fprintf(stderr,"weather_sensitivity = '%s'\n",(const char*)get_weather_sensitivity());
 	while ( (next=strtok_r(next?NULL:buffer,";",&last)) != NULL )
 	{
-		char propname[65], varname[65], cutoff_test='>';
-		double cutoff_value=-INFINITY, slope_value;
+		char propname[65], varname[65], cutoff_test='@';
+		double cutoff_value=0, slope_value;
 		// PROP: VAR[ REL VAL],SLOPE
 		// fprintf(stderr,"next = '%s'\n",next);
 		if ( sscanf(next,"%64[^:]:%64[^<>]%c%lf,%lf",propname,varname,&cutoff_test,&cutoff_value,&slope_value) == 5 
@@ -247,6 +247,34 @@ TIMESTAMP bus::precommit(TIMESTAMP t0)
 {
 	get_weather(t0);
 
+	// adjust load with sensitivity
+	for ( SENSITIVITY *sensitivity = sensitivity_list ; sensitivity != NULL ; sensitivity = sensitivity->next )
+	{
+		double adjust = (*sensitivity->source - sensitivity->cutoff_value) * sensitivity->slope;
+		switch ( sensitivity->cutoff_test )
+		{
+		case '<':
+			if ( (*sensitivity->source) < sensitivity->cutoff_value )
+			{
+				*(sensitivity->value) += adjust;
+			}
+			break;
+		case '>':
+			if ( (*sensitivity->source) > sensitivity->cutoff_value )
+			{
+				*(sensitivity->value) += adjust;
+			}
+			break;
+		case '@':
+			*(sensitivity->value) += adjust;
+			break;
+		default:
+			error("'%c' is not a valid cutoff test",sensitivity->cutoff_test);
+			return TS_INVALID;
+			break;
+		}
+	}
+
 	return current && current->next ? current->next->t : TS_NEVER;	
 }
 
@@ -255,19 +283,6 @@ TIMESTAMP bus::presync(TIMESTAMP t0)
 	// reset to base load
 	Pd = S.Re();
 	Qd = S.Im();
-
-	// adjust load with sensitivity
-	for ( SENSITIVITY *sensitivity = sensitivity_list ; sensitivity != NULL ; sensitivity = sensitivity->next )
-	{
-		if ( sensitivity->cutoff_test == '<' && (*sensitivity->source) < sensitivity->cutoff_value )
-		{
-			*(sensitivity->value) += (*sensitivity->source) * sensitivity->slope;
-		}
-		else if ( sensitivity->cutoff_test == '>' && (*sensitivity->source) > sensitivity->cutoff_value )
-		{
-			*(sensitivity->value) += (*sensitivity->source) * sensitivity->slope;
-		}
-	}
 
 	return TS_NEVER;
 }
