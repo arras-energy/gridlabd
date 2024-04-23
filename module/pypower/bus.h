@@ -15,6 +15,7 @@ public:
 public:
 	typedef struct s_sensitivity
 	{
+		char *def;
 		double *value; 
 		double *source;
 		double slope;

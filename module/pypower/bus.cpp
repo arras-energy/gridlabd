@@ -202,17 +202,6 @@ int bus::init(OBJECT *parent)
 			|| sscanf(next,"%64[^:]:%64[^,],%lf",propname,varname,&slope_value) == 3 )
 		{
 			// fprintf(stderr,"sensitivity: %s += %s * %lf if %s %c %lf else 0\n",propname,varname,slope_value,varname,cutoff_test,cutoff_value);
-			gld_property value(my(),propname);
-			if ( ! value.is_valid() )
-			{
-				error("weather_sensitivity value '%s' is not valid",propname);
-				return 0;
-			}
-			else if ( value.get_type() != PT_double )
-			{
-				error("weather_sensitivity value '%s' is not a double",propname);
-				return 0;
-			}
 			gld_property source(my(),varname);
 			if ( ! source.is_valid() )
 			{
@@ -225,7 +214,19 @@ int bus::init(OBJECT *parent)
 				return 0;
 			}
 			SENSITIVITY *sensitivity = new SENSITIVITY;
-			sensitivity->value = (double*)value.get_addr();
+			if ( strcmp(propname,"P") == 0 || strcmp(propname,"S.real") == 0 )
+			{
+				sensitivity->value = &S.Re();
+			}
+			else if ( strcmp(propname,"Q") == 0 || strcmp(propname,"S.imag") == 0 )
+			{
+				sensitivity->value = &S.Im();
+			}
+			else
+			{
+				error("property '%s' is not valid",propname);
+			}
+			sensitivity->def = strdup(next);
 			sensitivity->source = (double*)source.get_addr();
 			sensitivity->slope = slope_value;
 			sensitivity->cutoff_test = cutoff_test;
@@ -248,25 +249,21 @@ TIMESTAMP bus::precommit(TIMESTAMP t0)
 	get_weather(t0);
 
 	// adjust load with sensitivity
+	DS = complex(0,0);
 	for ( SENSITIVITY *sensitivity = sensitivity_list ; sensitivity != NULL ; sensitivity = sensitivity->next )
 	{
-		double adjust = (*sensitivity->source - sensitivity->cutoff_value) * sensitivity->slope;
 		switch ( sensitivity->cutoff_test )
 		{
 		case '<':
-			if ( (*sensitivity->source) < sensitivity->cutoff_value )
-			{
-				*(sensitivity->value) += adjust;
-			}
-			break;
 		case '>':
-			if ( (*sensitivity->source) > sensitivity->cutoff_value )
-			{
-				*(sensitivity->value) += adjust;
-			}
-			break;
 		case '@':
-			*(sensitivity->value) += adjust;
+			if ( (*sensitivity->source) < sensitivity->cutoff_value 
+				|| (*sensitivity->source) > sensitivity->cutoff_value 
+				|| sensitivity->cutoff_test == '@'
+				)
+			{
+				DS += (*sensitivity->source - sensitivity->cutoff_value) * sensitivity->slope;
+			}
 			break;
 		default:
 			error("'%c' is not a valid cutoff test",sensitivity->cutoff_test);
@@ -281,8 +278,9 @@ TIMESTAMP bus::precommit(TIMESTAMP t0)
 TIMESTAMP bus::presync(TIMESTAMP t0)
 {
 	// reset to base load
-	Pd = S.Re();
-	Qd = S.Im();
+	complex PQ = S + DS;
+	Pd = PQ.Re();
+	Qd = PQ.Im();
 
 	return TS_NEVER;
 }

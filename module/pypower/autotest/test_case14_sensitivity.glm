@@ -10,9 +10,9 @@ module pypower
 }
 
 modify pp_bus_1.weather_file ${DIR:-.}/test_case14_sensitivity.csv;
-modify pp_bus_1.weather_variables Sh,Sn,Sg,Wd,Ws,Td,Tw,RH,PW;
-modify pp_bus_2.weather_sensitivity "Pd:Td,1.01";
-modify pp_bus_1.weather_sensitivity "Pd:Td<50,-1.08;Pd:Td>80,1.05";
+modify pp_bus_1.weather_variables S,Sh,Sn,Sg,Wd,Ws,Td,Tw,RH,PW;
+modify pp_bus_2.weather_sensitivity "S.real:Sh,-0.1";
+modify pp_bus_1.weather_sensitivity "S.real:Td<50,-1.08;S.imag:Td>80,1.01";
 
 module tape
 {
