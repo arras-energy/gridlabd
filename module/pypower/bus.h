@@ -21,6 +21,7 @@ public:
 		double slope;
 		char cutoff_test;
 		double cutoff_value;
+		double last_adjustment;
 		struct s_sensitivity *next;
 	} SENSITIVITY;
 
@@ -77,7 +78,6 @@ private:
 	WEATHERDATA *first, *last, *current;
 
 	SENSITIVITY *sensitivity_list;
-	complex DS;
 
 public:
 	

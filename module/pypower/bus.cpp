@@ -231,6 +231,7 @@ int bus::init(OBJECT *parent)
 			sensitivity->slope = slope_value;
 			sensitivity->cutoff_test = cutoff_test;
 			sensitivity->cutoff_value = cutoff_value;
+			sensitivity->last_adjustment = 0.0;
 			sensitivity->next = sensitivity_list;
 			sensitivity_list = sensitivity;
 		}
@@ -248,10 +249,10 @@ TIMESTAMP bus::precommit(TIMESTAMP t0)
 {
 	get_weather(t0);
 
-	// adjust load with sensitivity
-	DS = complex(0,0);
+	// adjust values with sensitivities
 	for ( SENSITIVITY *sensitivity = sensitivity_list ; sensitivity != NULL ; sensitivity = sensitivity->next )
 	{
+		*(sensitivity->value) -= sensitivity->last_adjustment;
 		switch ( sensitivity->cutoff_test )
 		{
 		case '<':
@@ -262,7 +263,12 @@ TIMESTAMP bus::precommit(TIMESTAMP t0)
 				|| sensitivity->cutoff_test == '@'
 				)
 			{
-				DS += (*sensitivity->source - sensitivity->cutoff_value) * sensitivity->slope;
+				sensitivity->last_adjustment = (*sensitivity->source - sensitivity->cutoff_value) * sensitivity->slope;
+				*(sensitivity->value) += sensitivity->last_adjustment;
+			}
+			else
+			{
+				sensitivity->last_adjustment = 0.0;
 			}
 			break;
 		default:
@@ -278,9 +284,8 @@ TIMESTAMP bus::precommit(TIMESTAMP t0)
 TIMESTAMP bus::presync(TIMESTAMP t0)
 {
 	// reset to base load
-	complex PQ = S + DS;
-	Pd = PQ.Re();
-	Qd = PQ.Im();
+	Pd = S.Re();
+	Qd = S.Im();
 
 	return TS_NEVER;
 }
