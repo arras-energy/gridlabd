@@ -136,6 +136,9 @@ bus::bus(MODULE *module)
 			PT_double, "HI[degF]", get_HI_offset(),
 				PT_DESCRIPTION, "Heat index (degF)",
 
+			PT_char1024, "weather_sensitivity", get_weather_sensitivity_offset(),
+				PT_DESCRIPTION, "Weather sensitivities {PROP: VAR[ REL VAL],SLOPE[; ...]}",
+
 			NULL)<1)
 		{
 				throw "unable to publish bus properties";

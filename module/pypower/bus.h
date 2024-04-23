@@ -48,6 +48,8 @@ public:
 	GL_ATOMIC(double,HI);
 #define N_WEATHERDATA 10 // adjust if adding more weather data items
 
+	GL_ATOMIC(char1024,weather_sensitivity);
+
 private:
 
 	bool load_weather(void);
