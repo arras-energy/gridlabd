@@ -100,9 +100,7 @@ construct the piecewise linear sensitivity curve:
 
 * `@` the cutoff value is not used for comparison.
 
-Note that the cutoff value is always used to identify the intercept point, i.e.,
-
-    $adjust = (source - cutoff) * slope$
+Note that the cutoff value is always used to identify the intercept point, i.e., $adjust = (source - cutoff) * slope$.
 
 ## Branch Objects
 
