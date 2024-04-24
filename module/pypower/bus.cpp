@@ -214,11 +214,11 @@ int bus::init(OBJECT *parent)
 				return 0;
 			}
 			SENSITIVITY *sensitivity = new SENSITIVITY;
-			if ( strcmp(propname,"P") == 0 || strcmp(propname,"S.real") == 0 )
+			if ( strcmp(propname,"Pd") == 0 || strcmp(propname,"S.real") == 0 )
 			{
 				sensitivity->value = &S.Re();
 			}
-			else if ( strcmp(propname,"Q") == 0 || strcmp(propname,"S.imag") == 0 )
+			else if ( strcmp(propname,"Qd") == 0 || strcmp(propname,"S.imag") == 0 )
 			{
 				sensitivity->value = &S.Im();
 			}
