@@ -57,10 +57,10 @@ GridLAB-D `pypower` module classes.
 ~~~
 class bus {
     int32 bus_i; // bus number (1 to 29997)
-    complex S[MVA]; // base load demand not counting child objects, copied from Pd,Qd by default (MVA)
+    complex S[MVA]; // base load demand not counting child objects, including weather sensitivities, copied to Pd,Qd by default (MVA)
     enumeration {PQREF=1, NONE=4, REF=3, PV=2, PQ=1, UNKNOWN=0} type; // bus type (1 = PQ, 2 = PV, 3 = ref, 4 = isolated)
-    double Pd[MW]; // real power demand (MW)
-    double Qd[MVAr]; // reactive power demand (MVAr)
+    double Pd[MW]; // (OUTPUT) real power demand (MW)
+    double Qd[MVAr]; // (OUTPUT) reactive power demand (MVAr)
     double Gs[MW]; // shunt conductance (MW at V = 1.0 p.u.)
     double Bs[MVAr]; // shunt susceptance (MVAr at V = 1.0 p.u.)
     int32 area; // area number, 1-100
@@ -74,8 +74,33 @@ class bus {
     double lam_Q; // Lagrange multiplier on reactive power mismatch (u/MVAr)
     double mu_Vmax; // Kuhn-Tucker multiplier on upper voltage limit (u/p.u.)
     double mu_Vmin; // Kuhn-Tucker multiplier on lower voltage limit (u/p.u.)
-}
+    char1024 weather_file; // Source object for weather data
+    char1024 weather_variables; // Weather variable column names (col1,col2,...)
+    double weather_resolution[s]; // Weather time downsampling resolution (s)
+    double Sn[W/m^2]; // Solar direct normal irradiance (W/m^2)
+    double Sh[W/m^2]; // Solar horizontal irradiance (W/m^2)
+    double Sg[W/m^2]; // Solar global irradiance (W/m^2)
+    double Wd[deg]; // Wind direction (deg)
+    double Ws[m/2]; // Wind speed (m/2)
+    double Td[degC]; // Dry-bulb air temperature (degC)
+    double Tw[degC]; // Wet-bulb air temperature (degC)
+    double RH[%]; // Relative humidity (%)
+    double PW[in]; // Precipitable_water (in)
+    double HI[degF]; // Heat index (degF)
+    char1024 weather_sensitivity; // Weather sensitivities {PROP: VAR[ REL VAL],SLOPE[; ...]}
+}}
 ~~~
+
+Weather sensitivities are cumulative. The following relations may be used to
+construct the piecewise linear sensitivity curve:
+
+* `>` the cutoff value applies the slope when the weather variable is greater than the cutoff value
+
+* `<` the cutoff value applies the slope when the weather variable is less than the cutoff value
+
+* `@` the cutoff value is not used for comparison.
+
+Note that the cutoff value is always used to identify the intercept point, i.e., $adjust = (source - cutoff) * slope$.
 
 ## Branch Objects
 

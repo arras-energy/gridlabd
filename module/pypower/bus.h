@@ -13,6 +13,19 @@ public:
 	static char256 timestamp_format;
 
 public:
+	typedef struct s_sensitivity
+	{
+		char *def;
+		double *value; 
+		double *source;
+		double slope;
+		char cutoff_test;
+		double cutoff_value;
+		double last_adjustment;
+		struct s_sensitivity *next;
+	} SENSITIVITY;
+
+public:
 	// published properties
 	GL_ATOMIC(int32,bus_i);
 	GL_ATOMIC(enumeration,type);
@@ -48,6 +61,8 @@ public:
 	GL_ATOMIC(double,HI);
 #define N_WEATHERDATA 10 // adjust if adding more weather data items
 
+	GL_ATOMIC(char1024,weather_sensitivity);
+
 private:
 
 	bool load_weather(void);
@@ -61,6 +76,8 @@ private:
 	} WEATHERDATA;
 	gld_property *weather_mapper[N_WEATHERDATA];
 	WEATHERDATA *first, *last, *current;
+
+	SENSITIVITY *sensitivity_list;
 
 public:
 	
