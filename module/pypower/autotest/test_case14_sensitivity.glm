@@ -1,0 +1,40 @@
+#define CASE=14
+#ifexists "../case.glm"
+#define DIR=..
+#endif
+#include "${DIR:-.}/case.glm"
+
+module pypower
+{
+	solver_method NR;
+}
+
+modify pp_bus_1.weather_file ${DIR:-.}/test_case14_sensitivity.csv;
+modify pp_bus_1.weather_variables Sh,Sn,Sg,Wd,Ws,Td,Tw,RH,PW;
+modify pp_bus_1.weather_sensitivity "S.real:Td<10,-0.1;S.real:Td<50,-0.1;S.imag:Td>80,+0.1;S.real:Sh,-0.01";
+
+module tape
+{
+	csv_header_type NAME;
+}
+
+object recorder
+{
+	parent pp_bus_1;
+	property S,Sh,Sn,Sg,Wd,Ws,Td,Tw,RH,PW;
+	file "test_case14_sensitivity_pp_bus_1_record.csv";
+	interval 3600;
+}
+
+#set suppress_repeat_messages=FALSE
+
+clock
+{
+	timezone "PST+8PDT";
+	starttime "2020-01-01 00:00:00 PST";
+	stoptime "2021-01-01 00:00:00 PST";
+}
+
+#ifexists ../case.glm
+#on_exit 0 diff ../test_case14_sensitivity_pp_bus_1_record.csv test_case14_sensitivity_pp_bus_1_record.csv > gridlabd.diff
+#endif
