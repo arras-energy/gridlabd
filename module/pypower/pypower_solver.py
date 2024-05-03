@@ -25,9 +25,12 @@ modelname = "pypower"
 csv_headers = {
     "bus" : "bus_i,type,Pd,Qd,Gs,Bs,area,Vm,Va,baseKV,zone,Vmax,Vmin,lam_P,lam_Q,mu_Vmax,mu_Vmin",
     "branch" : "fbus,tbus,r,x,b,rateA,rateB,rateC,ratio,angle,status,angmin,angmax,Pfrom,Qfrom,Pto,Qto,mu_Sfrom,mu_Sto,mu_angmin,mu_angmax",
-    "gen" : "bus,Pg,Qg,Qmax,Qmin,Vg,mBase,status,Pmax,Pmin,Pc1,Pc2,Qc1min,Qc1max,Qc2min,Qc2max,ramp_agc,ramp_10,ramp_30,ramp_q,apf,mu_Pmax,mu_Pmin,mu_Qmax,mu_Qmin",
+    "gen" : "bus,Pg,Qb,Qmax,Qmin,Vg,mBase,status,Pmax,Pmin,Pc1,Pc2,Qc1min,Qc1max,Qc2min,Qc2max,ramp_agc,ramp_10,ramp_30,ramp_q,apf,mu_Pmax,mu_Pmin,mu_Qmax,mu_Qmin",
     "gencost" : "model,startup,shutdown,parameters",
 }
+
+class PypowerError(Exception):
+    pass
 
 def write_case(data,filename):
     name,ext = os.path.splitext(filename)
@@ -147,8 +150,11 @@ def solver(pf_case):
 
         # run OPF solver if gencost data is found
         if 'gencost' in casedata:
-            results = runopf(casedata,options) 
-            success = results['success']
+            if len(casedata['gencost']) > 0:
+                results = runopf(casedata,options) 
+                success = results['success']
+            else:
+                raise PypowerError("cannot solve OPF without gencost data")
         else:
             results,success = runpf(casedata,options) 
 
@@ -175,11 +181,13 @@ def solver(pf_case):
 
     except Exception:
 
-        e_type,e_value,e_trace = sys.exc_info()
+        write_case(casedata,f"{modelname}_exception.{save_format}")
 
-        print("EXCEPTION [pypower_solver.py]:",e_type,e_value,file=sys.stderr,flush=True)
-        import traceback
-        traceback.print_exception(e_type,e_value,e_trace,file=sys.stderr)
+        e_type,e_value,e_trace = sys.exc_info()
+        print(f"EXCEPTION [pypower_solver.py]: {e_type.__name__} - {e_value}",file=sys.stderr,flush=True)
+        if debug:
+            import traceback
+            traceback.print_exception(e_type,e_value,e_trace,file=sys.stderr)
 
         return False
 
