@@ -127,6 +127,29 @@ int gen::create(void)
 	return 1; /* return 1 on success, 0 on failure */
 }
 
+void gen::add_cost(class gencost *add)
+{
+	if ( cost == NULL )
+	{
+		cost = add;
+	}
+	else if ( cost->get_model() != add->get_model() )
+	{
+		error("unable to add different gencost model from '%s'",add->get_name());
+	}
+	else if ( cost->get_model() == gencost::CM_PIECEWISE )
+	{
+		// TODO: add cost
+		warning("add piecewise cost '%s' not implemented yet",add->get_name());
+	}
+	else if ( cost->get_model() == gencost::CM_POLYNOMIAL )
+	{
+		// TODO: add cost
+		warning("add polynomial cost '%s' not implemented yet",add->get_name());
+	}
+}
+
+
 int gen::init(OBJECT *parent)
 {
 	return 1;

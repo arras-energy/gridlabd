@@ -63,12 +63,16 @@ int gencost::create(void)
 
 int gencost::init(OBJECT *parent)
 {
+	while ( parent != NULL && ! get_object(parent)->isa("gen","pypower") )
+	{
+		parent = parent->parent;
+	}
 	if ( parent == NULL )
 	{
-		error("gencost does refer to a parent gen object");
+		error("parent does not trace back to a pypower.gen object");
 		return 0;
 	}
-	OBJECTDATA(parent,gen)->cost = this;
+	OBJECTDATA(parent,gen)->add_cost(this);
 
 	if ( model == CM_UNKNOWN )
 	{

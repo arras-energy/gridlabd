@@ -40,6 +40,7 @@ public:
 public:
 
 	class gencost *cost; // pointer to gencost data (if any)
+	void add_cost(class gencost *add);
 
 public:
 	// event handlers
