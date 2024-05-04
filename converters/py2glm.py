@@ -121,6 +121,7 @@ module pypower
                 oname = f"{NL}    name pp_gencost_{n};" if autoname else ""
                 glm.write(f"""object pypower.gencost
 {{{oname}
+    parent pp_gen_{n+1};
     model {int(model)};
     startup {startup};
     shutdown {shutdown};
