@@ -362,6 +362,8 @@ bool geodata::load_geodata(const char *file)
 						fclose(fp);
 						return true; 
 					}
+						return false;
+					}
 					data[n_data].timestamp = dt.get_timestamp();
 					data[n_data].value = (double*)malloc(sizeof(double)*n_locations);
 				}
