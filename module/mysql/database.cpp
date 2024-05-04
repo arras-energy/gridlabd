@@ -303,7 +303,11 @@ const char *database::get_last_error(void)
 {
 	return mysql_error(mysql);
 }
+#if LIBMYSQL_VERSION_ID < 80001
 bool database::get_sqlbind(MYSQL_BIND &value, gld_property &target, my_bool *error)
+#else
+bool database::get_sqlbind(MYSQL_BIND &value, gld_property &target, bool *error)
+#endif
 {
 	memset(&value,0,sizeof(value));
 	switch ( target.get_type() ) {	
