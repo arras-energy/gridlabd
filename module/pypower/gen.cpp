@@ -133,16 +133,17 @@ void gen::add_cost(class gencost *add)
 	{
 		cost = add;
 	}
-	else if ( cost->get_model() != add->get_model() )
+
+	// only polynomial cost models can be added together
+	else if ( cost->get_model() != gencost::CM_POLYNOMIAL )
 	{
-		error("unable to add different gencost model from '%s'",add->get_name());
+		error("unable to add to non-polynomial gencost model");
 	}
-	else if ( cost->get_model() == gencost::CM_PIECEWISE )
+	else if ( add->get_model() != gencost::CM_POLYNOMIAL )
 	{
-		// TODO: add cost
-		warning("add piecewise cost '%s' not implemented yet",add->get_name());
+		error("unable to add non-polynomial gencost model from '%s'",add->get_name());
 	}
-	else if ( cost->get_model() == gencost::CM_POLYNOMIAL )
+	else
 	{
 		// TODO: add cost
 		warning("add polynomial cost '%s' not implemented yet",add->get_name());
