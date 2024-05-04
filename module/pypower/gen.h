@@ -38,6 +38,10 @@ public:
 	GL_ATOMIC(double,mu_Qmin);
 
 public:
+
+	class gencost *cost; // pointer to gencost data (if any)
+
+public:
 	// event handlers
 	gen(MODULE *module);
 	int create(void);

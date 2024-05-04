@@ -50,7 +50,8 @@ int gencost::create(void)
 	extern size_t ngencost;
 	if ( ngencost < MAXENT )
 	{
-		gencostlist[ngencost++] = this;
+		index = ngencost++;
+		gencostlist[index] = this;
 	}
 	else
 	{
@@ -62,6 +63,13 @@ int gencost::create(void)
 
 int gencost::init(OBJECT *parent)
 {
+	if ( parent == NULL )
+	{
+		error("gencost does refer to a parent gen object");
+		return 0;
+	}
+	OBJECTDATA(parent,gen)->cost = this;
+
 	if ( model == CM_UNKNOWN )
 	{
 		error("cost model must be PIECEWISE or POLYNOMIAL");

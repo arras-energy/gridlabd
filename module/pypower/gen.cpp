@@ -122,6 +122,7 @@ int gen::create(void)
 
 	extern double base_MVA;
 	mBase = base_MVA;
+	cost = NULL;
 
 	return 1; /* return 1 on success, 0 on failure */
 }

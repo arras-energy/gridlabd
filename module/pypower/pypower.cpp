@@ -539,9 +539,15 @@ EXPORT TIMESTAMP on_precommit(TIMESTAMP t0)
     }
     if ( gencostdata )
     {
-        for ( size_t n = 0 ; n < ngencost ; n++ )
+        for ( size_t i = 0 ; i < ngen ; i++ )
         {
-            gencost *obj = gencostlist[n];
+            if ( genlist[i]->cost == NULL )
+            {
+                gl_error("%s.on_precommit(data) missing cost data for generator '%s'",(const char*)controllers,genlist[i]->get_name());
+                return TS_INVALID;
+            }
+            gencost *obj = genlist[i]->cost;
+            size_t n = obj->index;
             PyObject *pyobj = PyList_GetItem(gencostdata,n);
             SENDX(0,model,Long,Long)
             SENDX(1,startup,Double,Float)

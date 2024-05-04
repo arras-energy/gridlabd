@@ -19,6 +19,10 @@ public:
 	GL_ATOMIC(char1024,costs);
 
 public:
+
+	unsigned int index; // index into gencostlist
+	
+public:
 	// event handlers
 	gencost(MODULE *module);
 	int create(void);
