@@ -94,3 +94,21 @@ int gencost::init(OBJECT *parent)
 	
 	return 1;
 }
+
+bool gencost::is_equal(gencost *other)
+{
+	if ( other->get_model() != model )
+	{
+		return false;
+	}
+	if ( other->get_startup() != startup )
+	{
+		return false;
+	}
+	if ( other->get_shutdown() != shutdown )
+	{
+		return false;
+	}
+	return strcmp(other->get_costs(),costs) == 0 ? true : false;
+}
+

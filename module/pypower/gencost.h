@@ -23,6 +23,7 @@ public:
 public:
 
 	unsigned int index; // index into gencostlist
+	bool is_equal(gencost *other);
 	
 public:
 

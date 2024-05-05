@@ -134,19 +134,10 @@ void gen::add_cost(class gencost *add)
 		cost = add;
 	}
 
-	// only polynomial cost models can be added together
-	else if ( cost->get_model() != gencost::CM_POLYNOMIAL )
+	// only identical cost models can be "added" together
+	else if ( ! cost->is_equal(add) )
 	{
-		error("unable to add to non-polynomial gencost model");
-	}
-	else if ( add->get_model() != gencost::CM_POLYNOMIAL )
-	{
-		error("unable to add non-polynomial gencost model from '%s'",add->get_name());
-	}
-	else
-	{
-		// TODO: add cost
-		warning("add polynomial cost '%s' not implemented yet",add->get_name());
+		error("unable to add to different gencost models");
 	}
 }
 
