@@ -543,8 +543,8 @@ EXPORT TIMESTAMP on_precommit(TIMESTAMP t0)
         {
             if ( genlist[i]->cost == NULL )
             {
-                gl_error("pypower.on_precommit(t=%lld) missing cost data for generator '%s'",t0,genlist[i]->get_name());
-                return TS_INVALID;
+                gl_warning("pypower.on_precommit(t=%lld) missing cost data for generator '%s'",t0,genlist[i]->get_name());
+                continue;
             }
             gencost *obj = genlist[i]->cost;
             size_t n = obj->index;
