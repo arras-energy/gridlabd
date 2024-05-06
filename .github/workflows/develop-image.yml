@@ -149,7 +149,7 @@ jobs:
         sudo sh ./build.sh --upload --release
 
   buildAWSUbuntuAMI:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     environment: Integration
     needs: [buildUbuntu22FastS3,buildUbuntu20FastS3,buildMacos12FastS3,buildMacos13FastS3]
 
