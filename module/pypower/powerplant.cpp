@@ -121,6 +121,21 @@ powerplant::powerplant(MODULE *module)
 			PT_char256, "controller", get_controller_offset(),
 				PT_DESCRIPTION,"controller python function name",
 
+			PT_double, "startup_cost[$/MW]", get_startup_cost_offset(),
+				PT_DESCRIPTION,"generator startup cost ($/MW)",
+
+			PT_double, "shutdown_cost[$/MW]", get_shutdown_cost_offset(),
+				PT_DESCRIPTION,"generator shutdown cost ($/MW)",
+
+			PT_double, "fixed_cost[$/h]", get_fixed_cost_offset(),
+				PT_DESCRIPTION,"generator fixed cost ($/h)",
+
+			PT_double, "variable_cost[$/MWh]", get_variable_cost_offset(),
+				PT_DESCRIPTION,"generator variable cost ($/MWh)",
+
+			PT_double, "scarcity_cost[$/MW^2/h]", get_scarcity_cost_offset(),
+				PT_DESCRIPTION,"generator scarcity cost ($/MW^2h)",
+
 			NULL) < 1 )
 		{
 				throw "unable to publish powerplant properties";
@@ -159,6 +174,23 @@ int powerplant::init(OBJECT *parent_hdr)
 		{
 			error("parent '%s' is not a pypower bus or gen object",get_parent()->get_name());
 			return 0;
+		}
+
+		// look for gencost object that corresponds to this generator (if any)
+		for ( OBJECT *obj = gl_object_get_first() ; obj != NULL ; obj = obj->next)
+		{
+			if ( gl_object_isa(obj,"gencost","pypower") )
+			{
+				costobj = OBJECTDATA(obj,gencost);
+				if ( costobj->get_parent() == parent )
+				{
+					break; // got it
+				}
+				else
+				{
+					costobj = NULL; // forget about it!
+				}
+			}
 		}
 	}
 
@@ -249,6 +281,16 @@ TIMESTAMP powerplant::precommit(TIMESTAMP t0)
 		}
 	}
 	last_t = t0;
+
+	// post costs
+	if ( costobj != NULL )
+	{
+		costobj->set_startup(get_startup_cost());
+		costobj->set_shutdown(get_shutdown_cost());
+		char buffer[1025];
+		snprintf(buffer,sizeof(buffer)-1,"%lf,%lf,%lf",get_scarcity_cost(),get_variable_cost(),get_fixed_cost());
+		costobj->set_costs(buffer);
+	}
 
 	return TS_NEVER;
 }

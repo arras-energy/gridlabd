@@ -190,7 +190,12 @@ generator models with both `bus` and `gen` objects. When integrating with a
 properties `Pd` and `Qd`, respectively, when the plant is `ONLINE`.  
 
 When integrated with a `gen` object, both the `Pd` and `Qd` values are updated
-based on the powerplant's generator status and type.
+based on the powerplant's generator status and type. 
+
+Generators costs are copied to the corresponding `gencost` object when both
+share the same parent `gen` object. If the `powerplant` object has a parent
+`bus` object, the generator cost data is not copied to the corresponding
+`gencost` object.
 
 ## Powerlines
 

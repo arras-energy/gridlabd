@@ -70,6 +70,11 @@ public:
 	GL_ATOMIC(double,state_of_charge);
 	GL_ATOMIC(complex,S);
 	GL_ATOMIC(char256,controller);
+	GL_ATOMIC(double,startup_cost);
+	GL_ATOMIC(double,shutdown_cost);
+	GL_ATOMIC(double,fixed_cost);
+	GL_ATOMIC(double,variable_cost);
+	GL_ATOMIC(double,scarcity_cost);
 
 private:
 	PyObject *py_controller;
@@ -78,6 +83,7 @@ private:
 
 private:
 	bool is_dynamic; // true if parent is a gen otherwise false
+	gencost *costobj;
 	TIMESTAMP last_t;
 
 public:
