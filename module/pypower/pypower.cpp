@@ -34,6 +34,7 @@ enumeration save_format = PPSF_CSV;
 const char *save_formats[] = {"csv","json","py"};
 double total_loss = 0;
 double generation_shortfall = 0;
+bool with_emissions = false;
 
 enum {
     SS_INIT = 0,
@@ -176,6 +177,11 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
         PT_double, &generation_shortfall,
         PT_UNITS, "MW",
         PT_DESCRIPTION, "System-wide generation shortfall",
+        NULL);
+
+    gl_global_create("pypower::with_emissions",
+        PT_bool, &with_emissions,
+        PT_DESCRIPTION, "Include emissions results",
         NULL);
 
     // always return the first class registered

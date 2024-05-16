@@ -27,6 +27,7 @@ module pypower
 	enumeration {PY=2, JSON=1, CSV=0} save_format; // Save case format
 	double total_loss[MW]; // System-wide line losses
 	double generation_shortfall[MW]; // System-wide generation shortfall
+    bool with_emissions; // Include emissions results
 }
 ~~~
 
