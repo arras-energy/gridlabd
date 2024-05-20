@@ -272,7 +272,7 @@ EXPORT int init_currdump(OBJECT *obj)
 	}
 	catch (const char *msg)
 	{
-		gl_error("%s (currdump:%d): %s", obj->name, obj->id, msg);
+		gl_error("%s (currdump:%d): %s", obj->name && strlen(obj->name) > 0 ? obj->name : "(na)", obj->id, msg);
 		return 0; 
 	}
 }
