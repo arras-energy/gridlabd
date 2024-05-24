@@ -209,6 +209,11 @@ PyObject *gencostdata = NULL;
 
 EXPORT bool on_init(void)
 {
+    if ( enable_opf && ngen != ngencost )
+    {
+        gl_warning("pypower OPF solver requires the number of gencost records (%d) to match the number of gen records (%d)",ngencost,ngen);
+    }
+    
     // import controllers, if any
     if ( controllers[0] != '\0' )
     {
