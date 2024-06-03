@@ -1,0 +1,29 @@
+class test
+{
+	double x;
+	double y[s];
+	int32 n;
+}
+
+module tape;
+
+object test
+{
+	object multiplayer 
+	{
+		file "test_multiplayer.csv";
+		property x;
+		property y,n;
+	};
+}
+
+object test
+{
+	object multiplayer 
+	{
+		file "test_multiplayer.csv";
+	};
+}
+
+#set savefile=test_multiplayer.json
+
