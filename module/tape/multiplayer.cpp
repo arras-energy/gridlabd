@@ -5,6 +5,7 @@
 EXPORT_CREATE(multiplayer);
 EXPORT_INIT(multiplayer);
 EXPORT_PRECOMMIT(multiplayer);
+EXPORT_SYNC(multiplayer);
 
 EXPORT_METHOD(multiplayer,file);
 EXPORT_METHOD(multiplayer,property)
@@ -17,7 +18,7 @@ multiplayer::multiplayer(MODULE *module)
 	if (oclass==NULL)
 	{
 		// register to receive notice for first top down. bottom up, and second top down synchronizations
-		oclass = gld_class::create(module,"multiplayer",sizeof(multiplayer),PC_AUTOLOCK|PC_OBSERVER);
+		oclass = gld_class::create(module,"multiplayer",sizeof(multiplayer),PC_BOTTOMUP|PC_AUTOLOCK|PC_OBSERVER);
 		if (oclass==NULL)
 			throw "unable to register class multiplayer";
 		else
@@ -37,6 +38,13 @@ multiplayer::multiplayer(MODULE *module)
 			PT_char32, "indexname", get_indexname_offset(),
 				PT_DEFAULT, "timestamp",
 				PT_DESCRIPTION, "name of index column",
+
+			PT_enumeration, "on_error", get_on_error_offset(),
+				PT_DEFAULT, "WARN",
+				PT_KEYWORD, "IGNORE", (enumeration)ERR_IGNORE,
+				PT_KEYWORD, "WARN", (enumeration)ERR_WARN,
+				PT_KEYWORD, "STOP", (enumeration)ERR_STOP,
+				PT_DESCRIPTION, "error handling (IGNORE, WARN, STOP)",
 
 			PT_method, "file", get_file_offset(),
 				PT_DESCRIPTION, "data source",
@@ -59,6 +67,7 @@ int multiplayer::create(void)
 	line = (char*)malloc(maxlen);
 	target_list = new std::list<gld_property>();
 	property_list = new std::string("");
+	next_t = TS_ZERO;
 	return 1; /* return 1 on success, 0 on failure */
 }
 
@@ -83,10 +92,82 @@ int multiplayer::init(OBJECT *parent)
 
 TIMESTAMP multiplayer::precommit(TIMESTAMP t1)
 {
-	fprintf(stderr,"%s\n",line);
-	fflush(stderr);
-	// TODO: copy line data into target properties
+	if ( t1 < next_t )
+	{
+		return next_t;
+	}
+	char *last;
+	char *next = strtok_r(line,",",&last);
+	if ( next == NULL && target_list->size() > 0 )
+	{
+		error("no data on record at index '%s'", line);
+		return TS_INVALID;
+	}
+	char *ts = next;
+	std::list<gld_property>::iterator prop = target_list->begin();
+	while ( (next=strtok_r(NULL,",",&last)) != NULL && prop != target_list->end() )
+	{
+		if ( prop->from_string(next) <= 0 )
+		{
+			switch ( on_error )
+			{
+			case ERR_STOP:
+				error("unable to set '%s.%s' to value '%s'",get_object(prop->get_object())->get_name(),prop->get_name(),next);
+				return TS_INVALID;
+			case ERR_WARN:
+				warning("ignoring unable to set '%s.%s' to value '%s'",get_object(prop->get_object())->get_name(),prop->get_name(),next);					
+			case ERR_IGNORE:
+			default:
+				break;
+			}
+		}
+		prop++;
+	}
+	if ( strtok_r(NULL,",",&last) != NULL )
+	{
+		switch ( on_error )
+		{
+		case ERR_STOP:
+			error("extra data '%s' at index '%s'",next,ts);
+			return TS_INVALID;
+		case ERR_WARN:
+			warning("ignoring extra data '%s' at index '%s'",next,ts);
+		case ERR_IGNORE:
+		default:
+			break;
+		}		
+	}
+	else if ( prop != target_list->end() )
+	{
+		switch ( on_error )
+		{
+		case ERR_STOP:
+			error("missing data for '%s.%s' at index '%s'",get_object(prop->get_object())->get_name(),prop->get_name(),ts);
+			return TS_INVALID;
+		case ERR_WARN:
+			warning("ignoring missing data for '%s.%s' at index '%s'",get_object(prop->get_object())->get_name(),prop->get_name(),ts);
+		case ERR_IGNORE:
+		default:
+			break;
+		}		
+	}
+
 	return read() ? next_t : TS_INVALID;
+}
+
+TIMESTAMP multiplayer::presync(TIMESTAMP t1)
+{
+	return TS_INVALID;
+}
+
+TIMESTAMP multiplayer::sync(TIMESTAMP t1)
+{
+	return next_t;
+}
+
+TIMESTAMP multiplayer::postsync(TIMESTAMP t1)
+{
+	return TS_INVALID;
 }
 
 int multiplayer::property(char *buffer, size_t len)
@@ -177,7 +258,7 @@ bool multiplayer::load(void)
 	}
 	if ( target_list->size() > 0 )
 	{
-		return true;
+		return read();
 	}
 	char *last=NULL;
 	char *next=strtok_r(line,",",&last);
@@ -186,10 +267,13 @@ bool multiplayer::load(void)
 		error("column '%s' is not '%s' as specified by indexname property",next?next:"0",(const char *)indexname);
 		return false;
 	}
-	if ( (next=strtok_r(NULL,",",&last)) != NULL && property(next,0) <= 0 )
+	while ( (next=strtok_r(NULL,",",&last)) != NULL )
 	{
-		error("file load failed");
-		return false;
+		if ( property(next,0) <= 0 )
+		{
+			error("file load failed");
+			return false;
+		}
 	}
 	return read();
 }
@@ -217,6 +301,20 @@ bool multiplayer::read(void)
 	{
 		line[len-1] = '\0';
 	}
+	TIMESTAMP last_t = next_t;
 	next_t = gld_clock(line).get_timestamp();
-	return true;
+	if ( next_t == TS_ZERO )
+	{
+		next_t = last_t; // no new data
+		return true;
+	}
+	else if ( next_t <= last_t )
+	{
+		error("invalid index (out of order) at '%s'",line);
+		return false;
+	}
+	else
+	{
+		return true;
+	}
 }

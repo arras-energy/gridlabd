@@ -14,12 +14,14 @@ public:
 
 	// keyword values
 	typedef enum {MS_INIT=0, MS_OK=1, MS_DONE=2, MS_ERROR=3} MULTIPLAYERSTATUS;
+	typedef enum {ERR_IGNORE=0, ERR_WARN=1, ERR_STOP=2} ONERROR;
 
 public:
 
 	// properties
 	GL_ATOMIC(enumeration,status); 
 	GL_ATOMIC(char32,indexname);
+	GL_ATOMIC(enumeration,on_error);
 	GL_METHOD(multiplayer,file);
 	GL_METHOD(multiplayer,property);
 
@@ -45,6 +47,9 @@ public:
 	int create(void);
 	int init(OBJECT *parent);
 	TIMESTAMP precommit(TIMESTAMP t1);
+	TIMESTAMP presync(TIMESTAMP t1);
+	TIMESTAMP sync(TIMESTAMP t1);
+	TIMESTAMP postsync(TIMESTAMP t1);
 	
 public:
 

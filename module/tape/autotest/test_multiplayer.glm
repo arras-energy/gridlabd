@@ -1,3 +1,7 @@
+#ifexist ../test_multiplayer.csv
+#define DIR=..
+#endif
+
 class test
 {
 	double x;
@@ -5,16 +9,26 @@ class test
 	int32 n;
 }
 
-module tape;
+module tape
+{
+	csv_header_type NAME;
+}
 
 object test
 {
 	object multiplayer 
 	{
-		file "test_multiplayer.csv";
+		file "${DIR:-.}/test_multiplayer.csv";
 		indexname "datetime";
 		property x;
 		property y,n;
+		on_error IGNORE;
+	};
+	object recorder
+	{
+		file test_multiplayer_record_1.csv;
+		property x,y,n;
+		interval 0;
 	};
 }
 
@@ -22,9 +36,19 @@ object test
 {
 	object multiplayer 
 	{
-		file "test_multiplayer.csv";
+		file "${DIR:-.}/test_multiplayer.csv";
 		indexname "datetime";
+		on_error WARN;
+	};
+	object recorder
+	{
+		file test_multiplayer_record_2.csv;
+		property x,y,n;
+		interval 0;
 	};
 }
 
-#set savefile=test_multiplayer.json
+#ifexist ../test_multiplayer_record_1.csv
+#on_exit 0 diff ../test_multiplayer_record_1.csv test_multiplayer_record_1.csv > gridlabd.diff
+#on_exit 0 diff ../test_multiplayer_record_2.csv test_multiplayer_record_2.csv >> gridlabd.diff
+#endif
