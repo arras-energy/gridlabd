@@ -68,6 +68,7 @@ int multiplayer::create(void)
 	target_list = new std::list<gld_property>();
 	property_list = new std::string("");
 	next_t = TS_ZERO;
+	status = MS_INIT;
 	return 1; /* return 1 on success, 0 on failure */
 }
 
@@ -101,6 +102,7 @@ TIMESTAMP multiplayer::precommit(TIMESTAMP t1)
 	if ( next == NULL && target_list->size() > 0 )
 	{
 		error("no data on record at index '%s'", line);
+		status = MS_ERROR;
 		return TS_INVALID;
 	}
 	char *ts = next;
@@ -113,11 +115,15 @@ TIMESTAMP multiplayer::precommit(TIMESTAMP t1)
 			{
 			case ERR_STOP:
 				error("unable to set '%s.%s' to value '%s'",get_object(prop->get_object())->get_name(),prop->get_name(),next);
+				status = MS_ERROR;
 				return TS_INVALID;
 			case ERR_WARN:
 				warning("ignoring unable to set '%s.%s' to value '%s'",get_object(prop->get_object())->get_name(),prop->get_name(),next);					
+				status = MS_ERROR;
+				break;
 			case ERR_IGNORE:
 			default:
+				status = next_t < TS_NEVER ? MS_OK : MS_DONE;
 				break;
 			}
 		}
@@ -129,11 +135,15 @@ TIMESTAMP multiplayer::precommit(TIMESTAMP t1)
 		{
 		case ERR_STOP:
 			error("extra data '%s' at index '%s'",next,ts);
+			status = MS_ERROR;
 			return TS_INVALID;
 		case ERR_WARN:
 			warning("ignoring extra data '%s' at index '%s'",next,ts);
+			status = MS_ERROR;
+			break;
 		case ERR_IGNORE:
 		default:
+			status = next_t < TS_NEVER ? MS_OK : MS_DONE;
 			break;
 		}		
 	}
@@ -143,11 +153,15 @@ TIMESTAMP multiplayer::precommit(TIMESTAMP t1)
 		{
 		case ERR_STOP:
 			error("missing data for '%s.%s' at index '%s'",get_object(prop->get_object())->get_name(),prop->get_name(),ts);
+			status = MS_ERROR;
 			return TS_INVALID;
 		case ERR_WARN:
 			warning("ignoring missing data for '%s.%s' at index '%s'",get_object(prop->get_object())->get_name(),prop->get_name(),ts);
+			status = MS_ERROR;
+			break;
 		case ERR_IGNORE:
 		default:
+			status = next_t < TS_NEVER ? MS_OK : MS_DONE;
 			break;
 		}		
 	}
@@ -282,6 +296,7 @@ bool multiplayer::read(void)
 {
 	if ( ferror(fp) )
 	{
+		status = MS_ERROR;
 		return false;
 	}
 	if ( feof(fp) )
@@ -311,6 +326,7 @@ bool multiplayer::read(void)
 	else if ( next_t <= last_t )
 	{
 		error("invalid index (out of order) at '%s'",line);
+		status = MS_ERROR;
 		return false;
 	}
 	else
