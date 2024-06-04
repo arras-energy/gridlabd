@@ -30,6 +30,13 @@ When an error is encountered, the `on_error` property is used to determine
 what happen, if anything, i.e., `IGNORE`, `WARN`, or `STOP`.  The `status`
 property provide an indication of `multiplayer` status.
 
+# Caveats
+
+Unlike `player`, the `multiplayer` object does not support triggers, loops, 
+of differential timestamps.
+
+Empty CSV fiels are not supported and will result in `missing data` errors.
+
 # Example
 
 The following example reads three columns of data from a CSV file with the
