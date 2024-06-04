@@ -12,6 +12,7 @@ object test
 	object multiplayer 
 	{
 		file "test_multiplayer.csv";
+		indexname "datetime";
 		property x;
 		property y,n;
 	};
@@ -22,8 +23,8 @@ object test
 	object multiplayer 
 	{
 		file "test_multiplayer.csv";
+		indexname "datetime";
 	};
 }
 
 #set savefile=test_multiplayer.json
-

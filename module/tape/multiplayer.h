@@ -28,12 +28,16 @@ private:
 	// internal data
 	char *fname;
 	FILE *fp;
+	char *line;
+	size_t maxlen;
+	TIMESTAMP next_t;
 	std::list<gld_property> *target_list;
 	std::string *property_list;
 
 private:
 
 	bool load(void);
+	bool read(void);
 
 public:
 	// required implementations 

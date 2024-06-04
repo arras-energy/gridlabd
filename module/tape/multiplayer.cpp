@@ -55,6 +55,8 @@ int multiplayer::create(void)
 {
 	fname = NULL;
 	fp = NULL;
+	maxlen = 1024;
+	line = (char*)malloc(maxlen);
 	target_list = new std::list<gld_property>();
 	property_list = new std::string("");
 	return 1; /* return 1 on success, 0 on failure */
@@ -66,16 +68,22 @@ int multiplayer::init(OBJECT *parent)
 	{
 		error("no input file specified");
 	}
+	if ( ! load() )
+	{
+		error("unable to load file '%s'", fname);
+		return 0;
+	}
 	if ( target_list->size() == 0 )
 	{
 		error("no targets specified");
 	}
+
 	return 1;
 }
 
 TIMESTAMP multiplayer::precommit(TIMESTAMP t1)
 {
-	return TS_NEVER;
+	return read() ? next_t : TS_INVALID;
 }
 
 int multiplayer::property(char *buffer, size_t len)
@@ -133,22 +141,14 @@ int multiplayer::file(char *buffer, size_t len)
 	{
 		if ( fname != NULL )
 		{
-			free((void*)fname);
+			error("unable to change the file after it is loaded");
+			return 0;
 		}
 		fname = strdup(buffer);
-		if ( fp != NULL )
-		{
-			fclose(fp);
-		}
 		fp = fopen(fname,"r");
 		if ( fp == NULL )
 		{
 			error("file '%s' not found",fname);
-			return 0;
-		}
-		else if ( ! load() )
-		{
-			error("unable to load file '%s'", fname);
 			return 0;
 		}
 		return strlen(fname)+1;
@@ -166,11 +166,45 @@ bool multiplayer::load(void)
 	size_t len;
 	char *buffer = fgetln(fp,&len);
 	char line[len+1];
-	strcpy(line,buffer);
+	strncpy(line,buffer,len);
+	line[len] = '\0';
 	if ( line[len-1] == '\n' )
 	{
-		line[len-1] = '\0'
+		line[len-1] = '\0';
 	}
+	if ( target_list->size() > 0 )
+	{
+		return true;
+	}
+	char *last=NULL;
+	char *next=strtok_r(line,",",&last);
+	if ( next == NULL || strcmp(next,indexname)!=0 )
+	{
+		error("column '%s' is not '%s' as specified by indexname property",next?next:"0",(const char *)indexname);
+		return false;
+	}
+	if ( (next=strtok_r(NULL,",",&last)) != NULL && property(next,0) <= 0 )
+	{
+		error("file load failed");
+		return false;
+	}
+	return read();
+}
 
+bool multiplayer::read(void)
+{
+	size_t len;
+	char *buffer = fgetln(fp,&len);
+	if ( len+1 > maxlen )
+	{
+		line = (char*)realloc(line,maxlen*=2);
+	}
+	strncpy(line,buffer,len);
+	line[len] = '\0';
+	if ( line[len-1] == '\n' )
+	{
+		line[len-1] = '\0';
+	}
+	next_t = gld_clock(line);
 	return true;
 }
