@@ -83,6 +83,9 @@ int multiplayer::init(OBJECT *parent)
 
 TIMESTAMP multiplayer::precommit(TIMESTAMP t1)
 {
+	fprintf(stderr,"%s\n",line);
+	fflush(stderr);
+	// TODO: copy line data into target properties
 	return read() ? next_t : TS_INVALID;
 }
 
@@ -193,6 +196,15 @@ bool multiplayer::load(void)
 
 bool multiplayer::read(void)
 {
+	if ( ferror(fp) )
+	{
+		return false;
+	}
+	if ( feof(fp) )
+	{
+		next_t = TS_NEVER;
+		return true;
+	}
 	size_t len;
 	char *buffer = fgetln(fp,&len);
 	if ( len+1 > maxlen )
@@ -205,6 +217,6 @@ bool multiplayer::read(void)
 	{
 		line[len-1] = '\0';
 	}
-	next_t = gld_clock(line);
+	next_t = gld_clock(line).get_timestamp();
 	return true;
 }
