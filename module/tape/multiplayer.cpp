@@ -67,6 +67,7 @@ int multiplayer::create(void)
 	line = (char*)malloc(maxlen);
 	target_list = new std::list<gld_property>();
 	property_list = new std::string("");
+	convert_list = new std::list<double>();
 	next_t = TS_ZERO;
 	status = MS_INIT;
 	return 1; /* return 1 on success, 0 on failure */
@@ -107,9 +108,61 @@ TIMESTAMP multiplayer::precommit(TIMESTAMP t1)
 	}
 	char *ts = next;
 	std::list<gld_property>::iterator prop = target_list->begin();
+	std::list<double>::iterator scale = convert_list->begin();
 	while ( (next=strtok_r(NULL,",",&last)) != NULL && prop != target_list->end() )
 	{
-		if ( prop->from_string(next) <= 0 )
+		if ( *scale != 0 )
+		{
+			if ( prop->get_type() == PT_double )
+			{
+				double value;
+				if ( sscanf(next,"%lg",&value) == 0 )
+				{
+					switch ( on_error )
+					{
+					case ERR_STOP:
+						error("double value '%s' is invalid",next);
+						status = MS_ERROR;
+						return TS_INVALID;
+					case ERR_WARN:
+						warning("double value '%s' is invalid",next);
+						status = MS_ERROR;
+						break;
+					case ERR_IGNORE:
+					default:
+						status = next_t < TS_NEVER ? MS_OK : MS_DONE;
+						break;
+					}					
+				}
+				value *= *scale;
+				prop->setp(value);
+			}
+			else if ( prop->get_type() == PT_complex )
+			{
+				complex value(0,0,I);
+				if ( sscanf(next,"%lg%lg%c",&value.r,&value.i,(char*)&value.f) == 0 || strchr("ijrd",value.f) == NULL )
+				{
+					switch ( on_error )
+					{
+					case ERR_STOP:
+						error("complex value '%s' is invalid",next);
+						status = MS_ERROR;
+						return TS_INVALID;
+					case ERR_WARN:
+						warning("complex value '%s' is invalid",next);
+						status = MS_ERROR;
+						break;
+					case ERR_IGNORE:
+					default:
+						status = next_t < TS_NEVER ? MS_OK : MS_DONE;
+						break;
+					}
+				}
+				value *= *scale;
+				prop->setp(value);
+			}
+		}
+		else if ( prop->from_string(next) <= 0 )
 		{
 			switch ( on_error )
 			{
@@ -128,6 +181,7 @@ TIMESTAMP multiplayer::precommit(TIMESTAMP t1)
 			}
 		}
 		prop++;
+		scale++;
 	}
 	if ( strtok_r(NULL,",",&last) != NULL )
 	{
@@ -196,21 +250,43 @@ int multiplayer::property(char *buffer, size_t len)
 		size_t total_len = strlen(buffer);
 		while ( (next=strtok_r(next?NULL:buffer,",",&last)) != NULL )
 		{
-			gld_property *prop = get_parent() == NULL ? new gld_property(next) : new gld_property(get_parent(),next);
-			if ( prop->is_valid() )
+			char pname[64], uname[64];
+			gld_unit *unit = NULL;
+			if ( sscanf(next,"%63[^[][%63[^]]]",pname,uname) == 2 )
 			{
-				target_list->insert(target_list->end(),*prop);
-				if ( property_list->size() > 0 )
+				unit = new gld_unit(uname);
+				if ( ! unit->is_valid() )
 				{
-					property_list->append(",");
+					error("unit '%s' is not valid",uname);
+					return 0;
 				}
-				property_list->append(next);
 			}
-			else
+			gld_property *prop = get_parent() == NULL ? new gld_property(pname) : new gld_property(get_parent(),pname);
+			if ( ! prop->is_valid() )
 			{
-				error("property '%s' is not found",next);
+				error("property '%s' is not found",pname);
 				return 0;
 			}
+			double scale = 0.0;
+			if ( prop->get_unit() )
+			{
+				if ( unit == NULL )
+				{
+					scale = 1.0;
+				}
+				else if ( ! unit->convert(*prop->get_unit(),scale) )
+				{
+					error("unit '%s' cannot be converted to '%s'",uname,prop->get_unit()->get_name());
+					return 0;
+				}
+			}
+			convert_list->insert(convert_list->end(),scale);
+			target_list->insert(target_list->end(),*prop);
+			if ( property_list->size() > 0 )
+			{
+				property_list->append(",");
+			}
+			property_list->append(pname);
 		}
 		return total_len;		
 	}

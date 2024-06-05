@@ -34,6 +34,7 @@ private:
 	size_t maxlen;
 	TIMESTAMP next_t;
 	std::list<gld_property> *target_list;
+	std::list<double> *convert_list;
 	std::string *property_list;
 
 private:
