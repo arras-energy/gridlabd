@@ -2,6 +2,11 @@
 #define DIR=..
 #endif
 
+clock
+{
+	timezone PST+8PDT;
+}
+
 class test
 {
 	double x;
