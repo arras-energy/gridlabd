@@ -377,16 +377,16 @@ char *database::get_sqldata(char *buffer, size_t size, gld_property &prop, gld_u
 			double value = prop.get_double((UNIT*)unit);
 			if ( isnan(value) )
 			{
-				snprintf(buffer,sizeof(buffer)-1,"%s","NULL");
+				snprintf(buffer,size-1,"%s","NULL");
 			}
 			else
 			{
-				snprintf(buffer,sizeof(buffer)-1,"%g",value);
+				snprintf(buffer,size-1,"%g",value);
 			}
 		}
 		else
 		{
-			snprintf(buffer,sizeof(buffer)-1,"%g",prop.get_double());
+			snprintf(buffer,size-1,"%g",prop.get_double());
 		}
 		return buffer;
 	default:
