@@ -49,6 +49,6 @@ object test
 }
 
 #ifexist ../test_multiplayer_record_1.csv
-#on_exit 0 diff ../test_multiplayer_record_1.csv test_multiplayer_record_1.csv > gridlabd.diff
-#on_exit 0 diff ../test_multiplayer_record_2.csv test_multiplayer_record_2.csv >> gridlabd.diff
+#on_exit 0 diff -w ../test_multiplayer_record_1.csv test_multiplayer_record_1.csv > gridlabd.diff
+#on_exit 0 diff -w ../test_multiplayer_record_2.csv test_multiplayer_record_2.csv >> gridlabd.diff
 #endif
