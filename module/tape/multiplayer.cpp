@@ -161,6 +161,24 @@ TIMESTAMP multiplayer::precommit(TIMESTAMP t1)
 				value *= *scale;
 				prop->setp(value);
 			}
+			else
+			{
+				switch ( on_error )
+				{
+				case ERR_STOP:
+					error("unit conversion of '%s' not possible for '%s.%s'",next,get_object(prop->get_object())->get_name());
+					status = MS_ERROR;
+					return TS_INVALID;
+				case ERR_WARN:
+					warning("unit conversion '%s' not possible for '%s.%s'",next,get_object(prop->get_object())->get_name());
+					status = MS_ERROR;
+					break;
+				case ERR_IGNORE:
+				default:
+					status = next_t < TS_NEVER ? MS_OK : MS_DONE;
+					break;
+				}
+			}
 		}
 		else if ( prop->from_string(next) <= 0 )
 		{
@@ -270,11 +288,8 @@ int multiplayer::property(char *buffer, size_t len)
 			double scale = 0.0;
 			if ( prop->get_unit() )
 			{
-				if ( unit == NULL )
-				{
-					scale = 1.0;
-				}
-				else if ( ! unit->convert(*prop->get_unit(),scale) )
+				scale = 1.0;
+				if ( unit != NULL && ! unit->convert(*prop->get_unit(),scale) )
 				{
 					error("unit '%s' cannot be converted to '%s'",uname,prop->get_unit()->get_name());
 					return 0;
