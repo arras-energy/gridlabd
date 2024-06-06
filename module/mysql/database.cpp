@@ -70,15 +70,13 @@ database::database(MODULE *module)
 				snprintf(msg,sizeof(msg)-1, "unable to publish properties in %s",__FILE__);
 				throw msg;
 		}
-
-		memset(this,0,sizeof(database));
+		defaults = this;
 		gl_verbose("MySQL client info: %s", mysql_get_client_info());
 	}
 }
 
 int database::create(void) 
 {
-	memcpy(this,defaults,sizeof(*this));
 	strcpy(hostname,default_hostname);
 	strcpy(username,default_username);
 	strcpy(password,default_password);
@@ -86,7 +84,18 @@ int database::create(void)
 	port = default_port;
 	strcpy(socketname,default_socketname);
 	clientflags = default_clientflags;
+	options = 0;
+	set_on_init("");
+	set_on_sync("");
+	set_on_term("");
+	sync_interval = 0.0;
+	tz_offset = 0;
+	uses_dst = false;
+	mysql_client = NULL;
+	mysql = NULL;
+
 	last_database = this;
+	strcpy(last_table_checked,"");
 
 	// term list
 	if ( first==NULL ) first = this;
@@ -368,16 +377,16 @@ char *database::get_sqldata(char *buffer, size_t size, gld_property &prop, gld_u
 			double value = prop.get_double((UNIT*)unit);
 			if ( isnan(value) )
 			{
-				snprintf(buffer,sizeof(buffer)-1,"%s","NULL");
+				snprintf(buffer,size-1,"%s","NULL");
 			}
 			else
 			{
-				snprintf(buffer,sizeof(buffer)-1,"%g",value);
+				snprintf(buffer,size-1,"%g",value);
 			}
 		}
 		else
 		{
-			snprintf(buffer,sizeof(buffer)-1,"%g",prop.get_double());
+			snprintf(buffer,size-1,"%g",prop.get_double());
 		}
 		return buffer;
 	default:
