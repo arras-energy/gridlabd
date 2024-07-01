@@ -25,8 +25,8 @@ while [ $# -gt 0 ]; do
     else
         $GLD_BIN/python3 -m pip freeze | grep $1 1>$STDOUT 2>$STDERR || $GLD_BIN/python3 -m pip $QUIET install $1 
         test "$($GLD_BIN/python3 -m pip freeze | grep ^$1)" != "" || exit 1
-        echo "Did this one run?"
-        echo "$GLD_BIN"
+        # echo "Did this one run?"
+        # echo "$GLD_BIN"
     fi
     shift 1
 done
