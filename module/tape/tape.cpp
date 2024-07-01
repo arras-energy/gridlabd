@@ -24,6 +24,7 @@
 #include "aggregate.h"
 #include "histogram.h"
 #include "group_recorder.h"
+#include "multiplayer.h"
 
 char timestamp_format[32]="%Y-%m-%d %H:%M:%S";
 
@@ -396,6 +397,8 @@ EXPORT CLASS *init(CALLBACKS *fntable, void *module, int argc, char *argv[])
 
 	/* new metrics_collector_writer() */
 	new_metrics_collector_writer((MODULE*)module);
+
+	new multiplayer((MODULE*)module);
 
 #if 0
 	new_loadshape(module);

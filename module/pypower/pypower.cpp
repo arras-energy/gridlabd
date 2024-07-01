@@ -11,7 +11,7 @@ bool enable_opf = false;
 double base_MVA = 100.0;
 int32 pypower_version = 2;
 bool stop_on_failure = false;
-int32 maximum_timestep = 0; // seconds; 0 = no max ts
+double maximum_timestep = 0; // seconds; 0 = no max ts
 typedef enum {
     PPSM_NR = 1, // Newton-Raphson
     PPSM_FDXB = 2, // Fast-decoupled XB method
@@ -91,7 +91,8 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
         );
 
     gl_global_create("pypower::maximum_timestep",
-        PT_int32, &maximum_timestep, 
+        PT_double, &maximum_timestep, 
+        PT_UNITS, "s",
         PT_DESCRIPTION, "Maximum timestep allowed between solutions",
         NULL);
 
@@ -608,7 +609,7 @@ EXPORT TIMESTAMP on_precommit(TIMESTAMP t0)
         }
     }
 
-    TIMESTAMP t2 = maximum_timestep > 0 ? t0+maximum_timestep : TS_NEVER;
+    TIMESTAMP t2 = maximum_timestep > 0 ? TIMESTAMP(t0+maximum_timestep) : TS_NEVER;
     return (TIMESTAMP)min((unsigned long long)t1,(unsigned long long)t2);
 }
 
@@ -894,7 +895,7 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
         {
             return t0;
         }
-        TIMESTAMP t2 = maximum_timestep > 0 ? t0+maximum_timestep : TS_NEVER;
+        TIMESTAMP t2 = maximum_timestep > 0 ? TIMESTAMP(t0+maximum_timestep) : TS_NEVER;
         return (TIMESTAMP)min((unsigned long long)t1,(unsigned long long)t2);
 
     }
