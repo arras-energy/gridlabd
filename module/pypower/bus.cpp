@@ -32,7 +32,7 @@ bus::bus(MODULE *module)
 				PT_DESCRIPTION, "bus number (1 to 29997)",
 
 			PT_complex, "S[MVA]", get_Pd_offset(),
-				PT_DESCRIPTION, "base load demand not counting child objects, copied from Pd,Qd by default (MVA)",
+				PT_DESCRIPTION, "base load demand not counting child objects, including weather sensitivities, copied to Pd,Qd by default (MVA)",
 
 			PT_enumeration, "type", get_type_offset(),
 				PT_DESCRIPTION, "bus type (1 = PQ, 2 = PV, 3 = ref, 4 = isolated)",
@@ -136,6 +136,9 @@ bus::bus(MODULE *module)
 			PT_double, "HI[degF]", get_HI_offset(),
 				PT_DESCRIPTION, "Heat index (degF)",
 
+			PT_char1024, "weather_sensitivity", get_weather_sensitivity_offset(),
+				PT_DESCRIPTION, "Weather sensitivities {PROP: VAR[ REL VAL],SLOPE[; ...]}",
+
 			NULL)<1)
 		{
 				throw "unable to publish bus properties";
@@ -158,6 +161,7 @@ int bus::create(void)
 
 	// initialize weather data
 	current = first = last = NULL;
+	sensitivity_list = NULL;
 
 	return 1; // return 1 on success, 0 on failure
 }
@@ -184,12 +188,84 @@ int bus::init(OBJECT *parent)
 		return 0;
 	}
 
+	char buffer[strlen(weather_sensitivity)+1];
+	strcpy(buffer,weather_sensitivity);
+	char *next=NULL, *last=NULL;
+	// fprintf(stderr,"weather_sensitivity = '%s'\n",(const char*)get_weather_sensitivity());
+	while ( (next=strtok_r(next?NULL:buffer,";",&last)) != NULL )
+	{
+		char propname[65], varname[65], cutoff_test='@';
+		double cutoff_value=0, slope_value;
+		// PROP: VAR[ REL VAL],SLOPE
+		// fprintf(stderr,"next = '%s'\n",next);
+		if ( sscanf(next,"%64[^:]:%64[^<>]%c%lf,%lf",propname,varname,&cutoff_test,&cutoff_value,&slope_value) == 5 
+			|| sscanf(next,"%64[^:]:%64[^,],%lf",propname,varname,&slope_value) == 3 )
+		{
+			// fprintf(stderr,"sensitivity: %s += %s * %lf if %s %c %lf else 0\n",propname,varname,slope_value,varname,cutoff_test,cutoff_value);
+			gld_property source(my(),varname);
+			if ( ! source.is_valid() )
+			{
+				error("weather_sensitivity source '%s' is not valid",varname);
+				return 0;
+			}
+			else if ( source.get_type() != PT_double )
+			{
+				error("weather_sensitivity source '%s' is not a double",varname);
+				return 0;
+			}
+			SENSITIVITY *sensitivity = new SENSITIVITY;
+			if ( strcmp(propname,"Pd") == 0 || strcmp(propname,"S.real") == 0 )
+			{
+				sensitivity->value = &S.Re();
+			}
+			else if ( strcmp(propname,"Qd") == 0 || strcmp(propname,"S.imag") == 0 )
+			{
+				sensitivity->value = &S.Im();
+			}
+			else
+			{
+				error("property '%s' is not valid",propname);
+			}
+			sensitivity->def = strdup(next);
+			sensitivity->source = (double*)source.get_addr();
+			sensitivity->slope = slope_value;
+			sensitivity->cutoff_test = cutoff_test;
+			sensitivity->cutoff_value = cutoff_value;
+			sensitivity->last_adjustment = 0.0;
+			sensitivity->next = sensitivity_list;
+			sensitivity_list = sensitivity;
+		}
+		else
+		{
+			error("weather_sensitivity '%s' in not valid",next);
+			return 0;
+		}
+	}
+
 	return 1; // return 1 on success, 0 on failure, 2 on retry later
 }
 
 TIMESTAMP bus::precommit(TIMESTAMP t0)
 {
 	get_weather(t0);
+
+	// adjust values with sensitivities
+	for ( SENSITIVITY *sensitivity = sensitivity_list ; sensitivity != NULL ; sensitivity = sensitivity->next )
+	{
+		*(sensitivity->value) -= sensitivity->last_adjustment;
+		if ( ( sensitivity->cutoff_test == '<' && *sensitivity->source < sensitivity->cutoff_value )
+			|| (sensitivity->cutoff_test == '>' && *sensitivity->source > sensitivity->cutoff_value )
+			|| sensitivity->cutoff_test == '@'
+			)
+		{
+			sensitivity->last_adjustment = (*sensitivity->source - sensitivity->cutoff_value) * sensitivity->slope;
+			*(sensitivity->value) += sensitivity->last_adjustment;
+		}
+		else
+		{
+			sensitivity->last_adjustment = 0.0;
+		}
+	}
 
 	return current && current->next ? current->next->t : TS_NEVER;	
 }

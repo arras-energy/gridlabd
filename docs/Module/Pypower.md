@@ -5,19 +5,28 @@
 GLM:
 
 ~~~
-module pypower 
+module pypower
 {
-    set {QUIET=65536, WARNING=131072, DEBUG=262144, VERBOSE=524288} message_flags; // module message control flags
-    int32 version; // Version of pypower used (default is 2)
-    enumeration {NR=1, FD_XB=2, FD_BX=3, GS=4} solver_method; // PyPower solver method to use
-    int32 maximum_timestep; // Maximum timestep allowed between solutions (default is 0, meaning no maximum timestep)
-    double baseMVA[MVA]; // Base MVA value (default is 100 MVA)
-    bool enable_opf; // Flag to enable solving optimal powerflow problem instead of just powerflow (default is FALSE)
-    bool stop_on_failure; // Flag to stop simulation on solver failure (default is FALSE)
-    bool save_case; // Flag to enable saving case data and results (default is FALSE)
-    char1024 controllers; // Python module containing controller functions
-    double solver_update_resolution; // Minimum difference before a value is considered changed
-    enumeration {INIT=0, SUCCESS=1, FAILED=2} solver_status; // Result of the last pypower solver run
+	set {QUIET=65536, WARNING=131072, DEBUG=262144, VERBOSE=524288} message_flags; // module message control flags
+	char256 timestamp_format; // Format for weather file timestamps ('' is RFC822/ISO8601)
+	int32 version; // Version of pypower used
+	enumeration {NR=1, FD_XB=2, FD_BX=3, GS=4} solver_method; // PyPower solver method to use
+	int32 maximum_timestep; // Maximum timestep allowed between solutions
+	double baseMVA[MVA]; // Base MVA value
+	bool enable_opf; // Flag to enable optimal powerflow (OPF) solver
+	bool stop_on_failure; // Flag to stop simulation on solver failure
+	bool save_case; // Flag to save pypower case data and results
+	char1024 controllers_path; // Path to find module containing controller functions
+	char1024 controllers; // Python module containing controller functions
+	double solver_update_resolution; // Minimum difference before a value is considered changed
+	int32 maximum_iterations; // Maximum iterations (0 defaults to pypower default for solver_method)
+	double solution_tolerance; // Solver convergence error tolerante (0 defaults to pypower default)
+	enumeration {FAILED=2, SUCCESS=1, INIT=0} solver_status; // Result of the last pypower solver run
+	bool enforce_q_limits; // Enable enforcement of reactive power limits
+	bool use_dc_powerflow; // Enable use of DC powerflow solution
+	enumeration {PY=2, JSON=1, CSV=0} save_format; // Save case format
+	double total_loss[MW]; // System-wide line losses
+	double generation_shortfall[MW]; // System-wide generation shortfall
 }
 ~~~
 
@@ -48,10 +57,10 @@ GridLAB-D `pypower` module classes.
 ~~~
 class bus {
     int32 bus_i; // bus number (1 to 29997)
-    complex S[MVA]; // base load demand not counting child objects, copied from Pd,Qd by default (MVA)
+    complex S[MVA]; // base load demand not counting child objects, including weather sensitivities, copied to Pd,Qd by default (MVA)
     enumeration {PQREF=1, NONE=4, REF=3, PV=2, PQ=1, UNKNOWN=0} type; // bus type (1 = PQ, 2 = PV, 3 = ref, 4 = isolated)
-    double Pd[MW]; // real power demand (MW)
-    double Qd[MVAr]; // reactive power demand (MVAr)
+    double Pd[MW]; // (OUTPUT) real power demand (MW)
+    double Qd[MVAr]; // (OUTPUT) reactive power demand (MVAr)
     double Gs[MW]; // shunt conductance (MW at V = 1.0 p.u.)
     double Bs[MVAr]; // shunt susceptance (MVAr at V = 1.0 p.u.)
     int32 area; // area number, 1-100
@@ -65,8 +74,33 @@ class bus {
     double lam_Q; // Lagrange multiplier on reactive power mismatch (u/MVAr)
     double mu_Vmax; // Kuhn-Tucker multiplier on upper voltage limit (u/p.u.)
     double mu_Vmin; // Kuhn-Tucker multiplier on lower voltage limit (u/p.u.)
-}
+    char1024 weather_file; // Source object for weather data
+    char1024 weather_variables; // Weather variable column names (col1,col2,...)
+    double weather_resolution[s]; // Weather time downsampling resolution (s)
+    double Sn[W/m^2]; // Solar direct normal irradiance (W/m^2)
+    double Sh[W/m^2]; // Solar horizontal irradiance (W/m^2)
+    double Sg[W/m^2]; // Solar global irradiance (W/m^2)
+    double Wd[deg]; // Wind direction (deg)
+    double Ws[m/2]; // Wind speed (m/2)
+    double Td[degC]; // Dry-bulb air temperature (degC)
+    double Tw[degC]; // Wet-bulb air temperature (degC)
+    double RH[%]; // Relative humidity (%)
+    double PW[in]; // Precipitable_water (in)
+    double HI[degF]; // Heat index (degF)
+    char1024 weather_sensitivity; // Weather sensitivities {PROP: VAR[ REL VAL],SLOPE[; ...]}
+}}
 ~~~
+
+Weather sensitivities are cumulative. The following relations may be used to
+construct the piecewise linear sensitivity curve:
+
+* `>` the cutoff value applies the slope when the weather variable is greater than the cutoff value
+
+* `<` the cutoff value applies the slope when the weather variable is less than the cutoff value
+
+* `@` the cutoff value is not used for comparison.
+
+Note that the cutoff value is always used to identify the intercept point, i.e., $adjust = (source - cutoff) * slope$.
 
 ## Branch Objects
 
@@ -206,9 +240,24 @@ If the `on_init` function is defined in the Python `controllers` module, it
 will be called when the simulation is initialized. Note that many `gridlabd`
 module functions are not available until after initialization is completed.
 
+In addition, the following event handlers are supported:
+
+* `on_precommit(dict:data) --> int`: Called when the clock advances before
+  the main solver is called. 
+
+* `on_sync(dict:data) --> int`: Called each time the main solver is called.
+
+* `on_commit(dict:data) --> int`: Called after the last time the main solver
+  is called.
+
+* `on_term() --> None`: Called when the simulation is done.
+
 Any `load`, `powerplant`, and `relay` object may specify a `controller`
 property. When this property is defined, the corresponding controller
-function will be called if it is defined in the `controllers` module.
+function will be called if it is defined in the `controllers` module. The
+return value is a unix timestamp in seconds of epoch indicating the time of
+the next event, if any. Otherwise, it should return `gridlabd.NEVER` or
+`gridlabd.INVALID` to indicate an error.
 
 Controller functions use the following call/return prototype
 
@@ -222,6 +271,13 @@ is any valid property of the calling object. A special return name `t` is
 used to specify the time at which the controller is to be called again,
 specify in second of the Unix epoch.
 
+When the controller module is loaded, the built-in `gridlabd` module is added
+to the globals to provide access to the main instance of `gridlabd` and its
+support methods. You do not need to import `gridlabd`.
+
+For more information on the `gridlabd` main module, see [[/Module/Python]] and
+[[/Module/Python/Property]].
+
 ## SCADA
 
 The `scada` object is used to access properties of objects in the
@@ -232,6 +288,17 @@ will copy back values that have changed. If the `record` property is `TRUE`,
 the `controllers` module will have a global `historian` which records are
 past values of the `scada` global.
 
+## Geodata
+
+The `geodata` object is used to map a panel of location-based data to
+variables across a number of objects or classes based on the objects'
+locations.  Each `geodata` CSV file corresponds to a single object property,
+and is organized a locations in columns and time-series in rows.
+
+## Weather
+
+The `weather` object is used to read weather data from a weather file.
+
 # See also
 
 * [PyPower documentation](https://pypi.org/project/PYPOWER/)
@@ -241,6 +308,9 @@ past values of the `scada` global.
 * [[/Module/Pypower/Powerplant]]
 * [[/Module/Pypower/Relay]]
 * [[/Module/Pypower/Scada]]
+* [[/Module/Pypower/Weather]]
 * [[/Module/Pypower/Transformer]]
+* [[/Module/Python]]
+* [[/Module/Python/Property]]
 * [[/Converters/Import/Pypower_cases]]
 * [[/Converters/Import/Psse_models]]
