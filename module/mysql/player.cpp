@@ -42,14 +42,31 @@ player::player(MODULE *module)
 				throw msg;
 		}
 		gl_global_create("mysql::maximum_threads",PT_int32,&maximum_threads,PT_ACCESS,PA_PUBLIC,PT_DESCRIPTION,"maximum number of theads allowed during initialization sequence",NULL);
-		memset(this,0,sizeof(player));
+		defaults = this;
 	}
 }
 
 int player::create(void) 
 {
-	memcpy(this,defaults,sizeof(*this));
+	set_property("");
+	set_table("");
+	set_query("");
+	set_mode("");
+	set_filetype("");
+	connection = NULL;
+	options = 0;
 	db = last_database;
+	memset(&target,0,sizeof(target));
+	memset(&unit,0,sizeof(unit));
+	memset(field,0,sizeof(field));
+	scale = 0.0;
+	db = NULL;
+	data = NULL;
+	n_rows = 0;
+	fields = NULL;
+	n_fields = 0;
+	next_t = TS_ZERO;
+	row_num = 0;
 	thread_rv = -1;
 	thread_status = PTS_NONE;
 	return 1; /* return 1 on success, 0 on failure */

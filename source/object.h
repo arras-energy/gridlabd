@@ -365,6 +365,7 @@ typedef struct s_callbacks {
 	} version;
 	int (*call_external_callback)(const char*, void *);
 	struct {
+		PyObject *main;
 		PyObject *(*import)(const char *module, const char *path);
 		bool (*call)(PyObject *pModule, const char *method, const char *vargsfmt, va_list varargs, void *result);
 	} python;

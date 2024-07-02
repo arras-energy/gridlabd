@@ -116,3 +116,6 @@ validate.zip.gz
 validate.tar.gz
 gridlabd-core.*
 openfido.err
+
+# docs
+html/

@@ -50,7 +50,8 @@ int gencost::create(void)
 	extern size_t ngencost;
 	if ( ngencost < MAXENT )
 	{
-		gencostlist[ngencost++] = this;
+		index = ngencost++;
+		gencostlist[index] = this;
 	}
 	else
 	{
@@ -62,6 +63,17 @@ int gencost::create(void)
 
 int gencost::init(OBJECT *parent)
 {
+	while ( parent != NULL && ! get_object(parent)->isa("gen","pypower") )
+	{
+		parent = parent->parent;
+	}
+	if ( parent == NULL )
+	{
+		error("parent does not trace back to a pypower.gen object");
+		return 0;
+	}
+	OBJECTDATA(parent,gen)->add_cost(this);
+
 	if ( model == CM_UNKNOWN )
 	{
 		error("cost model must be PIECEWISE or POLYNOMIAL");
@@ -82,3 +94,21 @@ int gencost::init(OBJECT *parent)
 	
 	return 1;
 }
+
+bool gencost::is_equal(gencost *other)
+{
+	if ( other->get_model() != model )
+	{
+		return false;
+	}
+	if ( other->get_startup() != startup )
+	{
+		return false;
+	}
+	if ( other->get_shutdown() != shutdown )
+	{
+		return false;
+	}
+	return strcmp(other->get_costs(),costs) == 0 ? true : false;
+}
+

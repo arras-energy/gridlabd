@@ -42,15 +42,25 @@ collector::collector(MODULE *module)
 				snprintf(msg,sizeof(msg)-1, "unable to publish properties in %s",__FILE__);
 				throw msg;
 		}
-
-		memset(this,0,sizeof(collector));
+		defaults = this;
 	}
 }
 
 int collector::create(void) 
 {
-	memcpy(this,defaults,sizeof(*this));
+	set_property("");
+	set_group("");
+	set_table("");
+	set_mode("");
+	limit = 0;
+	interval = 0;
+	connection = NULL;
+	options = 0;
+	mysql = NULL;
 	db = last_database;
+	list = NULL;
+	names = NULL;
+	next_t = TS_ZERO;
 	return 1; /* return 1 on success, 0 on failure */
 }
 

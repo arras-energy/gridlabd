@@ -34,9 +34,14 @@ object pypower.load
 
 object pypower.powerplant
 {
-    parent pp_bus_2;
+    parent pp_gen_2;
     S 10.0;
     status ONLINE;
+    startup_cost 1.0;
+    shutdown_cost 0.5;
+    fixed_cost 0.1;
+    variable_cost 0.3;
+    scarcity_cost 0.7;
 }
 
 #include "${DIR:-.}/case.glm"

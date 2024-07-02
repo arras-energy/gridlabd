@@ -122,7 +122,7 @@ int impedance_dump::dump(TIMESTAMP t)
 
 	//write style sheet info
 	fprintf(fn,"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n");
-	fprintf(fn,"<?xml-stylesheet href=\"C:\\Projects\\GridLAB-D_Builds\\ticket_704\\VS2005\\gridlabd-2_0.xsl\" type=\"text/xsl\"?>\n");
+	//fprintf(fn,"<?xml-stylesheet href=\"C:\\Projects\\GridLAB-D_Builds\\ticket_704\\VS2005\\gridlabd-2_0.xsl\" type=\"text/xsl\"?>\n");
 	fprintf(fn,"<gridlabd>\n");
 	//write time
 	gl_printtime(t, timestr, 64);
@@ -149,10 +149,13 @@ int impedance_dump::dump(TIMESTAMP t)
 			fprintf(fn,"\t<fuse>\n");
 
 			//write the name
-			if(obj->name[0] != 0){
+			if ( obj->name && strlen(obj->name) > 0 )
+			{
 				fprintf(fn,"\t\t<name>%s</name>\n",obj->name);
-			} else {
-				fprintf(fn,"\t\t<name>NA</name>\n");
+			} 
+			else 
+			{
+				fprintf(fn,"\t\t<name>%s:%d</name>\n", obj->oclass->name, obj->id);
 			}
 
 			//write the id
@@ -415,10 +418,13 @@ int impedance_dump::dump(TIMESTAMP t)
 			fprintf(fn,"\t<overhead_line>\n");
 
 			//write the name
-			if(obj->name[0] != 0){
+			if ( obj->name && strlen(obj->name) > 0 )
+			{
 				fprintf(fn,"\t\t<name>%s</name>\n",obj->name);
-			} else {
-				fprintf(fn,"\t\t<name>NA</name>\n");
+			} 
+			else 
+			{
+				fprintf(fn,"\t\t<name>%s:%d</name>\n", obj->oclass->name, obj->id);
 			}
 
 			//write the id
@@ -684,10 +690,13 @@ int impedance_dump::dump(TIMESTAMP t)
 			fprintf(fn,"\t<recloser>\n");
 
 			//write the name
-			if(obj->name[0] != 0){
+			if ( obj->name && strlen(obj->name) > 0 )
+			{
 				fprintf(fn,"\t\t<name>%s</name>\n",obj->name);
-			} else {
-				fprintf(fn,"\t\t<name>NA</name>\n");
+			} 
+			else 
+			{
+				fprintf(fn,"\t\t<name>%s:%d</name>\n", obj->oclass->name, obj->id);
 			}
 
 			//write the id
@@ -950,10 +959,13 @@ int impedance_dump::dump(TIMESTAMP t)
 			fprintf(fn,"\t<regulator>\n");
 
 			//write the name
-			if(obj->name != NULL){
+			if ( obj->name && strlen(obj->name) > 0 )
+			{
 				fprintf(fn,"\t\t<name>%s</name>\n",obj->name);
-			} else {
-				fprintf(fn,"\t\t<name>NA</name>\n");
+			} 
+			else 
+			{
+				fprintf(fn,"\t\t<name>%s:%d</name>\n", obj->oclass->name, obj->id);
 			}
 
 			//write the id
@@ -1220,10 +1232,13 @@ int impedance_dump::dump(TIMESTAMP t)
 			fprintf(fn,"\t<relay>\n");
 
 			//write the name
-			if(obj->name[0] != 0){
+			if ( obj->name && strlen(obj->name) > 0 )
+			{
 				fprintf(fn,"\t\t<name>%s</name>\n",obj->name);
-			} else {
-				fprintf(fn,"\t\t<name>NA</name>\n");
+			} 
+			else 
+			{
+				fprintf(fn,"\t\t<name>%s:%d</name>\n", obj->oclass->name, obj->id);
 			}
 
 			//write the id
@@ -1486,10 +1501,13 @@ int impedance_dump::dump(TIMESTAMP t)
 			fprintf(fn,"\t<sectionalizer>\n");
 
 			//write the name
-			if(obj->name[0] != 0){
+			if ( obj->name && strlen(obj->name) > 0 )
+			{
 				fprintf(fn,"\t\t<name>%s</name>\n",obj->name);
-			} else {
-				fprintf(fn,"\t\t<name>NA</name>\n");
+			} 
+			else 
+			{
+				fprintf(fn,"\t\t<name>%s:%d</name>\n", obj->oclass->name, obj->id);
 			}
 
 			//write the id
@@ -1752,10 +1770,13 @@ int impedance_dump::dump(TIMESTAMP t)
 			fprintf(fn,"\t<series reactor>\n");
 
 			//write the name
-			if(obj->name[0] != 0){
+			if ( obj->name && strlen(obj->name) > 0 )
+			{
 				fprintf(fn,"\t\t<name>%s</name>\n",obj->name);
-			} else {
-				fprintf(fn,"\t\t<name>NA</name>\n");
+			} 
+			else 
+			{
+				fprintf(fn,"\t\t<name>%s:%d</name>\n", obj->oclass->name, obj->id);
 			}
 
 			//write the id
@@ -2019,10 +2040,13 @@ int impedance_dump::dump(TIMESTAMP t)
 			fprintf(fn,"\t<switch>\n");
 
 			//write the name
-			if(obj->name[0] != 0){
+			if ( obj->name && strlen(obj->name) > 0 )
+			{
 				fprintf(fn,"\t\t<name>%s</name>\n",obj->name);
-			} else {
-				fprintf(fn,"\t\t<name>NA</name>\n");
+			} 
+			else 
+			{
+				fprintf(fn,"\t\t<name>%s:%d</name>\n", obj->oclass->name, obj->id);
 			}
 
 			//write the id
@@ -2285,10 +2309,13 @@ int impedance_dump::dump(TIMESTAMP t)
 			fprintf(fn,"\t<transformer>\n");
 
 			//write the name
-			if(obj->name[0] != 0){
+			if ( obj->name && strlen(obj->name) > 0 )
+			{
 				fprintf(fn,"\t\t<name>%s</name>\n",obj->name);
-			} else {
-				fprintf(fn,"\t\t<name>NA</name>\n");
+			} 
+			else 
+			{
+				fprintf(fn,"\t\t<name>%s:%d</name>\n", obj->oclass->name, obj->id);
 			}
 
 			//write the id
@@ -2569,10 +2596,13 @@ int impedance_dump::dump(TIMESTAMP t)
 			fprintf(fn,"\t<triplex_line>\n");
 
 			//write the name
-			if(obj->name[0] != 0){
+			if ( obj->name && strlen(obj->name) > 0 )
+			{
 				fprintf(fn,"\t\t<name>%s</name>\n",obj->name);
-			} else {
-				fprintf(fn,"\t\t<name>NA</name>\n");
+			} 
+			else 
+			{
+				fprintf(fn,"\t\t<name>%s:%d</name>\n", obj->oclass->name, obj->id);
 			}
 
 			//write the id
@@ -2811,10 +2841,13 @@ int impedance_dump::dump(TIMESTAMP t)
 			fprintf(fn,"\t<underground_line>\n");
 
 			//write the name
-			if(obj->name[0] != 0){
+			if ( obj->name && strlen(obj->name) > 0 )
+			{
 				fprintf(fn,"\t\t<name>%s</name>\n",obj->name);
-			} else {
-				fprintf(fn,"\t\t<name>NA</name>\n");
+			} 
+			else 
+			{
+				fprintf(fn,"\t\t<name>%s:%d</name>\n", obj->oclass->name, obj->id);
 			}
 
 			//write the id
@@ -3079,10 +3112,13 @@ int impedance_dump::dump(TIMESTAMP t)
 			fprintf(fn,"\t<capacitor>\n");
 
 			//write the name
-			if(obj->name[0] != 0){
+			if ( obj->name && strlen(obj->name) > 0 )
+			{
 				fprintf(fn,"\t\t<name>%s</name>\n",obj->name);
-			} else {
-				fprintf(fn,"\t\t<name>NA</name>\n");
+			} 
+			else 
+			{
+				fprintf(fn,"\t\t<name>%s:%d</name>\n",obj->oclass->name,obj->id);
 			}
 
 			//write the id
@@ -3228,7 +3264,7 @@ EXPORT int init_impedance_dump(OBJECT *obj)
 	}
 	catch (const char *msg)
 	{
-		gl_error("%s (impedance_dump:%d): %s", obj->name, obj->id, msg);
+		gl_error("%s (impedance_dump:%d): %s", obj->name && strlen(obj->name) > 0 ? obj->name : "(NA)", obj->id, msg);
 		return 0; 
 	}
 }

@@ -30,3 +30,5 @@ module_tape_tape_la_SOURCES += module/tape/collector.cpp
 module_tape_tape_la_SOURCES += module/tape/player.cpp
 module_tape_tape_la_SOURCES += module/tape/recorder.cpp
 module_tape_tape_la_SOURCES += module/tape/shaper.cpp
+
+module_tape_tape_la_SOURCES += module/tape/multiplayer.cpp module/tape/multiplayer.h

@@ -1,0 +1,35 @@
+#define CASE=14
+#ifexists "../case.glm"
+#define DIR=..
+#endif
+
+//#option debug
+
+module pypower
+{
+#ifdef DIR
+    controllers_path "${DIR}";
+#endif
+    controllers "controllers";
+}
+
+module tape
+{
+    csv_header_type NAME;
+}
+object pypower.powerplant
+{
+    parent pp_bus_2;
+    status ONLINE;
+    controller "storage_control";
+    charging_capacity 15 kW;
+    storage_capacity 10 MWh;
+    storage_efficiency 0.95;
+    object recorder 
+    {
+        file "${modelname/.glm/_record.csv}";
+        property S,state_of_charge;
+    };
+}
+
+#include "${DIR:-.}/case.glm"

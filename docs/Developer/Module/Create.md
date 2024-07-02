@@ -13,9 +13,10 @@ This section describes how to public properties in a class.
 The `gl_publish_variable(...)` function uses property offsets in memory. Every object attribute is listed sequentially in memory in the order in which they are declared. This function returns the difference in the memory address of an attribute from the start of the object in memory. It's defined by a macro, `GL_ATOMIC(type, attribute name)` which generates a callable function specific to every attribute it's applied to.
 
 The code looks like this:
-    static inline size_t get_##X##_offset(void) { return (char*)&(defaults->X)-(char*)defaults; };
 
-`defaults` is a class attribute, a pointer to an object of the same type as the class it's a part of. Say we are looking at the `pole` class. `defaults` will be a pointer to a pole object. Confusingly, `defaults` is never inititialized to anything beyond NULL. How does this work? Back when this program was written in C, `defaults` pointed to a chunk of memory holding an object with all attributes initilized to default values. In C you could create a new object by simply copying this memory chunk. In C++ you need to declare all the attributes within an object, not just the object itself. The old method of setting defaults stopped working, so it's done differently now. The `defaults` pointer was retained as an attribute in the class declaration. The get offset function uses it for pointer math, finding the differences in memory location between the start of an object and all of it's attributes. Because a class declaration includes the type of all attributes, the compiler can figure out how much space they will take up in memory. (In C++ all types have a fixed size.)  'defaults' never needs to be initialized.
+    `static inline size_t get_##X##_offset(void) { return (char*)&(defaults->X)-(char*)defaults; };`
+
+`defaults` is a class attribute, a pointer to an object of the same type as the class it's a part of. Say we are looking at the `pole` class. `defaults` will be a pointer to a pole object. Confusingly, `defaults` is never inititialized to anything beyond `NULL`. How does this work? Back when this program was written in C, `defaults` pointed to a chunk of memory holding an object with all attributes initilized to default values. In C you could create a new object by simply copying this memory chunk. In C++ you need to declare all the attributes within an object, not just the object itself. The old method of setting defaults stopped working, so it's done differently now. The `defaults` pointer was retained as an attribute in the class declaration. The get offset function uses it for pointer math, finding the differences in memory location between the start of an object and all of it's attributes. Because a class declaration includes the type of all attributes, the compiler can figure out how much space they will take up in memory. (In C++ all types have a fixed size.)  'defaults' never needs to be initialized.
 
 Published properties are declared using the `GL_*` declaration macros:
 ### `GL_ATOMIC(TYPE,NAME)` defines the following members:
@@ -96,7 +97,7 @@ Published properties are declared using the `GL_*` declaration macros:
   * `gld_object *get_NAME(gld_wlock &lock)` - returns a pointer to the underlying object using a write lock
   * `void set_NAME(OBJECT *ptr)` - sets the property to a new object pointer
   * `void set_NAME(const char *name)` - sets the property to a new object name
-  * `void init_NAME(void)` - initializes the object pointer (sets to NULL)
+  * `void init_NAME(void)` - initializes the object pointer (sets to `NULL`)
   * `void init_NAME(OBJECT *ptr)` - initializes the object pointer
   * `OBJECT *get_NAME_object(void)` - get the object pointer
 
@@ -113,10 +114,10 @@ The `PT_` prefix for variable specifications indicates Property Types:
 *	`PT_int16` - the data is a 16-bit integer
 *	`PT_int32` - the data is a 32-bit integer
 *	`PT_int64` - the data is a 64-bit integer
-*	`PT_char8` - the data is \p NULL -terminated string up to 8 characters in length
-*	`PT_char32` - the data is \p NULL -terminated string up to 32 characters in length 
-*	`PT_char256` - the data is \p NULL -terminated string up to 256 characters in length
-*	`PT_char1024` - the data is \p NULL -terminated string up to 1024 characters in length
+*	`PT_char8` - the data is `NULL` -terminated string up to 8 characters in length
+*	`PT_char32` - the data is `NULL` -terminated string up to 32 characters in length 
+*	`PT_char256` - the data is `NULL` -terminated string up to 256 characters in length
+*	`PT_char1024` - the data is `NULL` -terminated string up to 1024 characters in length
 *	`PT_object` - the data is a pointer to a GridLAB object
 *	`PT_delegated` - the data is delegated to a module for implementation (experimental)
 *	`PT_bool` - the data is a true/false value, implemented as a C++ bool

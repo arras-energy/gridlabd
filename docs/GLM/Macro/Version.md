@@ -18,7 +18,7 @@ Three aspects of the version can be checked. They are the version number, e.g., 
 Multiple tests may be specified, in which case the tests conjunction is the `or` operation, i.e., either one may be true for the test to succeed. To achieve an `and` operation, simply use the macro multiple times.
 
 # Example
-The following example checks that the version $\ge 4.2.1$ or the build number is $\gt 191225$ and the branch is $develop$.
+The following example checks that the version $\ge 4.2.1$ or the build number is $> 191225$ and the branch is $develop$.
 ~~~
 #version -ge 4.2.1 -gt 191225
 #version develop

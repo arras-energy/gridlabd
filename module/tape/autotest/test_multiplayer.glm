@@ -1,0 +1,59 @@
+#ifexist ../test_multiplayer.csv
+#define DIR=..
+#endif
+
+clock
+{
+	timezone PST+8PDT;
+}
+
+class test
+{
+	double x;
+	double y[s];
+	int32 n;
+}
+
+module tape
+{
+	csv_header_type NAME;
+}
+
+object test
+{
+	object multiplayer 
+	{
+		file "${DIR:-.}/test_multiplayer.csv";
+		indexname "datetime";
+		property x;
+		property y[min],n;
+		on_error IGNORE;
+	};
+	object recorder
+	{
+		file test_multiplayer_record_1.csv;
+		property x,y,n;
+		interval 0;
+	};
+}
+
+object test
+{
+	object multiplayer 
+	{
+		file "${DIR:-.}/test_multiplayer.csv";
+		indexname "datetime";
+		on_error WARN;
+	};
+	object recorder
+	{
+		file test_multiplayer_record_2.csv;
+		property x,y,n;
+		interval 0;
+	};
+}
+
+#ifexist ../test_multiplayer_record_1.csv
+#on_exit 0 diff -w ../test_multiplayer_record_1.csv test_multiplayer_record_1.csv > gridlabd.diff
+#on_exit 0 diff -w ../test_multiplayer_record_2.csv test_multiplayer_record_2.csv >> gridlabd.diff
+#endif

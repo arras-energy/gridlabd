@@ -63,19 +63,33 @@ recorder::recorder(MODULE *module)
 				snprintf(msg,sizeof(msg)-1, "unable to publish properties in %s",__FILE__);
 				throw msg;
 		}
-
-		memset(this,0,sizeof(recorder));
+		defaults = this;
 	}
 }
 
 int recorder::create(void) 
 {
-	memcpy(this,defaults,sizeof(*this));
-	db = last_database;
+	set_property("");
+	set_trigger("");
+	set_table("");
+	limit = 0;
+	interval = 0;
+	connection = NULL;
+	options = 0;
 	strcpy(datetime_fieldname,"t");
 	strcpy(recordid_fieldname,"id");
+	set_header_fieldnames("");
+
+	enabled = false;
+	db = last_database;
+	trigger_on = false;
+	strcpy(compare_op,"");
+	strcpy(compare_val,"");
+	n_properties = 0;
 	property_target = new std::vector<gld_property>;
 	property_unit = new std::vector<gld_unit>;
+	strcpy(header_data,"");
+	oldvalues = NULL;
 	return 1; /* return 1 on success, 0 on failure */
 }
 

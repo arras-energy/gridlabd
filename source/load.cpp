@@ -7956,8 +7956,8 @@ int GldLoader::process_macro(char *line, int size, char *_filename, int linenum)
 			return FALSE;
 		}
 		strcpy(value, strip_right_white(term+1));
-		if (strchr(value,'=')==NULL)
-			strcat(value,"="); // void entry
+		// if ( strchr(value,'=')==NULL )
+		// 	strcat(value,"="); // void entry
 		global_strictnames = FALSE;
 		result = global_setvar(value,"\"\""); // extra "" is used in case value is term is empty string
 		global_strictnames = oldstrict;

@@ -435,6 +435,7 @@ DEPRECATED static struct s_varmap {
 #endif
 	{"streaming_io",PT_bool, &global_streaming_io_enabled, PA_PROTECTED, "streaming I/O enable flag"},
 	{"compileonly",PT_bool, &global_compileonly, PA_PROTECTED, "compile only enable flag"},
+	{"initializeonly",PT_bool, &global_initializeonly, PA_PROTECTED, "initialize only enable flag"},
 	{"relax_naming_rules",PT_bool,&global_relax_naming_rules, PA_PUBLIC, "relax object naming rules enable flag"},
 	{"browser", PT_char1024, &global_browser, PA_PUBLIC, "browser selection"},
 	{"server_portnum",PT_int32,&global_server_portnum, PA_PUBLIC, "server port number (default is find first open starting at 6267)"},
