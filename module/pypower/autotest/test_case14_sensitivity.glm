@@ -31,8 +31,8 @@ object recorder
 clock
 {
 	timezone "PST+8PDT";
-	starttime "2020-01-01 00:00:00 PST";
-	stoptime "2021-01-01 00:00:00 PST";
+	starttime "2020-08-01 00:00:00 PST";
+	stoptime "2020-09-01 00:00:00 PST";
 }
 
 #ifexists ../case.glm

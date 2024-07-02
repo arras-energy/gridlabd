@@ -122,9 +122,25 @@ int gen::create(void)
 
 	extern double base_MVA;
 	mBase = base_MVA;
+	cost = NULL;
 
 	return 1; /* return 1 on success, 0 on failure */
 }
+
+void gen::add_cost(class gencost *add)
+{
+	if ( cost == NULL )
+	{
+		cost = add;
+	}
+
+	// only identical cost models can be "added" together
+	else if ( ! cost->is_equal(add) )
+	{
+		error("unable to add to different gencost models");
+	}
+}
+
 
 int gen::init(OBJECT *parent)
 {
