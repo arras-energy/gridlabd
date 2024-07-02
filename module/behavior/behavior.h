@@ -11,6 +11,7 @@
 
 #include "gridlabd.h"
 
+#include "learning.h"
 #include "random.h"
 #include "system.h"
 
