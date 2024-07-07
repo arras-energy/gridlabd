@@ -57,10 +57,28 @@ from flask_restful_swagger import swagger
 app = Flask("gridlabd")
 api = swagger.docs(Api(app), apiVersion='0')
 
+# Read configuration file (if any)
+try:
+    from rest_server_config import *
+except:
+    HOST="127.0.0.1"
+    PORT=5000
+    TOKEN = None # Automatically generate access token
+    DEBUG=False
+    TIMEOUT = 60 # run timeout in seconds
+    RETENTION = 3600 # session retention in seconds
+    CLEANUP = 5 # session cleanup interval in seconds
+    TMPDIR = "/tmp/gridlabd/rest_server" # path to session data
+    MAXFILE = 2**32 - 1 # maximum file size
+    LOGFILE = TMPDIR+"server.log" # logger output
+    MAXLOG = 2**20 # maximum logfile size
+    SSL_CONTEXT = None # "adhoc" or ('cert.pem', 'key.pem')
+
 #
 # Generation security token
 #
-TOKEN=hex(randint(0,2**64))[2:]
+if not "TOKEN" in globals() or not TOKEN:
+    TOKEN=hex(randint(0,2**64))[2:]
 
 class Session():
     """Session implementation"""
@@ -258,22 +276,6 @@ def app_close(session):
 #
 if __name__ == "__main__":
 
-    # Read configuration file (if any)
-    try:
-        from rest_server_config import *
-    except:
-        HOST="127.0.0.1"
-        PORT=5000
-        DEBUG=False
-        TIMEOUT = 60 # run timeout in seconds
-        RETENTION = 3600 # session retention in seconds
-        CLEANUP = 5 # session cleanup interval in seconds
-        TMPDIR = "/tmp/gridlabd/rest_server" # path to session data
-        MAXFILE = 2**32 - 1 # maximum file size
-        LOGFILE = TMPDIR+"server.log" # logger output
-        MAXLOG = 2**20 # maximum logfile size
-        SSL_CONTEXT = None # "adhoc" or ('cert.pem', 'key.pem')
-
     # Configure app
     app.config['MAX_CONTENT_LENGTH'] = MAXFILE
 
@@ -307,12 +309,8 @@ if __name__ == "__main__":
             LOGFILE=value if value else "/dev/stderr"
         elif key in ["--ssl_context"]:
             SSL_CONTEXT=value.split(",") if "," in value else ( value if value else None )
-        elif key in ["status"]:
-            COMMAND = 'status'
-        elif key in ["start"]:
-            COMMAND = 'start'
-        elif key in ["stop"]:
-            COMMAND = 'stop'
+        elif key in ["status","start","stop"]:
+            COMMAND = key
         else:
             raise Exception(f"'{arg}' is an invalid option")
 
