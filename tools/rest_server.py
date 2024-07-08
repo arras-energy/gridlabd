@@ -141,9 +141,17 @@ class Session():
         """Close session"""
         shutil.rmtree(self.cwd())
 
-    def run(self,*args):
+    def run(self,*args,wait=False,output=False):
         """Run GridLAB-D in a session"""
         try:
+
+            if not wait:
+                return dict(
+                    status = "OK",
+                    content = dict(
+                        process = os.fork(),
+                        ),
+                    )
 
             # start timer
             tic = time()
@@ -167,6 +175,17 @@ class Session():
             status = "TIMEOUT"
 
         # store outputs
+        if output:
+            return dict(
+                status=status if result.returncode==0 else "ERROR",
+                content=dict(
+                    returncode=result.returncode,
+                    runtime=round(toc-tic,3),
+                    stdout=result.stdout.decode("utf-8"),
+                    stderr=result.stderr.decode("utf-8"),
+                    ),
+                )
+
         with self.file("stdout","w") as fh:
             fh.write(result.stdout.decode("utf-8"))
         with self.file("stderr","w") as fh:
@@ -202,11 +221,35 @@ def app_run(session,command):
         session = Session(session)
         args = command.split()
         result = session.run(*args)
-        log.error(f"app_run(session={session}),command='{command}':exit({result['content']['returncode']})")
+        log.info(f"app_run(session={session}),command='{command}':exit({result['content']['returncode']})")
         return jsonify(result),http.HTTPStatus.OK
     except Exception as err:
         log.error(f"app_run(session={session},command='{command}'):{str(err)}")
         return jsonify(dict(status="ERROR",message=str(err))),http.HTTPStatus.BAD_REQUEST
+
+# Session start
+@app.route(f"/{TOKEN}/<string:session>/start/<path:command>")
+def app_start(session,command):
+    try:
+        session = Session(session)
+        args = command.split()
+        result = session.run(*args,wait=True)
+        log.info(f"app_start(session={session}),command='{command}':exit({result['content']['process']})")
+        return jsonify(result),http.HTTPStatus.OK
+    except Exception as err:
+        log.error(f"app_start(session={session},command='{command}'):{str(err)}")
+        return jsonify(dict(status="ERROR",message=str(err))),http.HTTPStatus.BAD_REQUEST
+
+# Session status
+@app.route(f"/{TOKEN}/<string:session>/status/<int:process>")
+def app_status(session,process):
+    try:
+        session = Session(session)
+        result = session.run("--pstatus",output=True)
+        return jsonify(result),http.HTTPStatus.OK
+    except:
+        log.error(f"app_start(session={session}):{str(err)}")
+        return jsonify(dict(status="ERROR",message=str(err))),http.HTTPStatus.BAD_REQUEST        
 
 # Session files
 @app.route(f"/{TOKEN}/<string:session>/files/")
