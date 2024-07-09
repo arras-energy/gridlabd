@@ -141,17 +141,19 @@ class Session():
         """Close session"""
         shutil.rmtree(self.cwd())
 
-    def run(self,*args,wait=False,output=False):
+    def run(self,*args,wait=True,output=False):
         """Run GridLAB-D in a session"""
         try:
 
             if not wait:
-                return dict(
-                    status = "OK",
-                    content = dict(
-                        process = os.fork(),
-                        ),
-                    )
+                pid = os.fork()
+                if pid > 0: # parent process
+                    return dict(
+                        status = "OK",
+                        content = dict(
+                            process = os.fork(),
+                            ),
+                        )
 
             # start timer
             tic = time()
@@ -191,6 +193,9 @@ class Session():
         with self.file("stderr","w") as fh:
             fh.write(result.stderr.decode("utf-8"))
 
+        if not wait:
+            exit(0)
+
         # return results
         return dict(
             status=status if result.returncode==0 else "ERROR",
@@ -215,7 +220,7 @@ def app_open(session):
         return jsonify(dict(status="ERROR",message=str(err))),http.HTTPStatus.BAD_REQUEST
 
 # Session run
-@app.route(f"/{TOKEN}/<string:session>/run/<path:command>")
+@app.route(f"/{TOKEN}/<string:session>/run/<string:command>")
 def app_run(session,command):
     try:
         session = Session(session)
@@ -228,7 +233,7 @@ def app_run(session,command):
         return jsonify(dict(status="ERROR",message=str(err))),http.HTTPStatus.BAD_REQUEST
 
 # Session start
-@app.route(f"/{TOKEN}/<string:session>/start/<path:command>")
+@app.route(f"/{TOKEN}/<string:session>/start/<string:command>")
 def app_start(session,command):
     try:
         session = Session(session)
