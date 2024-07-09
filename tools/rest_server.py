@@ -238,9 +238,9 @@ def app_start(session,command):
     try:
         session = Session(session)
         args = command.split()
-        result = session.run(*args,wait=True)
+        result = session.run(*args,wait=False)
         log.info(f"app_start(session={session}),command='{command}':exit({result['content']['process']})")
-        return jsonify(result),http.HTTPStatus.OK
+        return jsonify(dict(status="OK",content=result)),http.HTTPStatus.OK
     except Exception as err:
         log.error(f"app_start(session={session},command='{command}'):{str(err)}")
         return jsonify(dict(status="ERROR",message=str(err))),http.HTTPStatus.BAD_REQUEST

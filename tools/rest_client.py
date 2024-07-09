@@ -79,6 +79,16 @@ class Session:
         """
         return server_get(self.sid,"start"," ".join(args),**kwargs)
 
+    def progress(self,*args,**kwargs):
+        """Run command
+
+        Parameters:
+
+            *args (str list): gridlabd command
+            **kwargs (str list): requests GET options
+        """
+        return server_get(self.sid,"status"," ".join([str(x) for x in args]),**kwargs)
+
     def files(self,path=""):
         """Get list of files
 
@@ -118,11 +128,11 @@ if __name__ == "__main__":
     print("Session",session.sid,"created on",session.created_on,"status",session.status)
     print(session.upload("test.txt",open("rest_client.py","r")))
     print(session.run("version"))
-    result = session.start("--version=all")
-    print(result)
-    print(session.status(result["content"]["process"]))
     print(session.files())
     print(session.download("stdout"))
     print(session.download("stderr"))
     print(session.download("test.txt"))
+    result = session.start("--version=all")
+    print(result)
+    print(session.progress(result["content"]["process"]))
     print(session.close())
