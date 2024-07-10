@@ -141,7 +141,7 @@ class Session():
         """Close session"""
         shutil.rmtree(self.cwd())
 
-    def run(self,*args,wait=True,output=False):
+    def run(self,*args,wait=True,output=False,bin=False):
         """Run GridLAB-D in a session"""
         try:
 
@@ -159,7 +159,7 @@ class Session():
             tic = time()
 
             # dispatch simulation
-            result = sp.run(["gridlabd"]+list(args),
+            result = sp.run(["gridlabd.bin" if bin else "gridlabd"]+list(args),
                 cwd=self.cwd(),
                 capture_output=True,
                 timeout=TIMEOUT,
@@ -177,7 +177,7 @@ class Session():
             status = "TIMEOUT"
 
         # store outputs
-        if output:
+        if output and wait:
             return dict(
                 status=status if result.returncode==0 else "ERROR",
                 content=dict(
@@ -220,27 +220,27 @@ def app_open(session):
         return jsonify(dict(status="ERROR",message=str(err))),http.HTTPStatus.BAD_REQUEST
 
 # Session run
-@app.route(f"/{TOKEN}/<string:session>/run/<string:command>")
+@app.route(f"/{TOKEN}/<string:session>/run/<path:command>")
 def app_run(session,command):
     try:
         session = Session(session)
         args = command.split()
         result = session.run(*args)
-        log.info(f"app_run(session={session}),command='{command}':exit({result['content']['returncode']})")
+        log.info(f"app_run(session={session},command='{command}'):{result}")
         return jsonify(result),http.HTTPStatus.OK
     except Exception as err:
         log.error(f"app_run(session={session},command='{command}'):{str(err)}")
         return jsonify(dict(status="ERROR",message=str(err))),http.HTTPStatus.BAD_REQUEST
 
 # Session start
-@app.route(f"/{TOKEN}/<string:session>/start/<string:command>")
+@app.route(f"/{TOKEN}/<string:session>/start/<path:command>")
 def app_start(session,command):
     try:
         session = Session(session)
         args = command.split()
-        result = session.run(*args,wait=False)
-        log.info(f"app_start(session={session}),command='{command}':exit({result['content']['process']})")
-        return jsonify(dict(status="OK",content=result)),http.HTTPStatus.OK
+        result = session.run("server","start","--detach",*args,output=True)
+        log.info(f"app_start(session={session},command='{command}'):{result}")
+        return jsonify(result),http.HTTPStatus.OK
     except Exception as err:
         log.error(f"app_start(session={session},command='{command}'):{str(err)}")
         return jsonify(dict(status="ERROR",message=str(err))),http.HTTPStatus.BAD_REQUEST
@@ -250,20 +250,8 @@ def app_start(session,command):
 def app_status(session,process):
     try:
         session = Session(session)
-        # result = [x.split() for x in session.run("--pstatus",output=True)["stdout"].split("\n")]
-        # result = [x.split() for x in session.run("--pstatus",output=True)["content"]["stdout"].split("\n")]
-        # result = dict([(x[1],x[2:]) for x in result])
-        result = session.run("--pstatus",output=True)
-        if result["status"] == "OK":
-            print("result = ",result,file=sys.stderr)
-            result = [x.split() for x in result["content"]["stdout"].split("\n")]
-            print("result = ",result,file=sys.stderr,flush=True)
-            result = dict([(int(x[1]),[x[3],x[4]]) for x in result if len(x) > 4])
-            print("result = ",result,file=sys.stderr,flush=True)
-            if process in result:
-                result = dict(status="OK",content=dict(zip(["progress","state"],result[process])))#[(x[1],x[2:]) for x in result])
-            else:
-                result = dict(status="OK",content=dict(state="Done",progress="100%"))
+        result = session.run("server","list",str(process),output=True)
+        log.info(f"app_status(session={session}):{result}")
         return jsonify(result),http.HTTPStatus.OK
     except Exception as err:
         log.error(f"app_start(session={session}):{str(err)}")

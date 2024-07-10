@@ -136,8 +136,7 @@ if __name__ == "__main__":
     # print(session.download("stdout"))
     # print(session.download("stderr"))
     # print(session.download("test.txt"))
-    result = session.start("--version=all")
+    result = session.start("autotest/autotest/test_R1-12.47-1.glm")
     print(result)
-#python ../rest_client.py
-    print(session.progress(result["content"]["process"]))
+    print(session.progress(int(result["stdout"].strip())))
     print(session.close())
