@@ -17,7 +17,7 @@ def get_server_info():
     try:
         with open(os.path.join(TMPDIR,"server.info"),"r") as fh:
             return json.load(fh)
-    except FileExistsError:
+    except FileNotFoundError:
         return None
 
 def server_get(*args,**kwargs):
@@ -40,7 +40,11 @@ def server_post(*args,**kwargs):
         raise Exception(data["message"])
     return data["content"]
 
-URL = get_server_info()["url"]
+try:
+    URL = get_server_info()["url"]
+except:
+    print("WARNING: local server info not found (did you forget to start the rest_server?)",file=sys.stderr)
+    URL = "http://127.0.0.1:5000/YOUR_TOKEN"
 
 class Session:
     """Session client implementation"""
@@ -125,14 +129,15 @@ class Session:
 if __name__ == "__main__":
 
     session = Session()
-    print("Session",session.sid,"created on",session.created_on,"status",session.status)
-    print(session.upload("test.txt",open("rest_client.py","r")))
-    print(session.run("version"))
-    print(session.files())
-    print(session.download("stdout"))
-    print(session.download("stderr"))
-    print(session.download("test.txt"))
+    # print("Session",session.sid,"created on",session.created_on,"status",session.status)
+    # print(session.upload("test.txt",open(__file__,"r")))
+    # print(session.run("version"))
+    # print(session.files())
+    # print(session.download("stdout"))
+    # print(session.download("stderr"))
+    # print(session.download("test.txt"))
     result = session.start("--version=all")
     print(result)
+#python ../rest_client.py
     print(session.progress(result["content"]["process"]))
     print(session.close())

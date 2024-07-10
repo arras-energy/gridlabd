@@ -250,9 +250,22 @@ def app_start(session,command):
 def app_status(session,process):
     try:
         session = Session(session)
+        # result = [x.split() for x in session.run("--pstatus",output=True)["stdout"].split("\n")]
+        # result = [x.split() for x in session.run("--pstatus",output=True)["content"]["stdout"].split("\n")]
+        # result = dict([(x[1],x[2:]) for x in result])
         result = session.run("--pstatus",output=True)
+        if result["status"] == "OK":
+            print("result = ",result,file=sys.stderr)
+            result = [x.split() for x in result["content"]["stdout"].split("\n")]
+            print("result = ",result,file=sys.stderr,flush=True)
+            result = dict([(int(x[1]),[x[3],x[4]]) for x in result if len(x) > 4])
+            print("result = ",result,file=sys.stderr,flush=True)
+            if process in result:
+                result = dict(status="OK",content=dict(zip(["progress","state"],result[process])))#[(x[1],x[2:]) for x in result])
+            else:
+                result = dict(status="OK",content=dict(state="Done",progress="100%"))
         return jsonify(result),http.HTTPStatus.OK
-    except:
+    except Exception as err:
         log.error(f"app_start(session={session}):{str(err)}")
         return jsonify(dict(status="ERROR",message=str(err))),http.HTTPStatus.BAD_REQUEST        
 
@@ -421,6 +434,10 @@ if __name__ == "__main__":
 
     # Command processing
     if COMMAND == 'start':
+
+        if os.fork() > 0:
+            sleep(1)
+            exit(0)
 
         # Check server status
         if check_server():
