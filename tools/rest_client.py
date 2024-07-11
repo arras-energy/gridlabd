@@ -151,14 +151,14 @@ class Session:
 if __name__ == "__main__":
 
     session = Session()
-    # print("Session",session.sid,"created on",session.created_on,"status",session.status)
-    # print(session.upload("test.txt",open(__file__,"r")))
-    # print(session.run("version"))
-    # print(session.files())
-    # print(session.download("stdout"))
-    # print(session.download("stderr"))
-    # print(session.download("test.txt"))
-    result = session.start("-W",os.path.join(os.getcwd(),"autotest","autotest"),"test_R3-12.47-3.glm")
+    print("Session",session.sid,"created on",session.created_on,"status",session.status)
+    print(session.upload("test.txt",open(__file__,"r")))
+    print(session.run("version"))
+    print(session.files())
+    print(session.download("stdout"))
+    print(session.download("stderr"))
+    print(session.download("test.txt"))
+    result = session.start("-W",os.path.join(os.getcwd(),"autotest"),"test_rest_server.glm")
     print(result)
     process = result["process"]
     while True:
