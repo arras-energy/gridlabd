@@ -48,6 +48,7 @@ from time import time, sleep
 from random import randint
 from flask import Flask, request
 from flask.json import jsonify
+import requests
 import atexit
 import errno
 import http
@@ -141,15 +142,26 @@ class Session():
         """Close session"""
         shutil.rmtree(self.cwd())
 
-    def run(self,*args):
+    def run(self,*args,wait=True,output=False,bin=False):
         """Run GridLAB-D in a session"""
         try:
+
+            if not wait:
+                pid = os.fork()
+                if pid > 0: # parent process
+                    return dict(
+                        status = "OK",
+                        content = dict(
+                            process = os.fork(),
+                            ),
+                        )
 
             # start timer
             tic = time()
 
             # dispatch simulation
-            result = sp.run(["gridlabd"]+list(args),
+            log.info(f"{args}: starting")
+            result = sp.run(["gridlabd.bin" if bin else "gridlabd"]+list(args),
                 cwd=self.cwd(),
                 capture_output=True,
                 timeout=TIMEOUT,
@@ -167,10 +179,25 @@ class Session():
             status = "TIMEOUT"
 
         # store outputs
+        if output and wait:
+            return dict(
+                status=status if result.returncode==0 else "ERROR",
+                content=dict(
+                    returncode=result.returncode,
+                    runtime=round(toc-tic,3),
+                    stdout=result.stdout.decode("utf-8"),
+                    stderr=result.stderr.decode("utf-8"),
+                    ),
+                )
+
         with self.file("stdout","w") as fh:
             fh.write(result.stdout.decode("utf-8"))
         with self.file("stderr","w") as fh:
             fh.write(result.stderr.decode("utf-8"))
+
+        if not wait:
+            log.info(f"{args}: done")
+            sys.exit(0)
 
         # return results
         return dict(
@@ -202,11 +229,71 @@ def app_run(session,command):
         session = Session(session)
         args = command.split()
         result = session.run(*args)
-        log.error(f"app_run(session={session}),command='{command}':exit({result['content']['returncode']})")
+        log.info(f"app_run(session={session},command='{command}'):{result}")
         return jsonify(result),http.HTTPStatus.OK
     except Exception as err:
         log.error(f"app_run(session={session},command='{command}'):{str(err)}")
         return jsonify(dict(status="ERROR",message=str(err))),http.HTTPStatus.BAD_REQUEST
+
+# Process start
+@app.route(f"/{TOKEN}/<string:session>/start/<path:command>")
+def app_start(session,command):
+    try:
+        session = Session(session)
+        args = command.split()
+        result = session.run("server","start",*args,output=True)
+        log.info(f"app_start(session={session},command='{command}'):{result}")
+        if result["status"] != "OK":
+            raise Exception("process start failed")
+        return jsonify(dict(status="OK",content=dict(process=int(result["content"]["stdout"].strip())))),http.HTTPStatus.OK
+    except Exception as err:
+        log.error(f"app_start(session={session},command='{command}'):{str(err)}")
+        return jsonify(dict(status="ERROR",message=str(err))),http.HTTPStatus.BAD_REQUEST
+
+# Process status
+@app.route(f"/{TOKEN}/<string:session>/status/<int:process>")
+def app_status(session,process):
+    try:
+        session = Session(session)
+        result = session.run("server","status",str(process),output=True)
+        log.info(f"app_status(session={session}):{result}")
+        data = [x.split() for x in result["content"]["stdout"].strip().split("\n")]
+        log.info(f"app_status(session={session}):{data}")
+        if len(data) > 1:
+            raise Exception("unexpected extra results")
+        if 0 < len(data[0]) < 2:
+            raise Exception("missing results")
+        result["content"] = dict(state=None,progress=None)
+        if len(data[0]) > 0:
+            port = data[0][0]
+            if port != str(process):
+                raise Exception("mismatched process result")
+            req = requests.get(f"http://{HOST}:{port}/raw/progress")
+            if req and req.status_code == 200:
+                result["content"] = dict(state=data[0][1],progress=float(req.content.decode('utf-8')))
+        return jsonify(result),http.HTTPStatus.OK
+    except Exception as err:
+        log.error(f"app_start(session={session}):{str(err)}")
+        return jsonify(dict(status="ERROR",message=str(err))),http.HTTPStatus.BAD_REQUEST        
+
+# Process stop
+@app.route(f"/{TOKEN}/<string:session>/stop/<int:process>")
+def app_stop(session,process):
+    try:
+        session = Session(session)
+        req = requests.get(f"http://{HOST}:{process}/raw/progress")
+        result = dict(status="OK",content=dict(state=None,progress=None))
+        try:
+            result["content"]["progress"] = float(req.content.decode('utf-8'))
+        except:
+            pass
+        req = requests.get(f"http://{HOST}:{process}/control/stop")
+        log.info(f"app_stop(session={session}):{req.status_code}:{req.content}")
+        result["content"]["state"] = "STOPPED"
+        return jsonify(result),http.HTTPStatus.OK
+    except Exception as err:
+        log.error(f"app_start(session={session}):{str(err)}")
+        return jsonify(dict(status="ERROR",message=str(err))),http.HTTPStatus.BAD_REQUEST        
 
 # Session files
 @app.route(f"/{TOKEN}/<string:session>/files/")
@@ -344,9 +431,9 @@ if __name__ == "__main__":
                 shutil.copyfile(LOGFILE,name)
                 open(LOGFILE,"w").close()
                 log.info(f"rotated log into {name}")
-            signal.alarm(CLEANUP)
-        signal.signal(signal.SIGALRM,on_sigalrm)
-        signal.alarm(CLEANUP)
+            signal.alarm(CLEANUP) # schedule next cleanup
+        signal.signal(signal.SIGALRM,on_sigalrm) # install cleanup handler
+        signal.alarm(1) # start cleanup asap
 
     def set_server_info(**kwargs):
         """Set server info"""
@@ -373,6 +460,10 @@ if __name__ == "__main__":
 
     # Command processing
     if COMMAND == 'start':
+
+        if os.fork() > 0:
+            sleep(1)
+            exit(0)
 
         # Check server status
         if check_server():

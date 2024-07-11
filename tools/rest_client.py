@@ -17,7 +17,7 @@ def get_server_info():
     try:
         with open(os.path.join(TMPDIR,"server.info"),"r") as fh:
             return json.load(fh)
-    except FileExistsError:
+    except FileNotFoundError:
         return None
 
 def server_get(*args,**kwargs):
@@ -40,7 +40,11 @@ def server_post(*args,**kwargs):
         raise Exception(data["message"])
     return data["content"]
 
-URL = get_server_info()["url"]
+try:
+    URL = get_server_info()["url"]
+except:
+    print("WARNING: local server info not found (did you forget to start the rest_server?)",file=sys.stderr)
+    URL = "http://127.0.0.1:5000/YOUR_TOKEN"
 
 class Session:
     """Session client implementation"""
@@ -68,6 +72,48 @@ class Session:
             **kwargs (str list): requests GET options
         """
         return server_get(self.sid,"run"," ".join(args),**kwargs)
+
+    def start(self,*args,**kwargs):
+        """Run command
+
+        Parameters:
+
+            *args (str list): gridlabd command
+            **kwargs (str list): requests GET options
+
+        Returns:
+
+            process (int): port number to control process
+        """
+        return server_get(self.sid,"start"," ".join(args),**kwargs)
+
+    def progress(self,*args,**kwargs):
+        """Run command
+
+        Parameters:
+
+            *args (str list): port number
+            **kwargs (str list): requests GET options
+
+        Returns:
+
+            progress (float): fraction of process completed
+            state (str): state of process
+        """
+        return server_get(self.sid,"status"," ".join([str(x) for x in args]),**kwargs)
+
+    def stop(self,*args,**kwargs):
+        """Stop command
+
+        Parameters:
+
+            *args (str list): port number
+
+        Returns:
+
+            state (str): state of process
+        """
+        return server_get(self.sid,"stop"," ".join([str(x) for x in args]),**kwargs)
 
     def files(self,path=""):
         """Get list of files
@@ -106,10 +152,23 @@ if __name__ == "__main__":
 
     session = Session()
     print("Session",session.sid,"created on",session.created_on,"status",session.status)
-    print(session.upload("test.txt",open("rest_client.py","r")))
+    print(session.upload("test.txt",open(__file__,"r")))
     print(session.run("version"))
     print(session.files())
     print(session.download("stdout"))
     print(session.download("stderr"))
     print(session.download("test.txt"))
+    result = session.start("-W",os.path.join(os.getcwd(),"autotest"),"test_rest_server.glm")
+    print(result)
+    process = result["process"]
+    while True:
+        import time
+        time.sleep(1)
+        result = session.progress(process)
+        print(result)
+        if result["state"] != "RUNNING":
+            break
+        if float(result["progress"]) > 0:
+            print(session.stop(process))
+
     print(session.close())

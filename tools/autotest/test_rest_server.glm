@@ -1,0 +1,5 @@
+#ifexist ../test_rest_server.sh
+#define DIR=..
+#endif
+
+#system source ${DIR:-.}/test_rest_server.sh
