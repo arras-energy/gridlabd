@@ -80,6 +80,10 @@ class Session:
 
             *args (str list): gridlabd command
             **kwargs (str list): requests GET options
+
+        Returns:
+
+            process (int): port number to control process
         """
         return server_get(self.sid,"start"," ".join(args),**kwargs)
 
@@ -88,10 +92,28 @@ class Session:
 
         Parameters:
 
-            *args (str list): gridlabd command
+            *args (str list): port number
             **kwargs (str list): requests GET options
+
+        Returns:
+
+            progress (float): fraction of process completed
+            state (str): state of process
         """
         return server_get(self.sid,"status"," ".join([str(x) for x in args]),**kwargs)
+
+    def stop(self,*args,**kwargs):
+        """Stop command
+
+        Parameters:
+
+            *args (str list): port number
+
+        Returns:
+
+            state (str): state of process
+        """
+        return server_get(self.sid,"stop"," ".join([str(x) for x in args]),**kwargs)
 
     def files(self,path=""):
         """Get list of files
@@ -136,7 +158,17 @@ if __name__ == "__main__":
     # print(session.download("stdout"))
     # print(session.download("stderr"))
     # print(session.download("test.txt"))
-    result = session.start("autotest/autotest/test_R1-12.47-1.glm")
+    result = session.start("-W",os.path.join(os.getcwd(),"autotest","autotest"),"test_R3-12.47-3.glm")
     print(result)
-    print(session.progress(int(result["stdout"].strip())))
+    process = result["process"]
+    while True:
+        import time
+        time.sleep(1)
+        result = session.progress(process)
+        print(result)
+        if result["state"] != "RUNNING":
+            break
+        if float(result["progress"]) > 0:
+            print(session.stop(process))
+
     print(session.close())
