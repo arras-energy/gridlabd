@@ -144,5 +144,28 @@ void gen::add_cost(class gencost *add)
 
 int gen::init(OBJECT *parent)
 {
+	if ( get_bus() == 0 )
+	{
+		if ( parent == NULL )
+		{
+			error("cannot find bus id without a known parent");
+			return 0;
+		}
+		class bus *p = OBJECTDATA(parent,class bus);
+		if ( p->isa("bus","pypower") )
+		{
+			if ( p->get_bus_i() == 0 )
+			{
+				return 2; // defer until bus is initialized
+			}
+			set_bus(p->get_bus_i());
+		}
+		else
+		{
+			error("parent object '%s' is not a pypower bus",p->get_name());
+			return 0;
+		}
+	}
+			
 	return 1;
 }
