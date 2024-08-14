@@ -105,7 +105,7 @@ int branch::init(OBJECT *parent)
 	// automatic bus lookup
 	if ( get_fbus() == 0 )
 	{
-		bus *f = (bus*)get_from();
+		bus *f = OBJECTDATA(get_from(),bus);
 		if ( f->isa("bus","pypower") )
 		{
 			if ( f->get_bus_i() == 0 )
@@ -122,7 +122,7 @@ int branch::init(OBJECT *parent)
 	}
 	if ( get_tbus() == 0 )
 	{
-		bus *t = (bus*)get_to();
+		bus *t = OBJECTDATA(get_to(),bus);
 		if ( t->isa("bus","pypower") )
 		{
 			if ( t->get_bus_i() == 0 )
