@@ -12,6 +12,7 @@ OPTIONS
     -o|--output[=[FILEPATH]]    set output file (default stdout)
     -p|--precision=INTEGER      set output decimal precision (default 4)
     --quiet                     disable error output
+    --solve                     enable PyPower solver check
     -t|--filetype[=[FILETYPE]]  set file type (default `auto`)
     --verbose                   enable version output
     --warning                   disable warning output
@@ -112,6 +113,7 @@ OUTPUTPATH="/dev/stdout"
 OUTPUTFILE=sys.stdout
 FILETYPE='auto'
 SPARSE=True
+SOLVE=False
 
 E_OK = 0
 E_INVALID = 1
@@ -246,6 +248,21 @@ def get_powerflow_network(objects):
     M = branch.shape[0]
     verbose(f"M = {M}")
     verbose(f"branch ({'x'.join([str(x) for x in branch.shape])}) =\n{branch}")
+
+    if SOLVE:
+        from pypower.api import runpf
+        result = runpf(dict(
+            version=2,
+            baseMVA=100.0,
+            bus=np.array(bus),
+            branch=np.array(branch),
+            gen=np.array([]),
+            gencost=np.array([]),
+            ))
+        if result.success == 0:
+            warning("solver failed")
+        else:
+            print(f"solver result =\n{result}")
 
     global FILETYPE
     if FILETYPE == "auto":
@@ -394,6 +411,8 @@ if __name__ == "__main__":
                     error(E_INVALID,f"'{arg}' has an invalid integer value")
             elif key in ["--dense"]:
                 SPARSE=False
+            elif key in ["--solve"]:
+                SOLVE=True
             else:
                 error(E_INVALID,f"option '{arg}' is invalid")
 
