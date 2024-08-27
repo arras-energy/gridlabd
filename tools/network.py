@@ -3,19 +3,29 @@
 Syntax: gridlabd network OPTIONS [...]
 
 OPTIONS
+    --debug                     enable traceback output on exceptions
+    --dense                     enable dense array output
+    -g|--generator=SCHEME       add swing bus generators (default `auto`)
     -h|--help|help              get this help
     -i|--input[=[FILEPATH]]     set input file (default stdin)
+    --json=KEY:VALUE[,...]      set JSON dump options (see `json` module)
     -o|--output[=[FILEPATH]]    set output file (default stdout)
-    -t|--filetype[=[FILETYPE]]  set file type (default 'auto')
-    -z|--zero=FLOAT             set near zero value (default 1e-12)
     -p|--precision=INTEGER      set output decimal precision (default 4)
-    -g|--generator=SCHEME       add swing bus generators (default 'auto')
+    --quiet                     disable error output
+    -t|--filetype[=[FILETYPE]]  set file type (default `auto`)
+    --verbose                   enable version output
+    --warning                   disable warning output
+    -z|--zero=FLOAT             set near zero value (default 1e-12)
 
 DESCRIPTION
 
 Input JSON file must be a valid GridLAB-D JSON model which includes objects.
+Note that for impedance values to be calculated correctly, the powerflow must
+be initialized, i.e., loaded with at the least the `-I` option, if not solved
+in time-series (no load option). Do not use the `-C` option because this only
+compiles the model but does not solve the powerflow.
 
-Output can be a JSON or a PyPower case. JSON files are used for `network`
+Outputs can be a JSON or a PyPower case. JSON files are used for `network`
 filetype and contains the 3-phase network topology data, including
 
         N = number of busses
@@ -30,6 +40,11 @@ filetype and contains the 3-phase network topology data, including
         L = weighted Laplacian matrix
         J = incidence matrix,
 
+By default the arrays A, I, L, and J are output as sparse list-of-lists, i.e.,
+rows indices followed by row data. See SciPy LIL format for details. Use the
+`dense` option to enable non-sparse output (can be very slow for large
+networks).
+
 Output can also be a `pypower` filetype for a PyPower case data. See 
 https://pypower.org/ for information on the format of PyPower case data.
 
@@ -40,10 +55,16 @@ set the output data decimal precision.
 The `generator` option is used to determine whether and how the swing bus
 generator is defined. The following values are recognized:
 
-    auto        automatically add a generator if none is found on a swing bus 
-    single      consolidate swing bus generators even if the swing busses appear to be separate
+    auto        automatically add a generator if none is found on a swing
+                bus 
+
+    single      consolidate swing bus generators even if the swing busses
+                appear to be separate
+    
     none        do not add generators to swing busses
-    multiple    separate swing bus generators even if the swing busses appear to be the same
+    
+    multiple    separate swing bus generators even if the swing busses appear
+                to be the same
 
 PYTHON
 
@@ -67,7 +88,10 @@ dict_keys(['N', 'M', 'line', 'Z', 'R', 'row', 'col', 'A', 'I', 'L', 'J'])
 ~~~
 """
 
-import os, sys, json, signal
+import os, sys
+import json
+import signal
+import datetime as dt
 import numpy as np
 import scipy as sp
 import warnings
@@ -81,6 +105,13 @@ WARNING=not "--warning" in sys.argv
 QUIET="--quiet" in sys.argv
 VERBOSE="--verbose" in sys.argv
 DEBUG="--debug" in sys.argv
+JSONOPTS=dict(separators=(',',':'))
+INPUTPATH="/dev/stdin"
+INPUTFILE=sys.stdin
+OUTPUTPATH="/dev/stdout"
+OUTPUTFILE=sys.stdout
+FILETYPE='auto'
+SPARSE=True
 
 E_OK = 0
 E_INVALID = 1
@@ -140,16 +171,14 @@ def verbose(*args,**kwargs):
         msg = f"VERBOSE [{EXENAME}]: {' '.join([str(x) for x in args])}"
         print(msg,**kwargs)
 
-INPUTPATH="/dev/stdin"
-INPUTFILE=sys.stdin
-OUTPUTPATH="/dev/stdout"
-OUTPUTFILE=sys.stdout
-FILETYPE='auto'
-
 class NumpyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.ndarray):
             return obj.tolist()
+        elif isinstance(obj,sp.sparse.coo_array):
+            return [obj.row,obj.data.round(PRECISION)]
+        elif isinstance(obj,sp.sparse.coo_matrix):
+            return [obj.row,obj.data.round(PRECISION)]
         elif isinstance(obj, (complex)):
             return f"{obj.real}{obj.imag:+f}j"
         else:
@@ -234,6 +263,8 @@ def get_powerflow_network(objects):
 
         # # Real impedance by line
         R = branch.T[2]
+        if (R==0).all():
+            warning("no impedance data available")
 
         # get A - Laplacian matrix
         row = [int(x)-1 for x in branch[:,0]]
@@ -243,18 +274,18 @@ def get_powerflow_network(objects):
         verbose(f"row ({len(row)}) =",row)
         verbose(f"col ({len(col)}) =",col)
         A = sp.sparse.coo_array(([1]*M + [-1]*M,(row+col,col+row)),(N,N))
-        verbose(f"A  ({'x'.join([str(x) for x in A.shape])}) =\n{A.toarray()}")
+        verbose(f"A  ({'x'.join([str(x) for x in A.shape])}) =\n{A.tocoo() if SPARSE else A.toarray()}")
 
         # get I - weighted line-node incidence matrix
         I = sp.sparse.coo_array((Z,(list(range(M)),row)),shape=(M,N)) - sp.sparse.coo_array((Z,(list(range(M)),col)),shape=(M,N))
-        verbose(f"I  ({'x'.join([str(x) for x in I.shape])}) =\n{I.toarray()}")
+        verbose(f"I  ({'x'.join([str(x) for x in I.shape])}) =\n{I .tocoo()if SPARSE else I.toarray()}")
 
         # get L - weighted Laplacian
         L = I.T@I
-        verbose(f"L =\n{L.toarray()}")
+        verbose(f"L =\n{L.tocoo() if SPARSE else L.toarray()}")
 
         J = adjacency_to_incidence(A)
-        verbose(f"J =\n{J}")
+        verbose(f"J =\n{J.tocoo() if SPARSE else J.toarray()}")
 
         busphases = [x+"_A" for x in busnames]+[x+"_B" for x in busnames]+[x+"_C" for x in busnames]
         branchphases = [x+"_A" for x in branchnames]+[x+"_B" for x in branchnames]+[x+"_C" for x in branchnames]
@@ -266,15 +297,17 @@ def get_powerflow_network(objects):
             R = R.round(PRECISION),
             row = [busphases[x] for x in row],
             col = [busphases[x] for x in col],
-            A = A.toarray().round(PRECISION),
-            I = I.toarray().round(PRECISION),
-            L = L.toarray().round(PRECISION),
-            J = J.toarray().round(PRECISION),
+            A = (A.tocoo() if SPARSE else A.toarray().round(PRECISION)),
+            I = (I.tocoo() if SPARSE else I.toarray().round(PRECISION)),
+            L = (L.tocoo() if SPARSE else L.toarray().round(PRECISION)),
+            J = (J.tocoo() if SPARSE else J.toarray().round(PRECISION)),
             )
 
     elif FILETYPE == "pypower":
 
-        return f"""from numpy import array
+        return f"""# generated by '{' '.join(sys.argv)}' at {dt.datetime.now()}
+
+from numpy import array
 
 def {os.path.splitext(os.path.basename(OUTPUTPATH))[0]}():
     return dict(
@@ -344,6 +377,8 @@ if __name__ == "__main__":
                 OUTPUTFILE=open(value,"w") if value else sys.stdout
             elif key in ["-t","--filetype"] and value in ["network","pypower"]:
                 FILETYPE=value if value else "auto"
+            elif key in ["--json"]:
+                JSONOPTS={x:y for x,y in [z.split(":") for z in value.split(",")]}
             elif key in ["-z","--zero"]:
                 try:
                     NEARZERO=float(value)
@@ -357,6 +392,8 @@ if __name__ == "__main__":
                     PRECISION=int(value)
                 except ValueError:
                     error(E_INVALID,f"'{arg}' has an invalid integer value")
+            elif key in ["--dense"]:
+                SPARSE=False
             else:
                 error(E_INVALID,f"option '{arg}' is invalid")
 
@@ -369,7 +406,7 @@ if __name__ == "__main__":
             error(E_FAILED,"JSON model contains no object data")
         results = get_powerflow_network(DATA["objects"])
         if type(results) is dict:
-            print(json.dumps(results,indent=4,cls=NumpyEncoder),file=OUTPUTFILE) 
+            json.dump(results,cls=NumpyEncoder,fp=OUTPUTFILE,**JSONOPTS) 
         elif type(results) is str:
             print(results,file=OUTPUTFILE)
         else:
