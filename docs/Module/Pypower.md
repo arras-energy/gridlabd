@@ -27,6 +27,7 @@ module pypower
 	enumeration {PY=2, JSON=1, CSV=0} save_format; // Save case format
 	double total_loss[MW]; // System-wide line losses
 	double generation_shortfall[MW]; // System-wide generation shortfall
+    bool with_emissions; // Include emissions results
 }
 ~~~
 
@@ -190,7 +191,12 @@ generator models with both `bus` and `gen` objects. When integrating with a
 properties `Pd` and `Qd`, respectively, when the plant is `ONLINE`.  
 
 When integrated with a `gen` object, both the `Pd` and `Qd` values are updated
-based on the powerplant's generator status and type.
+based on the powerplant's generator status and type. 
+
+Generators costs are copied to the corresponding `gencost` object when both
+share the same parent `gen` object. If the `powerplant` object has a parent
+`bus` object, the generator cost data is not copied to the corresponding
+`gencost` object.
 
 ## Powerlines
 
