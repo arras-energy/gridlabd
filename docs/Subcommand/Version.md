@@ -42,7 +42,7 @@ The follow command options are supported:
 	gridlabd version check [-v|-q]
 ~~~
 
-The `check` command determines whether the current version is up to date.
+The `check` command determines whether the current version is up to date. If the file `no-version-check` is found in the local folder or in the folder `$HOME/.gridlabd`, then the version check is suppressed. This can significantly speed up short calls to gridlabd.
 
 ## `help`
 
