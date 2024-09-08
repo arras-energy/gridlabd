@@ -51,17 +51,17 @@ LHST-10.5
  AU/Island/Lord Howe
 
 ; Europe
-MSK-4MSKS,M3.5.0/01:00,M10.5.0/01:00 ; Moscow Time, Summer Time 1am last Sun/Mar to last Sun/Oct
+MSK-3MSKS,M3.5.0/01:00,M10.5.0/01:00 ; Moscow Time, Summer Time 1am last Sun/Mar to last Sun/Oct
  EU/RU/Moscow
  EU/RU/St Petersburg
  EU/GE/Tbilisi
  EU/RU/Samara
  EU/RU/Izhevsk
 EET-3 ; Eastern Europe Time (no Summer Time)
-EET-3EEST,M3.5.0/01:00,M10.5.0/01:00 ; Eastern European Time, Summer Time 1am last Sun/Mar to last Sun/Oct
+EET-2EEST,M3.5.0/01:00,M10.5.0/01:00 ; Eastern European Time, Summer Time 1am last Sun/Mar to last Sun/Oct
  EU/BY/Minsk
  EU/RU/Kaliningrad
-CET-2CEST,M3.5.0/01:00,M10.5.0/01:00 ; Central European Time, Summer Time 1am last Sun/Mar to last Sun/Oct
+CET-1CEST,M3.5.0/01:00,M10.5.0/01:00 ; Central European Time, Summer Time 1am last Sun/Mar to last Sun/Oct
  EU/BG/Sofia
  EU/CY/Kyrenia
  EU/EE/Tallinn
@@ -70,7 +70,7 @@ CET-2CEST,M3.5.0/01:00,M10.5.0/01:00 ; Central European Time, Summer Time 1am la
  EU/LV/Riga
  EU/LT/Vilnius
  EU/UA/Kiev
-WET-1WEST,M3.5.0/01:00,M10.5.0/01:00 ; Western European Time, Summer Time 1am last Sun/Mar to last Sun/Oct
+WET-0WEST,M3.5.0/01:00,M10.5.0/01:00 ; Western European Time, Summer Time 1am last Sun/Mar to last Sun/Oct
  EU/AL/Tirana
  EU/AD/Andorra la Vella
  EU/BE/Brussels

@@ -30,6 +30,8 @@ public:
 
 public:
 	GL_ATOMIC(int32,child_count);
+	GL_ATOMIC(complex,current);
+	GL_ATOMIC(double,loss);
 	
 public:
 	// event handlers

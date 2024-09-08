@@ -110,6 +110,7 @@ interpolate_method = 'quadratic'
 float_format = "%.1f"
 date_format = "%Y-%m-%d %H:%M:%S"
 max_retries = 5
+position = None
 
 def getforecast(lat,lon):
     """Get NOAA location"""
@@ -174,7 +175,7 @@ def writeglm(data, glm=sys.stdout, name=None, csv=None,download_now=True):
         glm.write("}\n")
         data.columns = list(map(lambda x:x.split('[')[0],data.columns))
         glm.write("module tape;\n")
-        glm.write("#define NOAA_FORECAST_TIMEZONE=${SHELL gridlabd timezone local}\n")
+        glm.write(f"#define NOAA_FORECAST_TIMEZONE=${{SHELL gridlabd timezone {','.join(position)} -f=TZSPEC}}\n")
         glm.write(f"#define NOAA_FORECAST_STARTTIME={data.index.min().isoformat('T')}\n")
         glm.write(f"#define NOAA_FORECAST_STOPTIME={data.index.max().isoformat('T')}\n")
         glm.write("object forecast\n{\n")
@@ -207,7 +208,6 @@ if __name__ == "__main__":
         else:
             print(f"Syntax: {os.path.basename(sys.argv[0]).replace('.py','')} -p -position=LAT,LON [-i|--interpolate=TIME|METHOD] [-g|--glm=GLMNAME] [-n|--name=OBJECTNAME] [-c|--csv=CSV] [--test] [-h|--help|help]")
         exit(code)
-    position = None
     glm = None
     name = None
     csv = None

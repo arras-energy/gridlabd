@@ -2,7 +2,6 @@ clock
 {
 	timezone PST+8PDT;
 	timezone "US/CA/Los Angeles";
-	timezone ${SHELL gridlabd timezone local};
 }
 
 #assert $(gridlabd timezone 37.5,-122.2) == "America/Los_Angeles"
