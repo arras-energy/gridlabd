@@ -80,7 +80,7 @@ jobs:
   buildAWSUbuntuAMI:
     runs-on: ubuntu-22.04
     environment: Integration
-    needs: [buildUbuntu22FastS3,buildMacos12FastS3,buildMacos13FastS3]
+    needs: [buildUbuntu22FastS3,buildMacos13FastS3]
 
     steps:
     - uses: actions/checkout@v3
