@@ -239,7 +239,7 @@ static CALLBACKS callbacks = {
 	{randomvar_getnext,randomvar_getspec},
 	{version_major,version_minor,version_patch,version_build,version_branch},
 	call_external_callback,
-	{python_embed_import,python_embed_call},
+	{NULL,python_embed_import,python_embed_call},
 	MAGIC /* used to check structure */
 };
 CALLBACKS *module_callbacks(void) { return &callbacks; }
@@ -539,6 +539,8 @@ MODULE *module_load(const char *file, /**< module filename, searches \p PATH */
 
 	/* call the initialization function */
 	errno = 0;
+	extern PyObject *gridlabd_module;
+	callbacks.python.main = gridlabd_module;
 	mod->oclass = (*init)(&callbacks,(void*)mod,argc,argv);
 	if ( mod->oclass==NULL && errno!=0 )
 		return NULL;

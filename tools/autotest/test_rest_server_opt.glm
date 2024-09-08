@@ -1,0 +1,15 @@
+class test
+{
+	randomvar x;
+}
+
+object test
+{
+	x "type:normal(0,1);refresh:1s";
+}
+
+clock
+{
+	starttime "2000-01-01 00:00:00";
+	stoptime "2001-01-01 00:00:00";
+}

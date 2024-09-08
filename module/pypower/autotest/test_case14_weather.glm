@@ -20,7 +20,7 @@ module tape
 object recorder
 {
 	parent pp_bus_1;
-	property Sh,Sn,Sg,Wd,Ws,Td,Tw,RH,PW;
+	property S,Sh,Sn,Sg,Wd,Ws,Td,Tw,RH,PW;
 	file "test_case14_weather_pp_bus_1_record.csv";
 	interval 3600;
 }
