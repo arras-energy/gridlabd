@@ -122,11 +122,50 @@ int gen::create(void)
 
 	extern double base_MVA;
 	mBase = base_MVA;
+	cost = NULL;
 
 	return 1; /* return 1 on success, 0 on failure */
 }
 
+void gen::add_cost(class gencost *add)
+{
+	if ( cost == NULL )
+	{
+		cost = add;
+	}
+
+	// only identical cost models can be "added" together
+	else if ( ! cost->is_equal(add) )
+	{
+		error("unable to add to different gencost models");
+	}
+}
+
+
 int gen::init(OBJECT *parent)
 {
+	if ( get_bus() == 0 )
+	{
+		if ( parent == NULL )
+		{
+			error("cannot find bus id without a known parent");
+			return 0;
+		}
+		class bus *p = OBJECTDATA(parent,class bus);
+		if ( p->isa("bus","pypower") )
+		{
+			if ( p->get_bus_i() == 0 )
+			{
+				return 2; // defer until bus is initialized
+			}
+			set_bus(p->get_bus_i());
+		}
+		else
+		{
+			error("parent object '%s' is not a pypower bus",p->get_name());
+			return 0;
+		}
+	}
+			
 	return 1;
 }
