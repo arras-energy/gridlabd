@@ -103,9 +103,6 @@ fault_check.txt
 # files that should be ignored by git
 *_ignore.*
 
-# requirements files
-requirements.txt
-
 # terraform artifacts
 *.zip
 terraform.*
