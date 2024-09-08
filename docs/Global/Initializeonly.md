@@ -5,24 +5,24 @@
 GLM:
 
 ~~~
-#set Initializeonly=FALSE
+#set initializeonly=FALSE
 ~~~
 
 Shell:
 
 ~~~
-bash$ gridlabd -D Initializeonly=FALSE
-bash$ gridlabd --define Initializeonly=FALSE
+bash$ gridlabd -D initializeonly=FALSE
+bash$ gridlabd --define initializeonly=FALSE
 ~~~
 
 # Description
 
-Initialize only enable flag
+Initialize only enable flag.
 
 # Example
 
 ~~~
-#set compileonly=FALSE
+#set initializeonly=FALSE
 ~~~
 
 # See also

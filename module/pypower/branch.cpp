@@ -69,6 +69,12 @@ branch::branch(MODULE *module)
 			PT_double, "angmax[deg]", get_angmax_offset(),
 				PT_DESCRIPTION, "maximum angle difference, angle(Vf) - angle(Vt) (degrees)",
 
+			PT_complex, "current[A]", get_current_offset(),
+				PT_DESCRIPTION, "line current (A)",
+
+			PT_double, "loss[MW]", get_loss_offset(),
+				PT_DESCRIPTION, "line loss (MW)",
+
 			NULL)<1)
 		{
 				throw "unable to publish branch properties";
@@ -99,7 +105,7 @@ int branch::init(OBJECT *parent)
 	// automatic bus lookup
 	if ( get_fbus() == 0 )
 	{
-		bus *f = (bus*)get_from();
+		bus *f = OBJECTDATA(get_from(),bus);
 		if ( f->isa("bus","pypower") )
 		{
 			if ( f->get_bus_i() == 0 )
@@ -116,7 +122,7 @@ int branch::init(OBJECT *parent)
 	}
 	if ( get_tbus() == 0 )
 	{
-		bus *t = (bus*)get_to();
+		bus *t = OBJECTDATA(get_to(),bus);
 		if ( t->isa("bus","pypower") )
 		{
 			if ( t->get_bus_i() == 0 )
