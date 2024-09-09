@@ -52,6 +52,7 @@ END
 
 function version-check()
 {
+	test -f no-version-check -o -f $HOME/.gridlabd/no-version-check && exit 0
 	version=$(${BIN} --version)
 	submitversion=$(echo $version | sed -r 's/.*([0-9]+\.[0-9]+\.[0-9]+\-[0-9]+)/\1/')
 	branch=$(${BIN} --version=git-branch)
