@@ -32,3 +32,4 @@ dist_pkgdata_DATA += tools/rest_client.py
 dist_pkgdata_DATA += tools/rest_server.py
 dist_pkgdata_DATA += tools/rest_server_config.py
 dist_pkgdata_DATA += tools/ucar_weather.py
+
