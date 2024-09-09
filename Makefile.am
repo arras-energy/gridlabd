@@ -126,7 +126,7 @@ python-venv:
 
 # NB: it's ok to use the runner's python to generate the requirements.txt file
 requirements.txt: python/requirements.csv
-	@python3 -m pip -q install pandas==2.0.0
+	@python3 -m pip -q install pandas==2.1.4
 	@python3 $(top_srcdir)/python/requirements.py $< >$@
 
 $(PYENV): requirements.txt
@@ -137,7 +137,7 @@ $(PYENV): requirements.txt
 	@(deactivate 1>/dev/null 2>&1 || true ; $(SYSPYTHON) -m venv $(PYENV))
 	@$(ENVPYTHON) --version 1>/dev/null || ( echo "ERROR [Makefile]: $(ENVPYTHON) is not found" > /dev/stderr ; false )
 	@$(ENVPYTHON) -m pip install --upgrade pip
-	@$(ENVPYTHON) -m pip install pandas==2.0.0
+	@$(ENVPYTHON) -m pip install pandas==2.1.4
 	@$(ENVPYTHON) $(top_srcdir)/python/requirements.py --buildenv | bash
 	@$(ENVPYTHON) -m pip install -r requirements.txt 
 	@touch $(PYENV)
