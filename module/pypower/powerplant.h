@@ -70,6 +70,15 @@ public:
 	GL_ATOMIC(double,state_of_charge);
 	GL_ATOMIC(complex,S);
 	GL_ATOMIC(char256,controller);
+	GL_ATOMIC(double,startup_cost);
+	GL_ATOMIC(double,shutdown_cost);
+	GL_ATOMIC(double,fixed_cost);
+	GL_ATOMIC(double,variable_cost);
+	GL_ATOMIC(double,scarcity_cost);
+	GL_ATOMIC(double,energy_rate);
+	GL_ATOMIC(double,total_cost);
+	GL_ATOMIC(double,emissions_rate);
+	GL_ATOMIC(double,total_emissions);
 
 private:
 	PyObject *py_controller;
@@ -79,6 +88,8 @@ private:
 private:
 	bool is_dynamic; // true if parent is a gen otherwise false
 	TIMESTAMP last_t;
+	gencost *costobj;
+	double last_Sm;
 
 public:
 	// event handlers
@@ -89,6 +100,7 @@ public:
 	TIMESTAMP presync(TIMESTAMP t0);
 	TIMESTAMP sync(TIMESTAMP t0);
 	TIMESTAMP postsync(TIMESTAMP t0);
+	TIMESTAMP commit(TIMESTAMP t0, TIMESTAMP t1);
 
 public:
 	// internal properties

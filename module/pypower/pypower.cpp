@@ -11,7 +11,7 @@ bool enable_opf = false;
 double base_MVA = 100.0;
 int32 pypower_version = 2;
 bool stop_on_failure = false;
-int32 maximum_timestep = 0; // seconds; 0 = no max ts
+double maximum_timestep = 0; // seconds; 0 = no max ts
 typedef enum {
     PPSM_NR = 1, // Newton-Raphson
     PPSM_FDXB = 2, // Fast-decoupled XB method
@@ -34,6 +34,7 @@ enumeration save_format = PPSF_CSV;
 const char *save_formats[] = {"csv","json","py"};
 double total_loss = 0;
 double generation_shortfall = 0;
+bool with_emissions = false;
 
 enum {
     SS_INIT = 0,
@@ -90,7 +91,8 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
         );
 
     gl_global_create("pypower::maximum_timestep",
-        PT_int32, &maximum_timestep, 
+        PT_double, &maximum_timestep, 
+        PT_UNITS, "s",
         PT_DESCRIPTION, "Maximum timestep allowed between solutions",
         NULL);
 
@@ -178,6 +180,11 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
         PT_DESCRIPTION, "System-wide generation shortfall",
         NULL);
 
+    gl_global_create("pypower::with_emissions",
+        PT_bool, &with_emissions,
+        PT_DESCRIPTION, "Include emissions results",
+        NULL);
+
     // always return the first class registered
     return bus::oclass;
 }
@@ -203,6 +210,11 @@ PyObject *gencostdata = NULL;
 
 EXPORT bool on_init(void)
 {
+    if ( enable_opf && ngen != ngencost )
+    {
+        gl_warning("pypower OPF solver requires the number of gencost records (%d) to match the number of gen records (%d)",ngencost,ngen);
+    }
+    
     // import controllers, if any
     if ( controllers[0] != '\0' )
     {
@@ -539,9 +551,15 @@ EXPORT TIMESTAMP on_precommit(TIMESTAMP t0)
     }
     if ( gencostdata )
     {
-        for ( size_t n = 0 ; n < ngencost ; n++ )
+        for ( size_t i = 0 ; i < ngen ; i++ )
         {
-            gencost *obj = gencostlist[n];
+            if ( genlist[i]->cost == NULL )
+            {
+                gl_warning("pypower.on_precommit(t=%lld) missing cost data for generator '%s'",t0,genlist[i]->get_name());
+                continue;
+            }
+            gencost *obj = genlist[i]->cost;
+            size_t n = obj->index;
             PyObject *pyobj = PyList_GetItem(gencostdata,n);
             SENDX(0,model,Long,Long)
             SENDX(1,startup,Double,Float)
@@ -591,7 +609,7 @@ EXPORT TIMESTAMP on_precommit(TIMESTAMP t0)
         }
     }
 
-    TIMESTAMP t2 = maximum_timestep > 0 ? t0+maximum_timestep : TS_NEVER;
+    TIMESTAMP t2 = maximum_timestep > 0 ? TIMESTAMP(t0+maximum_timestep) : TS_NEVER;
     return (TIMESTAMP)min((unsigned long long)t1,(unsigned long long)t2);
 }
 
@@ -877,7 +895,7 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
         {
             return t0;
         }
-        TIMESTAMP t2 = maximum_timestep > 0 ? t0+maximum_timestep : TS_NEVER;
+        TIMESTAMP t2 = maximum_timestep > 0 ? TIMESTAMP(t0+maximum_timestep) : TS_NEVER;
         return (TIMESTAMP)min((unsigned long long)t1,(unsigned long long)t2);
 
     }

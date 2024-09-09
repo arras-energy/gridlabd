@@ -7,6 +7,7 @@ EXPORT_CREATE(powerplant);
 EXPORT_INIT(powerplant);
 EXPORT_PRECOMMIT(powerplant);
 EXPORT_SYNC(powerplant);
+EXPORT_COMMIT(powerplant);
 
 CLASS *powerplant::oclass = NULL;
 powerplant *powerplant::defaults = NULL;
@@ -119,7 +120,34 @@ powerplant::powerplant(MODULE *module)
 				PT_DESCRIPTION, "power generation (MVA)",
 
 			PT_char256, "controller", get_controller_offset(),
-				PT_DESCRIPTION,"controller python function name",
+				PT_DESCRIPTION, "controller python function name",
+
+			PT_double, "startup_cost[$/MW]", get_startup_cost_offset(),
+				PT_DESCRIPTION, "generator startup cost ($/MW)",
+
+			PT_double, "shutdown_cost[$/MW]", get_shutdown_cost_offset(),
+				PT_DESCRIPTION, "generator shutdown cost ($/MW)",
+
+			PT_double, "fixed_cost[$/h]", get_fixed_cost_offset(),
+				PT_DESCRIPTION, "generator fixed cost ($/h)",
+
+			PT_double, "variable_cost[$/MWh]", get_variable_cost_offset(),
+				PT_DESCRIPTION, "generator variable cost ($/MWh)",
+
+			PT_double, "scarcity_cost[$/MW^2/h]", get_scarcity_cost_offset(),
+				PT_DESCRIPTION, "generator scarcity cost ($/MW^2h)",
+
+			PT_double, "energy_rate[MWh/unit]", get_energy_rate_offset(),
+				PT_DESCRIPTION, "generator heat rate/fuel efficiency (MWh/unit)",
+
+			PT_double, "total_cost[$]", get_total_cost_offset(),
+				PT_DESCRIPTION, "generator total operating cost ($)",
+
+			PT_double, "emissions_rate[tonne/MWh]", get_energy_rate_offset(),
+				PT_DESCRIPTION, "generator heat rate/fuel efficiency (tonne/MWh)",
+
+			PT_double, "total_emissions[tonne]", get_total_cost_offset(),
+				PT_DESCRIPTION, "generator total operating cost (tonne)",
 
 			NULL) < 1 )
 		{
@@ -134,6 +162,7 @@ int powerplant::create(void)
 	py_args = PyTuple_New(1);
 	py_kwargs = PyDict_New();
 	last_t = 0;
+	last_Sm = 0;
 
 	return 1; // return 1 on success, 0 on failure
 }
@@ -159,6 +188,23 @@ int powerplant::init(OBJECT *parent_hdr)
 		{
 			error("parent '%s' is not a pypower bus or gen object",get_parent()->get_name());
 			return 0;
+		}
+
+		// look for gencost object that corresponds to this generator (if any)
+		for ( OBJECT *obj = gl_object_get_first() ; obj != NULL ; obj = obj->next)
+		{
+			if ( gl_object_isa(obj,"gencost","pypower") )
+			{
+				costobj = OBJECTDATA(obj,gencost);
+				if ( costobj->get_parent() == parent )
+				{
+					break; // got it
+				}
+				else
+				{
+					costobj = NULL; // forget about it!
+				}
+			}
 		}
 	}
 
@@ -215,6 +261,30 @@ int powerplant::init(OBJECT *parent_hdr)
 	PyDict_SetItemString(py_kwargs,"controller",PyUnicode_FromString(get_controller()));
 	PyDict_SetItemString(py_kwargs,"t",PyFloat_FromDouble((double)gl_globalclock));
 
+	// check costs/emissions for units that should have them
+	switch (get_fuel())
+	{
+	case FT_COKE:
+	case FT_BIOMASS:
+	case FT_OIL:
+	case FT_WOOD:
+	case FT_GAS:
+	case FT_NATURALGAS:
+	case FT_COAL:
+		extern bool with_emissions;
+		if ( with_emissions && get_emissions_rate() == 0.0 )
+		{
+			warning("no emissions rate given for a unit that should have a non-zero emissions");
+		}
+	case FT_ELECTRICITY:
+		if ( get_variable_cost() == 0.0 )
+		{
+			warning("no variable cost given for a unit that should have a non-zero fuel cost");
+		}
+	default:
+		break;
+	}
+
 	return 1; // return 1 on success, 0 on failure, 2 on retry later
 }
 
@@ -249,6 +319,16 @@ TIMESTAMP powerplant::precommit(TIMESTAMP t0)
 		}
 	}
 	last_t = t0;
+
+	// post costs
+	if ( costobj != NULL )
+	{
+		costobj->set_startup(get_startup_cost());
+		costobj->set_shutdown(get_shutdown_cost());
+		char buffer[1025];
+		snprintf(buffer,sizeof(buffer)-1,"%lf,%lf,%lf",get_scarcity_cost(),get_variable_cost(),get_fixed_cost());
+		costobj->set_costs(buffer);
+	}
 
 	return TS_NEVER;
 }
@@ -364,5 +444,33 @@ TIMESTAMP powerplant::postsync(TIMESTAMP t0)
 {
 	// cannot separate contribution of this powerplant to total gen Pg,Qg
 	exception("invalid postsync event requrest");
+	return TS_NEVER;
+}
+
+TIMESTAMP powerplant::commit(TIMESTAMP t0, TIMESTAMP t1)
+{
+	double dt = (t0 - last_t)/3600;
+
+	double Sm = S.Mag();
+	if ( last_Sm == 0 && Sm != 0 )
+	{	// startup
+		total_cost += startup_cost * operating_capacity;
+	}
+	else if ( last_Sm != 0 && Sm == 0 )
+	{	// shutdown
+		total_cost += shutdown_cost * operating_capacity;
+	}
+	double energy = last_Sm * dt;
+	total_cost += fixed_cost*dt + (variable_cost + scarcity_cost*energy) * energy;
+
+	extern bool with_emissions;
+	if ( with_emissions )
+	{
+		total_emissions = emissions_rate * energy * dt;
+	}
+
+	last_t = t0;
+	last_Sm = Sm;
+
 	return TS_NEVER;
 }

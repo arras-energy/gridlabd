@@ -1,5 +1,5 @@
 # Set the base image to latest Ubuntu image
-FROM ubuntu:latest
+FROM ubuntu:22.04
 
 # Update the package lists and install sudo and curl
 RUN apt-get update && apt-get install -y sudo curl git nano

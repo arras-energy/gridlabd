@@ -1,6 +1,6 @@
 # Python Requirements
 
-The `requirements.csv` file provides platform specific information about python modules required to build and run GridLAB-D.  
+The `requirements.csv` file provides platform specific information about python modules required to build and run GridLAB-D.  This file is used to generate the `requirements.txt` file. If you change the CSV file you must push the updated TXT file.
 
 ## Sysinfo
 
@@ -8,7 +8,7 @@ You can determine which platform the python build system is running on by using 
 
 ## Default
 
-The `default` column specified the module version required if none is specified for the current platform.
+The `default` column specifies the module version required if none is specified for the current platform.
 
 ## Priority
 
