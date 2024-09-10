@@ -84,10 +84,6 @@ public:
 	complex V;
 
 public:
-	
-	complex V;
-
-public:
 
 	// event handlers
 	bus(MODULE *module);
