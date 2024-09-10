@@ -51,7 +51,7 @@ public:
 	GL_STRING(char256,hostname);
 	GL_STRING(char32,username);
 	GL_STRING(char32,password);
-	GL_STRING(char256,schema);
+	GL_STRING(char1024,schema);
 	GL_ATOMIC(int32,port);
 	GL_STRING(char1024,socketname);
 	GL_ATOMIC(int64,clientflags);
