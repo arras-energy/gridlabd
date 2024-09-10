@@ -221,7 +221,7 @@ TIMESTAMP database::commit(TIMESTAMP t0, TIMESTAMP t1)
 
 bool database::table_exists(const char *table)
 {
-	char query[1024];
+	char query[1200];
 	snprintf(query,sizeof(query)-1,"SELECT count(*) FROM information_schema.columns where table_schema = '%s' and table_name = '%s' and column_name in ('id', 't')",(const char*)schema,table);
 	if ( mysql_query(mysql,query) )
 		return false;
@@ -237,7 +237,7 @@ bool database::table_exists(const char *table)
 
 bool database::check_field(const char *table, const char *field)
 {
-	char query[1024];
+	char query[1200];
 	snprintf(query,sizeof(query)-1,"SELECT count(*) FROM information_schema.columns where table_schema = '%s' and table_name = '%s' and column_name = '%s'",(const char*)schema,table,field);
 	if ( mysql_query(mysql,query) )
 	{
