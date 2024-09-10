@@ -56,8 +56,8 @@ int player::create(void)
 	connection = NULL;
 	options = 0;
 	db = last_database;
-	memset(&target,0,sizeof(target));
-	memset(&unit,0,sizeof(unit));
+	target = gld_property();
+	unit = gld_unit();
 	memset(field,0,sizeof(field));
 	scale = 0.0;
 	db = NULL;

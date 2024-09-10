@@ -12,7 +12,7 @@ jobs:
     environment: Integration
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
       # this is to fix GIT not liking owner of the checkout dir
     - name: Set ownership
@@ -58,7 +58,7 @@ jobs:
         unzip awscliv2.zip
         sudo ./aws/install
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v2
@@ -83,7 +83,7 @@ jobs:
     needs: [buildUbuntu22FastS3,buildMacos13FastS3]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
       # this is to fix GIT not liking owner of the checkout dir
     - name: Set ownership
@@ -134,7 +134,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -169,7 +169,7 @@ jobs:
     environment: Integration
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
       # this is to fix GIT not liking owner of the checkout dir
     - name: Set ownership
@@ -204,7 +204,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
   
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
