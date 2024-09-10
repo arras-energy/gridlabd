@@ -229,7 +229,7 @@ int recorder::init(OBJECT *parent)
 			{
 				snprintf(fieldname,sizeof(fieldname)-1,"%s", prop.get_name());
 			}
-			char tmp[1024];
+			char tmp[1030];
 			snprintf(tmp,sizeof(tmp)-1,"`%s` %s, ",fieldname,sqltype);
 			strcat(property_list,tmp);
 			if ( db->check_field(get_table(),fieldname) ) 
