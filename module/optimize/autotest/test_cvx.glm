@@ -1,0 +1,70 @@
+
+#set suppress_repeat_messages=FALSE
+//#option verbose
+
+clock
+{
+    timezone America/Seattle;
+    starttime "2020-01-01 00:00:00 PST";
+    stoptime "2021-01-01 00:00:00 PST";
+}
+
+module optimize
+{
+    message_flags VERBOSE;
+    cvx_backend CPP;
+    cvx_options NONE;
+    cvx_dpp DEFAULT;
+    cvx_solver CLARABEL;
+    //cvx_solver CUSTOM;
+    //cvx_custom_solver "test_cvx.py";
+    cvx_warm_start FALSE;
+    cvx_solver_options time_limit:0.0,max_iter:50;
+    failure_handling HALT;
+}
+
+class test
+{
+    randomvar A0;
+    randomvar A1;
+    randomvar A2;
+    randomvar A3;
+    randomvar b;
+    double x;
+    double y;
+    double mu;
+}
+
+module powerflow;
+
+object test:..3
+{
+    parent optimizer;
+    name `test_{id}`;
+    A0 "type:normal(0,1);refresh:1h";
+    A1 "type:normal(0,1);refresh:1h";
+    A2 "type:normal(0,1);refresh:1h";
+    A3 "type:normal(0,1);refresh:1h";
+    b "type:normal(0,1);refresh:1h";
+}
+
+object cvx 
+{
+    name "optimizer";
+    event INIT;
+    presolve "m=20; n=15; np.random.seed(1); A=np.random.rand(m,n); b=np.random.rand(m)";
+    data "A=test.A0,test.A1,test.A2,test.A3";
+    data "b=test.b";
+    variables "x=test:x/mu,y=test:y";
+    //variables "z=pypower.bus:Pd,bus.Qd"
+    //variables "x=test.x/mu"; // duplicate error
+    //variables "y=test.y"; // duplicate error
+    //variables "z=test.z"; // not found error
+    objective "Minimize(sum_squares(A@x-b))";
+    constraints "0<=x";
+    constraints "x<=1,y==2*x";
+    //constraints "x>=2"; // makes the problem infeasible (for testing purposes)
+    postsolve "import sys;print(f'Optimal value is {__value__:.2f}',file=sys.stderr)";
+}
+
+#set savefile=${modelname/.glm/.json}
