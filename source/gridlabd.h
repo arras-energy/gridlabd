@@ -3442,7 +3442,7 @@ public:
 	inline gld_string get_string(const size_t sz=1024)
 	{
 		gld_string res;
-		char buf[1024];
+		char buf[1024]="";
 		if ( sizeof(buf)<sz ) throw "get_string() over size limit";
 		if ( to_string(buf,(int)sz)>=0 )
 			res = buf;
