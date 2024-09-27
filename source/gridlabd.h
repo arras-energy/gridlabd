@@ -1598,13 +1598,13 @@ inline DEPRECATED const char *gl_module_find_transform_function(TRANSFORMFUNCTIO
 /**@}*/
 
 #ifdef __cplusplus
-inline DEPRECATED randomvar *gl_randomvar_getfirst(void) { return callback->randomvar.getnext(NULL); };
-inline DEPRECATED randomvar *gl_randomvar_getnext(randomvar *var) { return callback->randomvar.getnext(var); };
-inline DEPRECATED size_t gl_randomvar_getspec(char *str, size_t size, const randomvar *var) { return callback->randomvar.getspec(str,size,var); };
+inline DEPRECATED randomvar *gl_randomvar_getfirst(void) { return callback->randomvars.getnext(NULL); };
+inline DEPRECATED randomvar *gl_randomvar_getnext(randomvar *var) { return callback->randomvars.getnext(var); };
+inline DEPRECATED size_t gl_randomvar_getspec(char *str, size_t size, const randomvar *var) { return callback->randomvars.getspec(str,size,var); };
 #else
-#define gl_randomvar_getfirst DEPRECATED (*callback->randomvar.getnext)(NULL)
-#define gl_randomvar_getnext DEPRECATED (*callback->randomvar.getnext) /* randomvar *(*randomvar.getnext)(randomvar*) */
-#define gl_randomvar_getspec DEPRECATED (*callback->randomvar.getspec) /* size_t (*randomvar.getspec(char*,size_t,randomvar*) */
+#define gl_randomvar_getfirst DEPRECATED (*callback->randomvars.getnext)(NULL)
+#define gl_randomvar_getnext DEPRECATED (*callback->randomvars.getnext) /* randomvar *(*randomvar.getnext)(randomvar*) */
+#define gl_randomvar_getspec DEPRECATED (*callback->randomvars.getspec) /* size_t (*randomvar.getspec(char*,size_t,randomvar*) */
 #endif
 
 /******************************************************************************
@@ -2447,7 +2447,7 @@ public:
 	
 	// Method: is_valid
 	// Check whether the unit is valid
-	inline bool is_valid(void) { return (UNIT*)&core != NULL && core.name[0]!='\0'; };
+	inline bool is_valid(void) { return core.name[0]!='\0'; };
 
 public: 
 
