@@ -278,27 +278,23 @@ int convert_from_complex(char *buffer, /**< pointer to the string buffer */
 		double m = v->Mag()*scale;
 		double a = v->Arg();
 		if (a>PI) a-=(2*PI);
-		snprintf(temp,sizeof(temp)-1,global_complex_format,m,a*180/PI,A);
-		count = strlen(temp);
+		count += snprintf(temp,sizeof(temp)-1,global_complex_format,m,a*180/PI,A);
 	} 
 	else if ( v->Notation() == R )
 	{
 		double m = v->Mag()*scale;
 		double a = v->Arg();
 		if (a>PI) a-=(2*PI);
-		snprintf(temp,sizeof(temp)-1,global_complex_format,m,a,R);
-		count = strlen(temp);
+		count += snprintf(temp,sizeof(temp)-1,global_complex_format,m,a,R);
 	} 
 	else 
 	{
-		snprintf(temp,sizeof(temp)-1,global_complex_format,v->Re()*scale,v->Im()*scale,v->Notation()?v->Notation():'i');
-		count = strlen(temp);
+		count += snprintf(temp,sizeof(temp)-1,global_complex_format,v->Re()*scale,v->Im()*scale,v->Notation()?v->Notation():'i');
 	}
 
 	if ( prop->unit )
 	{
-		snprintf(temp+count,sizeof(temp)-1+count," %s",prop->unit->name);
-		count += strlen(temp);
+		count += snprintf(temp+count,sizeof(temp)-1-count," %s",prop->unit->name);
 	}
 
 	if ( size == 0 )
