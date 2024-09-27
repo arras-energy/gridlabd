@@ -336,7 +336,7 @@ void pythonpath_init(const char *name,const char *value)
 		if ( value != NULL )
 		{
 			int len = snprintf(global_pythonpath,sizeof(global_pythonpath)-1,"%.*s",(int)sizeof(global_pythonpath)-2,value);
-			snprintf(global_pythonpath+len,sizeof(global_pythonpath)-1-len,":%.*s",(int)(sizeof(global_pythonpath)-2),pythonpath);
+			snprintf(global_pythonpath+len,sizeof(global_pythonpath)-1-len,":%.*s",(int)(sizeof(global_pythonpath)-3),pythonpath);
 		}
 		else
 		{
