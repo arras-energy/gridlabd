@@ -22,6 +22,7 @@ jobs:
 
     - name: Install openfido
       run: |
+        test -x /usr/local/bin/python3 || ln -sf $(which python3) /usr/local/bin/python3
         /usr/local/bin/python3 -m venv /usr/local/opt/openfido
         source /usr/local/opt/openfido/bin/activate
         /usr/local/bin/python3 -m pip install requests pandas docker
