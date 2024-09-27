@@ -1794,7 +1794,7 @@ DEPRECATED const char *global_pid(char *buffer, int size)
 **/
 const char *GldGlobals::getvar(const char *name, char *buffer, size_t size)
 {
-	char temp[1024];
+	char temp[2048];
 	size_t len = 0;
 	GLOBALVAR *var = NULL;
 	struct {
