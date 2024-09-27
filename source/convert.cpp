@@ -230,7 +230,7 @@ int convert_from_complex(char *buffer, /**< pointer to the string buffer */
 					    PROPERTY *prop) /**< a pointer to keywords that are supported */
 {
 	int count = 0;
-	char temp[1025] = "";
+	char temp[2048] = "";
 	complex *v = (complex*)data;
 	CNOTATION cplex_output_type = J;
 
