@@ -21,7 +21,11 @@ jobs:
       run: sudo ./build.sh --system --parallel
 
     - name: Install openfido
-      run: curl -sL https://raw.githubusercontent.com/openfido/cli/main/install.sh | sudo sh
+      run: |
+        /usr/local/bin/python3 -m venv /usr/local/opt/openfido
+        source /usr/local/opt/openfido/bin/activate
+        /usr/local/bin/python3 -m pip install requests pandas docker
+        curl -sL https://raw.githubusercontent.com/openfido/cli/main/install.sh | sudo sh
       
     - name: Validate system
       run: sudo gridlabd -D keep_progress=TRUE -T 0 --validate -D github_actions=yes || ( sudo utilities/save_validation_errors ; false )
