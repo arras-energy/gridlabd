@@ -37,7 +37,6 @@
 
 #include "tape.h"
 #include "file.h"
-#include "odbc.h"
 
 #if defined WIN32 && defined  __MINGW32__
 inline char* strtok_t(char *str, const char *delim, char **nextp)

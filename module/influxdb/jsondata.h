@@ -1319,7 +1319,7 @@ typename enable_if<!is_floating_point<TOut>::value, TOut>::type convertFloat(
 namespace ARDUINOJSON_NAMESPACE {
 class VariantData {
   VariantContent _content;  // must be first to allow cast from array to variant
-  uint8_t _flags;
+  uint8_t _flags = 0;
  public:
   template <typename Visitor>
   void accept(Visitor &visitor) const {
