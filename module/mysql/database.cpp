@@ -51,7 +51,6 @@ database::database(MODULE *module)
 				PT_KEYWORD,"MULTI_RESULTS",(int64)CLIENT_MULTI_RESULTS,
 				PT_KEYWORD,"MULTI_STATEMENTS",(int64)CLIENT_MULTI_STATEMENTS,
 				PT_KEYWORD,"NO_SCHEMA",(int64)CLIENT_NO_SCHEMA,
-				PT_KEYWORD,"ODBC",(int64)CLIENT_ODBC,
 				PT_KEYWORD,"SSL",(int64)CLIENT_SSL,
 				PT_KEYWORD,"REMEMBER_OPTIONS",(int64)CLIENT_REMEMBER_OPTIONS,
 			PT_set,"options",get_options_offset(),PT_ACCESS,PA_PUBLIC,PT_DESCRIPTION,"database connection options",
@@ -221,7 +220,7 @@ TIMESTAMP database::commit(TIMESTAMP t0, TIMESTAMP t1)
 
 bool database::table_exists(const char *table)
 {
-	char query[1024];
+	char query[1200];
 	snprintf(query,sizeof(query)-1,"SELECT count(*) FROM information_schema.columns where table_schema = '%s' and table_name = '%s' and column_name in ('id', 't')",(const char*)schema,table);
 	if ( mysql_query(mysql,query) )
 		return false;
@@ -237,7 +236,7 @@ bool database::table_exists(const char *table)
 
 bool database::check_field(const char *table, const char *field)
 {
-	char query[1024];
+	char query[1200];
 	snprintf(query,sizeof(query)-1,"SELECT count(*) FROM information_schema.columns where table_schema = '%s' and table_name = '%s' and column_name = '%s'",(const char*)schema,table,field);
 	if ( mysql_query(mysql,query) )
 	{

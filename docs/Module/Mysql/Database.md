@@ -117,7 +117,7 @@ Do not permit `db_name.tbl_name.col_name` syntax. This is for ODBC. It causes th
 
 ### `ODBC`
 
-Unused.
+Deprecated
 
 ### `SSL`
 
