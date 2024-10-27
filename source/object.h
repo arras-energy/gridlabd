@@ -355,7 +355,7 @@ typedef struct s_callbacks {
 	struct {
 		randomvar *(*getnext)(randomvar*);
 		size_t (*getspec)(char *, size_t, const randomvar *);
-	} randomvar;
+	} randomvars;
 	struct {
 		unsigned int (*major)(void);
 		unsigned int (*minor)(void);

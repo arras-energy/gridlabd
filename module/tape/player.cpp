@@ -10,7 +10,7 @@
 	The default \p type is \p file
 	The default \p name is the target (parent) objects \p classname-\p id
 	The default \p flags is \p "r"
-	- \p filetype specifies the source file extension, default is \p "txt".  Valid types are \p txt, \p odbc, and \p memory.
+	- \p filetype specifies the source file extension, default is \p "txt".  Valid types are \p txt, and \p memory.
 	- \p property is the target (parent) that is written to
 	- \p loop is the number of times the tape is to be repeated
 
@@ -42,7 +42,6 @@
 
 #include "tape.h"
 #include "file.h"
-#include "odbc.h"
 
 CLASS *player_class = NULL;
 static OBJECT *last_player = NULL;

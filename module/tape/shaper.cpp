@@ -43,7 +43,6 @@
 
 #include "tape.h"
 #include "file.h"
-#include "odbc.h"
 
 
 CLASS *shaper_class = NULL;
