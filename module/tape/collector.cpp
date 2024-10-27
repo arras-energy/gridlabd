@@ -32,7 +32,6 @@
 
 #include "tape.h"
 #include "file.h"
-#include "odbc.h"
 
 CLASS *collector_class = NULL;
 static OBJECT *last_collector = NULL;

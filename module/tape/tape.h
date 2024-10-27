@@ -15,7 +15,7 @@
 extern char timestamp_format[32];
 typedef enum {VT_INTEGER, VT_DOUBLE, VT_STRING} VARIABLETYPE;
 typedef enum {TS_INIT, TS_OPEN, TS_DONE, TS_ERROR} TAPESTATUS;
-typedef enum {FT_FILE, FT_ODBC, FT_MEMORY} FILETYPE;
+typedef enum {FT_FILE, FT_MEMORY} FILETYPE;
 typedef enum {SCR, EPS, GIF, JPG, PDF, PNG, SVG} PLOTFILE;
 typedef enum e_complex_part {CP_NONE = 0, REAL, IMAG, MAG, ANG, ANG_RAD} CPLPT;
 typedef enum {UNKNOWN=0, PLAYER=1, RECORDER=2, GROUPRECORDER=3} DELTATAPEOBJ;
