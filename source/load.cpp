@@ -2871,7 +2871,7 @@ int GldLoader::module_block(PARSER)
 {
 	char module_name[64];
 	char fmod[8],mod[54];
-	MODULE *module;
+	MODULE *module = NULL;
 	START;
 	if WHITE ACCEPT;
 	if (LITERAL("module") && WHITE) ACCEPT else REJECT;
