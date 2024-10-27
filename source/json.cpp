@@ -320,7 +320,7 @@ int GldJsonWriter::write_globals(FILE *fp)
 	/* for each module */
 	for ( var = global_find(NULL) ; var != NULL ; var = global_getnext(var) )
 	{
-		char buffer[1024];
+		char buffer[2048];
 		if ( global_getvar(var->prop->name,buffer,sizeof(buffer)-1) ) // only write globals that can be extracted
 		{
 			KEYWORD *key;
