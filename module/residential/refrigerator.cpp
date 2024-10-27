@@ -244,7 +244,7 @@ int refrigerator::init(OBJECT *parent)
 	ice_making_time = new double[3]; 
 	ice_making_time[0] = 1.0;
 	ice_making_time[1] = 2.0;
-	ice_making_time[3] = 3.0;
+	ice_making_time[2] = 3.0;
 
 	icemaker_running = false;
 	check_defrost = false;

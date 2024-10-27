@@ -11,7 +11,7 @@ GldCurl::GldCurl(const char *remote, const char *local)
 {
 	// initialize libcurl
 	curl = curl_easy_init();
-	if ( ! curl )
+	if ( curl == NULL )
 		throw "GldCurl: curl_easy_init() failed";
 	IN_MYCONTEXT output_debug("GldCurl(remote='%s', local='%s'): curl init ok", remote, local);
 
@@ -26,7 +26,7 @@ GldCurl::GldCurl(const char *remote, const char *local)
 
 	// access local file
 	fp = fopen(local,"w");
-	if ( ! fp )
+	if ( fp == NULL )
 		throw "GldCurl: local fopen failed";
 	if ( curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)fp) != CURLE_OK )
 	{
@@ -69,8 +69,8 @@ GldCurl::GldCurl(const char *remote, const char *local)
 
 GldCurl::~GldCurl(void)
 {
-	if ( ! curl ) curl_easy_cleanup(curl);
-	if ( ! fp ) fclose(fp);
+	if ( curl != NULL ) curl_easy_cleanup(curl);
+	if ( fp != NULL ) fclose(fp);
 }
 
 bool GldCurl::get_option(const char *name, long long &llval)
@@ -84,7 +84,7 @@ bool GldCurl::get_option(const char *name, long long &llval)
 		{
 			char token[256];
 			long long value;
-			if ( sscanf(tag,"%s:%lld",token,&value) == 2 && strcmp(token,name)==0 )
+			if ( sscanf(tag,"%255s:%lld",token,&value) == 2 && strcmp(token,name)==0 )
 			{
 				llval = value;
 				return true;
