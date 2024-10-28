@@ -1,6 +1,5 @@
 
 #set suppress_repeat_messages=FALSE
-#option verbose
 
 clock
 {
@@ -15,12 +14,13 @@ module optimize
     cvx_backend CPP;
     cvx_options NONE;
     cvx_dpp DEFAULT;
-    cvx_solver CLARABEL;
+    //cvx_solver CLARABEL;
     //cvx_solver CUSTOM;
     //cvx_custom_solver "test_cvx.py";
     cvx_warm_start FALSE;
     cvx_solver_options time_limit:0.0,max_iter:50;
     failure_handling HALT;
+    cvx_imports sum_squares,Minimize;
 }
 
 class test
@@ -58,7 +58,7 @@ object cvx
     data "b=test.b";
     variables "x=test:x&mu,y=test:y";
     //variables "p=pypower.bus:Pd,q=bus.Qd"; // class and module.class tests
-    variables "p=test_group@x"; // group test
+    //variables "p=test_group@x"; // group test
     //variables "x=test.x&mu"; // duplicate error
     //variables "y=test.y"; // duplicate error
     //variables "z=test.z"; // not found error

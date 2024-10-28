@@ -20,14 +20,14 @@ cvx *cvx::defaults = NULL;
 enumeration cvx::backend = cvx::BE_CPP;
 set cvx::options = cvx::CO_NONE;
 enumeration cvx::dpp = cvx::CD_DEFAULT;
-enumeration cvx::solver = cvx::CS_CLARABEL;
+enumeration cvx::solver = cvx::CS_AUTO;
 char1024 cvx::custom_solver = "";
 bool cvx::warm_start = false;
 char1024 cvx::solver_options = "";
 enumeration cvx::failure_handling = cvx::OF_HALT;
 PyObject *cvx::main_module = NULL;
 PyObject *cvx::globals = NULL;
-char1024 cvx::imports = "*";
+char1024 cvx::imports = "";
 
 int PyRun_FormatString(const char *format, ...)
 {
@@ -128,6 +128,7 @@ cvx::cvx(MODULE *module)
             PT_DESCRIPTION,"CVX DPP enforcement",NULL);
 
         gl_global_create("optimize::cvx_solver",PT_enumeration,&solver,
+            PT_KEYWORD, "AUTO", CS_AUTO,
             PT_KEYWORD, "CBC", CS_CBC,
             PT_KEYWORD, "CLARABEL", CS_CLARABEL,
             PT_KEYWORD, "COPT", CS_COPT,
@@ -208,9 +209,14 @@ int cvx::create(void)
         exception("unable to load cvxpy module");
     }
 
-    if ( PyRun_FormatString("from cvxpy import %s", (const char*)imports) != 0 )
+    if ( PyRun_SimpleString("import cvxpy as cvx") != 0 )
     {
-        exception("unable to load cvxpy");
+        exception("unable to import cvxpy");
+    }
+
+    if ( strcmp(imports,"") != 0 && PyRun_FormatString("from cvxpy import %s", (const char*)imports) != 0 )
+    {
+        exception("unable to import cvxpy symbols");
     }
 
     if ( PyRun_SimpleString("import numpy as np") != 0 )
@@ -576,7 +582,7 @@ bool cvx::add_variables(struct s_problem &problem, const char *spec)
                         if ( obj->oclass == oclass )
                         {
                             // TODO: link property to list
-                            gl_warning("TODO: item %d class '%s' object '%s' primal '%s' dual '%s'\n",count,classname,get_object(obj)->get_name(),primalname,dualname);
+                            gl_warning("TODO: item %d class '%s' object '%s' primal '%s' dual '%s'",count,classname,get_object(obj)->get_name(),primalname,dualname);
                             count++;
                         }
                     }
@@ -593,7 +599,7 @@ bool cvx::add_variables(struct s_problem &problem, const char *spec)
                         if ( strcmp(obj->groupid,groupname) == 0 )
                         {
                             // TODO: link property to list
-                            gl_warning("TODO: item %d group '%s' object '%s' primal '%s' dual '%s'\n",count,groupname,get_object(obj)->get_name(),primalname,dualname);
+                            gl_warning("TODO: item %d group '%s' object '%s' primal '%s' dual '%s'",count,groupname,get_object(obj)->get_name(),primalname,dualname);
                             count++;
                         }
                     }
@@ -604,11 +610,11 @@ bool cvx::add_variables(struct s_problem &problem, const char *spec)
                 }
                 else if ( sscanf(varspec,"%[^.].%[^&]&%[^,]",objectname,primalname,dualname) >= 2 )
                 {
-                    gl_warning("TODO: object '%s' primal '%s' dual '%s'\n",objectname,primalname,dualname);
+                    gl_warning("TODO: object '%s' primal '%s' dual '%s'",objectname,primalname,dualname);
                 }
                 else if ( sscanf(varspec,"%[^&]&%[^,]",primalname,dualname) >= 1 )
                 {
-                    gl_warning("TODO: global primal '%s' dual '%s'\n",primalname,dualname);
+                    gl_warning("TODO: global primal '%s' dual '%s'",primalname,dualname);
                 }
                 else
                 {
@@ -672,7 +678,7 @@ bool cvx::update_solution(struct s_problem &problem)
     PyRun_SimpleString(presolve);
     for ( VARIABLE *item = problem.variables ; item != NULL ; item = item->next )
     {
-        if ( PyRun_FormatString("%s = Variable(n)",item->name) == -1 )
+        if ( PyRun_FormatString("%s = cvx.Variable(n)",item->name) == -1 )
         {
             exception("unable to create CVX variable '%s'",item->name);
         }
@@ -691,7 +697,7 @@ bool cvx::update_solution(struct s_problem &problem)
     }
 
 
-    if ( PyRun_FormatString("__problem__ = Problem(__objective__,__constraints__)",get_name()) == -1 )
+    if ( PyRun_FormatString("__problem__ = cvx.Problem(__objective__,__constraints__)",get_name()) == -1 )
     {
         PyRun_SimpleString(on_failure);
         exception("problem construction failed");
