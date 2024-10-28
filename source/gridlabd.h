@@ -2220,8 +2220,20 @@ private:
 public: 
 
 	// Constructor: gld_class
+	inline gld_class(const char *name) 
+	{
+		CLASS *oclass = gl_class_get_by_name(name,NULL);
+		if ( oclass == NULL )
+		{
+			static char buffer[1024];
+			snprintf(buffer,sizeof(buffer)-1,"class '%s' not found",name);
+			throw (const char*)buffer; 
+		}
+		core = *oclass; 
+	};
 	// This is a blocker implementation to prevent direct creation of a class for now.
 	inline gld_class(void) { throw "gld_class constructor not permitted"; };
+
 
 	// Operatior: CLASS*
 	// Cast to CLASS
@@ -2290,6 +2302,28 @@ public:
 	// Method: get_next
 	// Get the next class
 	inline gld_class* get_next(void) { return (gld_class*)core.next; };
+
+public:
+
+	// Method: get_property
+	// Find a property
+	inline gld_property *get_property(const char *name, bool exception_ok = false) 
+	{
+		for ( PROPERTY *prop = core.pmap ; prop != NULL ; prop = prop->next )
+		{
+			if ( strcmp(prop->name,name) == 0 )
+			{
+				return (gld_property*)prop;
+			}
+		}
+		if ( exception_ok )
+		{
+			static char buffer[1024];
+			snprintf(buffer,sizeof(buffer)-1,"property '%s' not found",name);
+			throw (const char*)buffer;
+		}
+		return NULL;
+	};
 };
 
 /*	Class: gld_function

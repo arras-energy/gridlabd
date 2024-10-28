@@ -13,15 +13,16 @@ module optimize
     cvx_warm_start FALSE|TRUE;
     cvx_solver_options KEY:VALUE[,...];
     cvx_infeasible HALT|WARN|IGNORE;
+    cvx_imports "SYMBOL[,...]";
 }
 object cvx
 {
     event {NONE,INIT,PRECOMMIT,PRESYNC,SYNC,POSTSYNC,COMMIT,FINALIZE};
     data NAME:[OBJECT|CLASS|GROUP].PROPERTY[,...];
-    variables NAME=GLOBAL[/DUAL][,...];
-    variables NAME=GROUP@PROPERTY[/DUAL][,...];
-    variables NAME=CLASS:PROPERTY[/DUAL][,...];
-    variables NAME=OBJECT.PROPERTY[/DUAL][,...];
+    variables NAME=GLOBAL[&DUAL][,...];
+    variables NAME=GROUP@PROPERTY[&DUAL][,...];
+    variables NAME=CLASS:PROPERTY[&DUAL][,...];
+    variables NAME=OBJECT.PROPERTY[&DUAL][,...];
     objective [min|max](EXPRESSION);
     constraints EXPRESSION[:OBJECT.PROPERTY][,...];
     value FLOAT;

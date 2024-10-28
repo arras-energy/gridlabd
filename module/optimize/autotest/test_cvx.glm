@@ -1,6 +1,6 @@
 
 #set suppress_repeat_messages=FALSE
-//#option verbose
+#option verbose
 
 clock
 {
@@ -35,12 +35,13 @@ class test
     double mu;
 }
 
-module powerflow;
+module pypower;
 
 object test:..3
 {
     parent optimizer;
     name `test_{id}`;
+    groupid "test_group";
     A0 "type:normal(0,1);refresh:1h";
     A1 "type:normal(0,1);refresh:1h";
     A2 "type:normal(0,1);refresh:1h";
@@ -55,9 +56,10 @@ object cvx
     presolve "m=20; n=15; np.random.seed(1); A=np.random.rand(m,n); b=np.random.rand(m)";
     data "A=test.A0,test.A1,test.A2,test.A3";
     data "b=test.b";
-    variables "x=test:x/mu,y=test:y";
-    //variables "z=pypower.bus:Pd,bus.Qd"
-    //variables "x=test.x/mu"; // duplicate error
+    variables "x=test:x&mu,y=test:y";
+    //variables "p=pypower.bus:Pd,q=bus.Qd"; // class and module.class tests
+    variables "p=test_group@x"; // group test
+    //variables "x=test.x&mu"; // duplicate error
     //variables "y=test.y"; // duplicate error
     //variables "z=test.z"; // not found error
     objective "Minimize(sum_squares(A@x-b))";
