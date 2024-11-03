@@ -1,3 +1,4 @@
+// test_csv.glm
 
 #set suppress_repeat_messages=FALSE
 #option verbose
@@ -21,7 +22,7 @@ module optimize
     cvx_solver_options time_limit:0.0,max_iter:50;
     cvx_failure_handling HALT;
     cvx_imports Variable,sum_squares,Minimize;
-    cvx_problemdump "problem.txt";
+    cvx_problemdump "test_csv.txt";
 }
 
 class test
@@ -42,7 +43,7 @@ module pypower;
 
 object test:..3
 {
-    parent optimizer;
+    parent problem-x;
     name `test_{id}`;
     groupid "test_group";
     A0 "type:normal(0,1);refresh:1h";
@@ -51,12 +52,13 @@ object test:..3
     A3 "type:normal(0,1);refresh:1h";
     b0 "type:normal(0,1);refresh:1h";
     b1 "type:normal(0,1);refresh:1h";
-    x 123.4;
+    x 0.0;
+    y 0.0;
 }
 
 object cvx 
 {
-    name "optimizer";
+    name "problem-x";
     event INIT;
     //presolve "m=20; n=15; np.random.seed(1); A=np.random.rand(m,n); b=np.random.rand(m); x=Variable(n)";
     variables "x=test:x";
@@ -77,4 +79,19 @@ object cvx
     // postsolve "import sys; print('\\n'.join([f'{x}: {str(y)}' for x,y in __problem__.get_problem_data(__problem__.solver_stats.solver_name)[0].items()]),file=sys.stderr)";
 }
 
+object cvx 
+{
+    parent "problem-x";
+    name "problem-y";
+    event INIT;
+    variables "y=test:y";
+    objective "Minimize(sum_squares(y))";
+    constraints "y>=2";
+}
+
 #set savefile=${modelname/.glm/.json}
+
+#ifexist "../test_csv.txt"
+#on_exit 0 diff -I "object at 0[xX][0-9a-fA-f]+" ../test_csv.txt test_csv.txt > gridlabd.diff
+#endif
+

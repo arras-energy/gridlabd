@@ -204,6 +204,9 @@ cvx::cvx(MODULE *module)
         {
             exception("unable to access python globals in __main__");
         }
+
+        // create __cvx__ global
+        PyDict_SetItemString(globals,"__cvx__",PyDict_New());
     }
 }
 
@@ -258,12 +261,6 @@ int cvx::create(void)
         exception("unable to load numpy");
     }
 
-    // create __cvx__ global
-    if ( PyRun_FormatString("__cvx__ = {}") != 0 )
-    {
-        exception("unable to create __cvx__ global");
-    }
-
     return 1; /* return 1 on success, 0 on failure */
 }
 
@@ -273,27 +270,28 @@ int cvx::create(void)
 
 int cvx::init(OBJECT *parent)
 {
+    // setup problem dump
+    if ( PyDict_GetItemString(globals,"__dump__") == NULL )
+    {
+        gld_clock now;
+        if ( strcmp(problemdump,"") == 0 )
+        {
+            PyRun_FormatString("__dump__ = None");
+        }
+        else if ( PyRun_FormatString("__dump__ = open('%s','w'); print('Problem dumps starting at t=%lld (%s)\\n',file=__dump__,flush=True);",(const char*)problemdump,gl_globalclock,now.get_string().get_buffer()) < 0 )
+        {
+            exception("unable to open dumpfile '%s'",(const char*)problemdump);
+        }
+    }
+
     // objective must be specified
     if ( strlen(problem.objective) == 0 )
     {
         exception("missing problem objective");
     }
 
-    // setup problem dump
-    if ( strcmp(problemdump,"") == 0 )
-    {
-        PyRun_FormatString("__dump__ = None");
-    }
-    else
-    {
-        PyRun_FormatString("__dump__ = open('%s','w'); print('Problem dumps starting at t=%lld\\n',file=__dump__,flush=True);",(const char*)problemdump,gl_globalclock);
-    }
-
     // create this optimizers data in __cvx__ global
-    if ( PyRun_FormatString("__cvx__['%s'] = {}",(const char*)get_name()) != 0 )
-    {
-        exception("unable to create storage for '%s' in __cvx__ global",(const char*)get_name());
-    }
+    PyDict_SetItemString(PyDict_GetItemString(globals,"__cvx__"),(const char*)get_name(),PyDict_New());
 
     // initialization solution event handler
     if ( get_event(OE_INIT) && ! update_solution(problem) )
@@ -928,7 +926,8 @@ bool cvx::update_solution(struct s_problem &problem)
 
     if ( strcmp(problemdump,"") != 0 )
     {
-        PyRun_FormatString("print('*** Problem \\'%s\\' at t=%lld ***\\n',file=__dump__)",optname,gl_globalclock);
+        gld_clock now;
+        PyRun_FormatString("print('*** Problem \\'%s\\' at t=%lld (%s) ***\\n',file=__dump__)",optname,gl_globalclock,now.get_string().get_buffer());
         PyRun_FormatString("print('Objective:',__cvx__['%s']['objective'],file=__dump__)",optname);
         PyRun_FormatString("print('Contraints:',__cvx__['%s']['constraints'],file=__dump__)",optname);
     }
@@ -961,7 +960,7 @@ bool cvx::update_solution(struct s_problem &problem)
         {            
             if ( strcmp(problemdump,"") != 0 )
             {
-                PyRun_FormatString("print('Problem is unbounded',file=__dump__,flush=True)");
+                PyRun_FormatString("print('Problem is unbounded\\n',file=__dump__,flush=True)");
             }
             if ( strcmp(on_unbounded,"") != 0 )
             {
@@ -972,7 +971,7 @@ bool cvx::update_solution(struct s_problem &problem)
         {
             if ( strcmp(problemdump,"") != 0 )
             {
-                PyRun_FormatString("print('Problem is infeasible',file=__dump__,flush=True)");
+                PyRun_FormatString("print('Problem is infeasible\\n,file=__dump__,flush=True)");
             }
             if ( strcmp(on_infeasible,"") != 0 )
             {
@@ -1033,7 +1032,7 @@ bool cvx::update_solution(struct s_problem &problem)
         }
         if ( strcmp(problemdump,"") != 0 )
         {
-            PyRun_FormatString("print('Result:',__cvx__['%s']['result'],file=__dump__,flush=True)",optname);
+            PyRun_FormatString("print('Result:',__cvx__['%s']['result'],'\\n',file=__dump__,flush=True)",optname);
         }
         status = true;
     }

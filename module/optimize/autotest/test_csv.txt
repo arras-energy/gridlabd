@@ -1,0 +1,56 @@
+Problem dumps starting at t=1577865600 (2020-01-01 00:00:00 PST)
+
+*** Problem 'problem-x' at t=1577865600 (2020-01-01 00:00:00 PST) ***
+
+Objective: minimize quad_over_lin(var1, 1.0)
+Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
+dims: 0 equalities, 3 inequalities, 0 exponential cones, 
+SOC constraints: [], PSD constraints: [].
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x1333c5300>
+P:   (0, 0)	2.0
+  (1, 1)	2.0
+  (2, 2)	2.0
+q: [0 0 0]
+A: 
+b: []
+F:   (0, 0)	-1.0
+  (1, 1)	-1.0
+  (2, 2)	-1.0
+G: [-1 -1 -1]
+bool_vars_idx: []
+int_vars_idx: []
+lower_bounds: None
+upper_bounds: None
+n_var: 3
+n_eq: 0
+n_ineq: 3
+Problem solved: objective value is 3.0000000000000013
+Result: {'x': [1.0000000000000002, 1.0000000000000002, 1.0000000000000002]} 
+
+*** Problem 'problem-y' at t=1577865600 (2020-01-01 00:00:00 PST) ***
+
+Objective: minimize quad_over_lin(var30, 1.0)
+Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
+dims: 0 equalities, 3 inequalities, 0 exponential cones, 
+SOC constraints: [], PSD constraints: [].
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x1333c7d30>
+P:   (0, 0)	2.0
+  (1, 1)	2.0
+  (2, 2)	2.0
+q: [0 0 0]
+A: 
+b: []
+F:   (0, 0)	-1.0
+  (1, 1)	-1.0
+  (2, 2)	-1.0
+G: [-2 -2 -2]
+bool_vars_idx: []
+int_vars_idx: []
+lower_bounds: None
+upper_bounds: None
+n_var: 3
+n_eq: 0
+n_ineq: 3
+Problem solved: objective value is 12.000000000000005
+Result: {'y': [2.0000000000000004, 2.0000000000000004, 2.0000000000000004]} 
+
