@@ -1,6 +1,6 @@
 
 #set suppress_repeat_messages=FALSE
-
+#option verbose
 clock
 {
     timezone America/Seattle;
@@ -19,8 +19,9 @@ module optimize
     //cvx_custom_solver "test_cvx.py";
     cvx_warm_start FALSE;
     cvx_solver_options time_limit:0.0,max_iter:50;
-    failure_handling HALT;
-    cvx_imports sum_squares,Minimize;
+    cvx_failure_handling HALT;
+    cvx_imports Variable,sum_squares,Minimize;
+    cvx_problemdump "problem.txt";
 }
 
 class test
@@ -29,10 +30,12 @@ class test
     randomvar A1;
     randomvar A2;
     randomvar A3;
-    randomvar b;
+    randomvar b0;
+    randomvar b1;
     double x;
     double y;
     double mu;
+    double lambda;
 }
 
 module pypower;
@@ -46,27 +49,32 @@ object test:..3
     A1 "type:normal(0,1);refresh:1h";
     A2 "type:normal(0,1);refresh:1h";
     A3 "type:normal(0,1);refresh:1h";
-    b "type:normal(0,1);refresh:1h";
+    b0 "type:normal(0,1);refresh:1h";
+    b1 "type:normal(0,1);refresh:1h";
+    x 123.4;
 }
 
 object cvx 
 {
     name "optimizer";
     event INIT;
-    presolve "m=20; n=15; np.random.seed(1); A=np.random.rand(m,n); b=np.random.rand(m)";
-    data "A=test.A0,test.A1,test.A2,test.A3";
-    data "b=test.b";
-    variables "x=test:x&mu,y=test:y";
-    //variables "p=pypower.bus:Pd,q=bus.Qd"; // class and module.class tests
-    //variables "p=test_group@x"; // group test
-    //variables "x=test.x&mu"; // duplicate error
-    //variables "y=test.y"; // duplicate error
-    //variables "z=test.z"; // not found error
-    objective "Minimize(sum_squares(A@x-b))";
-    constraints "0<=x";
-    constraints "x<=1,y==2*x";
-    //constraints "x>=2"; // makes the problem infeasible (for testing purposes)
-    postsolve "import sys;print(f'Optimal value is {__value__:.2f}',file=sys.stderr)";
+    //presolve "m=20; n=15; np.random.seed(1); A=np.random.rand(m,n); b=np.random.rand(m); x=Variable(n)";
+    variables "x=test:x";
+    // variables "y=test:y&lambda";
+    // data "A=test.A0,test.A1,test.A2,test.A3;b1=test.b1;b2=test.b2";
+    // variables "y=test:y"; // duplicate test
+    // variables "p=pypower.bus:Pd,q=bus.Qd"; // class and module.class tests
+    // variables "p=test_group@x"; // group test
+    // variables "x=test.x&mu"; // duplicate error
+    // variables "y=test.y"; // duplicate error
+    // variables "z=test.z"; // not found error
+    objective "Minimize(sum_squares(x))";
+    constraints "x>=1";
+    // constraints "x<=-1";
+    // constraints "x<=1,y==2*x";
+    // constraints "x>=2"; // makes the problem infeasible (for testing purposes)
+    // postsolve "import sys;print(f'Optimal value is {__value__:.2f}',file=sys.stderr)";
+    // postsolve "import sys; print('\\n'.join([f'{x}: {str(y)}' for x,y in __problem__.get_problem_data(__problem__.solver_stats.solver_name)[0].items()]),file=sys.stderr)";
 }
 
 #set savefile=${modelname/.glm/.json}

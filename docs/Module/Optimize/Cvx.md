@@ -12,8 +12,9 @@ module optimize
     cvx_custom_solver MODULE;
     cvx_warm_start FALSE|TRUE;
     cvx_solver_options KEY:VALUE[,...];
-    cvx_infeasible HALT|WARN|IGNORE;
+    cvx_failure_handling HALT|WARN|IGNORE;
     cvx_imports "SYMBOL[,...]";
+    cvx_problemdump "FILENAME.json";
 }
 object cvx
 {
@@ -31,23 +32,53 @@ object cvx
 
 # Description
 
-The `cvx` object sets up a convex optimization using CVXPY.  The optimization is run on any event included in the `event` set.  
+The `cvx` object sets up a convex optimization using CVXPY.  The optimization
+is run on any event included in the `event` set.  
 
-Zero of more `data` references can be provided. References to objects are
-singletons and references to groups and classes are vectors comprising all
+Zero or more `data` references can be provided. References to objects are
+singletons while references to groups and classes are vectors comprising all
 members of the group or class. The `data` vector is assembled from the
 specified values in the order which they are received. Classes and groups are
-ordered by object id. 
+ordered by object id. The structure is always and $M \times N$ matrix where
+$M$ is the number of objects (in rows) and $N$ is the number of properties
+listed (in columns).  For example
 
-One or more `variables` may be specified in the same manner as `data` definitions. If the dual is specified, it uses the same aggregation as the primal property, e.g., `x=CLASS:PRIMAL/DUAL` will use `PRIMAL` as the primal variable and `DUAL` as the dual variable in all object of `CLASS`. 
+    data "A=test.A1,...,test.AN;b=test.b"
 
-Note: when the problem is infeasible or unbounded the variables are not updated and the object properties are unchanged from the previous values.
+will result in the following matrices
 
-When the optimization is successful, the value of the objective function is stored in the `value`. If the problem is infeasible, `value` is `inf`. If the problem is unbounded `value` if `-inf`.
+    A = [
+        [test_1.A0, ... test_1.AN],
+        ...
+        [test_M.A0, ... test_M.AN]
+    ]
+    b = [
+        [test_1.b],
+        ...
+        [test_M.b]
+    ]
+
+
+One or more `variables` may be specified in the same manner as `data`
+definitions. If the dual is specified, it uses the same aggregation as the
+primal property, e.g., `x=CLASS:PRIMAL&DUAL` will use `PRIMAL` as the primal
+variable and `DUAL` as the dual variable in all object of `CLASS`. 
+
+When the optimization is successful, the value of the objective function is
+stored in the `value` and the values of all variables and duals are updated.
+
+
+When the problem is infeasible or unbounded the variables are not updated and
+the object properties are unchanged from the previous values. The only
+indication that the problem is infeasible or unbounded is the property
+`value` is `+inf` or `-inf`, respectively.
 
 # Caveat
 
-It is often important to establish the correct rank for an optimizer so that it runs after all the objects it depends on have updated their properties. Use the `parent` property to ensure that the optimizer is initialized after all the objects it depends on.
+It is often important to establish the correct rank for an optimizer so that
+it runs after all the objects it depends on have updated their properties.
+Use the `parent` property to ensure that the optimizer is initialized after
+all the objects it depends on.
 
 # Example
 

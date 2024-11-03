@@ -2761,8 +2761,45 @@ public:
 // Parameters:
 // buffer - a char* reference to the buffer containing the value
 // len - a size_t indicating the size of the buffer
-// This implements a method handler. If the len is zero, the value should be read from the
-// buffer. If the len is non-zero, the value should be written to the buffer.
+//
+// This implements a method handler. The method handler prototype is
+//
+// int CLASSNAME::METHODNAME(
+//     char *buffer, // read/write buffer (NULL for size request)
+//     size_t len // write buffer len (0 for read request or size check)
+//     )
+// {
+//     if ( buffer == NULL ) // compute size of write request
+//     {
+//         size_t result = WRITE_BUFFER_SIZE();
+//         if ( len == 0 )
+//         {
+//             // return length of result only
+//             return result;
+//         }
+//         else
+//         {
+//             // return non-zero if len > length of result
+//             return len>result ? result : 0;
+//         }
+//     }
+//     else if ( len == 0 ) // read buffer into object data
+//     {
+//         // return number of characters read from buffer
+//         return READ_BUFFER();
+//     }
+//     else // write object data into buffer
+//     {
+//         // return number of characters written to buffer
+//         return WRITE_BUFFER();
+//     }
+// }
+//
+// If the len is zero, the value should be read from the buffer. If the len is
+// non-zero, the value should be written to the buffer. If the buffer is
+// NULL, then the size is computed. If len is zero, the result size is is
+// returned. If len is non-zero, then the result size is returned if len is
+// greater, otherwise 0 is returned.
 #define IMPL_METHOD(C,X) int C::X(char *buffer, size_t len) 
 
 // Function: setbits

@@ -82,6 +82,8 @@ public: // module globals
 
     static char1024 imports;
 
+    static char1024 problemdump;
+
 public: // public properties
     
     typedef enum {
@@ -103,9 +105,9 @@ public: // public properties
     GL_STRING(char1024,on_unbounded);
     GL_ATOMIC(double,value);
 
+    GL_METHOD(cvx,objective);
     GL_METHOD(cvx,data);
     GL_METHOD(cvx,variables);
-    GL_METHOD(cvx,objective);
     GL_METHOD(cvx,constraints);
 
 private: // private properties
@@ -114,7 +116,7 @@ private: // private properties
     static PyObject *globals;
 
     typedef struct s_reference {
-        gld_property *property;
+        double *ref;
         struct s_reference* next;
     } REFERENCE;
     typedef struct s_data {
@@ -127,8 +129,9 @@ private: // private properties
     typedef struct s_variable {
         char *spec;
         char *name;
-        REFERENCE *data;
-        PyObject *list;
+        REFERENCE *primal;
+        REFERENCE *dual;
+        size_t count;
         struct s_variable *next;
     } VARIABLE;
     typedef struct s_constraint {
