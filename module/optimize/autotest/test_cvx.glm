@@ -62,7 +62,7 @@ object cvx
     event INIT;
     presolve "m=20; n=15; np.random.seed(1); A=np.random.rand(m,n); b=np.random.rand(m); x=Variable(n)";
     objective "Minimize(sum_squares(A@x-b))";
-    postsolve "print('Residual 2-norm:',cvx.norm(A@x-b,p=2).value,file=__dump__,flush=True)";
+    postsolve "print('Residual 2-norm:',round(cvx.norm(A@x-b,p=2).value,6),file=__dump__,flush=True)";
 }
 
 object cvx 
