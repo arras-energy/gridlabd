@@ -92,6 +92,6 @@ object cvx
 #set savefile=${modelname/.glm/.json}
 
 #ifexist "../test_csv.txt"
-#on_exit 0 diff -I 'object at 0[xX][0-9a-fA-f]+' ../test_csv.txt test_csv.txt > gridlabd.diff
+#on_exit 0 diff -I '^param_prob:' ../test_csv.txt test_csv.txt > gridlabd.diff
 #endif
 
