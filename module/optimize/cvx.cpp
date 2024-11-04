@@ -232,33 +232,37 @@ int cvx::create(void)
     problem.variables = NULL;
     problem.constraints = NULL;
 
-    // load cvxpy module
-    cvxpy = PyImport_ImportModule("cvxpy");
-    if ( cvxpy == NULL )
+    // load python modules if needed
+    if ( PyDict_GetItemString(globals,"cvx") == NULL )
     {
-        if ( PyErr_Occurred() )
+        // load cvxpy module
+        cvxpy = PyImport_ImportModule("cvxpy");
+        if ( cvxpy == NULL )
         {
-            PyErr_Print();
+            if ( PyErr_Occurred() )
+            {
+                PyErr_Print();
+            }
+            exception("unable to load cvxpy module");
         }
-        exception("unable to load cvxpy module");
-    }
 
-    // import cvxpy module
-    if ( PyRun_FormatString("import cvxpy as cvx") != 0 )
-    {
-        exception("unable to import cvxpy");
-    }
+        // import cvxpy module
+        if ( PyRun_FormatString("import cvxpy as cvx") != 0 )
+        {
+            exception("unable to import cvxpy");
+        }
 
-    // import requested definitions from cvxpy, if any
-    if ( strcmp(imports,"") != 0 && PyRun_FormatString("from cvxpy import %s", (const char*)imports) != 0 )
-    {
-        exception("unable to import cvxpy symbols");
-    }
+        // import requested definitions from cvxpy, if any
+        if ( strcmp(imports,"") != 0 && PyRun_FormatString("from cvxpy import %s", (const char*)imports) != 0 )
+        {
+            exception("unable to import cvxpy symbols");
+        }
 
-    // import numpy
-    if ( PyRun_FormatString("import numpy as np") != 0 )
-    {
-        exception("unable to load numpy");
+        // import numpy
+        if ( PyRun_FormatString("import numpy as np") != 0 )
+        {
+            exception("unable to load numpy");
+        }
     }
 
     return 1; /* return 1 on success, 0 on failure */
@@ -304,6 +308,11 @@ int cvx::init(OBJECT *parent)
 
         // handle failure
         return failure_handling != OF_HALT ? 1 : 0;
+    }
+
+    if ( get_event() == OE_NONE )
+    {
+        warning("problem has no event handler specified and will never be solved");
     }
 
     return 1; // should use deferred optimization until all input objects are initialized
