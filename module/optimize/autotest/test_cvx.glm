@@ -65,6 +65,16 @@ object cvx
     postsolve "print('Residual 2-norm:',round(cvx.norm(A@x-b,p=2).value,6),file=__dump__,flush=True)";
 }
 
+object cvx
+{
+    name "linear-program";
+    event FINALIZE;
+    presolve "m=15;n=10;np.random.seed(1);s0 = np.random.randn(m);lamb0 = np.maximum(-s0, 0);s0 = np.maximum(s0, 0);x0 = np.random.randn(n);A = np.random.randn(m, n);b = A @ x0 + s0;c = -A.T @ lamb0;x = Variable(n)";
+    objective "Minimize(c.T@x)";
+    constraints "A@x<=b";
+    postsolve "print('Dual value:',__cvx__['linear-program']['constraints'][0].dual_value.round(6),file=__dump__,flush=True)";
+}
+
 object cvx 
 {
     name "problem-x";
