@@ -75,6 +75,8 @@ The `presolve` and `postsolve` scripts can be used to process additional Python 
 
 * `__dump__`: the file to which the problem dumps are written when the `cvx_problemdump` module global is specified.
 
+The `solver_options` must conform to the syntax for Python arguments as specified for [Problem.solve()](https://www.cvxpy.org/_modules/cvxpy/problems/problem.html#Problem.solve).
+
 # Caveat
 
 1. It is often important to establish the correct rank for an optimizer so that
