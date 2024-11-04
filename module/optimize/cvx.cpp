@@ -22,12 +22,6 @@ cvx *cvx::defaults = NULL;
 //
 
 enumeration cvx::backend = cvx::BE_CPP;
-set cvx::options = cvx::CO_NONE;
-enumeration cvx::dpp = cvx::CD_DEFAULT;
-enumeration cvx::solver = cvx::CS_AUTO;
-char1024 cvx::custom_solver = "";
-bool cvx::warm_start = false;
-char1024 cvx::solver_options = "";
 enumeration cvx::failure_handling = cvx::OF_HALT;
 PyObject *cvx::main_module = NULL;
 PyObject *cvx::globals = NULL;
@@ -120,6 +114,9 @@ cvx::cvx(MODULE *module)
                 PT_OUTPUT,
                 PT_DESCRIPTION, "optimal value",    
 
+            PT_char1024, "solver_options", get_solver_options_offset(),
+                PT_DESCRIPTION, "solver options to add to problem.solve() arguments",
+
             NULL)<1)
         {
             exception("unable to publish optimize/cvx properties");
@@ -130,56 +127,6 @@ cvx::cvx(MODULE *module)
             PT_KEYWORD, "SCIPY", (enumeration)BE_SCIPY,
             PT_KEYWORD, "NUMPY", (enumeration)BE_NUMPY,
             PT_DESCRIPTION,"CVX backend implementation",NULL);
-
-        gl_global_create("optimize::cvx_options",PT_set,&options,
-            PT_KEYWORD, "VERBOSE", (set)CO_VERBOSE,
-            PT_KEYWORD, "GP", (set)CO_GP,         
-            PT_KEYWORD, "QCP", (set)CO_QCP,
-            PT_KEYWORD, "GRADIENTS", (set)CO_GRADIENTS,
-            PT_KEYWORD, "NONE", (set)CO_NONE,
-            PT_DESCRIPTION,"CVX options",NULL);
-
-        gl_global_create("optimize::cvx_dpp",PT_enumeration,&dpp,
-            PT_KEYWORD, "DEFAULT", (enumeration)CD_DEFAULT,
-            PT_KEYWORD, "ENFORCE", (enumeration)CD_ENFORCE,
-            PT_KEYWORD, "IGNORE", (enumeration)CD_IGNORE,
-            PT_DESCRIPTION,"CVX DPP enforcement",NULL);
-
-        gl_global_create("optimize::cvx_solver",PT_enumeration,&solver,
-            PT_KEYWORD, "AUTO", CS_AUTO,
-            PT_KEYWORD, "CBC", CS_CBC,
-            PT_KEYWORD, "CLARABEL", CS_CLARABEL,
-            PT_KEYWORD, "COPT", CS_COPT,
-            PT_KEYWORD, "DAQP", CS_DAQP,
-            PT_KEYWORD, "GLOP", CS_GLOP,
-            PT_KEYWORD, "GLPK", CS_GLPK,
-            PT_KEYWORD, "GLPK_MI", CS_GLPK_MI,
-            PT_KEYWORD, "OSQP", CS_OSQP,
-            PT_KEYWORD, "PIQP", CS_PIQP,
-            PT_KEYWORD, "PROXQP", CS_PROXQP,
-            PT_KEYWORD, "PDLP", CS_PDLP,
-            PT_KEYWORD, "CPLEX", CS_CPLEX,
-            PT_KEYWORD, "NAG", CS_NAG,
-            PT_KEYWORD, "ECOS", CS_ECOS,
-            PT_KEYWORD, "GUROBI", CS_GUROBI,
-            PT_KEYWORD, "MOSEK", CS_MOSEK,
-            PT_KEYWORD, "CVXOPT", CS_CVXOPT,
-            PT_KEYWORD, "DSPA", CS_DSPA,
-            PT_KEYWORD, "SCS", CS_SCS,
-            PT_KEYWORD, "SCIP", CS_SCIP,
-            PT_KEYWORD, "XPRESS", CS_XPRESS,
-            PT_KEYWORD, "SCIPY", CS_SCIPY,
-            PT_KEYWORD, "CUSTOM", CS_CUSTOM,
-            PT_DESCRIPTION,"CVX solver selection",NULL);
-
-        gl_global_create("optimize::cvx_custom_solver",PT_char1024,&custom_solver,
-            PT_DESCRIPTION, "CVX custom solver module pathname", NULL);
-
-        gl_global_create("optimize::cvx_warm_start",PT_bool,&warm_start,
-            PT_DESCRIPTION, "enable CVX solver warm-start functionality",NULL);
-
-        gl_global_create("optimize::cvx_solver_options",PT_char1024,&solver_options,
-            PT_DESCRIPTION, "CVX solver-specification options", NULL);
 
         gl_global_create("optimize::cvx_failure_handling",PT_enumeration,&failure_handling,
             PT_KEYWORD, "HALT", OF_HALT,
@@ -235,6 +182,11 @@ int cvx::create(void)
     // load python modules if needed
     if ( PyDict_GetItemString(globals,"cvx") == NULL )
     {
+        if ( PyRun_FormatString("import os, sys") != 0 )
+        {
+            exception("unable to import os, sys");
+        }
+
         // load cvxpy module
         cvxpy = PyImport_ImportModule("cvxpy");
         if ( cvxpy == NULL )
@@ -280,7 +232,7 @@ int cvx::init(OBJECT *parent)
         gld_clock now;
         if ( strcmp(problemdump,"") == 0 )
         {
-            PyRun_FormatString("__dump__ = None");
+            PyRun_FormatString("__dump__ = open(os.devnull,'w')");
         }
         else if ( PyRun_FormatString("__dump__ = open('%s','w'); print('Problem dumps starting at t=%lld (%s)\\n',file=__dump__,flush=True);",(const char*)problemdump,gl_globalclock,now.get_string().get_buffer()) < 0 )
         {
@@ -941,7 +893,7 @@ bool cvx::update_solution(struct s_problem &problem)
         PyRun_FormatString("print('Contraints:',__cvx__['%s']['constraints'],file=__dump__)",optname);
     }
 
-    if ( PyRun_FormatString("__cvx__['%s']['value'] = __cvx__['%s']['problem'].solve()",optname,optname) == -1 )
+    if ( PyRun_FormatString("__cvx__['%s']['value'] = __cvx__['%s']['problem'].solve(%s)",optname,optname,(const char*)solver_options) == -1 )
     {
         if ( strcmp(problemdump,"") != 0 )
         {
@@ -1011,6 +963,7 @@ bool cvx::update_solution(struct s_problem &problem)
             PyRun_FormatString("print('Problem solved: objective value is','{0:.6g}'.format(__cvx__['%s']['problem'].value),file=__dump__,flush=True)",optname);
         }
 
+        // TODO: replace this with a direct call to value.tolist()
         char buffer[65536];
         int len = snprintf(buffer,sizeof(buffer)-1,"__cvx__['%s']['result'] = {",optname);
         for ( VARIABLE *item = problem.variables ; item != NULL ; item = item->next )

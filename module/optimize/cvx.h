@@ -23,55 +23,51 @@ public: // module globals
     } BACKENDTYPE;
     static enumeration backend;
 
-    typedef enum {
-        CO_NONE        = 0x00,
-        CO_VERBOSE     = 0x01,
-        CO_GP          = 0x02,
-        CO_QCP         = 0x04,
-        CO_GRADIENTS   = 0x08,
-    } OPTIONS;
-    static set options;
+    // typedef enum {
+    //     CO_NONE        = 0x00,
+    //     CO_VERBOSE     = 0x01,
+    //     CO_GP          = 0x02,
+    //     CO_QCP         = 0x04,
+    //     CO_GRADIENTS   = 0x08,
+    //     CO_DPPIGNORE   = 0x10,
+    //     CO_DPPENFORCE  = 0x20,
+    // } OPTIONS;
+    // static set options;
 
-    typedef enum {
-        CD_DEFAULT     = 0,
-        CD_ENFORCE     = 1,
-        CD_IGNORE      = 2,
-    } DPP;
-    static enumeration dpp;
+    // typedef enum {
+    //     CS_AUTO        = 0,
+    //     CS_CLARABEL    = 1,
+    //     CS_CBC         = 2,
+    //     CS_COPT        = 3,
+    //     CS_DAQP        = 4,
+    //     CS_GLOP        = 5,
+    //     CS_GLPK        = 6,
+    //     CS_GLPK_MI     = 7,
+    //     CS_OSQP        = 8,
+    //     CS_PIQP        = 9,
+    //     CS_PROXQP      = 10,
+    //     CS_PDLP        = 12,
+    //     CS_CPLEX       = 13,
+    //     CS_NAG         = 14,
+    //     CS_ECOS        = 15,
+    //     CS_GUROBI      = 16,
+    //     CS_MOSEK       = 17,
+    //     CS_CVXOPT      = 18,
+    //     CS_DSPA        = 19,
+    //     CS_SCS         = 20,
+    //     CS_SCIP        = 21,
+    //     CS_XPRESS      = 22,
+    //     CS_SCIPY       = 23,
+    //     _CS_LAST = CS_SCIPY,
+    //     CS_CUSTOM      = -1,
+    // } SOLVER;
+    // static enumeration solver;
 
-    typedef enum {
-        CS_AUTO        = 0,
-        CS_CLARABEL    = 1,
-        CS_CBC         = 2,
-        CS_COPT        = 3,
-        CS_DAQP        = 4,
-        CS_GLOP        = 5,
-        CS_GLPK        = 6,
-        CS_GLPK_MI     = 7,
-        CS_OSQP        = 8,
-        CS_PIQP        = 9,
-        CS_PROXQP      = 10,
-        CS_PDLP        = 12,
-        CS_CPLEX       = 13,
-        CS_NAG         = 14,
-        CS_ECOS        = 15,
-        CS_GUROBI      = 16,
-        CS_MOSEK       = 17,
-        CS_CVXOPT      = 18,
-        CS_DSPA        = 19,
-        CS_SCS         = 20,
-        CS_SCIP        = 21,
-        CS_XPRESS      = 22,
-        CS_SCIPY       = 23,
-        CS_CUSTOM      = -1,
-    } SOLVER;
-    static enumeration solver;
+    // static char1024 custom_solver;
 
-    static char1024 custom_solver;
+    // static bool warm_start;
 
-    static bool warm_start;
-
-    static char1024 solver_options;
+    // static char1024 solver_options;
 
     typedef enum {
         OF_HALT = 0,
@@ -109,6 +105,7 @@ public: // public properties
     GL_METHOD(cvx,data);
     GL_METHOD(cvx,variables);
     GL_METHOD(cvx,constraints);
+    GL_STRING(char1024,solver_options);
 
 private: // private properties
     

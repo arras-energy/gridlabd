@@ -6,27 +6,24 @@
 module optimize
 {
     cvx_backend CPP|SCIPY|NUMPY;
-    cvx_options VERBOSE|GP|QCP|GRADIENTS;
-    cvx_dpp DEFAULT|ENFORCE|IGNORE;
-    cvx_solver CBC|CLARABEL|COPT|DAQP|GLOP|GLPK|GLPK_MI|OSQP|PIQP|PROXQP|PDLP|CPLEX|NAG|ECOS|GUROBI|MOSEK|CVXOPT|DSPA|SCS|SCIP|XPRESS|SCIPY|CUSTOM;
-    cvx_custom_solver MODULE;
-    cvx_warm_start FALSE|TRUE;
-    cvx_solver_options KEY:VALUE[,...];
     cvx_failure_handling HALT|WARN|IGNORE;
     cvx_imports "SYMBOL[,...]";
-    cvx_problemdump "FILENAME.json";
+    cvx_problemdump "FILENAME";
 }
 object cvx
 {
     event {NONE,INIT,PRECOMMIT,PRESYNC,SYNC,POSTSYNC,COMMIT,FINALIZE};
-    data NAME:[OBJECT|CLASS|GROUP].PROPERTY[,...];
-    variables NAME=GLOBAL[&DUAL][,...];
-    variables NAME=GROUP@PROPERTY[&DUAL][,...];
-    variables NAME=CLASS:PROPERTY[&DUAL][,...];
-    variables NAME=OBJECT.PROPERTY[&DUAL][,...];
-    objective [min|max](EXPRESSION);
-    constraints EXPRESSION[:OBJECT.PROPERTY][,...];
-    value FLOAT;
+    data "NAME:[OBJECT|CLASS|GROUP].PROPERTY[,...][;...]";
+    variables "NAME=GLOBAL[&DUAL][;...]";
+    variables "NAME=GROUP@PROPERTY[&DUAL][;...]";
+    variables "NAME=CLASS:PROPERTY[&DUAL][;...]";
+    variables "NAME=OBJECT.PROPERTY[&DUAL][;...]";
+    objective "[Minimize|Maximize](EXPRESSION)";
+    constraints "EXPRESSION[:OBJECT.PROPERTY][,...]";
+    value DOUBLE;
+    presolve "PYTHON_SCRIPT";
+    postsolve "PYTHON_SCRIPT";
+    solver_options "OPTION=VALUE[,...]";
 }
 ~~~
 
@@ -58,7 +55,6 @@ will result in the following matrices
         [test_M.b]
     ]
 
-
 One or more `variables` may be specified in the same manner as `data`
 definitions. If the dual is specified, it uses the same aggregation as the
 primal property, e.g., `x=CLASS:PRIMAL&DUAL` will use `PRIMAL` as the primal
@@ -67,18 +63,26 @@ variable and `DUAL` as the dual variable in all object of `CLASS`.
 When the optimization is successful, the value of the objective function is
 stored in the `value` and the values of all variables and duals are updated.
 
-
 When the problem is infeasible or unbounded the variables are not updated and
 the object properties are unchanged from the previous values. The only
 indication that the problem is infeasible or unbounded is the property
 `value` is `+inf` or `-inf`, respectively.
 
+The `presolve` and `postsolve` scripts can be used to process additional Python code before and after the solver runs, respectively.  During the
+`presolve` and `postsolve` scripts the following globals are defined in Python.
+
+* `__cvx__`: a dictionary containing the problem `data`, `variables`, `objective`, `constraints`, `problem`, `result`, and `value`, for all the active problems in the GridLAB-D model. The keys to each problem are the name of the `cvx` objects which define the problem.
+
+* `__dump__`: the file to which the problem dumps are written when the `cvx_problemdump` module global is specified.
+
 # Caveat
 
-It is often important to establish the correct rank for an optimizer so that
+1. It is often important to establish the correct rank for an optimizer so that
 it runs after all the objects it depends on have updated their properties.
 Use the `parent` property to ensure that the optimizer is initialized after
 all the objects it depends on.
+
+2. Each problem creates global data and variables before the problem is solved. If other problems have created variables by the same name, these are overwritten. However, this also means that a subsequent problem can access the results of a previously solved problem without going through the `__cvx__` global, provided the name isn't used by more than one problem. The order in which problem are evaluated can be controlled using the `cvx` object's parent property.
 
 # Example
 
