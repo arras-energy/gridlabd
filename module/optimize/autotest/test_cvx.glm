@@ -6,7 +6,7 @@ clock
 {
     timezone America/Seattle;
     starttime "2020-01-01 00:00:00 PST";
-    stoptime "2021-01-01 00:00:00 PST";
+    stoptime "2020-01-02 00:00:00 PST";
 }
 
 module optimize
@@ -56,10 +56,19 @@ object test:..3
     y 0.0;
 }
 
+object cvx
+{
+    name "least-squares";
+    event INIT;
+    presolve "m=20; n=15; np.random.seed(1); A=np.random.rand(m,n); b=np.random.rand(m); x=Variable(n)";
+    objective "Minimize(sum_squares(A@x-b))";
+    postsolve "print('Residual 2-norm:',cvx.norm(A@x-b,p=2).value,file=__dump__,flush=True)";
+}
+
 object cvx 
 {
     name "problem-x";
-    event INIT;
+    event PRECOMMIT;
     //presolve "m=20; n=15; np.random.seed(1); A=np.random.rand(m,n); b=np.random.rand(m); x=Variable(n)";
     variables "x=test:x";
     // variables "y=test:y&lambda";
@@ -83,9 +92,9 @@ object cvx
 {
     parent "problem-x";
     name "problem-y";
-    event INIT;
+    event SYNC;
     variables "y=test:y";
-    objective "Minimize(sum_squares(y))";
+    objective "Minimize(sum_squares(y-x))";
     constraints "y>=2";
 }
 
