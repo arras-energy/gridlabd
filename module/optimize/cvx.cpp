@@ -1008,7 +1008,7 @@ bool cvx::update_solution(struct s_problem &problem)
     {
         if ( strcmp(problemdump,"") != 0 )
         {
-            PyRun_FormatString("print('Problem solved: objective value is',__cvx__['%s']['problem'].value,file=__dump__,flush=True)",optname);
+            PyRun_FormatString("print('Problem solved: objective value is','{0:.6g}'.format(__cvx__['%s']['problem'].value),file=__dump__,flush=True)",optname);
         }
 
         char buffer[65536];
