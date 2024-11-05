@@ -524,6 +524,7 @@ int cvx::constraints(
 //
 
 bool cvx::add_data(struct s_problem &problem, const char *spec)
+// Format of spec: "NAME:[OBJECT.|CLASS:.|GROUP@|]PROPERTY[,...][;...]"
 {
     if ( strchr(spec,';') != NULL )
     {
@@ -592,58 +593,31 @@ bool cvx::add_data(struct s_problem &problem, const char *spec)
         char *varspec;
         while (  (varspec=strsep(&speclist,",")) != NULL )
         {
-            char classname[65], groupname[65], objectname[65], primalname[65], dualname[65] = "";
-            // fprintf(stderr,"scanning '%s' for a valid property spec...\n",varspec);
-            if ( sscanf(varspec,"%[^:]:%[^&]&%[^,]",classname,primalname,dualname) >= 2 )
+            char classname[65], groupname[65], objectname[65], propname[65];
+            if ( sscanf(varspec,"%[^:]:%[^&]",classname,propname) == 2 )
             {
-                // gld_class oclass(classname);
-                // gld_property *primalprop = oclass.get_property(primalname,true);
-                CLASS *oclass = gl_class_get_by_name(classname,NULL);
-                int count = 0;
-                for ( OBJECT *obj = gl_object_get_first() ; obj != NULL ; obj = obj->next )
-                {
-                    if ( obj->oclass == oclass )
-                    {
-                        // TODO: link property to list
-                        gl_warning("TODO: item %d class '%s' object '%s' primal '%s' dual '%s'",count,classname,get_object(obj)->get_name(),primalname,dualname);
-                        count++;
-                    }
-                }
-                if ( count == 0 )
-                {
-                    warning("class '%s' has no objects",classname);
-                }
+                add_data_class(item,classname,propname);
             }
-            else if ( sscanf(varspec,"%[^@]@%[^/]/%[^,]",groupname,primalname,dualname) >= 2 )
+            else if ( sscanf(varspec,"%[^@]@%[^/]",groupname,propname) == 2 )
             {
-                int count = 0;
-                for ( OBJECT *obj = gl_object_get_first() ; obj != NULL ; obj = obj->next )
-                {
-                    if ( strcmp(obj->groupid,groupname) == 0 )
-                    {
-                        // TODO: link property to list
-                        gl_warning("TODO: item %d group '%s' object '%s' primal '%s' dual '%s'",count,groupname,get_object(obj)->get_name(),primalname,dualname);
-                        count++;
-                    }
-                }
-                if ( count == 0 )
-                {
-                    warning("group '%s' has no objects",groupname);
-                }
+                add_data_group(item,groupname,propname);
             }
-            else if ( sscanf(varspec,"%[^.].%[^&]&%[^,]",objectname,primalname,dualname) >= 2 )
+            else if ( sscanf(varspec,"%[^.].%[^&]",objectname,propname) == 2 )
             {
-                gl_warning("TODO: object '%s' primal '%s' dual '%s'",objectname,primalname,dualname);
+                add_data_object(item,objectname,propname);
             }
-            else if ( sscanf(varspec,"%[^&]&%[^,]",primalname,dualname) >= 1 )
+            else if ( sscanf(varspec,"%[^&]",propname) == 1 )
             {
-                gl_warning("TODO: global primal '%s' dual '%s'",primalname,dualname);
+                add_data_global(item,propname);
             }
             else
             {
-                exception("ignoring invalid variable spec '%s'",varspec);
+                exception("invalid data spec '%s'",varspec);
             }
         }
+
+        // publish to globals
+        PyDict_SetItemString(globals,item->name,item->list);
 
         // link to list
         item->next = problem.data;
@@ -653,11 +627,80 @@ bool cvx::add_data(struct s_problem &problem, const char *spec)
     }
 }
 
+void cvx::add_data_class(DATA *item, const char *classname, const char *propname)
+{
+    CLASS *oclass = gl_class_get_by_name(classname,NULL);
+    int count = 0;
+    for ( OBJECT *obj = gl_object_get_first() ; obj != NULL ; obj = obj->next )
+    {
+        if ( obj->oclass == oclass )
+        {
+            gld_property data(obj,propname);
+            if ( ! data.is_valid() )
+            {
+                exception("data item '%s' is not a known property of class '%s'",propname,classname);
+            }
+            if ( ! data.is_double() )
+            {
+                exception("data item '%s.%s' is not a real number",classname,propname);
+            }
+            
+            REFERENCE *ref = new REFERENCE;
+            if ( ref == NULL )
+            {
+                exception("memory allocation error");
+            }
+            ref->ptr = (double*)data.get_addr();
+            ref->next = item->data;
+            item->data = ref;
+            PyList_Append(item->list,PyFloat_FromDouble(*(ref->ptr)));
+            count++;
+        }
+    }
+    if ( count == 0 )
+    {
+        warning("class '%s' has no objects",classname);
+    }
+}
+
+void cvx::add_data_group(DATA *item, const char *groupname, const char *propname)
+{
+    int count = 0;
+    for ( OBJECT *obj = gl_object_get_first() ; obj != NULL ; obj = obj->next )
+    {
+        if ( strcmp(obj->groupid,groupname) == 0 )
+        {
+            // TODO: link property to list
+            gl_warning("TODO: data item %d group '%s' property '%s'",count,groupname,get_object(obj)->get_name(),propname);
+            count++;
+        }
+    }
+    if ( count == 0 )
+    {
+        warning("group '%s' has no objects",groupname);
+    }
+}
+
+void cvx::add_data_object(DATA *item, const char *objectname, const char *propname)
+{
+    gl_warning("TODO: data item for object '%s' property '%s'",objectname,propname);
+}
+
+void cvx::add_data_global(DATA *item, const char *propname)
+{
+    gl_warning("TODO: data item for global '%s'",propname);
+}
+
 //
 // Link object properties to CVX variable
 //
 
 bool cvx::add_variables(struct s_problem &problem, const char *spec)
+// Format of spec: 
+//   "NAME=CLASS:PROPERTY[&DUAL][;...]"
+//   "NAME=GROUP@PROPERTY[&DUAL][;...]"
+//   "NAME=OBJECT.PROPERTY[&DUAL][;...]"
+//   "NAME=PROPERTY[&DUAL][;...]"
 {
     if ( strchr(spec,';') != NULL )
     {
@@ -724,65 +767,21 @@ bool cvx::add_variables(struct s_problem &problem, const char *spec)
         while (  (varspec=strsep(&speclist,",")) != NULL )
         {
             char classname[65], groupname[65], objectname[65], primalname[65], dualname[65] = "";
-            // fprintf(stderr,"scanning '%s' for a valid property spec...\n",varspec);
             if ( sscanf(varspec,"%[^:]:%[^&]&%[^,]",classname,primalname,dualname) >= 2 )
             {
-                // gld_class oclass(classname);
-                // gld_property *primalprop = oclass.get_property(primalname,true);
-                CLASS *oclass = gl_class_get_by_name(classname,NULL);
-                for ( OBJECT *obj = gl_object_get_first() ; obj != NULL ; obj = obj->next )
-                {
-                    if ( obj->oclass == oclass )
-                    {
-                        gld_property data(obj,primalname);
-                        if ( ! data.is_valid() )
-                        {
-                            exception("primal property '%s' is not valid",primalname);
-                        }
-                        if ( ! data.is_double() )
-                        {
-                            exception("primal property '%s' is not a real number",primalname);
-                        }
-                        REFERENCE *primal = new REFERENCE;
-                        if ( primal == NULL )
-                        {
-                            exception("memory allocation error");
-                        }
-                        primal->ref = (double*)data.get_addr();
-                        primal->next = item->primal;
-                        item->primal = primal;
-                        item->count++;
-                    }
-                }
-                if ( item->count == 0 )
-                {
-                    warning("class '%s' has no objects",classname);
-                }
+                add_variable_class(item,classname,primalname,dualname);
             }
             else if ( sscanf(varspec,"%[^@]@%[^/]/%[^,]",groupname,primalname,dualname) >= 2 )
             {
-                int count = 0;
-                for ( OBJECT *obj = gl_object_get_first() ; obj != NULL ; obj = obj->next )
-                {
-                    if ( strcmp(obj->groupid,groupname) == 0 )
-                    {
-                        // TODO: link property to list
-                        gl_warning("TODO: item %d group '%s' object '%s' primal '%s' dual '%s'",count,groupname,get_object(obj)->get_name(),primalname,dualname);
-                        count++;
-                    }
-                }
-                if ( count == 0 )
-                {
-                    warning("group '%s' has no objects",groupname);
-                }
+                add_variable_group(item,groupname,primalname,dualname);
             }
             else if ( sscanf(varspec,"%[^.].%[^&]&%[^,]",objectname,primalname,dualname) >= 2 )
             {
-                gl_warning("TODO: object '%s' primal '%s' dual '%s'",objectname,primalname,dualname);
+                add_variable_object(item,objectname,primalname,dualname);
             }
             else if ( sscanf(varspec,"%[^&]&%[^,]",primalname,dualname) >= 1 )
             {
-                gl_warning("TODO: global primal '%s' dual '%s'",primalname,dualname);
+                add_variable_global(item,primalname,dualname);
             }
             else
             {
@@ -796,6 +795,94 @@ bool cvx::add_variables(struct s_problem &problem, const char *spec)
         free(buffer);
         return true;
     }
+}
+
+void cvx::add_variable_class(VARIABLE *item, const char *classname, const char *primalname, const char *dualname)
+{
+    CLASS *oclass = gl_class_get_by_name(classname,NULL);
+    for ( OBJECT *obj = gl_object_get_first() ; obj != NULL ; obj = obj->next )
+    {
+        if ( obj->oclass == oclass )
+        {
+            gld_property primal_data(obj,primalname);
+            if ( ! primal_data.is_valid() )
+            {
+                exception("primal variable '%s' is not a known property of class '%s'",primalname,classname);
+            }
+            if ( ! primal_data.is_double() )
+            {
+                exception("primal variable '%s.%s' is not a real number",classname,primalname);
+            }
+            
+            REFERENCE *primal = new REFERENCE;
+            if ( primal == NULL )
+            {
+                exception("memory allocation error");
+            }
+            primal->ptr = (double*)primal_data.get_addr();
+            primal->next = item->primal;
+            item->primal = primal;
+
+            if ( strcmp(dualname,"") != 0 )
+            {
+                gld_property dual_data(obj,dualname);
+                if ( ! dual_data.is_valid() )
+                {
+                    exception("dual variable '%s' is not a known property of class '%s'",dualname,classname);
+                }
+                if ( ! dual_data.is_double() )
+                {
+                    exception("dual variable '%s.%s' is not a real number",classname,dualname);
+                }
+
+                REFERENCE *dual = new REFERENCE;
+                if ( dual == NULL )
+                {
+                    exception("memory allocation error");
+                }
+                dual->ptr = (double*)dual_data.get_addr();
+                dual->next = item->dual;
+                item->dual = dual;
+            }
+            else
+            {
+                item->dual = NULL;
+            }
+            item->count++;
+        }
+    }
+    if ( item->count == 0 )
+    {
+        warning("class '%s' has no objects",classname);
+    }
+}
+
+void cvx::add_variable_group(VARIABLE *item, const char *groupname, const char *primalname, const char *dualname)
+{
+    int count = 0;
+    for ( OBJECT *obj = gl_object_get_first() ; obj != NULL ; obj = obj->next )
+    {
+        if ( strcmp(obj->groupid,groupname) == 0 )
+        {
+            // TODO: link property to list
+            gl_warning("TODO: item %d group '%s' object '%s' primal '%s' dual '%s'",count,groupname,get_object(obj)->get_name(),primalname,dualname);
+            count++;
+        }
+    }
+    if ( count == 0 )
+    {
+        warning("group '%s' has no objects",groupname);
+    }
+}
+
+void cvx::add_variable_object(VARIABLE *item, const char *objectname, const char *primalname, const char *dualname)
+{
+    gl_warning("TODO: object '%s' primal '%s' dual '%s'",objectname,primalname,dualname);
+}
+
+void cvx::add_variable_global(VARIABLE *item, const char *primalname, const char *dualname)
+{
+    gl_warning("TODO: global primal '%s' dual '%s'",primalname,dualname);
 }
 
 //
@@ -847,11 +934,38 @@ bool cvx::update_solution(struct s_problem &problem)
     bool status = true;
 
     verbose("updating problem");
-
-    if ( strcmp(presolve,"") != 0 )
+    PyObject *cvx = PyDict_GetItemString(globals,"__cvx__");
+    PyObject *objprob = PyDict_GetItemString(cvx,optname);
+    PyObject *probdata = PyDict_GetItemString(objprob,"data");
+    if ( probdata == NULL )
     {
-        PyRun_FormatString(presolve);
+        probdata = PyDict_New();
+        PyDict_SetItemString(objprob,"data",probdata);
     }
+
+    // copy data from objects
+    Py_ssize_t pos = 0;
+    for ( DATA *item = problem.data ; item != NULL ; item = item->next, pos++ )
+    {
+        bool changed = false;
+        Py_ssize_t ndx = 0;
+        for ( REFERENCE *ref = item->data ; ref != NULL ; ref=ref->next, ndx++ )
+        {
+            double value = *(ref->ptr);
+            if ( value != PyFloat_AsDouble(PyList_GET_ITEM(item->list,ndx)) )
+            {
+                changed = true;
+                PyList_SetItem(item->list,ndx,PyFloat_FromDouble(value));
+            }
+        }        
+        if ( changed )
+        {
+            PyDict_SetItemString(probdata,item->name,item->list);
+            PyDict_SetItemString(globals,item->name,item->list);
+        }
+    }
+
+    // set up variables
     for ( VARIABLE *item = problem.variables ; item != NULL ; item = item->next )
     {
         if ( PyRun_FormatString("%s = cvx.Variable(%ld)",item->name,item->count) == -1 )
@@ -864,18 +978,26 @@ bool cvx::update_solution(struct s_problem &problem)
         }
     }
 
+    // run presolve script
+    if ( strcmp(presolve,"") != 0 )
+    {
+        PyRun_FormatString(presolve);
+    }
 
+    // set objective
     if ( PyRun_FormatString("__cvx__['%s']['objective'] = %s",optname,problem.objective) == -1 )
     {
         exception("objective specification '%s' is invalid",problem.objective);
     }
 
+    // update constraints
     char buffer[1024];
     if ( PyRun_FormatString("__cvx__['%s']['constraints'] = [%s]",optname,constraints(buffer,sizeof(buffer)-1)>0?buffer:"") == -1 )
     {
         exception("constraints specification '[%s]' is invalid",buffer);
     }
 
+    // create problem
     if ( PyRun_FormatString("__cvx__['%s']['problem'] = cvx.Problem(__cvx__['%s']['objective'],__cvx__['%s']['constraints'])",optname,optname,optname) == -1 )
     {
         if ( strcmp(on_failure,"") != 0 )
@@ -885,14 +1007,17 @@ bool cvx::update_solution(struct s_problem &problem)
         exception("problem construction failed");
     }
 
+    // dump problem if requested
     if ( strcmp(problemdump,"") != 0 )
     {
         gld_clock now;
         PyRun_FormatString("print('*** Problem \\'%s\\' at t=%lld (%s) ***\\n',file=__dump__)",optname,gl_globalclock,now.get_string().get_buffer());
+        PyRun_FormatString("print('Data:',__cvx__['%s']['data'],file=__dump__)",optname);
         PyRun_FormatString("print('Objective:',__cvx__['%s']['objective'],file=__dump__)",optname);
         PyRun_FormatString("print('Contraints:',__cvx__['%s']['constraints'],file=__dump__)",optname);
     }
 
+    // solve problem
     if ( PyRun_FormatString("__cvx__['%s']['value'] = __cvx__['%s']['problem'].solve(%s)",optname,optname,(const char*)solver_options) == -1 )
     {
         if ( strcmp(problemdump,"") != 0 )
@@ -907,13 +1032,14 @@ bool cvx::update_solution(struct s_problem &problem)
         exception("problem solve failed");
     }
 
+    // dump results
     if ( strcmp(problemdump,"") != 0 )
     {
         PyRun_FormatString("print('\\n'.join([f'{x}: {y}' for x,y in __cvx__['%s']['problem'].get_problem_data(__cvx__['%s']['problem'].solver_stats.solver_name)[0].items()]),file=__dump__)",optname,optname);
     }
 
-    PyObject *cvx = PyDict_GetItemString(globals,"__cvx__");
-    PyObject *value = PyDict_GetItemString(PyDict_GetItemString(cvx,optname),"value");
+    // extract value, if any
+    PyObject *value = PyDict_GetItemString(objprob,"value");
     this->value = PyFloat_AsDouble(value);
     if ( ! isfinite(this->value) )
     {
@@ -985,17 +1111,23 @@ bool cvx::update_solution(struct s_problem &problem)
         PyObject *result = PyDict_GetItemString(PyDict_GetItemString(cvx,optname),"result");
         for ( VARIABLE *item = problem.variables ; item != NULL ; item = item->next )
         {
-            PyObject *var = PyDict_GetItemString(result,item->name);
-            Py_ssize_t ndx = 0;
-            for ( REFERENCE *prop = item->primal ; prop != NULL ; prop = prop->next )
+            if ( item->dual != NULL )
             {
-                *(prop->ref) = PyFloat_AsDouble(PyList_GetItem(var,ndx++));
+                warning("TODO: dual values not copied back to object %s",item->name);
             }
+            Py_ssize_t ndx = 0;
+            PyObject *var = PyDict_GetItemString(result,item->name);
+            for ( REFERENCE *prop = item->primal ; prop != NULL ; prop = prop->next, ndx++ )
+            {
+                *(prop->ptr) = PyFloat_AsDouble(PyList_GetItem(var,ndx));
+            }
+
         }
         if ( strcmp(problemdump,"") != 0 )
         {
             PyRun_FormatString("print('Result:',__cvx__['%s']['result'],'\\n',file=__dump__,flush=True)",optname);
         }
+
         status = true;
     }
 

@@ -13,7 +13,7 @@ module optimize
 object cvx
 {
     event {NONE,INIT,PRECOMMIT,PRESYNC,SYNC,POSTSYNC,COMMIT,FINALIZE};
-    data "NAME:[OBJECT|CLASS|GROUP].PROPERTY[,...][;...]";
+    data "NAME:[OBJECT.|CLASS:|GROUP@|]PROPERTY[,...][;...]";
     variables "NAME=GLOBAL[&DUAL][;...]";
     variables "NAME=GROUP@PROPERTY[&DUAL][;...]";
     variables "NAME=CLASS:PROPERTY[&DUAL][;...]";

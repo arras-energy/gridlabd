@@ -23,52 +23,6 @@ public: // module globals
     } BACKENDTYPE;
     static enumeration backend;
 
-    // typedef enum {
-    //     CO_NONE        = 0x00,
-    //     CO_VERBOSE     = 0x01,
-    //     CO_GP          = 0x02,
-    //     CO_QCP         = 0x04,
-    //     CO_GRADIENTS   = 0x08,
-    //     CO_DPPIGNORE   = 0x10,
-    //     CO_DPPENFORCE  = 0x20,
-    // } OPTIONS;
-    // static set options;
-
-    // typedef enum {
-    //     CS_AUTO        = 0,
-    //     CS_CLARABEL    = 1,
-    //     CS_CBC         = 2,
-    //     CS_COPT        = 3,
-    //     CS_DAQP        = 4,
-    //     CS_GLOP        = 5,
-    //     CS_GLPK        = 6,
-    //     CS_GLPK_MI     = 7,
-    //     CS_OSQP        = 8,
-    //     CS_PIQP        = 9,
-    //     CS_PROXQP      = 10,
-    //     CS_PDLP        = 12,
-    //     CS_CPLEX       = 13,
-    //     CS_NAG         = 14,
-    //     CS_ECOS        = 15,
-    //     CS_GUROBI      = 16,
-    //     CS_MOSEK       = 17,
-    //     CS_CVXOPT      = 18,
-    //     CS_DSPA        = 19,
-    //     CS_SCS         = 20,
-    //     CS_SCIP        = 21,
-    //     CS_XPRESS      = 22,
-    //     CS_SCIPY       = 23,
-    //     _CS_LAST = CS_SCIPY,
-    //     CS_CUSTOM      = -1,
-    // } SOLVER;
-    // static enumeration solver;
-
-    // static char1024 custom_solver;
-
-    // static bool warm_start;
-
-    // static char1024 solver_options;
-
     typedef enum {
         OF_HALT = 0,
         OF_WARN = 1,
@@ -113,7 +67,7 @@ private: // private properties
     static PyObject *globals;
 
     typedef struct s_reference {
-        double *ref;
+        double *ptr;
         struct s_reference* next;
     } REFERENCE;
     typedef struct s_data {
@@ -162,7 +116,15 @@ public: // event handlers
 private: // private methods
 
     bool add_data(struct s_problem &problem, const char *value);
+    void add_data_class(DATA *item, const char *classname, const char *propname);
+    void add_data_group(DATA *item, const char *groupname, const char *propname);
+    void add_data_object(DATA *item, const char *objectname, const char *propname);
+    void add_data_global(DATA *item, const char *propname);
     bool add_variables(struct s_problem &problem, const char *value);
+    void add_variable_class(VARIABLE *item, const char *classname, const char *primalname, const char *dualname);
+    void add_variable_group(VARIABLE *item, const char *groupname, const char *primalname, const char *dualname);
+    void add_variable_object(VARIABLE *item, const char *objectname, const char *primalname, const char *dualname);
+    void add_variable_global(VARIABLE *item, const char *primalname, const char *dualname);
     bool add_constraints(struct s_problem &problem, const char *value);
     bool set_objective(struct s_problem &problem, const char *value);
     bool update_solution(struct s_problem &problem);

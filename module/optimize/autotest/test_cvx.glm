@@ -1,7 +1,7 @@
 // test_csv.glm
 
 #set suppress_repeat_messages=FALSE
-#option verbose
+//#option verbose
 clock
 {
     timezone America/Seattle;
@@ -75,14 +75,15 @@ object cvx
     //presolve "m=20; n=15; np.random.seed(1); A=np.random.rand(m,n); b=np.random.rand(m); x=Variable(n)";
     variables "x=test:x";
     // variables "y=test:y&lambda";
-    // data "A=test.A0,test.A1,test.A2,test.A3;b1=test.b1;b2=test.b2";
+    data "A=test:A0"; // ,test.A1,test.A2,test.A3;b1=test.b1;b2=test.b2";
+    //presolve "print(A,file=sys.stderr)";
     // variables "y=test:y"; // duplicate test
     // variables "p=pypower.bus:Pd,q=bus.Qd"; // class and module.class tests
     // variables "p=test_group@x"; // group test
     // variables "x=test.x&mu"; // duplicate error
     // variables "y=test.y"; // duplicate error
     // variables "z=test.z"; // not found error
-    objective "Minimize(sum_squares(x))";
+    objective "Minimize(sum_squares(A@x))";
     constraints "x>=1";
     // constraints "x<=-1";
     // constraints "x<=1,y==2*x";
