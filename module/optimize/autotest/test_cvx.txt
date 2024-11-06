@@ -11,7 +11,7 @@ Objective: minimize quad_over_lin([[0.42 0.72 ... 0.88 0.03]
 Contraints: []
 dims: 20 equalities, 0 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3b190>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8f190>
 P:   (0, 0)	2.0
   (1, 1)	2.0
   (2, 2)	2.0
@@ -100,18 +100,18 @@ Result: {}
 
 *** Problem 'problem-x' at t=1577865600 (2020-01-01 00:00:00 PST) ***
 
-Data: {'A': [-1.222814517192745, 1.057713888268395, -0.8833105537289986]}
-Objective: minimize quad_over_lin([-1.22281 1.05771 -0.883311] @ var36, 1.0)
+Data: {'A': [0.5093463414659483, -1.0159877887782605, 1.0208528545490188]}
+Objective: minimize quad_over_lin([0.509346 -1.01599 1.02085] @ var36, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3be20>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8fe20>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-1.222814517192745
-  (0, 2)	1.057713888268395
-  (0, 3)	-0.8833105537289986
+  (0, 1)	0.5093463414659483
+  (0, 2)	-1.0159877887782605
+  (0, 3)	1.0208528545490188
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -124,23 +124,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 2.11401e-11
-Result: {'x': [1.3527559526664956, 2.623948043351397, 1.2693398301582712]} 
+Problem solved: objective value is 2.23116e-11
+Result: {'x': [1.3817552296400133, 2.03023092291095, 1.3311351635936606]} 
 
 *** Problem 'problem-y' at t=1577865600 (2020-01-01 00:00:00 PST) ***
 
-Data: {'A': [-1.2609444074755012, 0.02941680029187062, -0.041839312449386476]}
-Objective: minimize quad_over_lin([-1.26094 0.0294168 -0.0418393] @ var84, 1.0)
+Data: {'A': [-0.013889519225062848, 0.8802718427330528, -0.3700920215549009]}
+Objective: minimize quad_over_lin([-0.0138895 0.880272 -0.370092] @ var84, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3b520>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8fd90>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-1.2609444074755012
-  (0, 2)	0.02941680029187062
-  (0, 3)	-0.041839312449386476
+  (0, 1)	-0.013889519225062848
+  (0, 2)	0.8802718427330528
+  (0, 3)	-0.3700920215549009
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -153,23 +153,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 2.29819e-11
-Result: {'y': [1.1217521089305498, 49.513019307919734, 1.0050917182023127]} 
+Problem solved: objective value is 4.31569e-12
+Result: {'y': [1.6493121159700177, 1.2514414209017537, 2.9146762239031996]} 
 
 *** Problem 'problem-x' at t=1577869200 (2020-01-01 01:00:00 PST) ***
 
-Data: {'A': [-0.045924175352045515, 0.3753856300398809, -0.1878235154859319]}
-Objective: minimize quad_over_lin([-0.0459242 0.375386 -0.187824] @ var132, 1.0)
+Data: {'A': [0.027238062143191136, 0.22212641444446196, 0.9555006438535315]}
+Objective: minimize quad_over_lin([0.0272381 0.222126 0.955501] @ var132, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135a098d0>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12d783f40>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-0.045924175352045515
-  (0, 2)	0.3753856300398809
-  (0, 3)	-0.1878235154859319
+  (0, 1)	0.027238062143191136
+  (0, 2)	0.22212641444446196
+  (0, 3)	0.9555006438535315
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -182,23 +182,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 4.44938e-13
-Result: {'x': [1.680560669902501, 1.1710528261303472, 1.929570459544109]} 
+Problem solved: objective value is 1.4517
+Result: {'x': [1.0, 1.0, 1.0]} 
 
 *** Problem 'problem-y' at t=1577869200 (2020-01-01 01:00:00 PST) ***
 
-Data: {'A': [-0.6988267693345759, 2.3300542930026378, 1.1427033516512037]}
-Objective: minimize quad_over_lin([-0.698827 2.33005 1.1427] @ var180, 1.0)
+Data: {'A': [-0.2382880707323089, 0.26351856580113364, 1.7917839417346437]}
+Objective: minimize quad_over_lin([-0.238288 0.263519 1.79178] @ var180, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3b940>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8f640>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-0.6988267693345759
-  (0, 2)	2.3300542930026378
-  (0, 3)	1.1427033516512037
+  (0, 1)	-0.2382880707323089
+  (0, 2)	0.26351856580113364
+  (0, 3)	1.7917839417346437
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -211,23 +211,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 3.70501e-15
-Result: {'y': [7.604171863317619, 1.5204052644229935, 1.5501591918354727]} 
+Problem solved: objective value is 3.72961e-14
+Result: {'y': [13.601296852531743, 1.1702572574110797, 1.6367165689847332]} 
 
 *** Problem 'problem-x' at t=1577872800 (2020-01-01 02:00:00 PST) ***
 
-Data: {'A': [-1.6549945480171266, -2.04393656589335, -0.06395510122200698]}
-Objective: minimize quad_over_lin([-1.65499 -2.04394 -0.0639551] @ var228, 1.0)
+Data: {'A': [1.9402412907092992, 0.2631600633349186, -0.28646522177729916]}
+Objective: minimize quad_over_lin([1.94024 0.26316 -0.286465] @ var228, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3bfd0>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8ffd0>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-1.6549945480171266
-  (0, 2)	-2.04393656589335
-  (0, 3)	-0.06395510122200698
+  (0, 1)	1.9402412907092992
+  (0, 2)	0.2631600633349186
+  (0, 3)	-0.28646522177729916
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -240,23 +240,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 14.1593
-Result: {'x': [1.0000000000000002, 0.9999999999999999, 1.0]} 
+Problem solved: objective value is 1.76847e-14
+Result: {'x': [1.634504041224605, 1.1623178927628977, 12.13832424869134]} 
 
 *** Problem 'problem-y' at t=1577872800 (2020-01-01 02:00:00 PST) ***
 
-Data: {'A': [-0.7197447885487903, 1.8458577693095277, -0.18910202659485495]}
-Objective: minimize quad_over_lin([-0.719745 1.84586 -0.189102] @ var276, 1.0)
+Data: {'A': [0.129257455868069, -0.7945857180964399, -0.9817979779836277]}
+Objective: minimize quad_over_lin([0.129257 -0.794586 -0.981798] @ var276, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d39900>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8f610>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-0.7197447885487903
-  (0, 2)	1.8458577693095277
-  (0, 3)	-0.18910202659485495
+  (0, 1)	0.129257455868069
+  (0, 2)	-0.7945857180964399
+  (0, 3)	-0.9817979779836277
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -269,23 +269,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 2.33265e-15
-Result: {'y': [2.771513359509081, 1.2761257361239062, 1.907776254617274]} 
+Problem solved: objective value is 1.44351e-12
+Result: {'y': [20.745767789668918, 1.450851378663127, 1.5570622630090358]} 
 
 *** Problem 'problem-x' at t=1577876400 (2020-01-01 03:00:00 PST) ***
 
-Data: {'A': [0.3455502682159178, 0.17852523668265505, 1.1750392839789081]}
-Objective: minimize quad_over_lin([0.34555 0.178525 1.17504] @ var324, 1.0)
+Data: {'A': [-1.7181038931372825, 0.19125393721099274, -0.2306695568126682]}
+Objective: minimize quad_over_lin([-1.7181 0.191254 -0.23067] @ var324, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3ae30>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8ee30>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	0.3455502682159178
-  (0, 2)	0.17852523668265505
-  (0, 3)	1.1750392839789081
+  (0, 1)	-1.7181038931372825
+  (0, 2)	0.19125393721099274
+  (0, 3)	-0.2306695568126682
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -298,23 +298,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 2.88699
-Result: {'x': [1.0, 1.0, 0.9999999999999997]} 
+Problem solved: objective value is 9.91864e-14
+Result: {'x': [1.6235577066665783, 15.963673192652134, 1.143084733284934]} 
 
 *** Problem 'problem-y' at t=1577876400 (2020-01-01 03:00:00 PST) ***
 
-Data: {'A': [0.41261723712423676, 0.6791178371721616, 0.17925127889306772]}
-Objective: minimize quad_over_lin([0.412617 0.679118 0.179251] @ var372, 1.0)
+Data: {'A': [-0.5695003254961755, 0.5702219807758417, 1.436605933092594]}
+Objective: minimize quad_over_lin([-0.5695 0.570222 1.43661] @ var372, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3ae90>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8fb50>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	0.41261723712423676
-  (0, 2)	0.6791178371721616
-  (0, 3)	0.17925127889306772
+  (0, 1)	-0.5695003254961755
+  (0, 2)	0.5702219807758417
+  (0, 3)	1.436605933092594
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -327,23 +327,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 1.61541
-Result: {'y': [1.0, 1.0, 1.0]} 
+Problem solved: objective value is 4.50987e-16
+Result: {'y': [4.962209052119514, 1.2195351563047985, 1.4830607667652338]} 
 
 *** Problem 'problem-x' at t=1577880000 (2020-01-01 04:00:00 PST) ***
 
-Data: {'A': [2.0287595992530485, 0.8462286975681839, 0.5875145978839381]}
-Objective: minimize quad_over_lin([2.02876 0.846229 0.587515] @ var420, 1.0)
+Data: {'A': [-0.7765264460244269, 0.23100745909495868, 1.0609907209529028]}
+Objective: minimize quad_over_lin([-0.776526 0.231007 1.06099] @ var420, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3a8c0>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8e8c0>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	2.0287595992530485
-  (0, 2)	0.8462286975681839
-  (0, 3)	0.5875145978839381
+  (0, 1)	-0.7765264460244269
+  (0, 2)	0.23100745909495868
+  (0, 3)	1.0609907209529028
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -356,23 +356,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 11.9889
-Result: {'x': [0.9999999999999999, 1.0, 1.0]} 
+Problem solved: objective value is 8.62176e-13
+Result: {'x': [2.228323250794011, 1.4130440894408063, 1.3232247093689533]} 
 
 *** Problem 'problem-y' at t=1577880000 (2020-01-01 04:00:00 PST) ***
 
-Data: {'A': [0.5880004405269, 0.09876773600861075, -0.42917663774817677]}
-Objective: minimize quad_over_lin([0.588 0.0987677 -0.429177] @ var468, 1.0)
+Data: {'A': [-0.5501488119026339, 2.533602528140034, -0.02437843469031082]}
+Objective: minimize quad_over_lin([-0.550149 2.5336 -0.0243784] @ var468, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3a560>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8ec20>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	0.5880004405269
-  (0, 2)	0.09876773600861075
-  (0, 3)	-0.42917663774817677
+  (0, 1)	-0.5501488119026339
+  (0, 2)	2.533602528140034
+  (0, 3)	-0.02437843469031082
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -385,23 +385,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 3.02591e-13
-Result: {'y': [1.278159499534242, 1.4864524718841579, 2.093246381999454]} 
+Problem solved: objective value is 2.33264e-15
+Result: {'y': [6.732534651933993, 1.4794923751501834, 1.8274197854821639]} 
 
 *** Problem 'problem-x' at t=1577883600 (2020-01-01 05:00:00 PST) ***
 
-Data: {'A': [2.1693744331536537, 1.3373087984993879, 1.2945093361680802]}
-Objective: minimize quad_over_lin([2.16937 1.33731 1.29451] @ var516, 1.0)
+Data: {'A': [-0.3970099351748432, -1.5151028324383777, 0.07739462592996538]}
+Objective: minimize quad_over_lin([-0.39701 -1.5151 0.0773946] @ var516, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3b3d0>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8f910>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	2.1693744331536537
-  (0, 2)	1.3373087984993879
-  (0, 3)	1.2945093361680802
+  (0, 1)	-0.3970099351748432
+  (0, 2)	-1.5151028324383777
+  (0, 3)	0.07739462592996538
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -414,23 +414,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 23.0515
-Result: {'x': [0.9999999999999998, 1.0, 1.0]} 
+Problem solved: objective value is 5.36873e-15
+Result: {'x': [1.1818375155310308, 1.4583894136886653, 34.612365670692526]} 
 
 *** Problem 'problem-y' at t=1577883600 (2020-01-01 05:00:00 PST) ***
 
-Data: {'A': [-1.7234231549172356, -1.5214764262481986, -1.269915377443175]}
-Objective: minimize quad_over_lin([-1.72342 -1.52148 -1.26992] @ var564, 1.0)
+Data: {'A': [0.0015554119205765922, -1.1657798448653596, -0.3393668887400483]}
+Objective: minimize quad_over_lin([0.00155541 -1.16578 -0.339367] @ var564, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3a710>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8f070>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-1.7234231549172356
-  (0, 2)	-1.5214764262481986
-  (0, 3)	-1.269915377443175
+  (0, 1)	0.0015554119205765922
+  (0, 2)	-1.1657798448653596
+  (0, 3)	-0.3393668887400483
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -443,23 +443,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 20.3836
-Result: {'y': [1.0000000000000002, 0.9999999999999999, 1.0]} 
+Problem solved: objective value is 8.6633e-14
+Result: {'y': [1292.080134896421, 1.3939135124682114, 1.1336411543583997]} 
 
 *** Problem 'problem-x' at t=1577887200 (2020-01-01 06:00:00 PST) ***
 
-Data: {'A': [-2.0556805004422136, 0.7709923908236798, -0.7389389531909221]}
-Objective: minimize quad_over_lin([-2.05568 0.770992 -0.738939] @ var612, 1.0)
+Data: {'A': [-1.727654592426717, 2.3319573472221853, 0.37946625306751497]}
+Objective: minimize quad_over_lin([-1.72765 2.33196 0.379466] @ var612, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3ba60>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8f640>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-2.0556805004422136
-  (0, 2)	0.7709923908236798
-  (0, 3)	-0.7389389531909221
+  (0, 1)	-1.727654592426717
+  (0, 2)	2.3319573472221853
+  (0, 3)	0.37946625306751497
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -472,23 +472,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 1.77684e-11
-Result: {'x': [1.484913036703518, 5.2280019539598825, 1.3238538343974584]} 
+Problem solved: objective value is 4.84134e-17
+Result: {'x': [2.097074710251779, 1.3181218589245614, 1.4473403178631852]} 
 
 *** Problem 'problem-y' at t=1577887200 (2020-01-01 06:00:00 PST) ***
 
-Data: {'A': [0.770481631892761, -1.207481613685895, 0.26334214101177894]}
-Objective: minimize quad_over_lin([0.770482 -1.20748 0.263342] @ var660, 1.0)
+Data: {'A': [-0.8606830431982768, -1.4121722202102982, -0.9877257385483914]}
+Objective: minimize quad_over_lin([-0.860683 -1.41217 -0.987726] @ var660, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3b730>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8e6e0>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	0.770481631892761
-  (0, 2)	-1.207481613685895
-  (0, 3)	0.26334214101177894
+  (0, 1)	-0.8606830431982768
+  (0, 2)	-1.4121722202102982
+  (0, 3)	-0.9877257385483914
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -501,23 +501,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 6.70926e-12
-Result: {'y': [1.7143956818612942, 1.4514065454541631, 1.6390803367617235]} 
+Problem solved: objective value is 10.6314
+Result: {'y': [1.0, 1.0000000000000002, 1.0]} 
 
 *** Problem 'problem-x' at t=1577890800 (2020-01-01 07:00:00 PST) ***
 
-Data: {'A': [0.3306819559120314, 0.7464752155837543, 1.3026358570930883]}
-Objective: minimize quad_over_lin([0.330682 0.746475 1.30264] @ var708, 1.0)
+Data: {'A': [0.2675032928667661, -0.21656560222030322, -1.3753070598661679]}
+Objective: minimize quad_over_lin([0.267503 -0.216566 -1.37531] @ var708, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d39960>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8dc30>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	0.3306819559120314
-  (0, 2)	0.7464752155837543
-  (0, 3)	1.3026358570930883
+  (0, 1)	0.2675032928667661
+  (0, 2)	-0.21656560222030322
+  (0, 3)	-1.3753070598661679
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -530,23 +530,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 5.66341
-Result: {'x': [1.0, 1.0, 0.9999999999999998]} 
+Problem solved: objective value is 2.32531e-15
+Result: {'x': [8.94034286076569, 1.1290420682030549, 1.56114913797337]} 
 
 *** Problem 'problem-y' at t=1577890800 (2020-01-01 07:00:00 PST) ***
 
-Data: {'A': [-0.25340599435003835, -0.6277976103950098, -1.055978437658429]}
-Objective: minimize quad_over_lin([-0.253406 -0.627798 -1.05598] @ var756, 1.0)
+Data: {'A': [-0.627059215315783, 0.7598452170065805, -0.9466715668186853]}
+Objective: minimize quad_over_lin([-0.627059 0.759845 -0.946672] @ var756, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3aaa0>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8e6b0>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-0.25340599435003835
-  (0, 2)	-0.6277976103950098
-  (0, 3)	-1.055978437658429
+  (0, 1)	-0.627059215315783
+  (0, 2)	0.7598452170065805
+  (0, 3)	-0.9466715668186853
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -559,23 +559,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 3.75267
-Result: {'y': [1.0, 1.0, 0.9999999999999998]} 
+Problem solved: objective value is 3.48252e-11
+Result: {'y': [1.1932216472097377, 2.6755209542171117, 1.357141290164361]} 
 
 *** Problem 'problem-x' at t=1577894400 (2020-01-01 08:00:00 PST) ***
 
-Data: {'A': [0.15566717386453036, 0.5821228273918214, 0.31008023395801626]}
-Objective: minimize quad_over_lin([0.155667 0.582123 0.31008] @ var804, 1.0)
+Data: {'A': [0.8861225517991003, 0.15069490015626205, -0.4210572517432529]}
+Objective: minimize quad_over_lin([0.886123 0.150695 -0.421057] @ var804, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3b880>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8f400>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	0.15566717386453036
-  (0, 2)	0.5821228273918214
-  (0, 3)	0.31008023395801626
+  (0, 1)	0.8861225517991003
+  (0, 2)	0.15069490015626205
+  (0, 3)	-0.4210572517432529
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -588,23 +588,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 1.09803
-Result: {'x': [1.0, 1.0, 1.0]} 
+Problem solved: objective value is 2.38414e-11
+Result: {'x': [1.352398012025354, 1.0636010294305125, 3.2268165565113174]} 
 
 *** Problem 'problem-y' at t=1577894400 (2020-01-01 08:00:00 PST) ***
 
-Data: {'A': [0.7376222342398703, -1.5708656518374657, 0.8502009488225185]}
-Objective: minimize quad_over_lin([0.737622 -1.57087 0.850201] @ var852, 1.0)
+Data: {'A': [1.366375783314562, 1.2615471732711243, -0.9964437207919508]}
+Objective: minimize quad_over_lin([1.36638 1.26155 -0.996444] @ var852, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3bdf0>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8e980>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	0.7376222342398703
-  (0, 2)	-1.5708656518374657
-  (0, 3)	0.8502009488225185
+  (0, 1)	1.366375783314562
+  (0, 2)	1.2615471732711243
+  (0, 3)	-0.9964437207919508
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -617,23 +617,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 5.80944e-14
-Result: {'y': [1.5929224847893901, 1.609536002779166, 1.5918466579070019]} 
+Problem solved: objective value is 7.53861e-12
+Result: {'y': [1.3594489956817777, 1.3696028500733166, 3.598135510522311]} 
 
 *** Problem 'problem-x' at t=1577898000 (2020-01-01 09:00:00 PST) ***
 
-Data: {'A': [1.0509949145915882, -0.161564089663202, 0.29670863186300706]}
-Objective: minimize quad_over_lin([1.05099 -0.161564 0.296709] @ var900, 1.0)
+Data: {'A': [-0.46265681094289546, -1.0128872107426627, -0.6866657438969686]}
+Objective: minimize quad_over_lin([-0.462657 -1.01289 -0.686666] @ var900, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3b250>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8ebf0>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	1.0509949145915882
-  (0, 2)	-0.161564089663202
-  (0, 3)	0.29670863186300706
+  (0, 1)	-0.46265681094289546
+  (0, 2)	-1.0128872107426627
+  (0, 3)	-0.6866657438969686
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -646,23 +646,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 1.2941e-14
-Result: {'x': [1.5528387909085943, 12.2407775591663, 1.164929116754831]} 
+Problem solved: objective value is 4.67515
+Result: {'x': [1.0, 1.0, 1.0]} 
 
 *** Problem 'problem-y' at t=1577898000 (2020-01-01 09:00:00 PST) ***
 
-Data: {'A': [-0.8745918707399327, -0.7998673060754057, 0.8298867152580575]}
-Objective: minimize quad_over_lin([-0.874592 -0.799867 0.829887] @ var948, 1.0)
+Data: {'A': [1.3249963041858501, -1.1599030025803985, -0.17019725460451884]}
+Objective: minimize quad_over_lin([1.325 -1.1599 -0.170197] @ var948, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3a620>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8e9b0>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-0.8745918707399327
-  (0, 2)	-0.7998673060754057
-  (0, 3)	0.8298867152580575
+  (0, 1)	1.3249963041858501
+  (0, 2)	-1.1599030025803985
+  (0, 3)	-0.17019725460451884
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -675,23 +675,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 2.76736e-11
-Result: {'y': [1.32729209732506, 1.2685719728623863, 2.6214696829601207]} 
+Problem solved: objective value is 5.05953e-15
+Result: {'y': [1.6031149972482617, 1.5966004482655214, 1.5994366194488436]} 
 
 *** Problem 'problem-x' at t=1577901600 (2020-01-01 10:00:00 PST) ***
 
-Data: {'A': [0.7988939614529842, -0.3443761310340298, -0.5904802619019589]}
-Objective: minimize quad_over_lin([0.798894 -0.344376 -0.59048] @ var996, 1.0)
+Data: {'A': [0.1895124239607117, 0.34972860832953323, -0.6057475667873686]}
+Objective: minimize quad_over_lin([0.189512 0.349729 -0.605748] @ var996, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3b040>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8fc70>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	0.7988939614529842
-  (0, 2)	-0.3443761310340298
-  (0, 3)	-0.5904802619019589
+  (0, 1)	0.1895124239607117
+  (0, 2)	0.34972860832953323
+  (0, 3)	-0.6057475667873686
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -704,23 +704,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 3.72706e-12
-Result: {'x': [1.757176946695516, 1.5322053621666436, 1.483777229003445]} 
+Problem solved: objective value is 8.10534e-13
+Result: {'x': [1.638371277691769, 1.6708350466976776, 1.4772318975411505]} 
 
 *** Problem 'problem-y' at t=1577901600 (2020-01-01 10:00:00 PST) ***
 
-Data: {'A': [0.6264282119085736, -0.10561003621792922, -1.393548433086824]}
-Objective: minimize quad_over_lin([0.626428 -0.10561 -1.39355] @ var1044, 1.0)
+Data: {'A': [2.1744909216263526, -0.1111264312765997, -1.655727191863065]}
+Objective: minimize quad_over_lin([2.17449 -0.111126 -1.65573] @ var1044, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3aa10>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8fb20>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	0.6264282119085736
-  (0, 2)	-0.10561003621792922
-  (0, 3)	-1.393548433086824
+  (0, 1)	2.1744909216263526
+  (0, 2)	-0.1111264312765997
+  (0, 3)	-1.655727191863065
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -733,23 +733,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 4.24684e-17
-Result: {'y': [3.1917153174289057, 1.3316326654554538, 1.3338228565116816]} 
+Problem solved: objective value is 3.00459e-11
+Result: {'y': [1.444474534327022, 1.6172249733447228, 1.78851070244065]} 
 
 *** Problem 'problem-x' at t=1577905200 (2020-01-01 11:00:00 PST) ***
 
-Data: {'A': [-2.1470506313014113, 0.41809091895697137, 0.12605960318346007]}
-Objective: minimize quad_over_lin([-2.14705 0.418091 0.12606] @ var1092, 1.0)
+Data: {'A': [0.8729303812538274, 0.9140235924822009, -1.4873596219750902]}
+Objective: minimize quad_over_lin([0.87293 0.914024 -1.48736] @ var1092, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3bc70>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8fca0>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-2.1470506313014113
-  (0, 2)	0.41809091895697137
-  (0, 3)	0.12605960318346007
+  (0, 1)	0.8729303812538274
+  (0, 2)	0.9140235924822009
+  (0, 3)	-1.4873596219750902
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -762,23 +762,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 2.49687e-15
-Result: {'x': [1.4497859746551556, 6.515867574868178, 3.082183904386366]} 
+Problem solved: objective value is 1.63655e-11
+Result: {'x': [1.4643778743606914, 1.4579948087057784, 1.7554232318088112]} 
 
 *** Problem 'problem-y' at t=1577905200 (2020-01-01 11:00:00 PST) ***
 
-Data: {'A': [0.6441887278190294, 0.5219569293755192, -1.0765730142730292]}
-Objective: minimize quad_over_lin([0.644189 0.521957 -1.07657] @ var1140, 1.0)
+Data: {'A': [0.8407651708433792, -0.423850077916418, -0.49499853162924556]}
+Objective: minimize quad_over_lin([0.840765 -0.42385 -0.494999] @ var1140, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3a920>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8fc40>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	0.6441887278190294
-  (0, 2)	0.5219569293755192
-  (0, 3)	-1.0765730142730292
+  (0, 1)	0.8407651708433792
+  (0, 2)	-0.423850077916418
+  (0, 3)	-0.49499853162924556
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -791,23 +791,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 1.73473e-12
-Result: {'y': [1.5476390292529527, 1.557568845144353, 1.6812206531045863]} 
+Problem solved: objective value is 1.25898e-12
+Result: {'y': [1.692798027891344, 1.5531751962647138, 1.5453198832887072]} 
 
 *** Problem 'problem-x' at t=1577908800 (2020-01-01 12:00:00 PST) ***
 
-Data: {'A': [-0.24921297855281488, 0.0826438904647147, 0.060513007067742465]}
-Objective: minimize quad_over_lin([-0.249213 0.0826439 0.060513] @ var1188, 1.0)
+Data: {'A': [0.1520353818128767, 0.2203727212546598, 0.4632592303641089]}
+Objective: minimize quad_over_lin([0.152035 0.220373 0.463259] @ var1188, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3b3d0>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8f910>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-0.24921297855281488
-  (0, 2)	0.0826438904647147
-  (0, 3)	0.060513007067742465
+  (0, 1)	0.1520353818128767
+  (0, 2)	0.2203727212546598
+  (0, 3)	0.4632592303641089
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -820,23 +820,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 7.92002e-13
-Result: {'x': [1.0376165683952294, 1.832668650715658, 1.7703555568281626]} 
+Problem solved: objective value is 0.69834
+Result: {'x': [1.0, 1.0, 1.0]} 
 
 *** Problem 'problem-y' at t=1577908800 (2020-01-01 12:00:00 PST) ***
 
-Data: {'A': [1.7084142543705314, -1.253943690342683, -0.1441332769626976]}
-Objective: minimize quad_over_lin([1.70841 -1.25394 -0.144133] @ var1236, 1.0)
+Data: {'A': [-0.7134096462616109, -0.8507999739135508, 0.9648929445841519]}
+Objective: minimize quad_over_lin([-0.71341 -0.8508 0.964893] @ var1236, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3ac80>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8edd0>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	1.7084142543705314
-  (0, 2)	-1.253943690342683
-  (0, 3)	-0.1441332769626976
+  (0, 1)	-0.7134096462616109
+  (0, 2)	-0.8507999739135508
+  (0, 3)	0.9648929445841519
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -849,23 +849,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 1.90233e-11
-Result: {'y': [1.4414281682764098, 1.7773218175304135, 1.6227988222349987]} 
+Problem solved: objective value is 2.76725e-11
+Result: {'y': [1.2442114272768876, 1.3605683105331265, 2.1196228962593313]} 
 
 *** Problem 'problem-x' at t=1577912400 (2020-01-01 13:00:00 PST) ***
 
-Data: {'A': [-0.07071106217660394, -0.9180569235838907, -0.17247019072379535]}
-Objective: minimize quad_over_lin([-0.0707111 -0.918057 -0.17247] @ var1284, 1.0)
+Data: {'A': [0.07029032242581935, 0.007998449353152602, 0.810457744368824]}
+Objective: minimize quad_over_lin([0.0702903 0.00799845 0.810458] @ var1284, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3bc70>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8fca0>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-0.07071106217660394
-  (0, 2)	-0.9180569235838907
-  (0, 3)	-0.17247019072379535
+  (0, 1)	0.07029032242581935
+  (0, 2)	0.007998449353152602
+  (0, 3)	0.810457744368824
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -878,23 +878,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 1.34847
+Problem solved: objective value is 0.78987
 Result: {'x': [1.0, 1.0, 1.0]} 
 
 *** Problem 'problem-y' at t=1577912400 (2020-01-01 13:00:00 PST) ***
 
-Data: {'A': [-0.5370933626144926, 0.7137787378512913, -0.639993611329236]}
-Objective: minimize quad_over_lin([-0.537093 0.713779 -0.639994] @ var1332, 1.0)
+Data: {'A': [-0.07652815832355761, -1.002540248026901, -0.6120416087169445]}
+Objective: minimize quad_over_lin([-0.0765282 -1.00254 -0.612042] @ var1332, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d39ba0>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8dc60>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-0.5370933626144926
-  (0, 2)	0.7137787378512913
-  (0, 3)	-0.639993611329236
+  (0, 1)	-0.07652815832355761
+  (0, 2)	-1.002540248026901
+  (0, 3)	-0.6120416087169445
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -907,23 +907,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 1.3853e-11
-Result: {'y': [1.240171115586314, 2.1482572520635843, 1.355152517082089]} 
+Problem solved: objective value is 2.85985
+Result: {'y': [1.0, 1.0, 1.0]} 
 
 *** Problem 'problem-x' at t=1577916000 (2020-01-01 14:00:00 PST) ***
 
-Data: {'A': [0.4024518806519689, 0.3303975721497258, -2.083331961644251]}
-Objective: minimize quad_over_lin([0.402452 0.330398 -2.08333] @ var1380, 1.0)
+Data: {'A': [-0.9305255343765735, 1.8697854816363086, 0.3133642951815688]}
+Objective: minimize quad_over_lin([-0.930526 1.86979 0.313364] @ var1380, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3a920>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8fc40>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	0.4024518806519689
-  (0, 2)	0.3303975721497258
-  (0, 3)	-2.083331961644251
+  (0, 1)	-0.9305255343765735
+  (0, 2)	1.8697854816363086
+  (0, 3)	0.3133642951815688
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -936,23 +936,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 1.48716e-16
-Result: {'x': [4.051312781448889, 3.612430984169993, 1.3555193982133278]} 
+Problem solved: objective value is 6.43836e-17
+Result: {'x': [3.126813335513881, 1.370751313537052, 1.1059611520662347]} 
 
 *** Problem 'problem-y' at t=1577916000 (2020-01-01 14:00:00 PST) ***
 
-Data: {'A': [1.4484594360997056, 1.2626167941987252, -1.4437505221074616]}
-Objective: minimize quad_over_lin([1.44846 1.26262 -1.44375] @ var1428, 1.0)
+Data: {'A': [0.8315027245973902, -0.10679147379545761, -2.0997168510857604]}
+Objective: minimize quad_over_lin([0.831503 -0.106791 -2.09972] @ var1428, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3bbb0>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8ef80>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	1.4484594360997056
-  (0, 2)	1.2626167941987252
-  (0, 3)	-1.4437505221074616
+  (0, 1)	0.8315027245973902
+  (0, 2)	-0.10679147379545761
+  (0, 3)	-2.0997168510857604
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -965,23 +965,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 1.78929e-11
-Result: {'y': [1.28100664064796, 1.3427060127564585, 2.4594312059883716]} 
+Problem solved: objective value is 8.97749e-17
+Result: {'y': [3.6539722522937965, 1.336186314503225, 1.379040505186253]} 
 
 *** Problem 'problem-x' at t=1577919600 (2020-01-01 15:00:00 PST) ***
 
-Data: {'A': [-0.2969783981568977, -1.0426526173424941, -0.0696569879444174]}
-Objective: minimize quad_over_lin([-0.296978 -1.04265 -0.069657] @ var1476, 1.0)
+Data: {'A': [0.13468862312992544, 1.2578414859823794, -0.05556434244961248]}
+Objective: minimize quad_over_lin([0.134689 1.25784 -0.0555643] @ var1476, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3b040>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8fc70>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-0.2969783981568977
-  (0, 2)	-1.0426526173424941
-  (0, 3)	-0.0696569879444174
+  (0, 1)	0.13468862312992544
+  (0, 2)	1.2578414859823794
+  (0, 3)	-0.05556434244961248
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -994,23 +994,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 1.98609
-Result: {'x': [1.0, 1.0000000000000002, 1.0]} 
+Problem solved: objective value is 2.54234e-13
+Result: {'x': [1.0340796385261473, 1.253138761079775, 30.87464212989219]} 
 
 *** Problem 'problem-y' at t=1577919600 (2020-01-01 15:00:00 PST) ***
 
-Data: {'A': [-0.991737406419328, -0.6514260563664719, 1.370367719910223]}
-Objective: minimize quad_over_lin([-0.991737 -0.651426 1.37037] @ var1524, 1.0)
+Data: {'A': [-0.4082928974223133, -0.6162135190367434, -1.2365205099483039]}
+Objective: minimize quad_over_lin([-0.408293 -0.616214 -1.23652] @ var1524, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3b0a0>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8f8b0>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-0.991737406419328
-  (0, 2)	-0.6514260563664719
-  (0, 3)	1.370367719910223
+  (0, 1)	-0.4082928974223133
+  (0, 2)	-0.6162135190367434
+  (0, 3)	-1.2365205099483039
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -1023,23 +1023,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 1.40279e-11
-Result: {'y': [1.444215483513182, 1.4976625893994557, 1.757121583291281]} 
+Problem solved: objective value is 5.11224
+Result: {'y': [1.0, 1.0, 1.0]} 
 
 *** Problem 'problem-x' at t=1577923200 (2020-01-01 16:00:00 PST) ***
 
-Data: {'A': [-0.946594792576377, 0.34552758788510274, -0.2527713747927387]}
-Objective: minimize quad_over_lin([-0.946595 0.345528 -0.252771] @ var1572, 1.0)
+Data: {'A': [0.1241870962795957, -0.6985822803498442, 0.6762926275545289]}
+Objective: minimize quad_over_lin([0.124187 -0.698582 0.676293] @ var1572, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3a950>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8e950>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-0.946594792576377
-  (0, 2)	0.34552758788510274
-  (0, 3)	-0.2527713747927387
+  (0, 1)	0.1241870962795957
+  (0, 2)	-0.6985822803498442
+  (0, 3)	0.6762926275545289
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -1052,23 +1052,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 5.62212e-17
-Result: {'x': [1.4199569731464026, 4.745311967510791, 1.169089376412976]} 
+Problem solved: objective value is 2.00176e-12
+Result: {'x': [1.5788987894006468, 1.7185096675228695, 1.485215261273726]} 
 
 *** Problem 'problem-y' at t=1577923200 (2020-01-01 16:00:00 PST) ***
 
-Data: {'A': [-1.7360411477866382, 1.260849023170277, -0.13250563336648907]}
-Objective: minimize quad_over_lin([-1.73604 1.26085 -0.132506] @ var1620, 1.0)
+Data: {'A': [-0.9958927565519549, -0.2158706320334586, 0.5723716378492958]}
+Objective: minimize quad_over_lin([-0.995893 -0.215871 0.572372] @ var1620, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3ac80>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8da80>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-1.7360411477866382
-  (0, 2)	1.260849023170277
-  (0, 3)	-0.13250563336648907
+  (0, 1)	-0.9958927565519549
+  (0, 2)	-0.2158706320334586
+  (0, 3)	0.5723716378492958
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -1081,23 +1081,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 2.4176e-17
-Result: {'y': [1.295974692530715, 1.9482324001498674, 1.5588886719991777]} 
+Problem solved: objective value is 2.05822e-12
+Result: {'y': [1.356519576206936, 1.149689915965356, 2.7938731372617616]} 
 
 *** Problem 'problem-x' at t=1577926800 (2020-01-01 17:00:00 PST) ***
 
-Data: {'A': [-0.2418981741685625, -0.02094327565294315, -1.3681199249284384]}
-Objective: minimize quad_over_lin([-0.241898 -0.0209433 -1.36812] @ var1668, 1.0)
+Data: {'A': [0.09354358317516213, 0.9423229807300124, -1.2272163127749514]}
+Objective: minimize quad_over_lin([0.0935436 0.942323 -1.22722] @ var1668, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3b670>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8f430>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-0.2418981741685625
-  (0, 2)	-0.02094327565294315
-  (0, 3)	-1.3681199249284384
+  (0, 1)	0.09354358317516213
+  (0, 2)	0.9423229807300124
+  (0, 3)	-1.2272163127749514
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -1110,23 +1110,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 2.66004
-Result: {'x': [1.0, 1.0, 0.9999999999999999]} 
+Problem solved: objective value is 7.73735e-12
+Result: {'x': [1.6134521620123428, 1.7357718627919712, 1.4558012405166505]} 
 
 *** Problem 'problem-y' at t=1577926800 (2020-01-01 17:00:00 PST) ***
 
-Data: {'A': [-0.9100411282327986, 1.0115456753357273, -0.43040079882647275]}
-Objective: minimize quad_over_lin([-0.910041 1.01155 -0.430401] @ var1716, 1.0)
+Data: {'A': [-0.013939185186826722, -0.27514481044136396, 0.40807418204919516]}
+Objective: minimize quad_over_lin([-0.0139392 -0.275145 0.408074] @ var1716, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3b8b0>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8f4f0>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-0.9100411282327986
-  (0, 2)	1.0115456753357273
-  (0, 3)	-0.43040079882647275
+  (0, 1)	-0.013939185186826722
+  (0, 2)	-0.27514481044136396
+  (0, 3)	0.40807418204919516
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -1139,23 +1139,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 2.13409e-11
-Result: {'y': [1.3634809728404436, 1.8598449971755033, 1.488124053122529]} 
+Problem solved: objective value is 2.39422e-12
+Result: {'y': [1.610918224133636, 1.8160508233497603, 1.279498489812387]} 
 
 *** Problem 'problem-x' at t=1577930400 (2020-01-01 18:00:00 PST) ***
 
-Data: {'A': [-0.8596069389253287, -0.11764001647088983, 0.24182235414570444]}
-Objective: minimize quad_over_lin([-0.859607 -0.11764 0.241822] @ var1764, 1.0)
+Data: {'A': [1.608131189709011, -0.7647225943656475, 0.06350984553409102]}
+Objective: minimize quad_over_lin([1.60813 -0.764723 0.0635098] @ var1764, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d39cf0>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8fbe0>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-0.8596069389253287
-  (0, 2)	-0.11764001647088983
-  (0, 3)	0.24182235414570444
+  (0, 1)	1.608131189709011
+  (0, 2)	-0.7647225943656475
+  (0, 3)	0.06350984553409102
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -1168,23 +1168,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 8.53022e-12
-Result: {'x': [1.4155847303938807, 1.0463518419202495, 5.5409947061361535]} 
+Problem solved: objective value is 3.65256e-12
+Result: {'x': [1.3140111916116952, 2.8872232346053703, 1.4930657127629163]} 
 
 *** Problem 'problem-y' at t=1577930400 (2020-01-01 18:00:00 PST) ***
 
-Data: {'A': [0.6949514994960089, 0.4412565361009114, -0.2625505470406557]}
-Objective: minimize quad_over_lin([0.694951 0.441257 -0.262551] @ var1812, 1.0)
+Data: {'A': [-2.1626729580706816, -0.5066208684460537, -0.18942253151471544]}
+Objective: minimize quad_over_lin([-2.16267 -0.506621 -0.189423] @ var1812, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3bca0>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8f8b0>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	0.6949514994960089
-  (0, 2)	0.4412565361009114
-  (0, 3)	-0.2625505470406557
+  (0, 1)	-2.1626729580706816
+  (0, 2)	-0.5066208684460537
+  (0, 3)	-0.18942253151471544
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -1197,23 +1197,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 2.88523e-17
-Result: {'y': [1.4496354910315068, 1.268482942287164, 5.968956341806707]} 
+Problem solved: objective value is 8.17226
+Result: {'y': [0.9999999999999998, 1.0, 1.0]} 
 
 *** Problem 'problem-x' at t=1577934000 (2020-01-01 19:00:00 PST) ***
 
-Data: {'A': [-0.16237418943765608, -1.1279490494225657, -0.871015636430382]}
-Objective: minimize quad_over_lin([-0.162374 -1.12795 -0.871016] @ var1860, 1.0)
+Data: {'A': [-0.47775264190846617, 1.246761310080255, 0.3126784898518099]}
+Objective: minimize quad_over_lin([-0.477753 1.24676 0.312678] @ var1860, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d393f0>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8ebf0>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-0.16237418943765608
-  (0, 2)	-1.1279490494225657
-  (0, 3)	-0.871015636430382
+  (0, 1)	-0.47775264190846617
+  (0, 2)	1.246761310080255
+  (0, 3)	0.3126784898518099
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -1226,23 +1226,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 4.67139
-Result: {'x': [1.0, 1.0, 1.0]} 
+Problem solved: objective value is 1.17465e-16
+Result: {'x': [4.46984273545586, 1.4161268299543026, 1.183026767728653]} 
 
 *** Problem 'problem-y' at t=1577934000 (2020-01-01 19:00:00 PST) ***
 
-Data: {'A': [-0.09493420610747576, 0.9408820948645455, -1.9090944053965337]}
-Objective: minimize quad_over_lin([-0.0949342 0.940882 -1.90909] @ var1908, 1.0)
+Data: {'A': [-1.4761414864180145, 0.22896688609796428, 0.43811063296846997]}
+Objective: minimize quad_over_lin([-1.47614 0.228967 0.438111] @ var1908, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3ac80>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8ec50>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-0.09493420610747576
-  (0, 2)	0.9408820948645455
-  (0, 3)	-1.9090944053965337
+  (0, 1)	-1.4761414864180145
+  (0, 2)	0.22896688609796428
+  (0, 3)	0.43811063296846997
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -1255,23 +1255,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 7.84846e-17
-Result: {'y': [1.4812439189640796, 2.7768027678027254, 1.2948669661649883]} 
+Problem solved: objective value is 4.14136e-11
+Result: {'y': [1.2616693128735605, 2.3449561607996423, 3.0254428210912465]} 
 
 *** Problem 'problem-x' at t=1577937600 (2020-01-01 20:00:00 PST) ***
 
-Data: {'A': [-1.0849967440818442, -0.01535159934946479, 1.1393117590188755]}
-Objective: minimize quad_over_lin([-1.085 -0.0153516 1.13931] @ var1956, 1.0)
+Data: {'A': [0.2256075058328424, 0.02335518147477297, 0.4463414843708954]}
+Objective: minimize quad_over_lin([0.225608 0.0233552 0.446341] @ var1956, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3ac50>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8ed10>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-1.0849967440818442
-  (0, 2)	-0.01535159934946479
-  (0, 3)	1.1393117590188755
+  (0, 1)	0.2256075058328424
+  (0, 2)	0.02335518147477297
+  (0, 3)	0.4463414843708954
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -1284,23 +1284,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 2.97865e-13
-Result: {'x': [1.6284600532405094, 1.6003946813411796, 1.5723895708362805]} 
+Problem solved: objective value is 0.483448
+Result: {'x': [1.0, 1.0, 1.0]} 
 
 *** Problem 'problem-y' at t=1577937600 (2020-01-01 20:00:00 PST) ***
 
-Data: {'A': [0.003079583408257215, 1.3641015800124416, 0.6600644938056073]}
-Objective: minimize quad_over_lin([0.00307958 1.3641 0.660064] @ var2004, 1.0)
+Data: {'A': [-0.35162654756914735, -1.3854362591252423, 1.107108917447748]}
+Objective: minimize quad_over_lin([-0.351627 -1.38544 1.10711] @ var2004, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d39780>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8fd90>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	0.003079583408257215
-  (0, 2)	1.3641015800124416
-  (0, 3)	0.6600644938056073
+  (0, 1)	-0.35162654756914735
+  (0, 2)	-1.3854362591252423
+  (0, 3)	1.107108917447748
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -1313,23 +1313,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 4.10972
-Result: {'y': [1.0, 0.9999999999999998, 1.0]} 
+Problem solved: objective value is 1.95252e-11
+Result: {'y': [1.4267013825090784, 1.3307665954042323, 2.118457142765634]} 
 
 *** Problem 'problem-x' at t=1577941200 (2020-01-01 21:00:00 PST) ***
 
-Data: {'A': [0.16464922481125338, 1.2467353528903162, 0.8034626765373979]}
-Objective: minimize quad_over_lin([0.164649 1.24674 0.803463] @ var2052, 1.0)
+Data: {'A': [-1.0980779729279857, -0.05900586594651481, -1.6835770965616144]}
+Objective: minimize quad_over_lin([-1.09808 -0.0590059 -1.68358] @ var2052, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3afb0>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8efb0>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	0.16464922481125338
-  (0, 2)	1.2467353528903162
-  (0, 3)	0.8034626765373979
+  (0, 1)	-1.0980779729279857
+  (0, 2)	-0.05900586594651481
+  (0, 3)	-1.6835770965616144
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -1342,23 +1342,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 4.90555
-Result: {'x': [1.0, 1.0, 1.0]} 
+Problem solved: objective value is 8.06935
+Result: {'x': [1.0, 1.0, 0.9999999999999998]} 
 
 *** Problem 'problem-y' at t=1577941200 (2020-01-01 21:00:00 PST) ***
 
-Data: {'A': [-1.192120107795235, 1.1387847113241019, -0.9595099168949713]}
-Objective: minimize quad_over_lin([-1.19212 1.13878 -0.95951] @ var2100, 1.0)
+Data: {'A': [-0.35904100412986967, -1.8759326305024444, -0.3729652044116281]}
+Objective: minimize quad_over_lin([-0.359041 -1.87593 -0.372965] @ var2100, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3ac50>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12db30a90>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-1.192120107795235
-  (0, 2)	1.1387847113241019
-  (0, 3)	-0.9595099168949713
+  (0, 1)	-0.35904100412986967
+  (0, 2)	-1.8759326305024444
+  (0, 3)	-0.3729652044116281
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -1371,23 +1371,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 6.0487e-12
-Result: {'y': [1.3313624160244024, 2.4917083250559067, 1.3031422355741147]} 
+Problem solved: objective value is 6.80134
+Result: {'y': [1.0, 0.9999999999999999, 1.0]} 
 
 *** Problem 'problem-x' at t=1577944800 (2020-01-01 22:00:00 PST) ***
 
-Data: {'A': [0.6007575330331396, -0.014891966004279493, -0.4490201689975086]}
-Objective: minimize quad_over_lin([0.600758 -0.014892 -0.44902] @ var2148, 1.0)
+Data: {'A': [-1.4229553907146326, -0.5060785103072789, 0.03132983383751418]}
+Objective: minimize quad_over_lin([-1.42296 -0.506079 0.0313298] @ var2148, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3b4c0>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8db70>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	0.6007575330331396
-  (0, 2)	-0.014891966004279493
-  (0, 3)	-0.4490201689975086
+  (0, 1)	-1.4229553907146326
+  (0, 2)	-0.5060785103072789
+  (0, 3)	0.03132983383751418
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -1400,23 +1400,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 3.46473e-12
-Result: {'x': [1.3662333032011194, 1.6057654147360012, 1.7746726343510542]} 
+Problem solved: objective value is 1.21455e-11
+Result: {'x': [1.0945269213721256, 1.0478050974878355, 66.63738217520299]} 
 
 *** Problem 'problem-y' at t=1577944800 (2020-01-01 22:00:00 PST) ***
 
-Data: {'A': [-0.3257579770362794, 0.7528846569183656, -0.4881669183047147]}
-Objective: minimize quad_over_lin([-0.325758 0.752885 -0.488167] @ var2196, 1.0)
+Data: {'A': [1.5109888053571834, -2.619635341113802, -0.2745736960015789]}
+Objective: minimize quad_over_lin([1.51099 -2.61964 -0.274574] @ var2196, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135dddc00>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12db308e0>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-0.3257579770362794
-  (0, 2)	0.7528846569183656
-  (0, 3)	-0.4881669183047147
+  (0, 1)	1.5109888053571834
+  (0, 2)	-2.619635341113802
+  (0, 3)	-0.2745736960015789
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -1429,23 +1429,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 7.36316e-13
-Result: {'y': [1.56505855838614, 1.6806610728629507, 1.5476525321517487]} 
+Problem solved: objective value is 3.46396e-12
+Result: {'y': [2.606159523767969, 1.3590751228957865, 1.3752173237768224]} 
 
 *** Problem 'problem-x' at t=1577948400 (2020-01-01 23:00:00 PST) ***
 
-Data: {'A': [0.6250501724141934, 1.807440358684417, 0.08348015315668554]}
-Objective: minimize quad_over_lin([0.62505 1.80744 0.0834802] @ var2244, 1.0)
+Data: {'A': [0.22289429794612864, -0.23812552789349664, 2.2168435121903842]}
+Objective: minimize quad_over_lin([0.222894 -0.238126 2.21684] @ var2244, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3beb0>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8f880>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	0.6250501724141934
-  (0, 2)	1.807440358684417
-  (0, 3)	0.08348015315668554
+  (0, 1)	0.22289429794612864
+  (0, 2)	-0.23812552789349664
+  (0, 3)	2.2168435121903842
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -1458,23 +1458,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 6.33011
-Result: {'x': [1.0, 1.0000000000000002, 1.0]} 
+Problem solved: objective value is 1.71633e-13
+Result: {'x': [1.1455451138440602, 16.54067410602824, 1.6615610640782763]} 
 
 *** Problem 'problem-y' at t=1577948400 (2020-01-01 23:00:00 PST) ***
 
-Data: {'A': [-1.6332785634398994, 0.20400931060751706, -1.3344485739066612]}
-Objective: minimize quad_over_lin([-1.63328 0.204009 -1.33445] @ var2292, 1.0)
+Data: {'A': [-0.09583471834940584, -1.8898294182241142, 0.5035671686614235]}
+Objective: minimize quad_over_lin([-0.0958347 -1.88983 0.503567] @ var2292, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135ddd4e0>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12db31f60>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-1.6332785634398994
-  (0, 2)	0.20400931060751706
-  (0, 3)	-1.3344485739066612
+  (0, 1)	-0.09583471834940584
+  (0, 2)	-1.8898294182241142
+  (0, 3)	0.5035671686614235
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -1487,23 +1487,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 7.68906e-13
-Result: {'y': [1.6310214440683601, 24.260474254578163, 1.712655840128885]} 
+Problem solved: objective value is 5.20379e-16
+Result: {'y': [1.062707293087154, 1.4813460495678938, 5.76156619198353]} 
 
 *** Problem 'problem-x' at t=1577952000 (2020-01-02 00:00:00 PST) ***
 
-Data: {'A': [-2.2550078098317274, -0.43367643400925626, 1.0915732557633595]}
-Objective: minimize quad_over_lin([-2.25501 -0.433676 1.09157] @ var2340, 1.0)
+Data: {'A': [1.8428446943836712, 0.9019742651999637, -0.33916594806131406]}
+Objective: minimize quad_over_lin([1.84284 0.901974 -0.339166] @ var2340, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135d3bc10>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12da8e950>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	-2.2550078098317274
-  (0, 2)	-0.43367643400925626
-  (0, 3)	1.0915732557633595
+  (0, 1)	1.8428446943836712
+  (0, 2)	0.9019742651999637
+  (0, 3)	-0.33916594806131406
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -1516,23 +1516,23 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 1.05057e-16
-Result: {'x': [1.3382517541380172, 1.2688975647694918, 3.268730815385393]} 
+Problem solved: objective value is 5.17844e-14
+Result: {'x': [1.6335384767281522, 1.5717494372149563, 13.055659202728034]} 
 
 *** Problem 'problem-y' at t=1577952000 (2020-01-02 00:00:00 PST) ***
 
-Data: {'A': [1.526172813554105, 0.7631717564815402, 1.0157530245476465]}
-Objective: minimize quad_over_lin([1.52617 0.763172 1.01575] @ var2388, 1.0)
+Data: {'A': [0.4407441839745353, 2.38484689009971, 0.29261737377354147]}
+Objective: minimize quad_over_lin([0.440744 2.38485 0.292617] @ var2388, 1.0)
 Contraints: [Inequality(Constant(CONSTANT, NONNEGATIVE, ()))]
 dims: 1 equalities, 3 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [].
-param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x135ddc730>
+param_prob: <cvxpy.reductions.qp2quad_form.qp_matrix_stuffing.ParamQuadProg object at 0x12db32530>
 P:   (0, 0)	2.0
 q: [0 0 0 0]
 A:   (0, 0)	-1.0
-  (0, 1)	1.526172813554105
-  (0, 2)	0.7631717564815402
-  (0, 3)	1.0157530245476465
+  (0, 1)	0.4407441839745353
+  (0, 2)	2.38484689009971
+  (0, 3)	0.29261737377354147
 b: [-0]
 F:   (0, 1)	-1.0
   (1, 2)	-1.0
@@ -1545,15 +1545,15 @@ upper_bounds: None
 n_var: 4
 n_eq: 1
 n_ineq: 3
-Problem solved: objective value is 10.9237
-Result: {'y': [1.0000000000000002, 1.0, 1.0]} 
+Problem solved: objective value is 9.72322
+Result: {'y': [1.0, 1.0000000000000002, 1.0]} 
 
 *** Problem 'linear-program' at t=1577952000 (2020-01-02 00:00:00 PST) ***
 
 Data: {}
 Objective: minimize [5.91594 -0.386533 -1.58377 -3.45615 -4.00187 2.30939 0.485581 -2.7645 -4.55428 -1.02779] @ var2436
 Contraints: [Inequality(Expression(AFFINE, UNKNOWN, (15,)))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x135ddceb0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12db32290>
 dims: 0 equalities, 15 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].

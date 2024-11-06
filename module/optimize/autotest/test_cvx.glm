@@ -2,6 +2,7 @@
 
 #set suppress_repeat_messages=FALSE
 #option verbose
+#set randomseed=1
 clock
 {
     timezone America/Seattle;
