@@ -1,0 +1,41 @@
+clock
+{
+    timezone "PST+8PDT";
+    starttime "2020-01-01 00:00:00 PST";
+    stoptime "2020-02-01 00:00:00 PST";
+}
+
+module pypower
+{
+    save_case TRUE;
+    enable_opf TRUE;
+}
+
+class bus
+{
+    double V[kV]; // bus DC equivalent voltage
+    double G[MW]; // bus generation required
+    double P[$/MWh]; // bus generation price
+}
+
+#input "case14.py" -t pypower
+
+#for N in ${RANGE 14}
+modify pp_bus_${N}.P 50 $/MWh;
+#end
+
+module optimize
+{
+    cvx_failure_handling HALT;
+    cvx_problemdump "test_opf.txt";
+}
+
+object cvx
+{
+    name "opf";
+    data "P=bus:P"
+    variables "x=bus:V";
+    variables "g=bus:G";
+    objective "cvx.Minimize(P@g)";
+//    constraints ""
+}
