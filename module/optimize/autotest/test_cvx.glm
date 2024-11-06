@@ -1,4 +1,4 @@
-// test_csv.glm
+// test_cvx.glm
 
 #set suppress_repeat_messages=FALSE
 //#option verbose
@@ -6,16 +6,16 @@ clock
 {
     timezone America/Seattle;
     starttime "2020-01-01 00:00:00 PST";
-    stoptime "2020-01-02 00:00:00 PST";
+    stoptime "2020-02-01 00:00:00 PST";
 }
 
 module optimize
 {
     message_flags VERBOSE;
     cvx_backend CPP;
-    cvx_failure_handling HALT;
+    cvx_failure_handling WARN;
     cvx_imports Variable,sum_squares,Minimize;
-    cvx_problemdump "test_csv.txt";
+    cvx_problemdump "test_cvx.txt";
 }
 
 class test
@@ -33,7 +33,10 @@ class test
 }
 
 module pypower;
-
+module tape
+{
+    csv_header_type NAME;
+}
 object test:..3
 {
     parent problem-x;
@@ -47,6 +50,12 @@ object test:..3
     b1 "type:normal(0,1);refresh:1h";
     x 0.0;
     y 0.0;
+    object recorder
+    {
+        file `test_cvx_{id}.csv`;
+        property "A0,x,y";
+        interval -1;
+    };
 }
 
 object cvx
@@ -75,7 +84,7 @@ object cvx
     //presolve "m=20; n=15; np.random.seed(1); A=np.random.rand(m,n); b=np.random.rand(m); x=Variable(n)";
     variables "x=test:x";
     // variables "y=test:y&lambda";
-    data "A=test:A0"; // ,test.A1,test.A2,test.A3;b1=test.b1;b2=test.b2";
+    data "A0=test:A0"; // ,test.A1,test.A2,test.A3;b1=test.b1;b2=test.b2";
     //presolve "print(A,file=sys.stderr)";
     // variables "y=test:y"; // duplicate test
     // variables "p=pypower.bus:Pd,q=bus.Qd"; // class and module.class tests
@@ -83,8 +92,8 @@ object cvx
     // variables "x=test.x&mu"; // duplicate error
     // variables "y=test.y"; // duplicate error
     // variables "z=test.z"; // not found error
-    objective "Minimize(sum_squares(A@x))";
-    constraints "x>=1";
+    objective "Minimize(sum_squares(A0@x))";
+    constraints "x >= 1";
     // constraints "x<=-1";
     // constraints "x<=1,y==2*x";
     // constraints "x>=2"; // makes the problem infeasible (for testing purposes)
@@ -97,14 +106,15 @@ object cvx
     parent "problem-x";
     name "problem-y";
     event SYNC;
+    data "A1=test:A1";
     variables "y=test:y";
-    objective "Minimize(sum_squares(y-x))";
-    constraints "y>=2";
+    objective "Minimize(sum_squares(A1@y))";
+    constraints "y >= 1";
 }
 
 #set savefile=${modelname/.glm/.json}
 
-#ifexist "../test_csv.txt"
-#on_exit 0 diff -I '^param_prob:' ../test_csv.txt test_csv.txt > gridlabd.diff
+#ifexist "../test_cvx.txt"
+#on_exit 0 diff -I '^param_prob:' ../test_cvx.txt test_cvx.txt > gridlabd.diff
 #endif
 
