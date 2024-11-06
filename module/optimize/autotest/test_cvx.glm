@@ -1,12 +1,12 @@
 // test_cvx.glm
 
 #set suppress_repeat_messages=FALSE
-//#option verbose
+#option verbose
 clock
 {
     timezone America/Seattle;
     starttime "2020-01-01 00:00:00 PST";
-    stoptime "2020-02-01 00:00:00 PST";
+    stoptime "2020-01-02 00:00:00 PST";
 }
 
 module optimize
@@ -62,7 +62,14 @@ object cvx
 {
     name "least-squares";
     event INIT;
-    presolve "m=20; n=15; np.random.seed(1); A=np.random.rand(m,n); b=np.random.rand(m); x=Variable(n)";
+    presolve """
+m=20
+n=15
+np.random.seed(1)
+A=np.random.rand(m,n)
+b=np.random.rand(m)
+x=Variable(n)
+""";
     objective "Minimize(sum_squares(A@x-b))";
     postsolve "print('Residual 2-norm:',round(cvx.norm(A@x-b,p=2).value,6),file=__dump__,flush=True)";
 }
@@ -71,7 +78,19 @@ object cvx
 {
     name "linear-program";
     event FINALIZE;
-    presolve "m=15;n=10;np.random.seed(1);s0 = np.random.randn(m);lamb0 = np.maximum(-s0, 0);s0 = np.maximum(s0, 0);x0 = np.random.randn(n);A = np.random.randn(m, n);b = A @ x0 + s0;c = -A.T @ lamb0;x = Variable(n)";
+    presolve """
+m=15
+n=10
+np.random.seed(1)
+s0 = np.random.randn(m)
+lamb0 = np.maximum(-s0, 0)
+s0 = np.maximum(s0, 0)
+x0 = np.random.randn(n)
+A = np.random.randn(m, n)
+b = A @ x0 + s0
+c = -A.T @ lamb0
+x = Variable(n)
+""";
     objective "Minimize(c.T@x)";
     constraints "A@x<=b";
     postsolve "print('Dual value:',__cvx__['linear-program']['constraints'][0].dual_value.round(6),file=__dump__,flush=True)";
@@ -84,7 +103,7 @@ object cvx
     //presolve "m=20; n=15; np.random.seed(1); A=np.random.rand(m,n); b=np.random.rand(m); x=Variable(n)";
     variables "x=test:x";
     // variables "y=test:y&lambda";
-    data "A0=test:A0"; // ,test.A1,test.A2,test.A3;b1=test.b1;b2=test.b2";
+    data "A=test:A0"; // ,test.A1,test.A2,test.A3;b1=test.b1;b2=test.b2";
     //presolve "print(A,file=sys.stderr)";
     // variables "y=test:y"; // duplicate test
     // variables "p=pypower.bus:Pd,q=bus.Qd"; // class and module.class tests
@@ -92,7 +111,7 @@ object cvx
     // variables "x=test.x&mu"; // duplicate error
     // variables "y=test.y"; // duplicate error
     // variables "z=test.z"; // not found error
-    objective "Minimize(sum_squares(A0@x))";
+    objective "Minimize(sum_squares(A@x))";
     constraints "x >= 1";
     // constraints "x<=-1";
     // constraints "x<=1,y==2*x";
@@ -106,9 +125,9 @@ object cvx
     parent "problem-x";
     name "problem-y";
     event SYNC;
-    data "A1=test:A1";
+    data "A=test:A1";
     variables "y=test:y";
-    objective "Minimize(sum_squares(A1@y))";
+    objective "Minimize(sum_squares(A@y))";
     constraints "y >= 1";
 }
 

@@ -13,6 +13,8 @@ EXPORT_METHOD(cvx,data)
 EXPORT_METHOD(cvx,variables)
 EXPORT_METHOD(cvx,objective)
 EXPORT_METHOD(cvx,constraints)
+EXPORT_METHOD(cvx,presolve)
+EXPORT_METHOD(cvx,postsolve)
 
 CLASS *cvx::oclass = NULL;
 cvx *cvx::defaults = NULL;
@@ -32,21 +34,24 @@ char1024 cvx::problemdump = "";
 // Python Run function with formatting
 //
 
-int PyRun_FormatString(const char *format, ...)
+int cvx::PyRun_FormatString(const char *format, ...)
 {
     va_list ptr;
     va_start(ptr,format);
     char *buffer;
     vasprintf(&buffer,format,ptr);
-    gl_verbose("Running python command '%s'",buffer);
-    int result = PyRun_SimpleString(buffer);
-    if ( result != 0 )
+    gl_verbose("Running python script '%s'",buffer);
+    PyObject *result = PyRun_String(buffer,Py_file_input,globals,locals);
+    int rc = 0;
+    if ( result == NULL )
     {
         gl_verbose("Python command failed!");
+        rc = -1;
     }
+    Py_XDECREF(result);
     free(buffer);
     va_end(ptr);
-    return result;
+    return rc;
 }
 
 //
@@ -79,10 +84,10 @@ cvx::cvx(MODULE *module)
                 PT_KEYWORD, "NONE", (set)OE_NONE,
                 PT_DESCRIPTION, "event during which the optimization problem should be solved",
 
-            PT_char1024, "presolve", get_presolve_offset(),
+            PT_method, "presolve", get_presolve_offset(),
                 PT_DESCRIPTION, "presolve script",
 
-            PT_char1024, "postsolve", get_postsolve_offset(),
+            PT_method, "postsolve", get_postsolve_offset(),
                 PT_DESCRIPTION, "postsolve script",
 
             PT_char1024, "on_failure", get_on_failure_offset(),
@@ -146,7 +151,8 @@ cvx::cvx(MODULE *module)
             exception("unable to access python __main__ module");
         }
 
-        globals = PyModule_GetDict(main_module);
+        // setup globals
+        globals = PyDict_New(); // PyModule_GetDict(main_module);
         if ( globals == NULL )
         {
             exception("unable to access python globals in __main__");
@@ -165,8 +171,8 @@ int cvx::create(void)
 {
     // initialize properties
     set_event(OE_NONE);
-    set_presolve("");
-    set_postsolve("");
+    presolve_py = strdup("");
+    postsolve_py = strdup("");
     set_on_failure("");
     set_on_exception("");
     set_on_infeasible("");
@@ -217,6 +223,9 @@ int cvx::create(void)
         }
     }
 
+    // setup locals
+    locals = PyDict_New();
+
     return 1; /* return 1 on success, 0 on failure */
 }
 
@@ -232,9 +241,9 @@ int cvx::init(OBJECT *parent)
         gld_clock now;
         if ( strcmp(problemdump,"") == 0 )
         {
-            PyRun_FormatString("__dump__ = open(os.devnull,'w')");
+            PyRun_FormatString("global __dump__; __dump__ = open(os.devnull,'w')");
         }
-        else if ( PyRun_FormatString("__dump__ = open('%s','w'); print('Problem dumps starting at t=%lld (%s)\\n',file=__dump__,flush=True);",(const char*)problemdump,gl_globalclock,now.get_string().get_buffer()) < 0 )
+        else if ( PyRun_FormatString("global __dump__; __dump__ = open('%s','w'); print('Problem dumps starting at t=%lld (%s)\\n',file=__dump__,flush=True);",(const char*)problemdump,gl_globalclock,now.get_string().get_buffer()) < 0 )
         {
             exception("unable to open dumpfile '%s'",(const char*)problemdump);
         }
@@ -516,6 +525,74 @@ int cvx::constraints(
         }
         // return number of characters written to buffer
         return result;
+    }
+}
+
+//
+// Pre/Post solve scripts
+//
+
+int cvx::presolve(
+    char *buffer, // read/write buffer (NULL for size request)
+    size_t len // write buffer len (0 for read request or size check)
+    )    
+{
+    if ( buffer == NULL ) // compute size of write request
+    {
+        int result = strlen(presolve_py) + 1;
+        if ( len == 0 )
+        {
+            // return length of result only
+            return result;
+        }
+        else
+        {
+            // return non-zero if len > length of result
+            return (int)len > result ? result : 0;
+        }
+    }
+    else if ( len == 0 ) // read buffer into object data
+    {
+        // return number of characters read from buffer
+        free(presolve_py);
+        presolve_py = strdup(buffer);
+        return strlen(presolve_py);
+    }
+    else // write object data into buffer
+    {
+        return snprintf(buffer,len-1,"%s",presolve_py);
+    }
+}
+
+int cvx::postsolve(
+    char *buffer, // read/write buffer (NULL for size request)
+    size_t len // write buffer len (0 for read request or size check)
+    )    
+{
+    if ( buffer == NULL ) // compute size of write request
+    {
+        int result = strlen(postsolve_py) + 1;
+        if ( len == 0 )
+        {
+            // return length of result only
+            return result;
+        }
+        else
+        {
+            // return non-zero if len > length of result
+            return (int)len > result ? result : 0;
+        }
+    }
+    else if ( len == 0 ) // read buffer into object data
+    {
+        // return number of characters read from buffer
+        free(postsolve_py);
+        postsolve_py = strdup(buffer);
+        return strlen(postsolve_py);
+    }
+    else // write object data into buffer
+    {
+        return snprintf(buffer,len-1,"%s",postsolve_py);
     }
 }
 
@@ -979,9 +1056,9 @@ bool cvx::update_solution(struct s_problem &problem)
     }
 
     // run presolve script
-    if ( strcmp(presolve,"") != 0 )
+    if ( strcmp(presolve_py,"") != 0 )
     {
-        PyRun_FormatString(presolve);
+        PyRun_FormatString("%s",presolve_py);
     }
 
     // set objective
@@ -1103,9 +1180,9 @@ bool cvx::update_solution(struct s_problem &problem)
             exception("unable to get result");
         }
 
-        if ( strcmp(postsolve,"") != 0 )
+        if ( strcmp(postsolve_py,"") != 0 )
         {
-            PyRun_FormatString(postsolve);
+            PyRun_FormatString("%s",postsolve_py);
         }
 
         PyObject *result = PyDict_GetItemString(PyDict_GetItemString(cvx,optname),"result");

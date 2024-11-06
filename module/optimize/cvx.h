@@ -6,10 +6,12 @@
 #include "gridlabd.h"
 
 // method declarations
+DECL_METHOD(cvx,presolve);
 DECL_METHOD(cvx,data);
 DECL_METHOD(cvx,variables);
 DECL_METHOD(cvx,objective);
 DECL_METHOD(cvx,constraints);
+DECL_METHOD(cvx,postsolve);
 
 class cvx : public gld_object
 {
@@ -47,19 +49,19 @@ public: // public properties
         OE_FINALIZE  = 0x40,
     } OPTIMIZATIONEVENT;
     GL_BITFLAGS(set,event);
-    GL_STRING(char1024,presolve);
-    GL_STRING(char1024,postsolve);
     GL_STRING(char1024,on_failure);
     GL_STRING(char1024,on_exception);
     GL_STRING(char1024,on_infeasible);
     GL_STRING(char1024,on_unbounded);
     GL_ATOMIC(double,value);
+    GL_STRING(char1024,solver_options);
 
+    GL_METHOD(cvx,presolve);
     GL_METHOD(cvx,objective);
     GL_METHOD(cvx,data);
     GL_METHOD(cvx,variables);
     GL_METHOD(cvx,constraints);
-    GL_STRING(char1024,solver_options);
+    GL_METHOD(cvx,postsolve);
 
 private: // private properties
     
@@ -70,6 +72,8 @@ private: // private properties
         double *ptr;
         struct s_reference* next;
     } REFERENCE;
+    char *presolve_py;
+    char *postsolve_py;
     typedef struct s_data {
         char *spec;
         char *name;
@@ -97,6 +101,7 @@ private: // private properties
     } problem;
 
     PyObject *cvxpy; // cvxpy module
+    PyObject *locals; // local variables
 
 public: // required methods
 
@@ -115,6 +120,7 @@ public: // event handlers
 
 private: // private methods
 
+    int PyRun_FormatString(const char *format, ...);
     bool add_data(struct s_problem &problem, const char *value);
     void add_data_class(DATA *item, const char *classname, const char *propname);
     void add_data_group(DATA *item, const char *groupname, const char *propname);
