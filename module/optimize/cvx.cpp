@@ -19,6 +19,13 @@ EXPORT_METHOD(cvx,postsolve)
 CLASS *cvx::oclass = NULL;
 cvx *cvx::defaults = NULL;
 
+// convenience objects
+PyObject *gld = NULL;
+PyObject *class_dict = NULL;
+PyObject *global_list = NULL;
+PyObject *object_list = NULL;
+PyObject *property_type = NULL;
+
 //
 // Global variables
 //
@@ -46,6 +53,8 @@ int cvx::PyRun_FormatString(const char *format, ...)
     if ( result == NULL )
     {
         gl_verbose("Python command failed!");
+        PyErr_Print();
+        PyErr_Clear();
         rc = -1;
     }
     Py_XDECREF(result);
@@ -160,6 +169,16 @@ cvx::cvx(MODULE *module)
 
         // create __cvx__ global
         PyDict_SetItemString(globals,"__cvx__",PyDict_New());
+
+        // create gld global
+        gld = PyModule_New("gld");
+        class_dict = PyDict_New();
+        global_list = PyList_New(0);
+        object_list = PyList_New(0);
+        PyModule_AddObject(gld,"classes",class_dict);
+        PyModule_AddObject(gld,"globals",global_list);
+        PyModule_AddObject(gld,"objects",object_list);
+        PyDict_SetItemString(globals,"gld",gld);
     }
 }
 
@@ -235,6 +254,47 @@ int cvx::create(void)
 
 int cvx::init(OBJECT *parent)
 {
+    // add property accessor if not already done
+    if ( property_type == NULL )
+    {
+        property_type = callback->python.property_type();
+        if ( PyModule_AddObject(gld,"property",property_type) < 0 )
+        {
+            exception("unable to add property accessor to gld module");
+        }
+
+        // construct object list
+        for ( OBJECT *obj = gl_object_get_first() ; obj != NULL ; obj = obj->next )
+        {
+            if ( obj->name )
+            {
+                PyList_Append(object_list,PyUnicode_FromString(obj->name));
+            }
+            else
+            {
+                PyList_Append(object_list,PyUnicode_FromFormat("%s:%lu",obj->oclass->name,obj->id));
+            }
+        }
+
+        // construct global list
+        for ( GLOBALVAR *var = gl_global_get_next(NULL) ; var != NULL ; var = var->next )
+        {
+            PyList_Append(global_list,PyUnicode_FromString(var->prop->name));
+        }
+
+        // construct class data dictionary
+        for ( CLASS *oclass = callback->class_getfirst() ; oclass != NULL ; oclass = oclass->next )
+        {
+            PyObject *defs = PyList_New(0);
+            for ( PROPERTY *prop = oclass->pmap ; prop != NULL && prop->oclass == oclass ; prop = prop->next )
+            {
+                PyList_Append(defs,PyUnicode_FromString(prop->name));
+            }
+            PyDict_SetItemString(class_dict,oclass->name,defs);
+            Py_INCREF(defs);
+        }
+    }
+
     // setup problem dump
     if ( PyDict_GetItemString(globals,"__dump__") == NULL )
     {
@@ -1056,9 +1116,9 @@ bool cvx::update_solution(struct s_problem &problem)
     }
 
     // run presolve script
-    if ( strcmp(presolve_py,"") != 0 )
+    if ( strcmp(presolve_py,"") != 0 && PyRun_FormatString("%s",presolve_py) == -1 )
     {
-        PyRun_FormatString("%s",presolve_py);
+        exception("presolve script failed");
     }
 
     // set objective
@@ -1110,9 +1170,10 @@ bool cvx::update_solution(struct s_problem &problem)
     }
 
     // dump results
-    if ( strcmp(problemdump,"") != 0 )
+    if ( strcmp(problemdump,"") != 0 && 
+        PyRun_FormatString("print('\\n'.join([f'{x}: {y}' for x,y in __cvx__['%s']['problem'].get_problem_data(__cvx__['%s']['problem'].solver_stats.solver_name)[0].items()]),file=__dump__)",optname,optname) == -1 )
     {
-        PyRun_FormatString("print('\\n'.join([f'{x}: {y}' for x,y in __cvx__['%s']['problem'].get_problem_data(__cvx__['%s']['problem'].solver_stats.solver_name)[0].items()]),file=__dump__)",optname,optname);
+        exception("problem dump failed");
     }
 
     // extract value, if any
@@ -1180,9 +1241,9 @@ bool cvx::update_solution(struct s_problem &problem)
             exception("unable to get result");
         }
 
-        if ( strcmp(postsolve_py,"") != 0 )
+        if ( strcmp(postsolve_py,"") != 0 &&  PyRun_FormatString("%s",postsolve_py) == -1 )
         {
-            PyRun_FormatString("%s",postsolve_py);
+            exception("postsolve script failed");
         }
 
         PyObject *result = PyDict_GetItemString(PyDict_GetItemString(cvx,optname),"result");

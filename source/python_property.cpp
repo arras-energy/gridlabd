@@ -144,7 +144,7 @@ void python_property_dealloc ( PyObject * self ) ///< Object reference
 int python_property_create (
     PyObject* self, ///< Python **gridlabd.property** reference
     PyObject* args, ///< Python argument list (none)
-    PyObject* kwds ) ///< Python keywords list (object_id, object_name, property_name)
+    PyObject* kwds ) ///< Python keywords list (object_id, object_name/global_name, property_name)
 {
     python_property *pyprop = to_python_property(self);
     static char *kwlist[] = 
@@ -162,25 +162,43 @@ int python_property_create (
         return -1;
     }
 
+    const char *name = NULL;
     if ( object_info != NULL && PyLong_Check(object_info) )
     {
         pyprop->obj = object_find_by_id(PyLong_AsLong(object_info));
     }
     else if ( object_info != NULL && PyUnicode_Check(object_info) )
     {
-        pyprop->obj = object_find_name(PyUnicode_AsUTF8(object_info));
+        name = PyUnicode_AsUTF8(object_info);
+        pyprop->obj = object_find_name(name);
+        if ( pyprop->obj == NULL && global_find(name) != NULL )
+        {
+            pyprop->obj = NULL;
+        }
     }
     else
     {
-        PyErr_SetString(PyExc_Exception,"object name/id not specified");
-        return -1;
+        PyErr_SetString(PyExc_Exception,"object name/id missing/invalid");
+        return -2;
     }
 
-    pyprop->prop = object_get_property(pyprop->obj,property_name,NULL);
+    if ( name != NULL && pyprop->obj == NULL )
+    {
+        pyprop->prop = global_find(name)->prop;
+    }
+    else
+    {
+        if ( property_name == NULL )
+        {
+            PyErr_SetString(PyExc_Exception,"property name missing");
+            return -3;
+        }
+        pyprop->prop = object_get_property(pyprop->obj,property_name,NULL);
+    }
     if ( pyprop->prop == NULL )
     {
-        PyErr_SetString(PyExc_Exception,"property name not specified");
-        return -1;
+        PyErr_SetString(PyExc_Exception,pyprop->obj?"property name not valid":"global name not valid");
+        return -3;
     }
 
     return 0;

@@ -86,6 +86,37 @@ The `solver_options` must conform to the syntax for Python arguments as
 specified for [Problem.solve()]
 (https://www.cvxpy.org/_modules/cvxpy/problems/problem.html#Problem.solve).
 
+## Convenience Objects
+
+The following python objects are defined in `gld` object of `cvx` namespace:
+
+* `classes`: Contains a dict of GridLAB-D classes defined in the current model.
+
+* `globals`: Contains a list of GridLAB-D global names in the current model.
+
+* `objects`: Contains a list of GridLAB-D object names in the current model.
+
+* `property`: Python type for accessing GridLAB-D object properties. Includes
+  the following methods:
+
+  * `property(object:[str|int],name:str)->property`: get an project property
+
+  * `property(global:str)->property`: get a global variable
+
+  * `get_object()->str`: get the name of the object to which this property refers.
+
+  * `get_name()->str`: get the name of the object's property.
+
+  * `get_initial()->float`: get the initial value of the property, if any.
+
+  * `get_value()->float`: get the current value of the property, if any.
+
+  * `get_unit()->str`: get the units of the property, if any.
+
+  * `set_value(value:str|float)`: set the value of the property.
+
+  * `convert_unit(unit:str)->float`: convert the property value to a new unit, if any.
+
 # Caveat
 
 1. It is often important to establish the correct rank for an optimizer so that

@@ -1336,6 +1336,8 @@ inline DEPRECATED int gl_gethour(TIMESTAMP t)
 #define gl_get_oflags DEPRECATED (*callback->get_oflags)
 /**@}*/
 
+#define gl_global_get_next DEPRECATED (*callback->global.get_next)
+
 #ifdef __cplusplus
 
 /******************************************************************************

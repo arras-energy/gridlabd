@@ -1303,6 +1303,7 @@ typedef struct s_callbacks {
 		char *(*exception_msg)(void);
 	} exception;
 	struct {
+		GLOBALVAR *(*get_next)(GLOBALVAR *var);
 		GLOBALVAR *(*create)(const char *name, ...);
 		STATUS (*setvar)(const char *def,...);
 		char *(*getvar)(const char *name, char *buffer, int size);
@@ -1423,6 +1424,7 @@ typedef struct s_callbacks {
 		PyObject *main;
 		PyObject *(*import)(const char *module, const char *path);
 		bool (*call)(PyObject *pModule, const char *method, const char *vargsfmt, va_list varargs, void *result);
+		PyObject *(*property_type)(void);
 	} python;
 	long unsigned int magic; /* used to check structure alignment */
 } CALLBACKS; /**< core callback function table */

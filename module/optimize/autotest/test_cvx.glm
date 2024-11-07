@@ -1,7 +1,7 @@
 // test_cvx.glm
 
 #set suppress_repeat_messages=FALSE
-#option verbose
+//#option verbose
 #set randomseed=1
 clock
 {
@@ -101,6 +101,7 @@ object cvx
 {
     name "problem-x";
     event PRECOMMIT;
+    presolve "print(gld.objects,gld.globals,gld.classes,gld.property('problem-y','value'),gld.property('clock'),file=sys.stderr)";
     //presolve "m=20; n=15; np.random.seed(1); A=np.random.rand(m,n); b=np.random.rand(m); x=Variable(n)";
     variables "x=test:x";
     // variables "y=test:y&lambda";
