@@ -1,4 +1,2 @@
-import gridlabd;
-
-def GraphLaplacian():
-    return gridlabd.version()
+import sys
+print("imported gridlabd_py ok",file=sys.stderr)

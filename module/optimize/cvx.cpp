@@ -23,7 +23,7 @@ cvx *cvx::defaults = NULL;
 PyObject *gld = NULL;
 PyObject *class_dict = NULL;
 PyObject *global_list = NULL;
-PyObject *object_list = NULL;
+PyObject *object_dict = NULL;
 PyObject *property_type = NULL;
 
 //
@@ -35,6 +35,7 @@ enumeration cvx::failure_handling = cvx::OF_HALT;
 PyObject *cvx::main_module = NULL;
 PyObject *cvx::globals = NULL;
 char1024 cvx::imports = "";
+char1024 cvx::utils = "utils";
 char1024 cvx::problemdump = "";
 
 //
@@ -151,6 +152,9 @@ cvx::cvx(MODULE *module)
         gl_global_create("optimize::cvx_imports",PT_char1024,&imports,
             PT_DESCRIPTION, "CVX symbols to import", NULL);
 
+        gl_global_create("optimize::cvx_utils",PT_char1024,&utils,
+            PT_DESCRIPTION, "global symbol to use as cvx_utils.py import", NULL);
+
         gl_global_create("optimize::cvx_problemdump",PT_char1024,&problemdump,
             PT_DESCRIPTION, "CVX problem dump filename", NULL);
 
@@ -174,10 +178,10 @@ cvx::cvx(MODULE *module)
         gld = PyModule_New("gld");
         class_dict = PyDict_New();
         global_list = PyList_New(0);
-        object_list = PyList_New(0);
+        object_dict = PyDict_New();
         PyModule_AddObject(gld,"classes",class_dict);
         PyModule_AddObject(gld,"globals",global_list);
-        PyModule_AddObject(gld,"objects",object_list);
+        PyModule_AddObject(gld,"objects",object_dict);
         PyDict_SetItemString(globals,"gld",gld);
     }
 }
@@ -266,14 +270,27 @@ int cvx::init(OBJECT *parent)
         // construct object list
         for ( OBJECT *obj = gl_object_get_first() ; obj != NULL ; obj = obj->next )
         {
-            if ( obj->name )
+            gld_object *data = get_object(obj);
+            PyObject *values = PyDict_New();
+            PyDict_SetItemString(values,"class",PyUnicode_FromString(data->get_oclass()->get_name()));
+            PyDict_SetItemString(values,"id",PyLong_FromLong(data->get_id()));
+            if ( isfinite(data->get_latitude()) )
             {
-                PyList_Append(object_list,PyUnicode_FromString(obj->name));
+                PyDict_SetItemString(values,"latitude",PyFloat_FromDouble(data->get_latitude()));
             }
-            else
+            if ( isfinite(data->get_longitude()) )
             {
-                PyList_Append(object_list,PyUnicode_FromFormat("%s:%lu",obj->oclass->name,obj->id));
+                PyDict_SetItemString(values,"longitude",PyFloat_FromDouble(data->get_longitude()));
             }
+            if ( strcmp(data->get_groupid(),"") != 0 )
+            {
+                PyDict_SetItemString(values,"group",PyUnicode_FromString(data->get_groupid()));
+            }
+            if ( data->get_parent() != NULL )
+            {
+                PyDict_SetItemString(values,"parent",PyUnicode_FromString(data->get_parent()->get_name()));
+            }
+            PyDict_SetItemString(object_dict,data->get_name(),values);
         }
 
         // construct global list
@@ -293,6 +310,14 @@ int cvx::init(OBJECT *parent)
             PyDict_SetItemString(class_dict,oclass->name,defs);
             Py_INCREF(defs);
         }
+
+        PyObject *module = PyImport_ImportModule("cvx_utils");
+        if ( module == NULL )
+        {
+            exception("'import cvx_utils as %s' failed (PYTHONPATH=%s)",(const char*)utils,getenv("PYTHONPATH"));
+        }
+        PyModule_AddObject(module,"gld",gld);
+        PyDict_SetItemString(globals,utils,module);
     }
 
     // setup problem dump

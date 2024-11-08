@@ -33,7 +33,7 @@ public: // module globals
     static enumeration failure_handling;
 
     static char1024 imports;
-
+    static char1024 utils;
     static char1024 problemdump;
 
 public: // public properties

@@ -12,3 +12,5 @@ module_optimize_optimize_la_SOURCES =
 module_optimize_optimize_la_SOURCES += module/optimize/cvx.cpp module/optimize/cvx.h
 module_optimize_optimize_la_SOURCES += module/optimize/main.cpp module/optimize/optimize.h
 module_optimize_optimize_la_SOURCES += module/optimize/simple.cpp module/optimize/simple.h
+
+dist_pkgdata_DATA += module/optimize/cvx_utils.py

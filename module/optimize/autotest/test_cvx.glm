@@ -2,6 +2,7 @@
 
 #set suppress_repeat_messages=FALSE
 //#option verbose
+//#option debug
 #set randomseed=1
 clock
 {
@@ -16,6 +17,7 @@ module optimize
     cvx_backend CPP;
     cvx_failure_handling WARN;
     cvx_imports Variable,sum_squares,Minimize;
+    //cvx_utils "cu";
     cvx_problemdump "test_cvx.txt";
 }
 
@@ -43,6 +45,8 @@ object test:..3
     parent problem-x;
     name `test_{id}`;
     groupid "test_group";
+    latitude 37.5;
+    longitude -122.5;
     A0 "type:normal(0,1);refresh:1h";
     A1 "type:normal(0,1);refresh:1h";
     A2 "type:normal(0,1);refresh:1h";
@@ -57,6 +61,59 @@ object test:..3
         property "A0,x,y";
         interval -1;
     };
+}
+
+class node
+{
+    bool is_swing;
+    double V[V];
+    double P[W];
+}
+
+class line
+{
+    object from;
+    object to;
+    double R[Ohm];
+}
+
+object node 
+{
+    name "gen";
+    is_swing TRUE;
+}
+object node
+{
+    name "node";
+}
+object node
+{
+    name "load1";
+    P -1 W;
+}
+object node
+{
+    name "load2";
+    P -1 W;
+}
+
+object line
+{
+    from "gen";
+    to "node";
+    R 2 Ohm;
+}
+object line
+{
+    from "node";
+    to "load1";
+    R 1 Ohm;
+}
+object line
+{
+    from "node";
+    to "load2";
+    R 1 Ohm;
 }
 
 object cvx
@@ -100,8 +157,9 @@ x = Variable(n)
 object cvx 
 {
     name "problem-x";
-    event PRECOMMIT;
-    presolve "print(gld.objects,gld.globals,gld.classes,gld.property('problem-y','value'),gld.property('clock'),file=sys.stderr)";
+    event INIT;
+    presolve "G = utils.Network(); print(G.W.todense(),G.L.todense(),file=sys.stderr)";
+    //presolve "print(gld.objects,gld.globals,gld.classes,gld.property('problem-y','value'),gld.property('clock'),file=sys.stderr)";
     //presolve "m=20; n=15; np.random.seed(1); A=np.random.rand(m,n); b=np.random.rand(m); x=Variable(n)";
     variables "x=test:x";
     // variables "y=test:y&lambda";
