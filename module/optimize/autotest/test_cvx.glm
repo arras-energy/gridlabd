@@ -157,7 +157,7 @@ x = Variable(n)
 object cvx 
 {
     name "problem-x";
-    event INIT;
+    event PRECOMMIT;
     presolve "G = utils.Network(); print(G.W.todense(),G.L.todense(),file=sys.stderr)";
     //presolve "print(gld.objects,gld.globals,gld.classes,gld.property('problem-y','value'),gld.property('clock'),file=sys.stderr)";
     //presolve "m=20; n=15; np.random.seed(1); A=np.random.rand(m,n); b=np.random.rand(m); x=Variable(n)";
