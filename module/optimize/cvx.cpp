@@ -35,7 +35,7 @@ enumeration cvx::failure_handling = cvx::OF_HALT;
 PyObject *cvx::main_module = NULL;
 PyObject *cvx::globals = NULL;
 char1024 cvx::imports = "";
-char1024 cvx::utils = "utils";
+char1024 cvx::utils = "glm";
 char1024 cvx::problemdump = "";
 
 //
@@ -152,8 +152,8 @@ cvx::cvx(MODULE *module)
         gl_global_create("optimize::cvx_imports",PT_char1024,&imports,
             PT_DESCRIPTION, "CVX symbols to import", NULL);
 
-        gl_global_create("optimize::cvx_utils",PT_char1024,&utils,
-            PT_DESCRIPTION, "global symbol to use as cvx_utils.py import", NULL);
+        gl_global_create("optimize::glutils",PT_char1024,&utils,
+            PT_DESCRIPTION, "global symbol to use as glutils.py import", NULL);
 
         gl_global_create("optimize::cvx_problemdump",PT_char1024,&problemdump,
             PT_DESCRIPTION, "CVX problem dump filename", NULL);
@@ -311,10 +311,10 @@ int cvx::init(OBJECT *parent)
             Py_INCREF(defs);
         }
 
-        PyObject *module = PyImport_ImportModule("cvx_utils");
+        PyObject *module = PyImport_ImportModule("glutils");
         if ( module == NULL )
         {
-            exception("'import cvx_utils as %s' failed (PYTHONPATH=%s)",(const char*)utils,getenv("PYTHONPATH"));
+            exception("'import glutils as %s' failed (PYTHONPATH=%s)",(const char*)utils,getenv("PYTHONPATH"));
         }
         PyModule_AddObject(module,"gld",gld);
         PyDict_SetItemString(globals,utils,module);

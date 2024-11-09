@@ -12,6 +12,7 @@ dist_pkgdata_DATA += tools/fire_danger.py
 dist_pkgdata_DATA += tools/fire_report.py
 dist_pkgdata_DATA += tools/fit_filter.py
 dist_pkgdata_DATA += tools/gldserver.py
+dist_pkgdata_DATA += tools/glutils.py
 dist_pkgdata_DATA += tools/gridlabd-editor.png
 dist_pkgdata_DATA += tools/gridlabd-editor.py
 dist_pkgdata_DATA += tools/group.py
@@ -31,4 +32,3 @@ dist_pkgdata_DATA += tools/rest_client.py
 dist_pkgdata_DATA += tools/rest_server.py
 dist_pkgdata_DATA += tools/rest_server_config.py
 dist_pkgdata_DATA += tools/ucar_weather.py
-

@@ -17,7 +17,6 @@ module optimize
     cvx_backend CPP;
     cvx_failure_handling WARN;
     cvx_imports Variable,sum_squares,Minimize;
-    //cvx_utils "cu";
     cvx_problemdump "test_cvx.txt";
 }
 
@@ -160,7 +159,7 @@ object cvx
     event INIT;
     variables "x=test:x";
     data "A=test:A0"; // ,test.A1,test.A2,test.A3;b1=test.b1;b2=test.b2";
-    presolve "G = utils.Network(); np.set_printoptions(6); print(f'G_W =\\n{G.W.todense()}\\nG_L =\\n{G.L.todense()}\\nA = {np.array(A)}',file=sys.stderr)";
+    presolve "G = glm.Network(); np.set_printoptions(6); print(f'G_W =\\n{G.W.todense()}\\nG_L =\\n{G.L.todense()}\\nA = {np.array(A)}',file=sys.stderr)";
     objective "Minimize(sum_squares(A@x))";
     constraints "x >= 1";
 }

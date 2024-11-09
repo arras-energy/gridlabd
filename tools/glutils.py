@@ -347,18 +347,21 @@ if __name__ == "__main__":
     assert "pp_bus_1" in model.objects(), "object 'pp_bus_1' not found in model"
     assert model.property("pp_bus_1","bus_i").get_value() == 1, "pp_bus_1.bus_1 is not 1"
 
-    for var in model.globals():
-        model.property(var).get_object()
-        model.property(var).get_name()
-        model.property(var).get_value()
-        model.property(var).get_initial()
+    with open("autotest/case14.txt","w") as txt:
+        for var in model.globals():
+            print("global",var,"get_object() ->",model.property(var).get_object(),file=txt)
+            print("global",var,"get_name() ->",model.property(var).get_name(),file=txt)
+            print("global",var,"get_value() ->",model.property(var).get_value(),file=txt)
+            print("global",var,"property() ->",model.property(var).get_initial(),file=txt)
 
-    for obj in model.objects():
-        for var in model.properties(obj):
-            model.property(obj,var).get_object()
-            model.property(obj,var).get_name()
-            init = model.property(obj,var).get_initial()
-            value = model.property(obj,var).get_value()
-            if not value is None or not init is None:
-                model.property(obj,var).set_value(init if value is None else value)
-                assert model.property(obj,var).get_value()==value, "value changed"
+        for obj in model.objects():
+            for var in model.properties(obj):
+                print(obj,var,"property().get_object() ->",model.property(obj,var).get_object(),file=txt)
+                print(obj,var,"property().get_name() ->",model.property(obj,var).get_name(),file=txt)
+                init = model.property(obj,var).get_initial()
+                print(obj,var,"property().get_initial() ->",init,file=txt)
+                value = model.property(obj,var).get_value()
+                print(obj,var,"property().get_value() ->",value,file=txt)
+                if not value is None or not init is None:
+                    model.property(obj,var).set_value(init if value is None else value)
+                    assert model.property(obj,var).get_value()==value, "value changed"
