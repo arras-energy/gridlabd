@@ -2,121 +2,263 @@
 
 import numpy as np
 import scipy as sp
+import datetime as dt
+from typing import TypeVar
 
 class Model:
-
+    """Model accessor base class"""
     def __init__(self,source=None):
-        assert(source==gld or isinstance(source,dict))
+        assert("gld" in globals() and source==gld) or isinstance(source,dict), "invalid source"
+
+def rarray(x):
+    return np.array(x,dtype=np.float64)
+
+def from_timestamp(x):
+    if x == "NEVER":
+        return dt.datetime.strptime("2999-12-31 23:59:59 UTC","%Y-%m-%d %H:%M:%S %Z")
+    elif x == "INIT":
+        return dt.datetime.fromtimestamp(0);
+    else:
+        return dt.datetime.strptime(x,"%Y-%m-%d %H:%M:%S %Z")
+
+def from_complex(x):
+    try:
+        return complex(x.split()[0] if " " in x else x)
+    except:
+        return complex(float('nan'),float('nan'))
 
 class Property:
+    """JSON property accessor"""
+    fromtypes = {
+        "double": lambda x: float(x.split()[0]),
+        "complex": from_complex,
+        "int16": int,
+        "int32": int,
+        "int64": int,
+        "bool": bool,
+        "timestamp": from_timestamp,
+        "double_array": lambda x: np.array(x,dtype=np.float64),
+        "complex_array": lambda x: np.array(x,dtype=np.complex_),
+        "real": float,
+        "float" : float,
+        # everything else is str
+    }
+    totypes = {
+        "timestamp": lambda x: int(x.isoformat())
+        # everything else is str
+    }
+    def __init__(self,model:TypeVar(Model),*args:list[str]):
+        """Property accessor constructor
+        
+        Arguments:
 
-    def __init__(self,model,*args):
-        assert isinstance(model,dict),"model type invalid"
-        assert model["application"]=="gridlabd","not a gridlabd model"
-        self.model = model
-        self.obj = args[0]
-        self.name = args[1]
+        * model: the GridLAB-D model
 
-    def get_object(self,*args):
+        * args: global name or object name followed by property name 
+        """
+        assert isinstance(model,JsonModel),"model type invalid"
+        self.data = model.json
+        assert self.data["application"] == "gridlabd", "not a gridlabd model"
+        if len(args) == 1:
+            self.obj = None
+            self.name = args[0]
+        elif len(args) == 2:
+            self.obj,self.name = args
+        else:
+            raise ValueError("too many arguments")
 
+    def get_object(self) -> str:
+        """Get object name"""
         return self.obj
 
-    def set_object(self,*args):
+    def set_object(self,value:str):
+        """Set object name"""
+        self.obj = value
 
-        self.obj = args[0]
-
-    def get_name(self,*args):
-
+    def get_name(self) -> str:
+        """Get property name"""
         return self.name
 
-    def get_initial(self,*args):
-
+    def get_initial(self) -> str|float|int|bool|complex:
+        """Get default value, if any"""
         try:
-            return model["classes"][model["objects"]["class"]]["initial"]
+            spec = self.data["classes"][self.data["objects"][self.obj]["class"]]
+            value = spec["default"]
+            vtype = self.fromtypes[spec["type"]] if spec["type"] in self.fromtypes else str
+            return vtype(value)
         except:
             return None
         
-    def get_value(self,*args):
+    def get_value(self) -> str|float|int|complex|bool|dt.datetime:
+        """Get value, if any"""
+        try:
+            if not self.name in self.data["header"]:
+                spec = self.data["classes"][self.data["objects"][self.obj]["class"]][self.name]
+                data = self.data["objects"][self.obj]
+                if self.name in data:
+                    value = data[self.name] 
+                    vtype = self.fromtypes[spec["type"]] if spec["type"] in self.fromtypes else str
+                    return vtype(value)
+                return None
+            return None
+        except KeyError:
+            spec = self.data["globals"][self.name]
+            value = spec["value"]
+            vtype = self.fromtypes[spec["type"]] if spec["type"] in self.fromtypes else str
+            return vtype(value)
 
-        return model["objects"][self.obj][self.name]
+    def set_value(self,value:str|float|int|complex|bool|dt.datetime):
+        """Set property value"""
+        try:
+            # TODO: use totypes
+            self.data["objects"][self.obj][self.name] = str(value)
+        except KeyError:
+            self.data["globals"][self.name]["value"] = str(value)
 
-    def set_value(self,*args):
-
-        model["objects"][self.obj][self.name] = args[0]
-
-    def rlock(self,*args):
-
+    def rlock(self):
+        """Lock property for read"""
         return None
 
-    def wlock(self,*args):
-
+    def wlock(self):
+        """Lock property for write"""
         return None
 
-    def unlock(self,*args):
-
+    def unlock(self):
+        """Unlock property"""
         return None
 
-    def convert_unit(self,*args):
-
+    def convert_unit(self,unit:str) -> float:
+        """Convert property units"""
         raise RuntimeError("cannot convert units in static models")
 
-        
 class GldModel(Model):
-
+    """Dynamic model accessor"""
     def __init__(self):
+        """Dynamic model accessor"""
+        assert "gld" in globals(), "no current simulation running ('gld' is not built-in)"
         self.cache = {}
         super().__init__(gld)
 
-    def objects(self):
+    def objects(self) -> dict:
+        """Get objects in model"""
         return gld.objects
 
-    def classes(self):
+    def classes(self) -> dict:
+        """Get classes"""
         return gld.classes
 
-    def globals(self):
+    def globals(self) -> list[str]:
+        """Get list of global names"""
         return gld.globals
 
-    def property(self,*args):
+    def properties(self,obj):
+        """Get list of properties in object"""
+        raise NotImplementedError("properties not implemented yet")
+
+    def property(self,*args) -> str|float|int|complex|bool|dt.datetime:
+        """Get property accessor
+
+        Arguments:
+
+        * obj (str): object name or global variable name
+
+        * name (str): property name (for objects only, None for globals)
+        """
         key = "#".join(args)
         try:
             return self.cache[key]
         except:
-            prop = gld.property(*args)
-            self.cache[key] = prop
+            self.cache[key] = prop = gld.property(*args)
             return prop
 
 class JsonModel(Model):
-
+    """Static model accessor"""
     def __init__(self,jsonfile):
+        """Static model accessor
+
+        Arguments:
+
+        * jsonfile (str): name of JSON file to access
+        """
         import json
         self.json = json.load(open(jsonfile,"r"))
         super().__init__(self.json)
 
-    def objects(self):
-        return self.json["objects"]
+    def objects(self) -> dict:
+        """Get objects in model"""
+        header = ["class","id","latitude","longitude","group","parent"]
+        return {x:{z:w for z,w in y.items() if z in header} for x,y in self.json["objects"].items()}
 
-    def classes(self):
-        return self.json["classes"]
+    def classes(self) -> dict:
+        """Get classes in model"""
+        return {x:[z for z,w in y.items() if type(w) is dict] for x,y in self.json["classes"].items()}
 
-    def globals(self):
-        return self.json["globals"]
+    def globals(self) -> list[str]:
+        """Get globals in model"""
+        return list(self.json["globals"])
+
+    def properties(self,obj) -> list[str]:
+        """Get list of object properties"""
+        return list([x for x,y in self.json["classes"][self.json["objects"][obj]["class"]].items() if isinstance(y,dict)])
 
     def property(self,*args):
+        """Get property accessor
+
+        Arguments:
+
+        * obj (str): object name or global variable name
+
+        * name (str): property name (for objects only, None for globals)
+        """
         return Property(model,*args)
 
 
 class Network:
     """Network model accessor
+
+    Properties:
+
+    * last (dt.datetime): time of last update (when force=None)
+
+    * lines (list[str]): list of lines in model
+
+    * nodes (dict): nodes map
+
+    * Y (list[float]): list of line admittances
+
+    * bus (np.array): bus matrix
+
+    * branch (np.array): branch matrix
+
+    * row (np.array): row index matrix (branch from values)
+
+    * col (np.array): col index matrix (branch to values)
+
+    * A (np.array): adjancency matrix
+
+    * D (np.array): degree matrix
+
+    * L (np.array): graph Laplacian matrix
+
+    * B (np.array): oriented incidence matrix
+
+    * W (np.array): weighted Laplacian matrix
     """
     def __init__(self):
-
+        """Network model accessor constructor"""
         self.update()
 
-    def update(self,auto=None):
+    def update(self,force=None):
+        """Update dynamic model
 
+        Arguments:
+
+        * force (None|bool): force update (None is auto)
+        """
+        assert "gld" in globals(), "dynamic model is not available"
         model = GldModel()
         now = model.property("clock").get_value()
-        if auto is None:
+        if force is None:
 
 
             if not hasattr(self,'last') or now > self.last:
@@ -127,13 +269,13 @@ class Network:
 
                 update = False
 
-        elif isinstance(auto,bool):
+        elif isinstance(force,bool):
 
-            update = auto
+            update = force
 
         else:
 
-            raise ValueError("auto is not boolean or None")
+            raise ValueError("force is not boolean or None")
 
         if not hasattr(self,'nodes') or not hasattr(self,'lines') or update:
 
@@ -179,3 +321,44 @@ class Network:
 
             # weighted Laplacian matrix
             self.W = self.B.T @ sp.sparse.diags_array(self.Y) @ self.B
+
+#
+# Test JSON accessors
+#
+if __name__ == "__main__":
+
+    import os
+    import sys
+    import json
+
+    assert not "gld" in globals(), "not running as static model ('gld' is built-in)"
+
+    os.system("cd autotest; gridlabd convert case14.py case14.glm")
+    os.system("gridlabd -C autotest/case14.glm -o autotest/case14.json")
+
+    model = JsonModel('autotest/case14.json')
+    
+    assert "bus" in model.classes(), "class 'bus' not found in model"
+    assert "bus_i" in model.classes()["bus"], "class 'bus' missing property 'bus_i'"
+
+    assert "pypower::version" in model.globals(), "global 'pypower::version' not found in model"
+    assert model.property("pypower::version").get_value() == 2, "pypower::version value is not 2"
+
+    assert "pp_bus_1" in model.objects(), "object 'pp_bus_1' not found in model"
+    assert model.property("pp_bus_1","bus_i").get_value() == 1, "pp_bus_1.bus_1 is not 1"
+
+    for var in model.globals():
+        model.property(var).get_object()
+        model.property(var).get_name()
+        model.property(var).get_value()
+        model.property(var).get_initial()
+
+    for obj in model.objects():
+        for var in model.properties(obj):
+            model.property(obj,var).get_object()
+            model.property(obj,var).get_name()
+            init = model.property(obj,var).get_initial()
+            value = model.property(obj,var).get_value()
+            if not value is None or not init is None:
+                model.property(obj,var).set_value(init if value is None else value)
+                assert model.property(obj,var).get_value()==value, "value changed"

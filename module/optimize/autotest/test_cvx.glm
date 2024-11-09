@@ -157,27 +157,12 @@ x = Variable(n)
 object cvx 
 {
     name "problem-x";
-    event PRECOMMIT;
-    presolve "G = utils.Network(); print(G.W.todense(),G.L.todense(),file=sys.stderr)";
-    //presolve "print(gld.objects,gld.globals,gld.classes,gld.property('problem-y','value'),gld.property('clock'),file=sys.stderr)";
-    //presolve "m=20; n=15; np.random.seed(1); A=np.random.rand(m,n); b=np.random.rand(m); x=Variable(n)";
+    event INIT;
     variables "x=test:x";
-    // variables "y=test:y&lambda";
     data "A=test:A0"; // ,test.A1,test.A2,test.A3;b1=test.b1;b2=test.b2";
-    //presolve "print(A,file=sys.stderr)";
-    // variables "y=test:y"; // duplicate test
-    // variables "p=pypower.bus:Pd,q=bus.Qd"; // class and module.class tests
-    // variables "p=test_group@x"; // group test
-    // variables "x=test.x&mu"; // duplicate error
-    // variables "y=test.y"; // duplicate error
-    // variables "z=test.z"; // not found error
+    presolve "G = utils.Network(); np.set_printoptions(6); print(f'G_W =\\n{G.W.todense()}\\nG_L =\\n{G.L.todense()}\\nA = {np.array(A)}',file=sys.stderr)";
     objective "Minimize(sum_squares(A@x))";
     constraints "x >= 1";
-    // constraints "x<=-1";
-    // constraints "x<=1,y==2*x";
-    // constraints "x>=2"; // makes the problem infeasible (for testing purposes)
-    // postsolve "import sys;print(f'Optimal value is {__value__:.2f}',file=sys.stderr)";
-    // postsolve "import sys; print('\\n'.join([f'{x}: {str(y)}' for x,y in __problem__.get_problem_data(__problem__.solver_stats.solver_name)[0].items()]),file=sys.stderr)";
 }
 
 object cvx 
