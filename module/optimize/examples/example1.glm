@@ -1,0 +1,29 @@
+module optimize
+{
+    cvx_failure_handling WARN;
+    cvx_imports Variable,sum_squares,Minimize;
+    cvx_problemdump "example1.txt";
+}
+object cvx
+{
+    name "least-squares";
+    event INIT;
+    presolve """
+        m=20
+        n=15
+        np.random.seed(1)
+        A=np.random.rand(m,n)
+        b=np.random.rand(m)
+        x=Variable(n)
+        """;
+    objective "Minimize(sum_squares(A@x-b))";
+    postsolve """
+        print(list(__cvx__['least-squares'].keys()),file=__dump__)
+        residual = cvx.norm(A@x-b, p=2)
+        print('x =',x.value,file=__dump__)
+        print('Residual:', 
+            round(residual.value, 6),
+            file=__dump__,
+            flush=True)
+        """;
+}

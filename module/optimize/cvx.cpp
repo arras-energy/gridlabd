@@ -144,9 +144,10 @@ cvx::cvx(MODULE *module)
             PT_DESCRIPTION,"CVX backend implementation",NULL);
 
         gl_global_create("optimize::cvx_failure_handling",PT_enumeration,&failure_handling,
-            PT_KEYWORD, "HALT", OF_HALT,
-            PT_KEYWORD, "WARN", OF_WARN,
-            PT_KEYWORD, "IGNORE", OF_IGNORE,
+            PT_KEYWORD, "HALT", (enumeration)OF_HALT,
+            PT_KEYWORD, "WARN", (enumeration)OF_WARN,
+            PT_KEYWORD, "IGNORE", (enumeration)OF_IGNORE,
+            PT_KEYWORD, "RETRY", (enumeration)OF_RETRY,
             PT_DESCRIPTION, "CVX failure handling", NULL);
 
         gl_global_create("optimize::cvx_imports",PT_char1024,&imports,
@@ -248,6 +249,7 @@ int cvx::create(void)
 
     // setup locals
     locals = PyDict_New();
+    current_event = "NONE";
 
     return 1; /* return 1 on success, 0 on failure */
 }
@@ -258,6 +260,8 @@ int cvx::create(void)
 
 int cvx::init(OBJECT *parent)
 {
+    current_event = "INIT";
+
     // add property accessor if not already done
     if ( property_type == NULL )
     {
@@ -370,8 +374,14 @@ int cvx::init(OBJECT *parent)
 
 int cvx::precommit(TIMESTAMP t0)
 {
+    current_event = "PRECOMMIT";
+
     if ( get_event(OE_PRECOMMIT) && ! update_solution(problem) )
     {
+        if ( failure_handling == OF_RETRY )
+        {
+            return t0;
+        }
         if ( failure_handling == OF_WARN )
         {
             warning("optimization failed during precommit event");
@@ -383,8 +393,14 @@ int cvx::precommit(TIMESTAMP t0)
 
 TIMESTAMP cvx::presync(TIMESTAMP t0)
 {
+    current_event = "PRESYNC";
+
     if ( get_event(OE_PRESYNC) && ! update_solution(problem) )
     {
+        if ( failure_handling == OF_RETRY )
+        {
+            return t0;
+        }
         if ( failure_handling == OF_WARN )
         {
             warning("optimization failed during presync event");
@@ -396,8 +412,14 @@ TIMESTAMP cvx::presync(TIMESTAMP t0)
 
 TIMESTAMP cvx::sync(TIMESTAMP t0)
 {
+    current_event = "SYNC";
+
     if ( get_event(OE_SYNC) && ! update_solution(problem) )
     {
+        if ( failure_handling == OF_RETRY )
+        {
+            return t0;
+        }
         if ( failure_handling == OF_WARN )
         {
             warning("optimization failed during sync event");
@@ -409,8 +431,14 @@ TIMESTAMP cvx::sync(TIMESTAMP t0)
 
 TIMESTAMP cvx::postsync(TIMESTAMP t0)
 {
+    current_event = "POSTSYNC";
+
     if ( get_event(OE_POSTSYNC) && ! update_solution(problem) )
     {
+        if ( failure_handling == OF_RETRY )
+        {
+            return t0;
+        }
         if ( failure_handling == OF_WARN )
         {
             warning("optimization failed during postsync event");
@@ -422,9 +450,15 @@ TIMESTAMP cvx::postsync(TIMESTAMP t0)
 
 TIMESTAMP cvx::commit(TIMESTAMP t0,TIMESTAMP t1)
 {
-    if ( get_event(OE_COMMIT) )
+    current_event = "COMMIT";
+
+    if ( get_event(OE_COMMIT) && ! update_solution(problem) )
     {
-        if ( failure_handling == OF_WARN && ! update_solution(problem) )
+        if ( failure_handling == OF_RETRY )
+        {
+            return t0;
+        }
+        if ( failure_handling == OF_WARN )
         {
             warning("optimization failed during commit event");
         }
@@ -435,8 +469,14 @@ TIMESTAMP cvx::commit(TIMESTAMP t0,TIMESTAMP t1)
 
 int cvx::finalize(void)
 {
+    current_event = "FINALIZE";
+
     if ( get_event(OE_FINALIZE) && ! update_solution(problem) )
     {
+        if ( failure_handling == OF_RETRY )
+        {
+            exception("unable to retry solution on finalize event");
+        }
         if ( failure_handling == OF_WARN )
         {
             warning("optimization failed during finalize event");
@@ -617,6 +657,32 @@ int cvx::constraints(
 // Pre/Post solve scripts
 //
 
+static int unindent(char *text)
+{
+    bool eol = (text[0] == '\n');
+    int indent = 0, last = 0;
+    bool first = true;
+    char *to = text;
+    for ( char *from=(eol?text+1:text) ; *from != '\0' ; from++ )
+    {
+        if ( eol && *from == ' ' && first )
+        {
+            last = ++indent;
+            continue;
+        }
+        first = false;
+        if ( eol && last++ < indent )
+        {
+            continue;
+        }
+        last = 0;
+        *to++ = *from;
+        eol = ( *from == '\n' );
+    }
+    *to = '\0';
+    return to-text;
+}
+
 int cvx::presolve(
     char *buffer, // read/write buffer (NULL for size request)
     size_t len // write buffer len (0 for read request or size check)
@@ -641,7 +707,7 @@ int cvx::presolve(
         // return number of characters read from buffer
         free(presolve_py);
         presolve_py = strdup(buffer);
-        return strlen(presolve_py);
+        return unindent(presolve_py);
     }
     else // write object data into buffer
     {
@@ -673,7 +739,7 @@ int cvx::postsolve(
         // return number of characters read from buffer
         free(postsolve_py);
         postsolve_py = strdup(buffer);
-        return strlen(postsolve_py);
+        return unindent(postsolve_py);
     }
     else // write object data into buffer
     {
@@ -793,9 +859,9 @@ void cvx::add_data_class(DATA *item, const char *classname, const char *propname
 {
     CLASS *oclass = gl_class_get_by_name(classname,NULL);
     int count = 0;
-    for ( OBJECT *obj = gl_object_get_first() ; obj != NULL ; obj = obj->next )
+    for ( gld_object *obj = gld_object::get_first() ; obj != NULL ; obj = obj->get_next() )
     {
-        if ( obj->oclass == oclass )
+        if ( (CLASS*)(obj->get_oclass()) == oclass )
         {
             gld_property data(obj,propname);
             if ( ! data.is_valid() )
@@ -962,9 +1028,9 @@ bool cvx::add_variables(struct s_problem &problem, const char *spec)
 void cvx::add_variable_class(VARIABLE *item, const char *classname, const char *primalname, const char *dualname)
 {
     CLASS *oclass = gl_class_get_by_name(classname,NULL);
-    for ( OBJECT *obj = gl_object_get_first() ; obj != NULL ; obj = obj->next )
+    for ( gld_object *obj = gld_object::get_first() ; obj != NULL ; obj = obj->get_next() )
     {
-        if ( obj->oclass == oclass )
+        if ( (CLASS*)(obj->get_oclass()) == oclass )
         {
             gld_property primal_data(obj,primalname);
             if ( ! primal_data.is_valid() )
@@ -1103,6 +1169,11 @@ bool cvx::update_solution(struct s_problem &problem)
     {
         probdata = PyDict_New();
         PyDict_SetItemString(objprob,"data",probdata);
+    }
+
+    if ( PyRun_FormatString("__cvx__['%s']['event'] = '%s'",optname,current_event) == -1 )
+    {
+        exception("objective specification '%s' is invalid",problem.objective);
     }
 
     // copy data from objects

@@ -73,7 +73,7 @@ Python code before and after the solver runs, respectively.  During the
 `presolve` and `postsolve` scripts the following globals are defined in
 Python.
 
-* `__cvx__`: a dictionary containing the problem `data`, `variables`,
+* `__cvx__`: a dictionary containing the problem `event`, data`, `variables`,
   `objective`, `constraints`, `problem`, `result`, and `value`, for all the
   active problems in the GridLAB-D model. The keys to each problem are the
   names of the `cvx` objects which define the problem.

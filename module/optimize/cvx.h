@@ -29,6 +29,7 @@ public: // module globals
         OF_HALT = 0,
         OF_WARN = 1,
         OF_IGNORE = 2,
+        OF_RETRY = 3,
     } ONFAILURE;
     static enumeration failure_handling;
 
@@ -102,6 +103,7 @@ private: // private properties
 
     PyObject *cvxpy; // cvxpy module
     PyObject *locals; // local variables
+    const char *current_event; // the current event handler, if any
 
 public: // required methods
 
