@@ -1,0 +1,43 @@
+//#set verbose=true
+
+module pypower
+{
+    stop_on_failure FALSE;
+}
+
+class bus
+{
+    double gen[MW]; // total generation at bus
+    double price[$/MWh]; // cost at bus
+    double Vdc[pu*V]; // DC bus voltage 
+}
+
+#input "case14.py" -t pypower
+
+module optimize
+{
+    cvx_problemdump "example3.txt";
+}
+
+object cvx
+{
+    name "dcopf";
+    event "PRECOMMIT";
+    data "D=bus:Pd";
+    data "P=bus:price";
+    variables "v=bus:Vdc;g=bus:gen";
+    objective "cvx.Minimize(P@g)";
+    constraints "L@v-g+D==0";
+    constraints "v[0]==0.0";
+    constraints "g>=0";
+    presolve "G=glm.Network();L=G.L.todense()";
+    postsolve """
+        np.set_printoptions(precision=1,sign=' ',floatmode='fixed',linewidth=None)
+        print(G.names,file=sys.stderr)
+        print(f'V = {v.value.round(1)}',file=sys.stderr)
+        print(f'g = {g.value} = {sum(g.value):6.1f} MW',file=sys.stderr)
+        print(f'D = {np.array(D)} = {sum(D):6.1f} MW',file=sys.stderr)
+    """;
+}
+
+#set savefile="example3.json"

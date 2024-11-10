@@ -1,5 +1,6 @@
 """Utilities to link CVX with GridLAB-D networks"""
 
+import sys
 import numpy as np
 import scipy as sp
 import datetime as dt
@@ -57,7 +58,7 @@ class Property:
         * args: global name or object name followed by property name 
         """
         assert isinstance(model,JsonModel),"model type invalid"
-        self.data = model.json
+        self.data = model.data
         assert self.data["application"] == "gridlabd", "not a gridlabd model"
         if len(args) == 1:
             self.obj = None
@@ -181,25 +182,25 @@ class JsonModel(Model):
         * jsonfile (str): name of JSON file to access
         """
         import json
-        self.json = json.load(open(jsonfile,"r"))
-        super().__init__(self.json)
+        self.data = json.load(open(jsonfile,"r"))
+        super().__init__(self.data)
 
     def objects(self) -> dict:
         """Get objects in model"""
         header = ["class","id","latitude","longitude","group","parent"]
-        return {x:{z:w for z,w in y.items() if z in header} for x,y in self.json["objects"].items()}
+        return {x:{z:w for z,w in y.items() if z in header} for x,y in self.data["objects"].items()}
 
     def classes(self) -> dict:
         """Get classes in model"""
-        return {x:[z for z,w in y.items() if type(w) is dict] for x,y in self.json["classes"].items()}
+        return {x:[z for z,w in y.items() if type(w) is dict] for x,y in self.data["classes"].items()}
 
     def globals(self) -> list[str]:
         """Get globals in model"""
-        return list(self.json["globals"])
+        return list(self.data["globals"])
 
     def properties(self,obj) -> list[str]:
         """Get list of object properties"""
-        return list([x for x,y in self.json["classes"][self.json["objects"][obj]["class"]].items() if isinstance(y,dict)])
+        return list([x for x,y in self.data["classes"][self.data["objects"][obj]["class"]].items() if isinstance(y,dict)])
 
     def property(self,*args):
         """Get property accessor
@@ -244,9 +245,10 @@ class Network:
 
     * W (np.array): weighted Laplacian matrix
     """
-    def __init__(self):
+    def __init__(self,model=None):
         """Network model accessor constructor"""
-        self.update()
+        self.model = model if model else GldModel()
+        self.update(force=True)
 
     def update(self,force=None):
         """Update dynamic model
@@ -255,8 +257,7 @@ class Network:
 
         * force (None|bool): force update (None is auto)
         """
-        assert "gld" in globals(), "dynamic model is not available"
-        model = GldModel()
+        model = self.model
         now = model.property("clock").get_value()
         if force is None:
 
@@ -282,19 +283,34 @@ class Network:
             self.last = now
             self.lines = []
             self.nodes = {}
+            self.names = {"node":[],"line":[]}
             self.Y = []
+            self.Yc = []
+            busindex = {int(model.property(x,"bus_i").get_value()):x for x,y in model.objects().items() if y["class"] == "bus"}
             for name,data in model.objects().items():
 
                 oclass = model.classes()[data["class"]]
-                if "from" in oclass and "to" in oclass:
-                    Z = model.property(name,"R").get_value()
-                    if Z > 0:
-                        fobj,tobj = model.property(name,"from").get_value(),model.property(name,"to").get_value()
-                        for obj in [fobj,tobj]:
-                            if not obj in self.nodes:
-                                self.nodes[obj] = len(self.nodes)
-                        self.lines.append([self.nodes[fobj],self.nodes[tobj]])
-                        self.Y.append(1/Z)
+
+                # pypower branch
+                if "fbus" in oclass and "tbus" in oclass:
+                    self.names["line"].append(name)
+                    fobj,tobj = model.property(name,"fbus").get_value(),model.property(name,"tbus").get_value()
+                    for obj in [fobj,tobj]:
+                        if not obj in self.nodes:
+                            self.nodes[obj] = len(self.nodes)
+                            self.names["node"].append(busindex[int(obj)])
+                    self.lines.append([self.nodes[fobj],self.nodes[tobj]])
+                    R = model.property(name,"r").get_value()
+                    if R > 0:
+                        self.Y.append(1/R)
+                        self.Yc.append(1/complex(R,model.property(name,"x").get_value()))
+                    else:
+                        self.Y.append(0)
+                        self.Yc.append(complex(0))
+
+                # powerflow line
+                elif "from" in oclass and "to" in oclass:
+                    raise NotImplementedError("powerflow network not supported")
 
             self.bus = np.array(list(self.nodes.values()))
             self.branch = np.array(self.lines)
@@ -304,23 +320,25 @@ class Network:
 
             # adjacency matrix 
             self.A = sp.sparse.coo_array(
-                (   [1]*len(self.row) + [-1]*M, # data
+                (   [1]*M + [-1]*M, # data
                     (self.row+self.col,self.col+self.row) # coords
                     ),
                 shape=(N,N),
+                dtype=int
                 )
 
             # degree matrix
-            self.D = sp.sparse.diags(np.abs(self.A).sum(axis=1))
+            self.D = sp.sparse.diags(np.abs(self.A).sum(axis=1),dtype=int)
 
             # Laplacian matrix
             self.L = self.D - self.A
 
             # oriented incidence matrix
-            self.B = sp.sparse.coo_array(([1]*M,(list(range(M)),self.row)),shape=(M,N)) - sp.sparse.coo_array(([1]*M,(list(range(M)),self.col)),shape=(M,N))
+            self.B = sp.sparse.coo_array(([1]*M,(list(range(M)),self.row)),shape=(M,N)) - sp.sparse.coo_array(([1]*M,(list(range(M)),self.col)),shape=(M,N),dtype=int)
 
             # weighted Laplacian matrix
-            self.W = self.B.T @ sp.sparse.diags_array(self.Y) @ self.B
+            self.W = self.B.T @ sp.sparse.diags_array(self.Y,dtype=np.float64) @ self.B
+            self.Wc = self.B.T @ sp.sparse.diags_array(self.Yc,dtype=np.complex_) @ self.B
 
 #
 # Test JSON accessors
@@ -365,3 +383,11 @@ if __name__ == "__main__":
                 if not value is None or not init is None:
                     model.property(obj,var).set_value(init if value is None else value)
                     assert model.property(obj,var).get_value()==value, "value changed"
+
+    # network = Network(model)
+    # np.set_printoptions(precision=1)
+    # print(f'L = \n{network.L.todense()}',file=sys.stderr)
+    # print(f'B = \n{network.B.todense()}',file=sys.stderr)
+    # print(f'W = \n{network.W.todense()}',file=sys.stderr)
+    # print(f'Wc = \n{network.Wc.todense()}',file=sys.stderr)
+

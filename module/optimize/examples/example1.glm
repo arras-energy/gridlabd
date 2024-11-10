@@ -18,7 +18,6 @@ object cvx
         """;
     objective "Minimize(sum_squares(A@x-b))";
     postsolve """
-        print(list(__cvx__['least-squares'].keys()),file=__dump__)
         residual = cvx.norm(A@x-b, p=2)
         print('x =',x.value,file=__dump__)
         print('Residual:', 

@@ -765,7 +765,7 @@ bool cvx::add_data(struct s_problem &problem, const char *spec)
         char *item, *next = buffer;
         while ( (item=strsep(&next,";")) != NULL )
         {
-            if ( ! add_variables(problem,item) )
+            if ( ! add_data(problem,item) )
             {
                 free(buffer);
                 return false;
