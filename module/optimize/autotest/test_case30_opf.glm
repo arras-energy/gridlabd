@@ -8,10 +8,11 @@ class bus
     double price[$/MWh]; // cost at bus
     double Vdc[pu*V]; // DC bus voltage 
 }
-#input "case14.py" -t pypower
+#setenv PYTHONPATH=..
+#input "${modelname/_opf.glm/_opt.py}" -t pypower
 module optimize
 {
-    cvx_problemdump "example3.txt";
+    cvx_problemdump "${modelname/glm/txt}";
 }
 object cvx
 {

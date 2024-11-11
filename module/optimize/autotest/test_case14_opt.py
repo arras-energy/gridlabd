@@ -7,7 +7,7 @@
 
 from numpy import array
 
-def case14():
+def test_case14_opt():
     """Power flow data for IEEE 14 bus test case.
     Please see L{caseformat} for details on the case file format.
 

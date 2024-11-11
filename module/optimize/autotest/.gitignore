@@ -1,4 +1,8 @@
 test_cvx_*.csv
-case14.glm
+test_case14.glm
+test_case30.glm
+test_case39.glm
+test_case57.glm
+test_case118.glm
 test_opf_casedata_*.csv
 test_opf_results_*.csv
