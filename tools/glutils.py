@@ -217,7 +217,22 @@ class JsonModel(Model):
 class Network:
     """Network model accessor
 
-    Properties:
+    Arguments:
+
+    * model (dict): JSON model (dynamic model if None)
+
+    * matrix (list): List of matrices to generation (all if None)
+
+    * nodemap (dict): Map of properties to extract from nodes (or None)
+
+    * linemap (dict): Map of properties to extract from lines (or None)
+
+    The network model accessor generates a vector for all the extracted
+    properties in the `nodemap` and `linemap` arguments, if any. The
+    accessor also generates all the matrices listed in the `matrix` 
+    argument or all if `None`.
+
+    Properties generated for `matrix` list:
 
     * last (dt.datetime): time of last update (when force=None)
 
@@ -235,7 +250,7 @@ class Network:
 
     * col (np.array): col index matrix (branch to values)
 
-    * A (np.array): adjancency matrix
+    * A (np.array): adjacency matrix
 
     * D (np.array): degree matrix
 
@@ -245,9 +260,18 @@ class Network:
 
     * W (np.array): weighted Laplacian matrix
     """
-    def __init__(self,model=None):
+    def __init__(self,
+        model:dict=None,
+        matrix:list=None,
+        nodemap:dict=None,
+        linemap:dict=None,
+        ):
         """Network model accessor constructor"""
         self.model = model if model else GldModel()
+        self.matrix = matrix
+        self.nodemap = nodemap if nodemap else {}
+        self.linemap = linemap if linemap else {}
+
         self.update(force=True)
 
     def update(self,force=None):
@@ -280,65 +304,141 @@ class Network:
 
         if not hasattr(self,'nodes') or not hasattr(self,'lines') or update:
 
+            # initialize the extract arrays
             self.last = now
             self.lines = []
             self.nodes = {}
             self.names = {"node":[],"line":[]}
+            try:
+                self.baseMVA = float(model.property("pypower::baseMVA").split()[0])
+            except:
+                self.baseMVA = 100.0
+            self.refbus = []
             self.Y = []
             self.Yc = []
+            self.R = []
+            self.Z = []
+            for var in self.linemap:
+                setattr(self,var,[])
+            for var in self.nodemap:
+                setattr(self,var,[])
+
+            # create a reverse map of bus names from bus index
             busindex = {int(model.property(x,"bus_i").get_value()):x for x,y in model.objects().items() if y["class"] == "bus"}
+            
+            # process every object in the model
             for name,data in model.objects().items():
 
+                # get the object class
                 oclass = model.classes()[data["class"]]
 
-                # pypower branch
+                # pypower branches contain "fbus" and "tbus" properties
                 if "fbus" in oclass and "tbus" in oclass:
+
+                    # append the linemap values to the extract arrays
+                    for var,prop in self.linemap.items():
+                        val = model.property(name,prop).get_value()
+                        getattr(self,var).append(val)
+
+                    # append the line name to the line names array 
                     self.names["line"].append(name)
+
+                    # get the fbus and tbus indexes
                     fobj,tobj = model.property(name,"fbus").get_value(),model.property(name,"tbus").get_value()
+
+                    # for each of the from and to bus indexes
                     for obj in [fobj,tobj]:
+
+                        # if the bus index is not yet listed in the nodes list
                         if not obj in self.nodes:
+
+                            # add the bus index to the node list
                             self.nodes[obj] = len(self.nodes)
-                            self.names["node"].append(busindex[int(obj)])
+
+                            # get the name index for the bus
+                            ndx = busindex[int(obj)]
+
+                            # append the nodemap values to the extract arrays
+                            for var,prop in self.nodemap.items():
+                                val = model.property(ndx,prop).get_value()
+                                getattr(self,var).append(val)
+
+                            # append the index name to the node name array
+                            self.names["node"].append(ndx)
+
+                            # if the bus is a reference bus
+                            if model.property(ndx,"type").get_value() == "REF":
+
+                                # append the bus index to the reference bus list
+                                self.refbus.append(obj)
+
+                    # append the from and to bus index to line list
                     self.lines.append([self.nodes[fobj],self.nodes[tobj]])
-                    R = model.property(name,"r").get_value()
-                    if R > 0:
-                        self.Y.append(1/R)
-                        self.Yc.append(1/complex(R,model.property(name,"x").get_value()))
-                    else:
+
+                    # get the line impedance
+                    Z = complex(*[model.property(name,x).get_value() for x in ["r","x"]])
+
+                    # append the impedance to the Z array
+                    self.Z.append(Z)
+
+                    # if the impedance is non-zero
+                    if abs(Z) > 0:
+
+                        # append the admittance to the Y arrays
+                        self.Y.append(1/Z.imag) # susceptance dominates over conductance
+                        self.Yc.append(1/Z)
+                    
+                    else: # zero impedance means no line present (proxy for infinity)
+
+                        # no admittance
                         self.Y.append(0)
                         self.Yc.append(complex(0))
 
-                # powerflow line
+                # powerflow lines contain from and to object names
                 elif "from" in oclass and "to" in oclass:
+
                     raise NotImplementedError("powerflow network not supported")
 
+            # create the bus index array
             self.bus = np.array(list(self.nodes.values()))
+
+            # create the branch index array
             self.branch = np.array(self.lines)
+
+            # create the row and col index arrays
             self.row,self.col = self.branch.T.tolist()
+
+            # get the number of branches and busses
             M = len(self.branch)
             N = len(self.bus)
 
             # adjacency matrix 
-            self.A = sp.sparse.coo_array(
-                (   [1]*M + [-1]*M, # data
-                    (self.row+self.col,self.col+self.row) # coords
-                    ),
-                shape=(N,N),
-                dtype=int
-                )
+            if self.matrix is None or "A" in self.matrix or "L" in self.matrix:
+                self.A = sp.sparse.coo_array(
+                    (   [1]*M + [-1]*M, # data
+                        (self.row+self.col,self.col+self.row) # coords
+                        ),
+                    shape=(N,N),
+                    dtype=int
+                    )
 
             # degree matrix
-            self.D = sp.sparse.diags(np.abs(self.A).sum(axis=1),dtype=int)
+            if self.matrix is None or "D" in self.matrix or "L" in self.matrix:
+                self.D = sp.sparse.diags(np.abs(self.A).sum(axis=1),dtype=int)
 
             # Laplacian matrix
-            self.L = self.D - self.A
+            if self.matrix is None or "L" in self.matrix:
+                self.L = self.D - self.A
 
             # oriented incidence matrix
-            self.B = sp.sparse.coo_array(([1]*M,(list(range(M)),self.row)),shape=(M,N)) - sp.sparse.coo_array(([1]*M,(list(range(M)),self.col)),shape=(M,N),dtype=int)
+            if self.matrix is None or "B" in self.matrix or "W" in self.matrix or "Wc" in self.matrix: 
+                self.B = sp.sparse.coo_array(([1]*M,(list(range(M)),self.row)),shape=(M,N)) - sp.sparse.coo_array(([1]*M,(list(range(M)),self.col)),shape=(M,N),dtype=int)
 
             # weighted Laplacian matrix
-            self.W = self.B.T @ sp.sparse.diags_array(self.Y,dtype=np.float64) @ self.B
-            self.Wc = self.B.T @ sp.sparse.diags_array(self.Yc,dtype=np.complex_) @ self.B
+            if self.matrix is None or "W" in self.matrix:
+                self.W = self.B.T @ sp.sparse.diags_array(self.Y,dtype=np.float64) @ self.B
+            if self.matrix is None or "Wc" in self.matrix:
+                self.Wc = self.B.T @ sp.sparse.diags_array(self.Yc,dtype=np.complex_) @ self.B
 
 #
 # Test JSON accessors
@@ -384,10 +484,12 @@ if __name__ == "__main__":
                     model.property(obj,var).set_value(init if value is None else value)
                     assert model.property(obj,var).get_value()==value, "value changed"
 
-    # network = Network(model)
-    # np.set_printoptions(precision=1)
-    # print(f'L = \n{network.L.todense()}',file=sys.stderr)
-    # print(f'B = \n{network.B.todense()}',file=sys.stderr)
-    # print(f'W = \n{network.W.todense()}',file=sys.stderr)
-    # print(f'Wc = \n{network.Wc.todense()}',file=sys.stderr)
+    network = Network(model,nodemap={"D":"Pd"})
+    np.set_printoptions(precision=1)
+    print(f'L = \n{network.L.todense()}',file=sys.stderr)
+    print(f'B = \n{network.B.todense()}',file=sys.stderr)
+    print(f'W = \n{network.W.todense()}',file=sys.stderr)
+    print(f'Wc = \n{network.Wc.todense()}',file=sys.stderr)
+    print(f'D = {network.D}',file=sys.stderr)
+    print(network.refbus,file=sys.stderr)
 
