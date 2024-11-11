@@ -881,7 +881,7 @@ void cvx::add_data_class(DATA *item, const char *classname, const char *propname
             ref->ptr = (double*)data.get_addr();
             ref->next = item->data;
             item->data = ref;
-            PyList_Append(item->list,PyFloat_FromDouble(*(ref->ptr)));
+            PyList_Insert(item->list,0,PyFloat_FromDouble(*(ref->ptr)));
             count++;
         }
     }
@@ -1181,8 +1181,8 @@ bool cvx::update_solution(struct s_problem &problem)
     for ( DATA *item = problem.data ; item != NULL ; item = item->next, pos++ )
     {
         bool changed = false;
-        Py_ssize_t ndx = 0;
-        for ( REFERENCE *ref = item->data ; ref != NULL ; ref=ref->next, ndx++ )
+        Py_ssize_t ndx = PyList_Size(item->list)-1;
+        for ( REFERENCE *ref = item->data ; ref != NULL ; ref=ref->next, ndx-- )
         {
             double value = *(ref->ptr);
             if ( value != PyFloat_AsDouble(PyList_GET_ITEM(item->list,ndx)) )
