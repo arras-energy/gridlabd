@@ -11,6 +11,21 @@ class Model:
     def __init__(self,source=None):
         assert("gld" in globals() and source==gld) or isinstance(source,dict), "invalid source"
 
+    def globals(self) -> list:
+        raise RuntimeError("baseclass globals not accessible")
+
+    def objects(self) -> dict:
+        raise RuntimeError("baseclass objects not accessible")
+
+    def classes(self) -> dict:
+        raise RuntimeError("baseclass classes not accessible")
+
+    def properties(self) -> dict:
+        raise RuntimeError("baseclass properties not accessible")
+
+    def properties(self,*args) -> TypeVar('Property'):
+        raise RuntimeError("baseclass property not accessible")
+
 def rarray(x):
     return np.array(x,dtype=np.float64)
 
@@ -152,11 +167,11 @@ class GldModel(Model):
         """Get list of global names"""
         return gld.globals
 
-    def properties(self,obj):
+    def properties(self,obj) -> list[str]:
         """Get list of properties in object"""
         raise NotImplementedError("properties not implemented yet")
 
-    def property(self,*args) -> str|float|int|complex|bool|dt.datetime:
+    def property(self,*args) -> TypeVar('Property'):
         """Get property accessor
 
         Arguments:
@@ -164,6 +179,10 @@ class GldModel(Model):
         * obj (str): object name or global variable name
 
         * name (str): property name (for objects only, None for globals)
+
+        Returns:
+
+        Property: the property accessor
         """
         key = "#".join(args)
         try:
@@ -202,7 +221,7 @@ class JsonModel(Model):
         """Get list of object properties"""
         return list([x for x,y in self.data["classes"][self.data["objects"][obj]["class"]].items() if isinstance(y,dict)])
 
-    def property(self,*args):
+    def property(self,*args) -> TypeVar('Property'):
         """Get property accessor
 
         Arguments:
@@ -210,6 +229,10 @@ class JsonModel(Model):
         * obj (str): object name or global variable name
 
         * name (str): property name (for objects only, None for globals)
+
+        Returns:
+
+        Property: the property accessor
         """
         return Property(model,*args)
 
@@ -319,8 +342,12 @@ class Network:
             self.R = []
             self.Z = []
             for var in self.linemap:
+                if var in ["D","L","A","B","W","Wc","Y","Z"]:
+                    raise ValueError(f"linemap name {var} is reserved for matrices")
                 setattr(self,var,[])
             for var in self.nodemap:
+                if var in ["D","L","A","B","W","Wc","Y","Z"]:
+                    raise ValueError(f"nodemap name {var} is reserved for matrices")
                 setattr(self,var,[])
 
             # create a reverse map of bus names from bus index
@@ -484,12 +511,11 @@ if __name__ == "__main__":
                     model.property(obj,var).set_value(init if value is None else value)
                     assert model.property(obj,var).get_value()==value, "value changed"
 
-    network = Network(model,nodemap={"D":"Pd"})
+    network = Network(model,matrix=['W'],nodemap={"_D":"Pd"})
     np.set_printoptions(precision=1)
-    print(f'L = \n{network.L.todense()}',file=sys.stderr)
-    print(f'B = \n{network.B.todense()}',file=sys.stderr)
-    print(f'W = \n{network.W.todense()}',file=sys.stderr)
-    print(f'Wc = \n{network.Wc.todense()}',file=sys.stderr)
-    print(f'D = {network.D}',file=sys.stderr)
-    print(network.refbus,file=sys.stderr)
+    assert network.B.shape == (20,14), "B shape is incorrect"
+    assert network.W.shape == (14,14), "W shape is incorrect"
+    assert network.refbus == [1], "refbus is incorrect"
+    assert len(network.Y) == 20, "Y size is incorrect"
+    assert len(network._D) == 14, "_D size is incorrect"
 
