@@ -478,8 +478,9 @@ if __name__ == "__main__":
 
     assert not "gld" in globals(), "not running as static model ('gld' is built-in)"
 
-    os.system("cd autotest; gridlabd convert case14.py case14.glm")
-    os.system("gridlabd -C autotest/case14.glm -o autotest/case14.json")
+    if not os.path.exists("autotest/case14.json"):
+        os.system("cd autotest; gridlabd convert case14.py case14.glm")
+        os.system("gridlabd -C autotest/case14.glm -o autotest/case14.json")
 
     model = JsonModel('autotest/case14.json')
     
