@@ -18,6 +18,7 @@ class bus
     double P[$/MWh]; // bus generation price
 }
 
+#setenv PYTHONPATH=.:..
 #input "test_case14_opt.py" -t pypower
 
 #for N in ${RANGE 14}
