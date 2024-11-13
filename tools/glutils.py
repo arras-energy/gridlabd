@@ -26,10 +26,12 @@ class Model:
     def properties(self,*args) -> TypeVar('Property'):
         raise RuntimeError("baseclass property not accessible")
 
-def rarray(x):
+def rarray(x:str) -> TypeVar('np.array'):
+    """Convert string to float array"""
     return np.array(x,dtype=np.float64)
 
-def from_timestamp(x):
+def from_timestamp(x:str) -> TypeVar('dt.datetime'):
+    """Convert string to timestamp"""
     if x == "NEVER":
         return dt.datetime.strptime("2999-12-31 23:59:59 UTC","%Y-%m-%d %H:%M:%S %Z")
     elif x == "INIT":
@@ -37,7 +39,8 @@ def from_timestamp(x):
     else:
         return dt.datetime.strptime(x,"%Y-%m-%d %H:%M:%S %Z")
 
-def from_complex(x):
+def from_complex(x:str) -> complex:
+    """Convert string complex"""
     try:
         return complex(x.split()[0] if " " in x else x)
     except:
