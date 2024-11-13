@@ -63,7 +63,7 @@ class Property:
         "timestamp": lambda x: int(x.isoformat())
         # everything else is str
     }
-    def __init__(self,model:TypeVar(Model),*args:list[str]):
+    def __init__(self,model:TypeVar('Model'),*args:list[str]):
         """Property accessor constructor
         
         Arguments:
