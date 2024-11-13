@@ -125,6 +125,17 @@ cvx::cvx(MODULE *module)
             PT_method, "constraints", get_constraints_offset(),
                 PT_DESCRIPTION, "problem constraint expressions",
             
+            PT_enumeration, "status", get_status_offset(),
+                PT_KEYWORD, "INIT", (enumeration)SS_INIT,
+                PT_KEYWORD, "READY", (enumeration)SS_READY,
+                PT_KEYWORD, "OPTIMAL", (enumeration)SS_OPTIMAL,
+                PT_KEYWORD, "INACCURATE", (enumeration)SS_INACCURATE,
+                PT_KEYWORD, "INFEASIBLE", (enumeration)SS_INFEASIBLE,
+                PT_KEYWORD, "UNBOUNDED", (enumeration)SS_UNBOUNDED,
+                PT_KEYWORD, "INVALID", (enumeration)SS_INVALID,
+                PT_KEYWORD, "ERROR", (enumeration)SS_ERROR,
+                PT_DESCRIPTION, "solver status",
+
             PT_double, "value", get_value_offset(),
                 PT_OUTPUT,
                 PT_DESCRIPTION, "optimal value",    
@@ -202,6 +213,7 @@ int cvx::create(void)
     set_on_infeasible("");
     set_on_unbounded("");
     set_value(QNAN);
+    set_status(SS_INIT);
 
     // setup problem data
     problem.objective = strdup("");
@@ -348,7 +360,7 @@ int cvx::init(OBJECT *parent)
     PyDict_SetItemString(PyDict_GetItemString(globals,"__cvx__"),(const char*)get_name(),PyDict_New());
 
     // initialization solution event handler
-    if ( get_event(OE_INIT) && ! update_solution(problem) )
+    if ( get_event(OE_INIT) && ! update_solution() )
     {
         // warn on failure if required
         if ( failure_handling == OF_WARN )
@@ -365,6 +377,8 @@ int cvx::init(OBJECT *parent)
         warning("problem has no event handler specified and will never be solved");
     }
 
+    update_status();
+
     return 1; // should use deferred optimization until all input objects are initialized
 }
 
@@ -376,7 +390,7 @@ int cvx::precommit(TIMESTAMP t0)
 {
     current_event = "PRECOMMIT";
 
-    if ( get_event(OE_PRECOMMIT) && ! update_solution(problem) )
+    if ( get_event(OE_PRECOMMIT) && ! update_solution() )
     {
         if ( failure_handling == OF_RETRY )
         {
@@ -395,7 +409,7 @@ TIMESTAMP cvx::presync(TIMESTAMP t0)
 {
     current_event = "PRESYNC";
 
-    if ( get_event(OE_PRESYNC) && ! update_solution(problem) )
+    if ( get_event(OE_PRESYNC) && ! update_solution() )
     {
         if ( failure_handling == OF_RETRY )
         {
@@ -414,7 +428,7 @@ TIMESTAMP cvx::sync(TIMESTAMP t0)
 {
     current_event = "SYNC";
 
-    if ( get_event(OE_SYNC) && ! update_solution(problem) )
+    if ( get_event(OE_SYNC) && ! update_solution() )
     {
         if ( failure_handling == OF_RETRY )
         {
@@ -433,7 +447,7 @@ TIMESTAMP cvx::postsync(TIMESTAMP t0)
 {
     current_event = "POSTSYNC";
 
-    if ( get_event(OE_POSTSYNC) && ! update_solution(problem) )
+    if ( get_event(OE_POSTSYNC) && ! update_solution() )
     {
         if ( failure_handling == OF_RETRY )
         {
@@ -452,7 +466,7 @@ TIMESTAMP cvx::commit(TIMESTAMP t0,TIMESTAMP t1)
 {
     current_event = "COMMIT";
 
-    if ( get_event(OE_COMMIT) && ! update_solution(problem) )
+    if ( get_event(OE_COMMIT) && ! update_solution() )
     {
         if ( failure_handling == OF_RETRY )
         {
@@ -471,7 +485,7 @@ int cvx::finalize(void)
 {
     current_event = "FINALIZE";
 
-    if ( get_event(OE_FINALIZE) && ! update_solution(problem) )
+    if ( get_event(OE_FINALIZE) && ! update_solution() )
     {
         if ( failure_handling == OF_RETRY )
         {
@@ -898,8 +912,25 @@ void cvx::add_data_group(DATA *item, const char *groupname, const char *propname
     {
         if ( strcmp(obj->groupid,groupname) == 0 )
         {
-            // TODO: link property to list
-            gl_warning("TODO: data item %d group '%s' property '%s'",count,groupname,get_object(obj)->get_name(),propname);
+            gld_property data(obj,propname);
+            if ( ! data.is_valid() )
+            {
+                exception("data item '%s' is not a known property of object '%s' in group '%s'",propname,get_object(obj)->get_name(),groupname);
+            }
+            if ( ! data.is_double() )
+            {
+                exception("property '%s.%s' is not a real number",get_object(obj)->get_name(),propname);
+            }
+            
+            REFERENCE *ref = new REFERENCE;
+            if ( ref == NULL )
+            {
+                exception("memory allocation error");
+            }
+            ref->ptr = (double*)data.get_addr();
+            ref->next = item->data;
+            item->data = ref;
+            PyList_Insert(item->list,0,PyFloat_FromDouble(*(ref->ptr)));
             count++;
         }
     }
@@ -911,7 +942,25 @@ void cvx::add_data_group(DATA *item, const char *groupname, const char *propname
 
 void cvx::add_data_object(DATA *item, const char *objectname, const char *propname)
 {
-    gl_warning("TODO: data item for object '%s' property '%s'",objectname,propname);
+    gld_property data(objectname,propname);
+    if ( ! data.is_valid() )
+    {
+        exception("data item '%s' is not a known property of object '%s'",propname,objectname);
+    }
+    if ( ! data.is_double() )
+    {
+        exception("property '%s.%s' is not a real number",objectname,propname);
+    }
+    
+    REFERENCE *ref = new REFERENCE;
+    if ( ref == NULL )
+    {
+        exception("memory allocation error");
+    }
+    ref->ptr = (double*)data.get_addr();
+    ref->next = item->data;
+    item->data = ref;
+    PyList_Insert(item->list,0,PyFloat_FromDouble(*(ref->ptr)));
 }
 
 void cvx::add_data_global(DATA *item, const char *propname)
@@ -1021,6 +1070,7 @@ bool cvx::add_variables(struct s_problem &problem, const char *spec)
         item->next = problem.variables;
         problem.variables = item;
         free(buffer);
+        update_status();
         return true;
     }
 }
@@ -1149,6 +1199,23 @@ bool cvx::set_objective(struct s_problem &problem, const char *spec)
         exception("memory allocation error");
         return false;
     }
+    update_status();
+    return true;
+}
+
+//
+// Update status of problem
+//
+bool cvx::update_status(void)
+{
+    if ( problem.objective == NULL 
+      || strcmp(problem.objective,"") == 0 
+      || problem.variables == NULL )
+    {
+        status = SS_INIT;
+        return false;
+    }
+    status = SS_READY;
     return true;
 }
 
@@ -1156,10 +1223,10 @@ bool cvx::set_objective(struct s_problem &problem, const char *spec)
 // Update solution to problem
 //
 
-bool cvx::update_solution(struct s_problem &problem)
+bool cvx::update_solution(void)
 {
     const char *optname = (const char *)get_name();
-    bool status = true;
+    bool rc = true;
 
     verbose("updating problem");
     PyObject *cvx = PyDict_GetItemString(globals,"__cvx__");
@@ -1173,6 +1240,7 @@ bool cvx::update_solution(struct s_problem &problem)
 
     if ( PyRun_FormatString("__cvx__['%s']['event'] = '%s'",optname,current_event) == -1 )
     {
+        status = SS_INVALID;
         exception("objective specification '%s' is invalid",problem.objective);
     }
 
@@ -1203,6 +1271,7 @@ bool cvx::update_solution(struct s_problem &problem)
     {
         if ( PyRun_FormatString("%s = cvx.Variable(%ld)",item->name,item->count) == -1 )
         {
+            status = SS_INVALID;
             exception("unable to create CVX variable '%s'",item->name);
         }
         else
@@ -1214,12 +1283,14 @@ bool cvx::update_solution(struct s_problem &problem)
     // run presolve script
     if ( strcmp(presolve_py,"") != 0 && PyRun_FormatString("%s",presolve_py) == -1 )
     {
+        status = SS_ERROR;
         exception("presolve script failed");
     }
 
     // set objective
     if ( PyRun_FormatString("__cvx__['%s']['objective'] = %s",optname,problem.objective) == -1 )
     {
+        status = SS_INVALID;
         exception("objective specification '%s' is invalid",problem.objective);
     }
 
@@ -1227,6 +1298,7 @@ bool cvx::update_solution(struct s_problem &problem)
     char buffer[1024];
     if ( PyRun_FormatString("__cvx__['%s']['constraints'] = [%s]",optname,constraints(buffer,sizeof(buffer)-1)>0?buffer:"") == -1 )
     {
+        status = SS_INVALID;
         exception("constraints specification '[%s]' is invalid",buffer);
     }
 
@@ -1237,6 +1309,7 @@ bool cvx::update_solution(struct s_problem &problem)
         {
             PyRun_FormatString(on_failure);
         }
+        status = SS_INVALID;
         exception("problem construction failed");
     }
 
@@ -1262,6 +1335,7 @@ bool cvx::update_solution(struct s_problem &problem)
         {
             PyRun_FormatString(on_exception);
         }
+        status = SS_INVALID;
         exception("problem solve failed");
     }
 
@@ -1269,6 +1343,7 @@ bool cvx::update_solution(struct s_problem &problem)
     if ( strcmp(problemdump,"") != 0 && 
         PyRun_FormatString("print('\\n'.join([f'{x}: {y}' for x,y in __cvx__['%s']['problem'].get_problem_data(__cvx__['%s']['problem'].solver_stats.solver_name)[0].items()]),file=__dump__)",optname,optname) == -1 )
     {
+        status = SS_ERROR;
         exception("problem dump failed");
     }
 
@@ -1279,6 +1354,7 @@ bool cvx::update_solution(struct s_problem &problem)
     {
         if ( this->value < 0 )
         {            
+            status = SS_UNBOUNDED;
             if ( strcmp(problemdump,"") != 0 )
             {
                 PyRun_FormatString("print('Problem is unbounded\\n',file=__dump__,flush=True)");
@@ -1290,6 +1366,7 @@ bool cvx::update_solution(struct s_problem &problem)
         }
         else
         {
+            status = SS_INFEASIBLE;
             if ( strcmp(problemdump,"") != 0 )
             {
                 PyRun_FormatString("print('Problem is infeasible\\n,file=__dump__,flush=True)");
@@ -1311,10 +1388,11 @@ bool cvx::update_solution(struct s_problem &problem)
             verbose("ignoring %s problem",this->value>0?"infeasible":"unbounded");
             break;
         default:
+            status = SS_ERROR;
             exception("invalid handling (failure_handling=%ld) for %s problem",failure_handling,this->value>0?"infeasible":"unbounded");
             break;
         }
-        status = false;
+        rc = false;
     }
     else
     {
@@ -1334,11 +1412,13 @@ bool cvx::update_solution(struct s_problem &problem)
         len += snprintf(buffer+len,sizeof(buffer)-len-1,"%s","}\n");
         if ( PyRun_FormatString(buffer) < 0 )
         {
+            status = SS_ERROR;
             exception("unable to get result");
         }
 
         if ( strcmp(postsolve_py,"") != 0 &&  PyRun_FormatString("%s",postsolve_py) == -1 )
         {
+            status = SS_ERROR;
             exception("postsolve script failed");
         }
 
@@ -1361,10 +1441,10 @@ bool cvx::update_solution(struct s_problem &problem)
         {
             PyRun_FormatString("print('Result:',__cvx__['%s']['result'],'\\n',file=__dump__,flush=True)",optname);
         }
-
-        status = true;
+        status = SS_OPTIMAL;
+        rc = true;
     }
 
-    return status;
+    return rc;
 }
 

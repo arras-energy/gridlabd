@@ -24,6 +24,7 @@ object cvx
     presolve "PYTHON_SCRIPT";
     postsolve "PYTHON_SCRIPT";
     solver_options "OPTION=VALUE[,...]";
+    status {INIT|READY|OPTIMAL|INACCURATE|INFEASIBLE|UNBOUNDED|INVALID},
 }
 ~~~
 

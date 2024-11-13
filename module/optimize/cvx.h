@@ -56,6 +56,17 @@ public: // public properties
     GL_STRING(char1024,on_unbounded);
     GL_ATOMIC(double,value);
     GL_STRING(char1024,solver_options);
+    typedef enum {
+        SS_INIT = 0,
+        SS_READY = 1,
+        SS_OPTIMAL = 2,
+        SS_INACCURATE = 3,
+        SS_INFEASIBLE = 4,
+        SS_UNBOUNDED = 5,
+        SS_INVALID = 6,
+        SS_ERROR = 7,
+    } SOLVERSTATUS;
+    GL_ATOMIC(enumeration,status);
 
     GL_METHOD(cvx,presolve);
     GL_METHOD(cvx,objective);
@@ -135,7 +146,8 @@ private: // private methods
     void add_variable_global(VARIABLE *item, const char *primalname, const char *dualname);
     bool add_constraints(struct s_problem &problem, const char *value);
     bool set_objective(struct s_problem &problem, const char *value);
-    bool update_solution(struct s_problem &problem);
+    bool update_status(void);
+    bool update_solution(void);
 
 public: // required members
 
