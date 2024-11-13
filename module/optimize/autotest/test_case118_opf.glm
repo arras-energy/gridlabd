@@ -8,7 +8,7 @@ class bus
     double price[$/MWh]; // cost at bus
     double Vdc[pu*V]; // DC bus voltage 
 }
-#setenv PYTHONPATH=..
+#setenv PYTHONPATH=.:..
 #input "${modelname/_opf.glm/_opt.py}" -t pypower
 module optimize
 {
