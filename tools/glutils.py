@@ -424,48 +424,50 @@ class Network:
                 # powerflow lines contain from and to object names
                 elif "from" in oclass and "to" in oclass:
 
-                    raise NotImplementedError("powerflow network not supported")
+                    raise NotImplementedError(f"powerflow network not supported (object '{name}')")
 
-            # create the bus index array
-            self.bus = np.array(list(self.nodes.values()))
+            if self.nodes and self.lines:
 
-            # create the branch index array
-            self.branch = np.array(self.lines)
+                # create the bus index array
+                self.bus = np.array(list(self.nodes.values()))
 
-            # create the row and col index arrays
-            self.row,self.col = self.branch.T.tolist()
+                # create the branch index array
+                self.branch = np.array(self.lines)
 
-            # get the number of branches and busses
-            M = len(self.branch)
-            N = len(self.bus)
+                # create the row and col index arrays
+                self.row,self.col = self.branch.T.tolist()
 
-            # adjacency matrix 
-            if self.matrix is None or "A" in self.matrix or "L" in self.matrix:
-                self.A = sp.sparse.coo_array(
-                    (   [1]*M + [-1]*M, # data
-                        (self.row+self.col,self.col+self.row) # coords
-                        ),
-                    shape=(N,N),
-                    dtype=int
-                    )
+                # get the number of branches and busses
+                M = len(self.branch)
+                N = len(self.bus)
 
-            # degree matrix
-            if self.matrix is None or "D" in self.matrix or "L" in self.matrix:
-                self.D = sp.sparse.diags(np.abs(self.A).sum(axis=1),dtype=int)
+                # adjacency matrix 
+                if self.matrix is None or "A" in self.matrix or "L" in self.matrix:
+                    self.A = sp.sparse.coo_array(
+                        (   [1]*M + [-1]*M, # data
+                            (self.row+self.col,self.col+self.row) # coords
+                            ),
+                        shape=(N,N),
+                        dtype=int
+                        )
 
-            # Laplacian matrix
-            if self.matrix is None or "L" in self.matrix:
-                self.L = self.D - self.A
+                # degree matrix
+                if self.matrix is None or "D" in self.matrix or "L" in self.matrix:
+                    self.D = sp.sparse.diags(np.abs(self.A).sum(axis=1),dtype=int)
 
-            # oriented incidence matrix
-            if self.matrix is None or "B" in self.matrix or "W" in self.matrix or "Wc" in self.matrix: 
-                self.B = sp.sparse.coo_array(([1]*M,(list(range(M)),self.row)),shape=(M,N)) - sp.sparse.coo_array(([1]*M,(list(range(M)),self.col)),shape=(M,N),dtype=int)
+                # Laplacian matrix
+                if self.matrix is None or "L" in self.matrix:
+                    self.L = self.D - self.A
 
-            # weighted Laplacian matrix
-            if self.matrix is None or "W" in self.matrix:
-                self.W = self.B.T @ sp.sparse.diags_array(self.Y,dtype=np.float64) @ self.B
-            if self.matrix is None or "Wc" in self.matrix:
-                self.Wc = self.B.T @ sp.sparse.diags_array(self.Yc,dtype=np.complex_) @ self.B
+                # oriented incidence matrix
+                if self.matrix is None or "B" in self.matrix or "W" in self.matrix or "Wc" in self.matrix: 
+                    self.B = sp.sparse.coo_array(([1]*M,(list(range(M)),self.row)),shape=(M,N)) - sp.sparse.coo_array(([1]*M,(list(range(M)),self.col)),shape=(M,N),dtype=int)
+
+                # weighted Laplacian matrix
+                if self.matrix is None or "W" in self.matrix:
+                    self.W = self.B.T @ sp.sparse.diags_array(self.Y,dtype=np.float64) @ self.B
+                if self.matrix is None or "Wc" in self.matrix:
+                    self.Wc = self.B.T @ sp.sparse.diags_array(self.Yc,dtype=np.complex_) @ self.B
 
 #
 # Test JSON accessors
