@@ -18,7 +18,7 @@ class bus
     double P[$/MWh]; // bus generation price
 }
 
-#input "test_case14.py" -t pypower
+#input "test_case14_opt.py" -t pypower
 
 #for N in ${RANGE 14}
 modify pp_bus_${N}.P 50 $/MWh;
@@ -37,5 +37,4 @@ object cvx
     variables "x=bus:V";
     variables "g=bus:G";
     objective "cvx.Minimize(P@g)";
-//    constraints ""
 }

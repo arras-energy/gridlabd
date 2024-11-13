@@ -61,59 +61,6 @@ object test:..3
     };
 }
 
-class node
-{
-    bool is_swing;
-    double V[V];
-    double P[W];
-}
-
-class line
-{
-    object from;
-    object to;
-    double R[Ohm];
-}
-
-object node 
-{
-    name "gen";
-    is_swing TRUE;
-}
-object node
-{
-    name "node";
-}
-object node
-{
-    name "load1";
-    P -1 W;
-}
-object node
-{
-    name "load2";
-    P -1 W;
-}
-
-object line
-{
-    from "gen";
-    to "node";
-    R 2 Ohm;
-}
-object line
-{
-    from "node";
-    to "load1";
-    R 1 Ohm;
-}
-object line
-{
-    from "node";
-    to "load2";
-    R 1 Ohm;
-}
-
 object cvx
 {
     name "least-squares";
@@ -158,7 +105,6 @@ object cvx
     event INIT;
     variables "x=test:x";
     data "A=test:A0"; // ,test.A1,test.A2,test.A3;b1=test.b1;b2=test.b2";
-    presolve "G = glm.Network(); np.set_printoptions(6); print(f'G_W =\\n{G.W.todense()}\\nG_L =\\n{G.L.todense()}\\nA = {np.array(A)}',file=sys.stderr)";
     objective "Minimize(sum_squares(A@x))";
     constraints "x >= 1";
 }
