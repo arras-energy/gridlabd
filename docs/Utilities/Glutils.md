@@ -7,13 +7,49 @@
 
 Dynamic model accessor
 
+## `GldModel.from_complex(x:str) -> complex`
+
+Convert string complex
+
+## `GldModel.from_timestamp(x:str) -> dt.datetime`
+
+Convert string to timestamp
+
+## `GldModel.rarray(x:str) -> np.array`
+
+Convert string to float array
+
 ## JsonModel
 
 Static model accessor
 
+## `JsonModel.from_complex(x:str) -> complex`
+
+Convert string complex
+
+## `JsonModel.from_timestamp(x:str) -> dt.datetime`
+
+Convert string to timestamp
+
+## `JsonModel.rarray(x:str) -> np.array`
+
+Convert string to float array
+
 ## Model
 
 Model accessor base class
+
+## `Model.from_complex(x:str) -> complex`
+
+Convert string complex
+
+## `Model.from_timestamp(x:str) -> dt.datetime`
+
+Convert string to timestamp
+
+## `Model.rarray(x:str) -> np.array`
+
+Convert string to float array
 
 ## Network
 
@@ -63,9 +99,33 @@ Properties generated for `matrix` list:
 * W (np.array): weighted Laplacian matrix
 
 
+## `Network.from_complex(x:str) -> complex`
+
+Convert string complex
+
+## `Network.from_timestamp(x:str) -> dt.datetime`
+
+Convert string to timestamp
+
+## `Network.rarray(x:str) -> np.array`
+
+Convert string to float array
+
 ## Property
 
 JSON property accessor
+
+## `Property.from_complex(x:str) -> complex`
+
+Convert string complex
+
+## `Property.from_timestamp(x:str) -> dt.datetime`
+
+Convert string to timestamp
+
+## `Property.rarray(x:str) -> np.array`
+
+Convert string to float array
 
 # Functions
 

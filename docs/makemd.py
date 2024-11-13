@@ -56,6 +56,14 @@ try:
             NL='\n'
             print(f"\n## {item.__name__}{NL*2}{NL.join([x.strip() for x in item.__doc__.split(NL)])}",file=md)
 
+            for member in [getattr(module,x) for x in dir(module)]:
+                if not member.__doc__ or "__annotations__" not in dir(member):
+                    continue
+                args = [f"{x}:{t.__name__}" for x,t in member.__annotations__.items() if x != "return"]
+                returns = member.__annotations__['return'].__name__
+                docs = NL.join([x.strip() for x in member.__doc__.split(NL)])
+                print(f"\n## `{item.__name__}.{member.__name__}({', '.join(args)}) -> {returns}`{NL*2}{docs}",file=md)
+
         # output functions
         first = True
         for item in [getattr(module,x) for x in dir(module) if inspect.isfunction(getattr(module,x))]:
