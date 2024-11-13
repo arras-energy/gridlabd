@@ -7,49 +7,75 @@
 
 Dynamic model accessor
 
-## `GldModel.from_complex(x:str) -> complex`
+## `GldModel.classes() -> <class 'dict'>`
 
-Convert string complex
+Get classes
 
-## `GldModel.from_timestamp(x:str) -> dt.datetime`
+## `GldModel.globals() -> list[str]`
 
-Convert string to timestamp
+Get list of global names
 
-## `GldModel.rarray(x:str) -> np.array`
+## `GldModel.objects() -> <class 'dict'>`
 
-Convert string to float array
+Get objects in model
+
+## `GldModel.properties() -> list[str]`
+
+Get list of properties in object
+
+## `GldModel.property() -> Property`
+
+Get property accessor
+
+Arguments:
+
+* obj (str): object name or global variable name
+
+* name (str): property name (for objects only, None for globals)
+
+Returns:
+
+Property: the property accessor
+
 
 ## JsonModel
 
 Static model accessor
 
-## `JsonModel.from_complex(x:str) -> complex`
+## `JsonModel.classes() -> <class 'dict'>`
 
-Convert string complex
+Get classes in model
 
-## `JsonModel.from_timestamp(x:str) -> dt.datetime`
+## `JsonModel.globals() -> list[str]`
 
-Convert string to timestamp
+Get globals in model
 
-## `JsonModel.rarray(x:str) -> np.array`
+## `JsonModel.objects() -> <class 'dict'>`
 
-Convert string to float array
+Get objects in model
+
+## `JsonModel.properties() -> list[str]`
+
+Get list of object properties
+
+## `JsonModel.property() -> Property`
+
+Get property accessor
+
+Arguments:
+
+* obj (str): object name or global variable name
+
+* name (str): property name (for objects only, None for globals)
+
+Returns:
+
+Property: the property accessor
+
 
 ## Model
 
 Model accessor base class
-
-## `Model.from_complex(x:str) -> complex`
-
-Convert string complex
-
-## `Model.from_timestamp(x:str) -> dt.datetime`
-
-Convert string to timestamp
-
-## `Model.rarray(x:str) -> np.array`
-
-Convert string to float array
 
 ## Network
 
@@ -99,33 +125,58 @@ Properties generated for `matrix` list:
 * W (np.array): weighted Laplacian matrix
 
 
-## `Network.from_complex(x:str) -> complex`
+## `Network.update() -> None`
 
-Convert string complex
+Update dynamic model
 
-## `Network.from_timestamp(x:str) -> dt.datetime`
+Arguments:
 
-Convert string to timestamp
+* force (None|bool): force update (None is auto)
 
-## `Network.rarray(x:str) -> np.array`
-
-Convert string to float array
 
 ## Property
 
 JSON property accessor
 
-## `Property.from_complex(x:str) -> complex`
+## `Property.convert_unit(unit:<class 'str'>) -> <class 'float'>`
 
-Convert string complex
+Convert property units
 
-## `Property.from_timestamp(x:str) -> dt.datetime`
+## `Property.get_initial() -> str | float | int | bool | complex`
 
-Convert string to timestamp
+Get default value, if any
 
-## `Property.rarray(x:str) -> np.array`
+## `Property.get_name() -> <class 'str'>`
 
-Convert string to float array
+Get property name
+
+## `Property.get_object() -> <class 'str'>`
+
+Get object name
+
+## `Property.get_value() -> str | float | int | complex | bool | datetime.datetime`
+
+Get value, if any
+
+## `Property.rlock() -> None`
+
+Lock property for read
+
+## `Property.set_object(value:<class 'str'>) -> None`
+
+Set object name
+
+## `Property.set_value(value:str | float | int | complex | bool | datetime.datetime) -> None`
+
+Set property value
+
+## `Property.unlock() -> None`
+
+Unlock property
+
+## `Property.wlock() -> None`
+
+Lock property for write
 
 # Functions
 

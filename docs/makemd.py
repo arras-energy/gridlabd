@@ -56,11 +56,12 @@ try:
             NL='\n'
             print(f"\n## {item.__name__}{NL*2}{NL.join([x.strip() for x in item.__doc__.split(NL)])}",file=md)
 
-            for member in [getattr(module,x) for x in dir(module)]:
+            for member in [getattr(item,x) for x in dir(item) if not x.startswith('_')]:
                 if not member.__doc__ or "__annotations__" not in dir(member):
                     continue
-                args = [f"{x}:{t.__name__}" for x,t in member.__annotations__.items() if x != "return"]
-                returns = member.__annotations__['return'].__name__
+                args = [f"{x}:{t.__name__ if '__name__' in dir(t) else str(t)}" for x,t in member.__annotations__.items() if x != "return"]
+                returns = member.__annotations__['return'] if 'return' in member.__annotations__ else 'None'
+                returns = returns.__name__ if '__name__' in dir(returns) else str(returns)
                 docs = NL.join([x.strip() for x in member.__doc__.split(NL)])
                 print(f"\n## `{item.__name__}.{member.__name__}({', '.join(args)}) -> {returns}`{NL*2}{docs}",file=md)
 
@@ -74,7 +75,7 @@ try:
                 first = False
             NL='\n'
             args = [f"{x}:{t.__name__}" for x,t in item.__annotations__.items() if x != "return"]
-            returns = item.__annotations__['return'].__name__
+            returns = item.__annotations__['return'].__name__ if 'return' in item.__annotations__ else 'None'
             docs = NL.join([x.strip() for x in item.__doc__.split(NL)])
             print(f"\n## `{item.__name__}({', '.join(args)}) -> {returns}`{NL*2}{docs}",file=md)
 
