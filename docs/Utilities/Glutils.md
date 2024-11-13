@@ -7,6 +7,10 @@
 
 Dynamic model accessor
 
+## `GldModel()`
+
+Dynamic model accessor
+
 ## `GldModel.classes() -> dict`
 
 Get classes
@@ -41,6 +45,15 @@ Property: the property accessor
 ## JsonModel
 
 Static model accessor
+
+## `JsonModel()`
+
+Static model accessor
+
+Arguments:
+
+* jsonfile (str): name of JSON file to access
+
 
 ## `JsonModel.classes() -> dict`
 
@@ -125,6 +138,10 @@ Properties generated for `matrix` list:
 * W (np.array): weighted Laplacian matrix
 
 
+## `Network(model:dict, matrix:list, nodemap:dict, linemap:dict)`
+
+Network model accessor constructor
+
 ## `Network.update() -> None`
 
 Update dynamic model
@@ -137,6 +154,17 @@ Arguments:
 ## Property
 
 JSON property accessor
+
+## `Property(model:Model, args:list)`
+
+Property accessor constructor
+
+Arguments:
+
+* model: the GridLAB-D model
+
+* args: global name or object name followed by property name
+
 
 ## `Property.convert_unit(unit:str) -> float`
 

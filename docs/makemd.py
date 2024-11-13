@@ -56,14 +56,19 @@ try:
             NL='\n'
             print(f"\n## {item.__name__}{NL*2}{NL.join([x.strip() for x in item.__doc__.split(NL)])}",file=md)
 
-            for member in [getattr(item,x) for x in dir(item) if not x.startswith('_')]:
+            for member in [getattr(item,x) for x in dir(item) if not x.startswith('_') or x == "__init__"]:
                 if not member.__doc__ or not hasattr(member,"__annotations__"):
                     continue
+                if member.__name__ == "__init__":
+                    name = item.__name__
+                    returns = ""
+                else:
+                    name = f"{item.__name__}.{member.__name__}"
+                    returns = member.__annotations__['return'] if 'return' in member.__annotations__ else 'None'
+                    returns = " -> " + (returns.__name__ if hasattr(returns,'__name__') else str(returns))
                 args = [f"{x}:{t.__name__ if hasattr(t,'__name__') else str(t)}" for x,t in member.__annotations__.items() if x != "return"]
-                returns = member.__annotations__['return'] if 'return' in member.__annotations__ else 'None'
-                returns = returns.__name__ if hasattr(returns,'__name__') else str(returns)
                 docs = NL.join([x.strip() for x in member.__doc__.split(NL)])
-                print(f"\n## `{item.__name__}.{member.__name__}({', '.join(args)}) -> {returns}`{NL*2}{docs}",file=md)
+                print(f"\n## `{name}({', '.join(args)}){returns}`{NL*2}{docs}",file=md)
 
         # output functions
         first = True

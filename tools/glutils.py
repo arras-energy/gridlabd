@@ -8,7 +8,7 @@ from typing import TypeVar
 
 class Model:
     """Model accessor base class"""
-    def __init__(self,source=None):
+    def __init__(self,source:dict=None) -> None:
         assert("gld" in globals() and source==gld) or isinstance(source,dict), "invalid source"
 
     def globals(self) -> list:
@@ -66,7 +66,7 @@ class Property:
         "timestamp": lambda x: int(x.isoformat())
         # everything else is str
     }
-    def __init__(self,model:TypeVar('Model'),*args:list[str]):
+    def __init__(self,model:TypeVar('Model'),*args:list[str]) -> None:
         """Property accessor constructor
         
         Arguments:
@@ -152,7 +152,7 @@ class Property:
 
 class GldModel(Model):
     """Dynamic model accessor"""
-    def __init__(self):
+    def __init__(self) -> None:
         """Dynamic model accessor"""
         assert "gld" in globals(), "no current simulation running ('gld' is not built-in)"
         self.cache = {}
@@ -196,7 +196,7 @@ class GldModel(Model):
 
 class JsonModel(Model):
     """Static model accessor"""
-    def __init__(self,jsonfile):
+    def __init__(self,jsonfile) -> None:
         """Static model accessor
 
         Arguments:
@@ -291,7 +291,7 @@ class Network:
         matrix:list=None,
         nodemap:dict=None,
         linemap:dict=None,
-        ):
+        ) -> None:
         """Network model accessor constructor"""
         self.model = model if model else GldModel()
         self.matrix = matrix
