@@ -7,19 +7,19 @@
 
 Dynamic model accessor
 
-## `GldModel.classes() -> <class 'dict'>`
+## `GldModel.classes() -> dict`
 
 Get classes
 
-## `GldModel.globals() -> list[str]`
+## `GldModel.globals() -> list`
 
 Get list of global names
 
-## `GldModel.objects() -> <class 'dict'>`
+## `GldModel.objects() -> dict`
 
 Get objects in model
 
-## `GldModel.properties() -> list[str]`
+## `GldModel.properties() -> list`
 
 Get list of properties in object
 
@@ -42,19 +42,19 @@ Property: the property accessor
 
 Static model accessor
 
-## `JsonModel.classes() -> <class 'dict'>`
+## `JsonModel.classes() -> dict`
 
 Get classes in model
 
-## `JsonModel.globals() -> list[str]`
+## `JsonModel.globals() -> list`
 
 Get globals in model
 
-## `JsonModel.objects() -> <class 'dict'>`
+## `JsonModel.objects() -> dict`
 
 Get objects in model
 
-## `JsonModel.properties() -> list[str]`
+## `JsonModel.properties() -> list`
 
 Get list of object properties
 
@@ -138,7 +138,7 @@ Arguments:
 
 JSON property accessor
 
-## `Property.convert_unit(unit:<class 'str'>) -> <class 'float'>`
+## `Property.convert_unit(unit:str) -> float`
 
 Convert property units
 
@@ -146,11 +146,11 @@ Convert property units
 
 Get default value, if any
 
-## `Property.get_name() -> <class 'str'>`
+## `Property.get_name() -> str`
 
 Get property name
 
-## `Property.get_object() -> <class 'str'>`
+## `Property.get_object() -> str`
 
 Get object name
 
@@ -162,7 +162,7 @@ Get value, if any
 
 Lock property for read
 
-## `Property.set_object(value:<class 'str'>) -> None`
+## `Property.set_object(value:str) -> None`
 
 Set object name
 
