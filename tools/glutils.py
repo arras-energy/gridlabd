@@ -14,15 +14,7 @@ import datetime as dt
 from typing import TypeVar
 
 class Model:
-    """Model accessor base class
-
-    This is the base class for accessing model globals, classes, objects, and properties. It is not directly supported and only used to validate instances of dynamic (GldModel) and static (JsonModel) classes.
-    """
     def __init__(self,source:dict=None) -> None:
-        """Base class model access constructor
-
-        This constructor verifies that the source model is valid and raises an assert exception if the source is not valid.
-        """
         assert("gld" in globals() and source==gld) or isinstance(source,dict), "invalid source"
 
     def globals(self) -> list:

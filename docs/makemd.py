@@ -19,7 +19,7 @@ E_MISSING = 2
 E_SYNTAX = 3
 E_EXCEPTION = 9
 
-IGNORE = ['TypeVar']
+IGNORE = ['TypeVar','Model']
 
 class MakemdError(Exception):
     def __init__(self,msg,exitcode=None):
@@ -51,7 +51,7 @@ try:
             if not item.__doc__ or item.__name__ in IGNORE:
                 continue
             if first:
-                print("\n---\n---\n# Classes",file=md)
+                print("\n# Classes",file=md)
                 first = False
             NL='\n'
             print(f"\n---\n## {item.__name__}{NL*2}{NL.join([x.strip() for x in item.__doc__.split(NL)])}",file=md)
@@ -76,7 +76,7 @@ try:
             if not item.__doc__ or item.__name__ in IGNORE:
                 continue
             if first:
-                print("\n---\n---\n# Functions",file=md)
+                print("\n# Functions",file=md)
                 first = False
             NL='\n'
             args = [f"{x}:{t.__name__}" for x,t in item.__annotations__.items() if x != "return"]

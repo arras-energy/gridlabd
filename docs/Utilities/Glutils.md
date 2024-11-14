@@ -1,8 +1,6 @@
 [[/Utilities/Glutils]] -- Utilities to link CVX with GridLAB-D networks
 
 
----
----
 # Classes
 
 ---
@@ -89,11 +87,6 @@ Returns:
 
 Property: the property accessor
 
-
----
-## Model
-
-Model accessor base class
 
 ---
 ## Network
@@ -213,8 +206,6 @@ Unlock property
 
 Lock property for write
 
----
----
 # Functions
 
 ---
