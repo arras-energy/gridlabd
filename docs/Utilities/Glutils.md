@@ -1,5 +1,25 @@
 [[/Utilities/Glutils]] -- Utilities to link CVX with GridLAB-D networks
 
+Syntax: gridlabd glutils JSONFILE [OPTIONS ...]
+
+Options:
+
+* L:
+
+* islands:
+
+* W:
+
+* D:
+
+* B:
+
+* Wc:
+
+* A:
+
+* --test:
+
 The `glutils` module is a `gridlabd` runtime model accessor library that can
 be used when running Python code in `gridlabd` modules. The accessors allow Python code to read and write both global variables and object properties. The library also includes convenience methods to obtain a list global variables, and dictionaries of object, object header values, classes, class members, as well as property accessor that can perform unit conversion.
 
@@ -266,48 +286,3 @@ Unlock property
 ### `Property.wlock() -> None`
 
 Lock property for write
-
-# Functions
-
-## `from_complex(x:str) -> complex`
-
-Convert string complex
-
-Arguments:
-
-* x (str): the string to convert to a complex value
-
-Returns:
-
-* complex: the complex value
-
-
----
-
-## `from_timestamp(x:str) -> dt.datetime`
-
-Convert string to timestamp
-
-Arguments:
-
-* x (str): the `gridlabd` timestamp string to convert to a datetime
-
-Returns:
-
-* dt.datetime: the datetime represented by the timestamp
-
-
----
-
-## `rarray(x:str) -> np.array`
-
-Convert string to float array
-
-Arguments:
-
-* x (str): the string to convert to an array of floats
-
-Returns:
-
-* np.array: the resulting Numpy array
-

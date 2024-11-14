@@ -55,29 +55,11 @@ class Model:
         raise RuntimeError("baseclass property not accessible")
 
 def rarray(x:str) -> TypeVar('np.array'):
-    """Convert string to float array
-
-    Arguments:
-
-    * x (str): the string to convert to an array of floats
-
-    Returns:
-
-    * np.array: the resulting Numpy array
-    """
+    # Convert string to float array
     return np.array(x,dtype=np.float64)
 
 def from_timestamp(x:str) -> TypeVar('dt.datetime'):
-    """Convert string to timestamp
-
-    Arguments:
-
-    * x (str): the `gridlabd` timestamp string to convert to a datetime
-
-    Returns:
-
-    * dt.datetime: the datetime represented by the timestamp
-    """
+    # Convert string to timestamp
     if x == "NEVER":
         return dt.datetime.strptime("2999-12-31 23:59:59 UTC","%Y-%m-%d %H:%M:%S %Z")
     elif x == "INIT":
@@ -86,16 +68,7 @@ def from_timestamp(x:str) -> TypeVar('dt.datetime'):
         return dt.datetime.strptime(x,"%Y-%m-%d %H:%M:%S %Z")
 
 def from_complex(x:str) -> complex:
-    """Convert string complex
-
-    Arguments:
-
-    * x (str): the string to convert to a complex value
-
-    Returns:
-
-    * complex: the complex value
-    """
+    # Convert string complex
     try:
         return complex(x.split()[0] if " " in x else x)
     except:
