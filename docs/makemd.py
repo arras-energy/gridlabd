@@ -53,8 +53,10 @@ try:
             if first:
                 print("\n# Classes",file=md)
                 first = False
+            else:
+                print("\n---",file=md)
             NL='\n'
-            print(f"\n---\n## {item.__name__}{NL*2}{NL.join([x.strip() for x in item.__doc__.split(NL)])}",file=md)
+            print(f"\n## {item.__name__}{NL*2}{NL.join([x.strip() for x in item.__doc__.split(NL)])}",file=md)
 
             for member in [getattr(item,x) for x in dir(item) if not x.startswith('_') or x == "__init__"]:
                 if not member.__doc__ or not hasattr(member,"__annotations__"):
@@ -78,11 +80,13 @@ try:
             if first:
                 print("\n# Functions",file=md)
                 first = False
+            else:
+                print("\n---",file=md)
             NL='\n'
             args = [f"{x}:{t.__name__}" for x,t in item.__annotations__.items() if x != "return"]
             returns = item.__annotations__['return'].__name__ if 'return' in item.__annotations__ else 'None'
             docs = NL.join([x.strip() for x in item.__doc__.split(NL)])
-            print(f"\n---\n## `{item.__name__}({', '.join(args)}) -> {returns}`{NL*2}{docs}",file=md)
+            print(f"\n## `{item.__name__}({', '.join(args)}) -> {returns}`{NL*2}{docs}",file=md)
 
 
         # output constants

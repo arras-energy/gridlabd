@@ -1,12 +1,21 @@
 [[/Utilities/Glutils]] -- Utilities to link CVX with GridLAB-D networks
 
+The `glutils` module is a `gridlabd` runtime model accessor library that can
+be used when running Python code in `gridlabd` modules. The accessors allow Python code to read and write both global variables and object properties. The library also includes convenience methods to obtain a list global variables, and dictionaries of object, object header values, classes, class members, as well as property accessor that can perform unit conversion.
+
+The `glutils` module also include a JSON model accessor that uses the same
+underlying methods as the runtime accessor.
+
+
 
 # Classes
 
----
 ## GldModel
 
 Dynamic model accessor
+
+The dynamic model accessor allows Python code running in a simulation to access global variables and object properties while the simulation is running.  Use `objects()` to obtain a dict of object names and header values. Use `classes()` to obtain a dict class name and properties. Use `globals()` to obtain a list of global variables.  Use `properties(obj)` to obtain a list of properties of an object. Use `property(obj)` to access an object property or global variable value.
+
 
 ### `GldModel()`
 
@@ -16,19 +25,39 @@ Dynamic model accessor
 
 Get classes
 
+Returns:
+
+* dict: the classes and property names available
+
+
 ### `GldModel.globals() -> list`
 
 Get list of global names
+
+Returns:
+
+* list: the global variables defined
+
 
 ### `GldModel.objects() -> dict`
 
 Get objects in model
 
+Returns:
+
+* dict: the object names and header values
+
+
 ### `GldModel.properties() -> list`
 
 Get list of properties in object
 
-### `GldModel.property() -> Property`
+Returns:
+
+* list: the list of properties defined in an object
+
+
+### `GldModel.property() -> gld.property`
 
 Get property accessor
 
@@ -40,10 +69,11 @@ Arguments:
 
 Returns:
 
-Property: the property accessor
+gld.property: the dynamic property accessor
 
 
 ---
+
 ## JsonModel
 
 Static model accessor
@@ -89,6 +119,7 @@ Property: the property accessor
 
 
 ---
+
 ## Network
 
 Network model accessor
@@ -116,6 +147,8 @@ Properties generated for `matrix` list:
 
 * nodes (dict): nodes map
 
+* names (dict): names of node and line objects
+
 * Y (list[float]): list of line admittances
 
 * bus (np.array): bus matrix
@@ -141,6 +174,19 @@ Properties generated for `matrix` list:
 
 Network model accessor constructor
 
+### `Network.islands(precision:int) -> int`
+
+Calculate the number of islands in network
+
+Arguments:
+
+* precision (int): the precision with which to evaluate eigenvalues
+
+Returns:
+
+* int: the number of connected subnetworks in the network
+
+
 ### `Network.update() -> None`
 
 Update dynamic model
@@ -151,6 +197,7 @@ Arguments:
 
 
 ---
+
 ## Property
 
 JSON property accessor
@@ -174,13 +221,27 @@ Convert property units
 
 Get default value, if any
 
+Returns:
+* str|float|int|bool|complex: the default value of the property
+
+
 ### `Property.get_name() -> str`
 
-Get property name
+Get the property name
+
+Returns:
+
+* str: the name of the property
+
 
 ### `Property.get_object() -> str`
 
-Get object name
+Get the object name for this property
+
+Returns:
+
+* str: the name of the object to which this property refers
+
 
 ### `Property.get_value() -> str | float | int | complex | bool | datetime.datetime`
 
@@ -192,7 +253,7 @@ Lock property for read
 
 ### `Property.set_object(value:str) -> None`
 
-Set object name
+Set the object name for this property
 
 ### `Property.set_value(value:str | float | int | complex | bool | datetime.datetime) -> None`
 
@@ -208,17 +269,45 @@ Lock property for write
 
 # Functions
 
----
 ## `from_complex(x:str) -> complex`
 
 Convert string complex
 
+Arguments:
+
+* x (str): the string to convert to a complex value
+
+Returns:
+
+* complex: the complex value
+
+
 ---
+
 ## `from_timestamp(x:str) -> dt.datetime`
 
 Convert string to timestamp
 
+Arguments:
+
+* x (str): the `gridlabd` timestamp string to convert to a datetime
+
+Returns:
+
+* dt.datetime: the datetime represented by the timestamp
+
+
 ---
+
 ## `rarray(x:str) -> np.array`
 
 Convert string to float array
+
+Arguments:
+
+* x (str): the string to convert to an array of floats
+
+Returns:
+
+* np.array: the resulting Numpy array
+

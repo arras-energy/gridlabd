@@ -1,5 +1,25 @@
 """Utilities to link CVX with GridLAB-D networks
 
+Syntax: gridlabd glutils JSONFILE [OPTIONS ...]
+
+Options:
+
+* L:
+
+* islands:
+
+* W:
+
+* D:
+
+* B:
+
+* Wc:
+
+* A:
+
+* --test:
+
 The `glutils` module is a `gridlabd` runtime model accessor library that can
 be used when running Python code in `gridlabd` modules. The accessors allow Python code to read and write both global variables and object properties. The library also includes convenience methods to obtain a list global variables, and dictionaries of object, object header values, classes, class members, as well as property accessor that can perform unit conversion.
 
@@ -7,7 +27,9 @@ The `glutils` module also include a JSON model accessor that uses the same
 underlying methods as the runtime accessor.
 """
 
+import os
 import sys
+import json
 import numpy as np
 import scipy as sp
 import datetime as dt
@@ -209,7 +231,7 @@ class GldModel(Model):
     """
     def __init__(self) -> None:
         """Dynamic model accessor"""
-        assert "gld" in globals(), 
+        assert "gld" in globals(), \
             "no current simulation running ('gld' is not built-in)"
         self.cache = {}
         super().__init__(gld)
@@ -315,6 +337,8 @@ class JsonModel(Model):
         """
         return Property(model,*args)
 
+class NetworkError(Exception):
+    pass
 
 class Network:
     """Network model accessor
@@ -341,6 +365,8 @@ class Network:
     * lines (list[str]): list of lines in model
 
     * nodes (dict): nodes map
+
+    * names (dict): names of node and line objects
 
     * Y (list[float]): list of line admittances
 
@@ -548,56 +574,84 @@ class Network:
                 if self.matrix is None or "Wc" in self.matrix:
                     self.Wc = self.B.T @ sp.sparse.diags_array(self.Yc,dtype=np.complex_) @ self.B
 
+    def islands(self,precision:int=9) -> int:
+        """Calculate the number of islands in network
+
+        Arguments:
+
+        * precision (int): the precision with which to evaluate eigenvalues
+
+        Returns:
+
+        * int: the number of connected subnetworks in the network
+        """
+        if not hasattr(self,"W"):
+            raise NetworkError("cannot compute islands unless W is computed")
+
+        # TODO: replace with sp.linalg.eigs
+        e,v = np.linalg.eigh(network.W.todense())
+        return len([x for x in e.round(precision) if x == 0.0])
 #
 # Test JSON accessors
 #
 if __name__ == "__main__":
 
-    import os
-    import sys
-    import json
+    if len(sys.argv) == 1:
+        print("\n".join([x for x in __doc__.split("\n") if x.startswith("Syntax")]))
+        exit(1)
 
-    assert not "gld" in globals(), "not running as static model ('gld' is built-in)"
+    if sys.argv[1] == "--test":
 
-    if not os.path.exists("autotest/case14.json"):
-        os.system("cd autotest; gridlabd convert case14.py case14.glm")
-        os.system("gridlabd -C autotest/case14.glm -o autotest/case14.json")
+        try:
 
-    model = JsonModel('autotest/case14.json')
-    
-    assert "bus" in model.classes(), "class 'bus' not found in model"
-    assert "bus_i" in model.classes()["bus"], "class 'bus' missing property 'bus_i'"
+            assert not "gld" in globals(), "not running as static model ('gld' is built-in)"
 
-    assert "pypower::version" in model.globals(), "global 'pypower::version' not found in model"
-    assert model.property("pypower::version").get_value() == 2, "pypower::version value is not 2"
+            if not os.path.exists("tools/autotest/case14.json"):
+                os.system("cd tools/autotest; gridlabd convert case14.py case14.glm")
+                os.system("gridlabd -C tools/autotest/case14.glm -o tools/autotest/case14.json")
 
-    assert "pp_bus_1" in model.objects(), "object 'pp_bus_1' not found in model"
-    assert model.property("pp_bus_1","bus_i").get_value() == 1, "pp_bus_1.bus_1 is not 1"
+            model = JsonModel('tools/autotest/case14.json')
+            
+            assert "bus" in model.classes(), "class 'bus' not found in model"
+            assert "bus_i" in model.classes()["bus"], "class 'bus' missing property 'bus_i'"
 
-    with open("autotest/case14.txt","w") as txt:
-        for var in model.globals():
-            print("global",var,"get_object() ->",model.property(var).get_object(),file=txt)
-            print("global",var,"get_name() ->",model.property(var).get_name(),file=txt)
-            print("global",var,"get_value() ->",model.property(var).get_value(),file=txt)
-            print("global",var,"property() ->",model.property(var).get_initial(),file=txt)
+            assert "pypower::version" in model.globals(), "global 'pypower::version' not found in model"
+            assert model.property("pypower::version").get_value() == 2, "pypower::version value is not 2"
 
-        for obj in model.objects():
-            for var in model.properties(obj):
-                print(obj,var,"property().get_object() ->",model.property(obj,var).get_object(),file=txt)
-                print(obj,var,"property().get_name() ->",model.property(obj,var).get_name(),file=txt)
-                init = model.property(obj,var).get_initial()
-                print(obj,var,"property().get_initial() ->",init,file=txt)
-                value = model.property(obj,var).get_value()
-                print(obj,var,"property().get_value() ->",value,file=txt)
-                if not value is None or not init is None:
-                    model.property(obj,var).set_value(init if value is None else value)
-                    assert model.property(obj,var).get_value()==value, "value changed"
+            assert "pp_bus_1" in model.objects(), "object 'pp_bus_1' not found in model"
+            assert model.property("pp_bus_1","bus_i").get_value() == 1, "pp_bus_1.bus_1 is not 1"
 
-    network = Network(model,matrix=['W'],nodemap={"_D":"Pd"})
-    np.set_printoptions(precision=1)
-    assert network.B.shape == (20,14), "B shape is incorrect"
-    assert network.W.shape == (14,14), "W shape is incorrect"
-    assert network.refbus == [1], "refbus is incorrect"
-    assert len(network.Y) == 20, "Y size is incorrect"
-    assert len(network._D) == 14, "_D size is incorrect"
+            with open("autotest/case14.txt","w") as txt:
+                for var in model.globals():
+                    print("global",var,"get_object() ->",model.property(var).get_object(),file=txt)
+                    print("global",var,"get_name() ->",model.property(var).get_name(),file=txt)
+                    print("global",var,"get_value() ->",model.property(var).get_value(),file=txt)
+                    print("global",var,"property() ->",model.property(var).get_initial(),file=txt)
 
+                for obj in model.objects():
+                    for var in model.properties(obj):
+                        print(obj,var,"property().get_object() ->",model.property(obj,var).get_object(),file=txt)
+                        print(obj,var,"property().get_name() ->",model.property(obj,var).get_name(),file=txt)
+                        init = model.property(obj,var).get_initial()
+                        print(obj,var,"property().get_initial() ->",init,file=txt)
+                        value = model.property(obj,var).get_value()
+                        print(obj,var,"property().get_value() ->",value,file=txt)
+                        if not value is None or not init is None:
+                            model.property(obj,var).set_value(init if value is None else value)
+                            assert model.property(obj,var).get_value()==value, "value changed"
+
+            network = Network(model,matrix=['W'],nodemap={"_D":"Pd"})
+            np.set_printoptions(precision=1)
+            assert network.B.shape == (20,14), "B shape is incorrect"
+            assert network.W.shape == (14,14), "W shape is incorrect"
+            assert network.refbus == [1], "refbus is incorrect"
+            assert len(network.Y) == 20, "Y size is incorrect"
+            assert len(network._D) == 14, "_D size is incorrect"
+            assert network.islands() == 1, "incorrect number of islands"
+            exit(0)
+        
+        except Exception as err:
+
+            print(f"ERROR [glutils.py]: {err}",file=sys.stderr)
+
+    # for arg in sys.argv[1:]:
