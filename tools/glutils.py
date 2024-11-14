@@ -4,21 +4,13 @@ Syntax: gridlabd glutils JSONFILE [OPTIONS ...]
 
 Options:
 
-* L:
+* --test: run a self test
 
-* islands:
+* graph:VAR: matrix analysis result
 
-* W:
+* node:VAR: node property vector
 
-* D:
-
-* B:
-
-* Wc:
-
-* A:
-
-* --test:
+* line:VAR: line property vector
 
 The `glutils` module is a `gridlabd` runtime model accessor library that can
 be used when running Python code in `gridlabd` modules. The accessors allow Python code to read and write both global variables and object properties. The library also includes convenience methods to obtain a list global variables, and dictionaries of object, object header values, classes, class members, as well as property accessor that can perform unit conversion.
@@ -34,8 +26,12 @@ import numpy as np
 import scipy as sp
 import datetime as dt
 from typing import TypeVar
+import inspect
+
+DEBUG = True
 
 class Model:
+    # Baseclass for model accessors
     def __init__(self,source:dict=None) -> None:
         assert("gld" in globals() and source==gld) or isinstance(source,dict), "invalid source"
 
@@ -75,7 +71,11 @@ def from_complex(x:str) -> complex:
         return complex(float('nan'),float('nan'))
 
 class Property:
-    """JSON property accessor"""
+    """JSON property accessor
+
+    This property accessor is the static model version of the dynamic accessor that is built-in when running Python inside a GridLAB-D
+    simulation.
+    """
     fromtypes = {
         "double": lambda x: float(x.split()[0]),
         "complex": from_complex,
@@ -361,6 +361,9 @@ class Network:
 
     * W (np.array): weighted Laplacian matrix
     """
+
+    RESULTS = ["D","L","A","B","W","Wc"]
+
     def __init__(self,
         model:dict=None,
         matrix:list=None,
@@ -375,6 +378,26 @@ class Network:
 
         self.update(force=True)
 
+    def todict(self,precision=6) -> dict:
+        """Get network data as a dict
+
+        Returns:
+
+        * dict: network data
+        """
+        result = {x:getattr(self,x) for x in ["lines","nodes","names","refbus",
+                "baseMVA","row","col",
+                ]}
+        result['Y'] = [round(x,precision) for x in network.Y]
+        for x in ["Z","Yc"]:
+            result[x] = [f"{round(x.real,precision)}{round(x.imag,precision)}j" for x in getattr(self,x)]
+        for x in ["bus","branch"]:
+            result[x] = getattr(self,x).round(precision).tolist()
+        for x in self.RESULTS:
+            if x in dir(self):
+                result[x] = getattr(self,x).todense().round(precision).tolist()
+        return result
+
     def update(self,force=None):
         """Update dynamic model
 
@@ -385,7 +408,6 @@ class Network:
         model = self.model
         now = model.property("clock").get_value()
         if force is None:
-
 
             if not hasattr(self,'last') or now > self.last:
 
@@ -417,14 +439,15 @@ class Network:
             self.refbus = []
             self.Y = []
             self.Yc = []
-            self.R = []
             self.Z = []
             for var in self.linemap:
-                if var in ["D","L","A","B","W","Wc","Y","Z"]:
+                if var in self.RESULTS + ["Y","Yc","Z","last","lines",
+                        "nodes","names","refbus","baseMVA"]:
                     raise ValueError(f"linemap name {var} is reserved for matrices")
                 setattr(self,var,[])
             for var in self.nodemap:
-                if var in ["D","L","A","B","W","Wc","Y","Z"]:
+                if var in self.RESULTS + ["Y","Yc","Z","last","lines",
+                        "nodes","names","refbus","baseMVA"]:
                     raise ValueError(f"nodemap name {var} is reserved for matrices")
                 setattr(self,var,[])
 
@@ -573,9 +596,9 @@ if __name__ == "__main__":
         print("\n".join([x for x in __doc__.split("\n") if x.startswith("Syntax")]))
         exit(1)
 
-    if sys.argv[1] == "--test":
+    try:
 
-        try:
+        if sys.argv[1] == "--test":
 
             assert not "gld" in globals(), "not running as static model ('gld' is built-in)"
 
@@ -622,9 +645,22 @@ if __name__ == "__main__":
             assert len(network._D) == 14, "_D size is incorrect"
             assert network.islands() == 1, "incorrect number of islands"
             exit(0)
-        
-        except Exception as err:
 
-            print(f"ERROR [glutils.py]: {err}",file=sys.stderr)
+        else:
 
-    # for arg in sys.argv[1:]:
+            model = JsonModel(sys.argv[1])
+            matrix = [x.split(':')[1] for x in sys.argv[2:] if x.startswith("graph:")]
+            nodes = [x.split(':')[1] for x in sys.argv[2:] if x.startswith("node:")]
+            lines = [x.split(':')[1] for x in sys.argv[2:] if x.startswith("line:")]
+            network = Network(model,matrix=matrix,nodemap=nodes,linemap=lines)
+            for key in [x for x in sys.argv[2:] if not x.split(":")[1] in dir(network)]:
+                print(f"WARNING [glutils.py]: '{key}' is not a valid network analysis result",file=sys.stderr)
+            print(network.todict())
+
+    except Exception as err:
+
+        print(f"ERROR [glutils.py]: {err}",file=sys.stderr)
+
+        if DEBUG:
+            raise
+

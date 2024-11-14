@@ -4,21 +4,13 @@ Syntax: gridlabd glutils JSONFILE [OPTIONS ...]
 
 Options:
 
-* L:
+* --test: run a self test
 
-* islands:
+* graph:VAR: matrix analysis result
 
-* W:
+* node:VAR: node property vector
 
-* D:
-
-* B:
-
-* Wc:
-
-* A:
-
-* --test:
+* line:VAR: line property vector
 
 The `glutils` module is a `gridlabd` runtime model accessor library that can
 be used when running Python code in `gridlabd` modules. The accessors allow Python code to read and write both global variables and object properties. The library also includes convenience methods to obtain a list global variables, and dictionaries of object, object header values, classes, class members, as well as property accessor that can perform unit conversion.
@@ -207,6 +199,15 @@ Returns:
 * int: the number of connected subnetworks in the network
 
 
+### `Network.todict() -> dict`
+
+Get network data as a dict
+
+Returns:
+
+* dict: network data
+
+
 ### `Network.update() -> None`
 
 Update dynamic model
@@ -221,6 +222,10 @@ Arguments:
 ## Property
 
 JSON property accessor
+
+This property accessor is the static model version of the dynamic accessor that is built-in when running Python inside a GridLAB-D
+simulation.
+
 
 ### `Property(model:Model, args:list)`
 
