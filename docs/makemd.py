@@ -51,10 +51,10 @@ try:
             if not item.__doc__ or item.__name__ in IGNORE:
                 continue
             if first:
-                print("\n# Classes",file=md)
+                print("\n---\n---\n# Classes",file=md)
                 first = False
             NL='\n'
-            print(f"\n## {item.__name__}{NL*2}{NL.join([x.strip() for x in item.__doc__.split(NL)])}",file=md)
+            print(f"\n---\n## {item.__name__}{NL*2}{NL.join([x.strip() for x in item.__doc__.split(NL)])}",file=md)
 
             for member in [getattr(item,x) for x in dir(item) if not x.startswith('_') or x == "__init__"]:
                 if not member.__doc__ or not hasattr(member,"__annotations__"):
@@ -68,7 +68,7 @@ try:
                     returns = " -> " + (returns.__name__ if hasattr(returns,'__name__') else str(returns))
                 args = [f"{x}:{t.__name__ if hasattr(t,'__name__') else str(t)}" for x,t in member.__annotations__.items() if x != "return"]
                 docs = NL.join([x.strip() for x in member.__doc__.split(NL)])
-                print(f"\n## `{name}({', '.join(args)}){returns}`{NL*2}{docs}",file=md)
+                print(f"\n### `{name}({', '.join(args)}){returns}`{NL*2}{docs}",file=md)
 
         # output functions
         first = True
@@ -76,13 +76,13 @@ try:
             if not item.__doc__ or item.__name__ in IGNORE:
                 continue
             if first:
-                print("\n# Functions",file=md)
+                print("\n---\n---\n# Functions",file=md)
                 first = False
             NL='\n'
             args = [f"{x}:{t.__name__}" for x,t in item.__annotations__.items() if x != "return"]
             returns = item.__annotations__['return'].__name__ if 'return' in item.__annotations__ else 'None'
             docs = NL.join([x.strip() for x in item.__doc__.split(NL)])
-            print(f"\n## `{item.__name__}({', '.join(args)}) -> {returns}`{NL*2}{docs}",file=md)
+            print(f"\n---\n## `{item.__name__}({', '.join(args)}) -> {returns}`{NL*2}{docs}",file=md)
 
 
         # output constants

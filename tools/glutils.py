@@ -258,7 +258,7 @@ class GldModel(Model):
         """
         raise NotImplementedError("properties not implemented yet")
 
-    def property(self,*args) -> TypeVar('Property'):
+    def property(self,*args) -> TypeVar('gld.property'):
         """Get property accessor
 
         Arguments:
