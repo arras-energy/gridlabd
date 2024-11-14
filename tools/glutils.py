@@ -1,4 +1,11 @@
-"""Utilities to link CVX with GridLAB-D networks"""
+"""Utilities to link CVX with GridLAB-D networks
+
+The `glutils` module is a `gridlabd` runtime model accessor library that can
+be used when running Python code in `gridlabd` modules. The accessors allow Python code to read and write both global variables and object properties. The library also includes convenience methods to obtain a list global variables, and dictionaries of object, object header values, classes, class members, as well as property accessor that can perform unit conversion.
+
+The `glutils` module also include a JSON model accessor that uses the same
+underlying methods as the runtime accessor.
+"""
 
 import sys
 import numpy as np
@@ -7,8 +14,15 @@ import datetime as dt
 from typing import TypeVar
 
 class Model:
-    """Model accessor base class"""
+    """Model accessor base class
+
+    This is the base class for accessing model globals, classes, objects, and properties. It is not directly supported and only used to validate instances of dynamic (GldModel) and static (JsonModel) classes.
+    """
     def __init__(self,source:dict=None) -> None:
+        """Base class model access constructor
+
+        This constructor verifies that the source model is valid and raises an assert exception if the source is not valid.
+        """
         assert("gld" in globals() and source==gld) or isinstance(source,dict), "invalid source"
 
     def globals(self) -> list:
@@ -27,11 +41,29 @@ class Model:
         raise RuntimeError("baseclass property not accessible")
 
 def rarray(x:str) -> TypeVar('np.array'):
-    """Convert string to float array"""
+    """Convert string to float array
+
+    Arguments:
+
+    * x (str): the string to convert to an array of floats
+
+    Returns:
+
+    * np.array: the resulting Numpy array
+    """
     return np.array(x,dtype=np.float64)
 
 def from_timestamp(x:str) -> TypeVar('dt.datetime'):
-    """Convert string to timestamp"""
+    """Convert string to timestamp
+
+    Arguments:
+
+    * x (str): the `gridlabd` timestamp string to convert to a datetime
+
+    Returns:
+
+    * dt.datetime: the datetime represented by the timestamp
+    """
     if x == "NEVER":
         return dt.datetime.strptime("2999-12-31 23:59:59 UTC","%Y-%m-%d %H:%M:%S %Z")
     elif x == "INIT":
@@ -40,7 +72,16 @@ def from_timestamp(x:str) -> TypeVar('dt.datetime'):
         return dt.datetime.strptime(x,"%Y-%m-%d %H:%M:%S %Z")
 
 def from_complex(x:str) -> complex:
-    """Convert string complex"""
+    """Convert string complex
+
+    Arguments:
+
+    * x (str): the string to convert to a complex value
+
+    Returns:
+
+    * complex: the complex value
+    """
     try:
         return complex(x.split()[0] if " " in x else x)
     except:
@@ -87,23 +128,39 @@ class Property:
             raise ValueError("too many arguments")
 
     def get_object(self) -> str:
-        """Get object name"""
+        """Get the object name for this property
+
+        Returns:
+
+        * str: the name of the object to which this property refers
+        """
         return self.obj
 
-    def set_object(self,value:str):
-        """Set object name"""
+    def set_object(self,value:str) -> None:
+        """Set the object name for this property"""
         self.obj = value
 
     def get_name(self) -> str:
-        """Get property name"""
+        """Get the property name
+
+        Returns:
+
+        * str: the name of the property
+        """
         return self.name
 
     def get_initial(self) -> str|float|int|bool|complex:
-        """Get default value, if any"""
+        """Get default value, if any
+
+        Returns:
+        * str|float|int|bool|complex: the default value of the property
+        """
         try:
-            spec = self.data["classes"][self.data["objects"][self.obj]["class"]]
+            oclass = self.data["objects"][self.obj]["class"]
+            spec = self.data["classes"][oclass]
             value = spec["default"]
-            vtype = self.fromtypes[spec["type"]] if spec["type"] in self.fromtypes else str
+            vtype = self.fromtypes[spec["type"]] \
+                if spec["type"] in self.fromtypes else str
             return vtype(value)
         except:
             return None
@@ -112,18 +169,21 @@ class Property:
         """Get value, if any"""
         try:
             if not self.name in self.data["header"]:
-                spec = self.data["classes"][self.data["objects"][self.obj]["class"]][self.name]
+                oclass = self.data["objects"][self.obj]["class"]
+                spec = self.data["classes"][oclass][self.name]
                 data = self.data["objects"][self.obj]
                 if self.name in data:
                     value = data[self.name] 
-                    vtype = self.fromtypes[spec["type"]] if spec["type"] in self.fromtypes else str
+                    vtype = self.fromtypes[spec["type"]] \
+                        if spec["type"] in self.fromtypes else str
                     return vtype(value)
                 return None
             return None
         except KeyError:
             spec = self.data["globals"][self.name]
             value = spec["value"]
-            vtype = self.fromtypes[spec["type"]] if spec["type"] in self.fromtypes else str
+            vtype = self.fromtypes[spec["type"]] \
+                if spec["type"] in self.fromtypes else str
             return vtype(value)
 
     def set_value(self,value:str|float|int|complex|bool|dt.datetime):
@@ -151,27 +211,51 @@ class Property:
         raise RuntimeError("cannot convert units in static models")
 
 class GldModel(Model):
-    """Dynamic model accessor"""
+    """Dynamic model accessor
+
+    The dynamic model accessor allows Python code running in a simulation to access global variables and object properties while the simulation is running.  Use `objects()` to obtain a dict of object names and header values. Use `classes()` to obtain a dict class name and properties. Use `globals()` to obtain a list of global variables.  Use `properties(obj)` to obtain a list of properties of an object. Use `property(obj)` to access an object property or global variable value.
+    """
     def __init__(self) -> None:
         """Dynamic model accessor"""
-        assert "gld" in globals(), "no current simulation running ('gld' is not built-in)"
+        assert "gld" in globals(), 
+            "no current simulation running ('gld' is not built-in)"
         self.cache = {}
         super().__init__(gld)
 
     def objects(self) -> dict:
-        """Get objects in model"""
+        """Get objects in model
+
+        Returns:
+
+        * dict: the object names and header values
+        """
         return gld.objects
 
     def classes(self) -> dict:
-        """Get classes"""
+        """Get classes
+
+        Returns:
+
+        * dict: the classes and property names available
+        """
         return gld.classes
 
     def globals(self) -> list[str]:
-        """Get list of global names"""
+        """Get list of global names
+
+        Returns:
+
+        * list: the global variables defined
+        """
         return gld.globals
 
     def properties(self,obj) -> list[str]:
-        """Get list of properties in object"""
+        """Get list of properties in object
+
+        Returns:
+
+        * list: the list of properties defined in an object
+        """
         raise NotImplementedError("properties not implemented yet")
 
     def property(self,*args) -> TypeVar('Property'):
@@ -185,7 +269,7 @@ class GldModel(Model):
 
         Returns:
 
-        Property: the property accessor
+        gld.property: the dynamic property accessor
         """
         key = "#".join(args)
         try:
