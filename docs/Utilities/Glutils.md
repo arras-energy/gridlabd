@@ -1,4 +1,4 @@
-[[/Utilities/Glutils]] -- Utilities to link CVX with GridLAB-D networks
+[[/docs/Utilities/Glutils]] -- Utilities to link CVX with GridLAB-D networks
 
 Syntax: gridlabd glutils JSONFILE [OPTIONS ...]
 

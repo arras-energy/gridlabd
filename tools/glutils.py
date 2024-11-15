@@ -378,8 +378,14 @@ class Network:
 
         self.update(force=True)
 
-    def todict(self,precision=6) -> dict:
+    def todict(self,extras=None,precision=6) -> dict:
         """Get network data as a dict
+
+        Arguments:
+
+        * extras: include extracted node or line variables with network data
+
+        * precision: change precision of extracted values (default is 6)
 
         Returns:
 
@@ -390,12 +396,19 @@ class Network:
                 ]}
         result['Y'] = [round(x,precision) for x in network.Y]
         for x in ["Z","Yc"]:
-            result[x] = [f"{round(x.real,precision)}{round(x.imag,precision)}j" for x in getattr(self,x)]
+            result[x] = [f"{round(x.real,precision):f}{round(x.imag,precision):+f}j" for x in getattr(self,x)]
         for x in ["bus","branch"]:
             result[x] = getattr(self,x).round(precision).tolist()
         for x in self.RESULTS:
             if x in dir(self):
-                result[x] = getattr(self,x).todense().round(precision).tolist()
+                value = getattr(self,x).todense()
+                if value.dtype == np.complex_:
+                    result[x] = [[str(y).strip('()') for y in x] for x in value.round(precision).tolist()]
+                else:
+                    result[x] = value.round(precision).tolist()
+        for x,y in extras.items() if extras else {}:
+            if x in dir(self):
+                result[x] = y(getattr(self,x))
         return result
 
     def update(self,force=None):
@@ -646,16 +659,20 @@ if __name__ == "__main__":
             assert network.islands() == 1, "incorrect number of islands"
             exit(0)
 
-        else:
+        DEBUG = "--debug" in sys.argv
+        if DEBUG:
+            sys.argv.remove("--debug")
 
-            model = JsonModel(sys.argv[1])
-            matrix = [x.split(':')[1] for x in sys.argv[2:] if x.startswith("graph:")]
-            nodes = [x.split(':')[1] for x in sys.argv[2:] if x.startswith("node:")]
-            lines = [x.split(':')[1] for x in sys.argv[2:] if x.startswith("line:")]
-            network = Network(model,matrix=matrix,nodemap=nodes,linemap=lines)
-            for key in [x for x in sys.argv[2:] if not x.split(":")[1] in dir(network)]:
-                print(f"WARNING [glutils.py]: '{key}' is not a valid network analysis result",file=sys.stderr)
-            print(network.todict())
+        model = JsonModel(sys.argv[1])
+        matrix = [x.split(':',2)[1] for x in sys.argv[2:] if x.startswith("graph:")]
+        nodes = dict([x.split(':',3)[1:] for x in sys.argv[2:] if x.startswith("node:")])
+        lines = dict([x.split(':',3)[1:] for x in sys.argv[2:] if x.startswith("line:")])
+        print(matrix,nodes,lines)
+        network = Network(model,matrix=matrix,nodemap=nodes,linemap=lines)
+        for key in [x for x in sys.argv[2:] if not x.split(":")[1] in dir(network)]:
+            print(f"WARNING [glutils.py]: '{key}' is not a valid network analysis result",file=sys.stderr)
+        extras = list(nodes) + list(lines)
+        print(json.dumps(network.todict(extras={y:lambda x:x for y in extras}),indent=2))
 
     except Exception as err:
 
