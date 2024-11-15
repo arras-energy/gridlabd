@@ -43,13 +43,31 @@ extracted using the `graph` option:
 
 * Wc: weighted complex Laplacian matrix
 
+Metadata arrays are also extract to support interpretation of the graph
+matrices. These include the following:
+
+* lines: list of line from/to tuples as an index into the `bus` list
+
+* nodes: mapping of the node ids as an index into the `branch` list
+
+* names: a list of the node and line object names in the model
+
+* baseMVA: the baseMVA value, if found
+
+* row: the `from` node index in the graph matrices
+
+* col: the `to` node index in the graph matrices
+
+* bus: the bus list
+
+* branch: the branch from/to list
+
 The extraction process automatically generates the edge weights based on the
-line impedance. These are stored in `Y`, `Yc`, and `Z`.  In addition, the
-reference bus list is stored in `refbus`.  All other properties of a
-line/branch or node/bus can be extracted as a vector using the `line` and
-`node` options, respectively by defining the mapping, e.g.,
+line impedance. These are stored in `Y`, `Yc`, and `Z`.  All other properties
+of lines/branches or nodes/buses can be extracted as a vector using the
+`line` and `node` options, respectively by defining the mapping, e.g.,
 `node:VAR:PROPERTY`, where `VAR` is any string not already used for graph
-arrays and impedance vectors.
+matrices and impedance vectors.
 
 
 
