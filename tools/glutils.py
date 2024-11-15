@@ -1,4 +1,4 @@
-"""Utilities to link CVX with GridLAB-D networks
+"""GridLAB-D model access utilities
 
 Syntax: gridlabd glutils JSONFILE [OPTIONS ...]
 
@@ -15,10 +15,41 @@ Options:
 * line:VAR: line property vector
 
 The `glutils` module is a `gridlabd` runtime model accessor library that can
-be used when running Python code in `gridlabd` modules. The accessors allow Python code to read and write both global variables and object properties. The library also includes convenience methods to obtain a list global variables, and dictionaries of object, object header values, classes, class members, as well as property accessor that can perform unit conversion.
+be used when running Python code in `gridlabd` modules. The accessors allow
+Python code to read and write both global variables and object properties.
+The library also includes convenience methods to obtain a list global
+variables, and dictionaries of object, object header values, classes, class
+members, as well as property accessor that can perform unit conversion.
 
-The `glutils` module also include a JSON model accessor that uses the same
+The `glutils` module also includes a JSON model accessor that uses the same
 underlying methods as the runtime accessor.
+
+The utilities include a number of useful graph theory methods to extract the
+structure and properties of network embedded in the model. Networks are
+identified by `from` and `to` properties in edges, or in the case of
+`pypower` models, the presence of `fbus` and `tbus` properties that refer to
+`bus_i` properties in vertices. The following structural property can be
+extracted using the `graph` option:
+
+* A: adjacency matrix
+
+* D: degree matrix
+
+* L: graph Laplacian matrix
+
+* B: oriented incidence matrix
+
+* W: weighted real Laplacian matrix
+
+* Wc: weighted complex Laplacian matrix
+
+The extraction process automatically generates the edge weights based on the
+line impedance. These are stored in `Y`, `Yc`, and `Z`.  In addition, the
+reference bus list is stored in `refbus`.  All other properties of a
+line/branch or node/bus can be extracted as a vector using the `line` and
+`node` options, respectively by defining the mapping, e.g.,
+`node:VAR:PROPERTY`, where `VAR` is any string not already used for graph
+arrays and impedance vectors.
 """
 
 import os
@@ -611,17 +642,26 @@ if __name__ == "__main__":
         print("\n".join([x for x in __doc__.split("\n") if x.startswith("Syntax")]))
         exit(1)
 
+    if sys.argv[1] in ["-h","--help","help"]:
+
+        print(__doc__)
+        exit(0)
+
     try:
 
         if sys.argv[1] == "--test":
 
             assert not "gld" in globals(), "not running as static model ('gld' is built-in)"
 
-            if not os.path.exists("tools/autotest/case14.json"):
-                os.system("cd tools/autotest; gridlabd convert case14.py case14.glm")
-                os.system("gridlabd -C tools/autotest/case14.glm -o tools/autotest/case14.json")
+            source = "tools/autotest/case14.py"
+            python = os.path.join("/tmp",os.path.basename(source))
+            glmfile = python.replace(".py",".glm")
+            target = python.replace(".py",".json")
+            os.system(f"gridlabd source {source} > {python}")
+            os.system(f"cd /tmp; gridlabd convert {os.path.basename(python)} {os.path.basename(glmfile)}")
+            os.system(f"gridlabd -C {glmfile} -o {target}")
 
-            model = JsonModel('tools/autotest/case14.json')
+            model = JsonModel(target)
             
             assert "bus" in model.classes(), "class 'bus' not found in model"
             assert "bus_i" in model.classes()["bus"], "class 'bus' missing property 'bus_i'"
@@ -659,6 +699,7 @@ if __name__ == "__main__":
             assert len(network.Y) == 20, "Y size is incorrect"
             assert len(network._D) == 14, "_D size is incorrect"
             assert network.islands() == 1, "incorrect number of islands"
+
             exit(0)
 
         DEBUG = "--debug" in sys.argv
