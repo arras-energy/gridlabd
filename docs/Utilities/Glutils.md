@@ -4,6 +4,8 @@ Syntax: gridlabd glutils JSONFILE [OPTIONS ...]
 
 Options:
 
+* --debug: enable traceback on exceptions
+
 * --test: run a self test
 
 * graph:VAR: matrix analysis result
@@ -202,6 +204,12 @@ Returns:
 ### `Network.todict() -> dict`
 
 Get network data as a dict
+
+Arguments:
+
+* extras: include extracted node or line variables with network data
+
+* precision: change precision of extracted values (default is 6)
 
 Returns:
 

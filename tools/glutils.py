@@ -4,6 +4,8 @@ Syntax: gridlabd glutils JSONFILE [OPTIONS ...]
 
 Options:
 
+* --debug: enable traceback on exceptions
+
 * --test: run a self test
 
 * graph:VAR: matrix analysis result
