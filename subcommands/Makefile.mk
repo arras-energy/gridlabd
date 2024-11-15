@@ -23,6 +23,7 @@ bin_SCRIPTS += subcommands/gridlabd-python
 bin_SCRIPTS += subcommands/gridlabd-require
 bin_SCRIPTS += subcommands/gridlabd-requirements
 bin_SCRIPTS += subcommands/gridlabd-server
+bin_SCRIPTS += subcommands/gridlabd-source
 bin_SCRIPTS += subcommands/gridlabd-template
 bin_SCRIPTS += subcommands/gridlabd-timezone
 bin_SCRIPTS += subcommands/gridlabd-trace
