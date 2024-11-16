@@ -452,11 +452,13 @@ class Network:
             result[x] = getattr(self,x).round(precision).tolist()
         for x in self.RESULTS:
             if x in dir(self):
-                value = getattr(self,x).todense()
+                value = getattr(self,x).tocoo()
+                coords = [x.tolist() for x in value.coords]
                 if value.dtype == np.complex_:
-                    result[x] = [[str(y).strip('()') for y in x] for x in value.round(precision).tolist()]
+                    data = [str(x).strip('()') for x in value.data.round(precision).tolist()]
                 else:
-                    result[x] = value.round(precision).tolist()
+                    data = value.data.round(precision).tolist()
+                result[x] = [[[i,j],v] for i,j,v in zip(*coords,data)]
         for x,y in extras.items() if extras else {}:
             if x in dir(self):
                 result[x] = y(getattr(self,x))
@@ -728,7 +730,6 @@ if __name__ == "__main__":
         matrix = [x.split(':',2)[1] for x in sys.argv[2:] if x.startswith("graph:")]
         nodes = dict([x.split(':',3)[1:] for x in sys.argv[2:] if x.startswith("node:")])
         lines = dict([x.split(':',3)[1:] for x in sys.argv[2:] if x.startswith("line:")])
-        print(matrix,nodes,lines)
         network = Network(model,matrix=matrix,nodemap=nodes,linemap=lines)
         for key in [x for x in sys.argv[2:] if not x.split(":")[1] in dir(network)]:
             print(f"WARNING [glutils.py]: '{key}' is not a valid network analysis result",file=sys.stderr)
