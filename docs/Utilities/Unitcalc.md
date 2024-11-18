@@ -1,6 +1,6 @@
-[[/docs/Utilities/Glunits]] -- Unit support
+[[/docs/Utilities/Unitcalc]] -- Unit support
 
-Syntax: gridlabd glunits VALUE [VALUE OP [...]] [OPTIONS ...]
+Syntax: gridlabd unitcalc VALUE [VALUE OP [...]] [OPTIONS ...]
 
 Options:
 
@@ -8,7 +8,7 @@ Options:
 
 * `--list`: list of primitives in unit dictionary
 
-The `glunits` tool support unit arithmetic and unit conversion for shell
+The `unitcalc` tool support unit arithmetic and unit conversion for shell
 scripts and Python applications. All arguments are in RPN, e.g., "2 3 +". 
 
 The number of comma-delimited units, if specified, must match the number of
@@ -40,10 +40,10 @@ Supported operators include the following:
 
 Examples:
 
-    $ gridlabd glunits "32 degF" --unit=degC
+    $ gridlabd unitcalc "32 degF" --unit=degC
     0 degC
 
-    $ gridlabd glunits "32.2 ft/s^2" "5 lb" x --unit=N
+    $ gridlabd unitcalc "32.2 ft/s^2" "5 lb" x --unit=N
     22.2591 N
 
 

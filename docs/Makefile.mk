@@ -1,7 +1,7 @@
 
 DOCS = 
 DOCS += docs/Utilities/Glutils.md
-DOCS += docs/Utilities/Glunits.md
+DOCS += docs/Utilities/Unitcalc.md
 
 %.md: FORCE
 	echo "Updating $@"

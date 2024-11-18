@@ -82,7 +82,7 @@ import datetime as dt
 from typing import TypeVar
 import inspect
 import re
-from glunits import floatUnit,Unit
+from unitcalc import floatUnit,Unit
 
 DEBUG = True
 
