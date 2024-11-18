@@ -410,7 +410,7 @@ class floatUnit:
     The `floatUnit` class support all floating point arithmetic.
     """
 
-    def __init__(self,value:float|int||str,unit:str|None=None):
+    def __init__(self,value:float|int|str,unit:str|None=None):
         """Float with unit constructor
 
         Arguments:
