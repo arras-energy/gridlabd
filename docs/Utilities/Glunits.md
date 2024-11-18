@@ -1,9 +1,9 @@
 [[/docs/Utilities/Glunits]] -- Unit support
 
-Syntax: gridlabd glunit VALUE [OP VALUE ...] [--unit=UNIT]
+Syntax: gridlabd glunit VALUE VALUE OP [...] [--unit=UNIT]
 
 The `glunit` tool support unit arithmetic and unit conversion for shell
-scripts and Python applications.
+scripts and Python applications. All arguments are in RPN, e.g., "2 3 +"
 
 Examples:
 

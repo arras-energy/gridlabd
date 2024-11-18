@@ -1,9 +1,9 @@
 """Unit support
 
-Syntax: gridlabd glunit VALUE [OP VALUE ...] [--unit=UNIT]
+Syntax: gridlabd glunit VALUE VALUE OP [...] [--unit=UNIT]
 
 The `glunit` tool support unit arithmetic and unit conversion for shell
-scripts and Python applications.
+scripts and Python applications. All arguments are in RPN, e.g., "2 3 +"
 
 Examples:
 
@@ -13,6 +13,8 @@ Examples:
 
 """
 
+import sys
+import os
 import copy
 import re
 import math
@@ -24,7 +26,6 @@ from typing import TypeVar
 # k - Boltzmann's constant
 # m - electron mass
 # s - currency unit
-PRECISION = 7
 TAGS = ["c","e","h","k","m","s","scale","offset","prec"]
 UNITS = {
     "unit" : [0,0,0,0,0,0,1,0,15],
@@ -548,157 +549,216 @@ class floatUnit:
 
 if __name__ == "__main__":
 
-    import unittest
+    if len(sys.argv) == 1:
 
-    class TestFloatUnit(unittest.TestCase):
+        print("\n".join([x for x in __doc__.split("\n") if x.startswith("Syntax: ")]))
+        exit(1)
 
-        def test_scalars(self):
-            self.assertEqual(floatUnit("1 Yunit").convert("unit"),1e24)
-            self.assertEqual(floatUnit("1 Zunit").convert("unit"),1e21)
-            self.assertEqual(floatUnit("1 Eunit").convert("unit"),1e18)
-            self.assertEqual(floatUnit("1 Punit").convert("unit"),1e15)
-            self.assertEqual(floatUnit("1 Tunit").convert("unit"),1e12)
-            self.assertEqual(floatUnit("1 Gunit").convert("unit"),1e9)
-            self.assertEqual(floatUnit("1 Munit").convert("unit"),1e6)
-            self.assertEqual(floatUnit("1 kunit").convert("unit"),1e3)
-            self.assertEqual(floatUnit("1 hunit").convert("unit"),1e2)
-            self.assertEqual(floatUnit("1 daunit").convert("unit"),1e1)
-            self.assertEqual(floatUnit("1 dunit").convert("unit"),1e-1)
-            self.assertEqual(floatUnit("1 cunit").convert("unit"),1e-2)
-            self.assertEqual(floatUnit("1 munit").convert("unit"),1e-3)
-            self.assertEqual(floatUnit("1 uunit").convert("unit"),1e-6)
-            self.assertEqual(floatUnit("1 nunit").convert("unit"),1e-9)
-            self.assertEqual(floatUnit("1 punit").convert("unit"),1e-12)
-            self.assertEqual(floatUnit("1 funit").convert("unit"),1e-15)
-            # note precision of 1 unit is 1e-15
-            self.assertEqual(floatUnit("1 aunit"),"1e-18 unit")
-            self.assertEqual(floatUnit("1 zunit"),"1e-21 unit")
-            self.assertEqual(floatUnit("1 yunit"),"1e-24 unit")
+    if sys.argv[1] == "--test":
+        import unittest
 
-        def test_conversions(self):
-            # area
-            self.assertNotEqual(floatUnit("0.999999 m^2"),floatUnit("10.76381 sf"))
-            self.assertEqual(floatUnit("1.000000 m^2"),floatUnit("10.76391 sf"))
-            self.assertNotEqual(floatUnit("1.000001 m^2"),floatUnit("10.76391 sf"))
-            # data rate
-            self.assertNotEqual(floatUnit("0.999999 b/s"),floatUnit("1.25e-7 MB/s"))
-            self.assertEqual(floatUnit("1.000000 b/s"),floatUnit("1.25e-7 MB/s"))
-            self.assertNotEqual(floatUnit("1.000001 b/s"),floatUnit("1.25e-7 MB/s"))
-            # data storage
-            self.assertNotEqual(floatUnit("0.999999 B"),floatUnit("8 b"))
-            self.assertEqual(floatUnit("1.000000 B"),floatUnit("8 b"))
-            self.assertNotEqual(floatUnit("1.000001 B"),floatUnit("8 b"))
-            # frequency
-            self.assertNotEqual(floatUnit("59.99999 unit/s"),floatUnit("60e-3 kHz"))
-            self.assertEqual(floatUnit("60.00000 unit/s"),floatUnit("60e-3 kHz"))
-            self.assertNotEqual(floatUnit("60.00001 unit/s"),floatUnit("60e-3 kHz"))
-            # mileage
-            self.assertNotEqual(floatUnit("0.999999 km/l"),floatUnit("2.352146 mile/gal"))
-            self.assertEqual(floatUnit("1.000000 km/l"),floatUnit("2.352146 mile/gal"))
-            self.assertNotEqual(floatUnit("1.000001 km/l"),floatUnit("2.352146 mile/gal"))
-            # energy
-            self.assertNotEqual(floatUnit("0.999999 kWh"),floatUnit("3.6 MJ"))
-            self.assertEqual(floatUnit("1.000000 kWh"),floatUnit("3.6 MJ"))
-            self.assertNotEqual(floatUnit("1.000001 kWh"),floatUnit("3.6 MJ"))
-            # distance
-            self.assertNotEqual(floatUnit("2.539999 cm"),floatUnit("1 in"))
-            self.assertEqual(floatUnit("2.540000 cm"),floatUnit("1 in"))
-            self.assertNotEqual(floatUnit("2.540001 cm"),floatUnit("1 in"))
-            # mass
-            self.assertNotEqual(floatUnit("0.999999 kg"),floatUnit("2.204620 lb"))
-            self.assertEqual(floatUnit("1.000000 kg"),floatUnit("2.204620 lb"))
-            self.assertNotEqual(floatUnit("1.000001 kg"),floatUnit("2.204620 lb"))
-            # angle
-            self.assertNotEqual(floatUnit("0.99999999999999 deg"),floatUnit("0.01745328641889982 rad"))
-            self.assertEqual(floatUnit("1.00000000000000 deg"),floatUnit("0.01745328641889982 rad"))
-            self.assertNotEqual(floatUnit("1.00000000000001 deg"),floatUnit("0.01745328641889982 rad"))
-            # pressure
-            self.assertNotEqual(floatUnit("0.999999 psi"),floatUnit("6894.757 Pa"))
-            self.assertEqual(floatUnit("1.000000 psi"),floatUnit("6894.757 Pa"))
-            self.assertNotEqual(floatUnit("1.000001 psi"),floatUnit("6894.757 Pa"))
-            # velocity
-            self.assertNotEqual(floatUnit("0.999999 mph"),floatUnit("0.4470400 m/s"))
-            self.assertEqual(floatUnit("1.000000 mph"),floatUnit("0.4470400 m/s"))
-            self.assertNotEqual(floatUnit("1.000001 mph"),floatUnit("0.4470400 m/s"))
-            # temperature
-            self.assertNotEqual(floatUnit("-0.02 degC"),floatUnit("32 degF"))
-            self.assertEqual(floatUnit("+0.00 degC"),floatUnit("32 degF"))
-            self.assertNotEqual(floatUnit("+0.02 degC"),floatUnit("32 degF"))
-            self.assertNotEqual(floatUnit("273.14 K"),floatUnit("31.98 degF"))
-            self.assertEqual(floatUnit("273.14 K"),floatUnit("32.00 degF"))
-            self.assertNotEqual(floatUnit("273.14 K"),floatUnit("32.02 degF"))
-            # time
-            self.assertNotEqual(floatUnit("1 min"),floatUnit("59.99998 s"))
-            self.assertEqual(floatUnit("1 min"),floatUnit("60.00000 s"))
-            self.assertNotEqual(floatUnit("1 min"),floatUnit("60.00002 s"))
-            self.assertNotEqual(floatUnit("1 h"),floatUnit("3599.998 s"))
-            self.assertEqual(floatUnit("1 h"),floatUnit("3600.000 s"))
-            self.assertNotEqual(floatUnit("1 h"),floatUnit("3600.002 s"))
-            # volume
-            self.assertNotEqual(floatUnit("0.999999 m^3"),floatUnit("264.17205 gal"))
-            self.assertEqual(floatUnit("1.000000 m^3"),floatUnit("264.17205 gal"))
-            self.assertNotEqual(floatUnit("1.000001 m^3"),floatUnit("264.17205 gal"))
+        class TestFloatUnit(unittest.TestCase):
 
-        def test_float(self):
-            x = floatUnit("2.34")
-            self.assertAlmostEqual(x,2.34)
-            self.assertAlmostEqual(x,"2.34")
-            self.assertAlmostEqual(x.value,2.34)
-            self.assertAlmostEqual(float(x),2.34)
-            self.assertEqual(x.unit,None)
-            self.assertEqual(str(x),"2.34")
+            def test_scalars(self):
+                self.assertEqual(floatUnit("1 Yunit").convert("unit"),1e24)
+                self.assertEqual(floatUnit("1 Zunit").convert("unit"),1e21)
+                self.assertEqual(floatUnit("1 Eunit").convert("unit"),1e18)
+                self.assertEqual(floatUnit("1 Punit").convert("unit"),1e15)
+                self.assertEqual(floatUnit("1 Tunit").convert("unit"),1e12)
+                self.assertEqual(floatUnit("1 Gunit").convert("unit"),1e9)
+                self.assertEqual(floatUnit("1 Munit").convert("unit"),1e6)
+                self.assertEqual(floatUnit("1 kunit").convert("unit"),1e3)
+                self.assertEqual(floatUnit("1 hunit").convert("unit"),1e2)
+                self.assertEqual(floatUnit("1 daunit").convert("unit"),1e1)
+                self.assertEqual(floatUnit("1 dunit").convert("unit"),1e-1)
+                self.assertEqual(floatUnit("1 cunit").convert("unit"),1e-2)
+                self.assertEqual(floatUnit("1 munit").convert("unit"),1e-3)
+                self.assertEqual(floatUnit("1 uunit").convert("unit"),1e-6)
+                self.assertEqual(floatUnit("1 nunit").convert("unit"),1e-9)
+                self.assertEqual(floatUnit("1 punit").convert("unit"),1e-12)
+                self.assertEqual(floatUnit("1 funit").convert("unit"),1e-15)
+                # note precision of 1 unit is 1e-15
+                self.assertEqual(floatUnit("1 aunit"),"1e-18 unit")
+                self.assertEqual(floatUnit("1 zunit"),"1e-21 unit")
+                self.assertEqual(floatUnit("1 yunit"),"1e-24 unit")
 
-        def test_simple_unit(self):
-            x = floatUnit("1.23 m")
-            self.assertAlmostEqual(x,1.23)
-            self.assertAlmostEqual(x,"1.23 m")
-            self.assertAlmostEqual(x,"1230 mm")
-            self.assertAlmostEqual(x.value,1.23)
-            self.assertAlmostEqual(float(x),1.23)
-            self.assertEqual(x.unit,"m")
-            self.assertEqual(str(x),"1.23 m")
+            def test_conversions(self):
+                # area
+                self.assertNotEqual(floatUnit("0.999999 m^2"),floatUnit("10.76381 sf"))
+                self.assertEqual(floatUnit("1.000000 m^2"),floatUnit("10.76391 sf"))
+                self.assertNotEqual(floatUnit("1.000001 m^2"),floatUnit("10.76391 sf"))
+                # data rate
+                self.assertNotEqual(floatUnit("0.999999 b/s"),floatUnit("1.25e-7 MB/s"))
+                self.assertEqual(floatUnit("1.000000 b/s"),floatUnit("1.25e-7 MB/s"))
+                self.assertNotEqual(floatUnit("1.000001 b/s"),floatUnit("1.25e-7 MB/s"))
+                # data storage
+                self.assertNotEqual(floatUnit("0.999999 B"),floatUnit("8 b"))
+                self.assertEqual(floatUnit("1.000000 B"),floatUnit("8 b"))
+                self.assertNotEqual(floatUnit("1.000001 B"),floatUnit("8 b"))
+                # frequency
+                self.assertNotEqual(floatUnit("59.99999 unit/s"),floatUnit("60e-3 kHz"))
+                self.assertEqual(floatUnit("60.00000 unit/s"),floatUnit("60e-3 kHz"))
+                self.assertNotEqual(floatUnit("60.00001 unit/s"),floatUnit("60e-3 kHz"))
+                # mileage
+                self.assertNotEqual(floatUnit("0.999999 km/l"),floatUnit("2.352146 mile/gal"))
+                self.assertEqual(floatUnit("1.000000 km/l"),floatUnit("2.352146 mile/gal"))
+                self.assertNotEqual(floatUnit("1.000001 km/l"),floatUnit("2.352146 mile/gal"))
+                # energy
+                self.assertNotEqual(floatUnit("0.999999 kWh"),floatUnit("3.6 MJ"))
+                self.assertEqual(floatUnit("1.000000 kWh"),floatUnit("3.6 MJ"))
+                self.assertNotEqual(floatUnit("1.000001 kWh"),floatUnit("3.6 MJ"))
+                # distance
+                self.assertNotEqual(floatUnit("2.539999 cm"),floatUnit("1 in"))
+                self.assertEqual(floatUnit("2.540000 cm"),floatUnit("1 in"))
+                self.assertNotEqual(floatUnit("2.540001 cm"),floatUnit("1 in"))
+                # mass
+                self.assertNotEqual(floatUnit("0.999999 kg"),floatUnit("2.204620 lb"))
+                self.assertEqual(floatUnit("1.000000 kg"),floatUnit("2.204620 lb"))
+                self.assertNotEqual(floatUnit("1.000001 kg"),floatUnit("2.204620 lb"))
+                # angle
+                self.assertNotEqual(floatUnit("0.99999999999999 deg"),floatUnit("0.01745328641889982 rad"))
+                self.assertEqual(floatUnit("1.00000000000000 deg"),floatUnit("0.01745328641889982 rad"))
+                self.assertNotEqual(floatUnit("1.00000000000001 deg"),floatUnit("0.01745328641889982 rad"))
+                # pressure
+                self.assertNotEqual(floatUnit("0.999999 psi"),floatUnit("6894.757 Pa"))
+                self.assertEqual(floatUnit("1.000000 psi"),floatUnit("6894.757 Pa"))
+                self.assertNotEqual(floatUnit("1.000001 psi"),floatUnit("6894.757 Pa"))
+                # velocity
+                self.assertNotEqual(floatUnit("0.999999 mph"),floatUnit("0.4470400 m/s"))
+                self.assertEqual(floatUnit("1.000000 mph"),floatUnit("0.4470400 m/s"))
+                self.assertNotEqual(floatUnit("1.000001 mph"),floatUnit("0.4470400 m/s"))
+                # temperature
+                self.assertNotEqual(floatUnit("-0.02 degC"),floatUnit("32 degF"))
+                self.assertEqual(floatUnit("+0.00 degC"),floatUnit("32 degF"))
+                self.assertNotEqual(floatUnit("+0.02 degC"),floatUnit("32 degF"))
+                self.assertNotEqual(floatUnit("273.14 K"),floatUnit("31.98 degF"))
+                self.assertEqual(floatUnit("273.14 K"),floatUnit("32.00 degF"))
+                self.assertNotEqual(floatUnit("273.14 K"),floatUnit("32.02 degF"))
+                # time
+                self.assertNotEqual(floatUnit("1 min"),floatUnit("59.99998 s"))
+                self.assertEqual(floatUnit("1 min"),floatUnit("60.00000 s"))
+                self.assertNotEqual(floatUnit("1 min"),floatUnit("60.00002 s"))
+                self.assertNotEqual(floatUnit("1 h"),floatUnit("3599.998 s"))
+                self.assertEqual(floatUnit("1 h"),floatUnit("3600.000 s"))
+                self.assertNotEqual(floatUnit("1 h"),floatUnit("3600.002 s"))
+                # volume
+                self.assertNotEqual(floatUnit("0.999999 m^3"),floatUnit("264.17205 gal"))
+                self.assertEqual(floatUnit("1.000000 m^3"),floatUnit("264.17205 gal"))
+                self.assertNotEqual(floatUnit("1.000001 m^3"),floatUnit("264.17205 gal"))
 
-        def test_unit_convert(self):
-            x = floatUnit("1.23 m").convert("cm")
-            self.assertAlmostEqual(float(x),123.0)
-            self.assertEqual(x.unit,"cm")
-            self.assertEqual(str(x),"123 cm")
+            def test_float(self):
+                x = floatUnit("2.34")
+                self.assertAlmostEqual(x,2.34)
+                self.assertAlmostEqual(x,"2.34")
+                self.assertAlmostEqual(x.value,2.34)
+                self.assertAlmostEqual(float(x),2.34)
+                self.assertEqual(x.unit,None)
+                self.assertEqual(str(x),"2.34")
 
-        def test_unit_add(self):
-            x = floatUnit("1.23 m")
-            y = floatUnit("1 cm")
-            z = x + y
-            self.assertAlmostEqual(float(z),1.24)
-            self.assertEqual(z.unit,"m")
-            self.assertEqual(str(z),"1.24 m")
+            def test_simple_unit(self):
+                x = floatUnit("1.23 m")
+                self.assertAlmostEqual(x,1.23)
+                self.assertAlmostEqual(x,"1.23 m")
+                self.assertAlmostEqual(x,"1230 mm")
+                self.assertAlmostEqual(x.value,1.23)
+                self.assertAlmostEqual(float(x),1.23)
+                self.assertEqual(x.unit,"m")
+                self.assertEqual(str(x),"1.23 m")
 
-        def test_unit_sub(self):
-            x = floatUnit("1.23 m")
-            y = floatUnit("1 cm")
-            z = x - y
-            self.assertAlmostEqual(float(z),1.22)
-            self.assertEqual(z.unit,"m")
-            self.assertEqual(str(z),"1.22 m")
+            def test_unit_convert(self):
+                x = floatUnit("1.23 m").convert("cm")
+                self.assertAlmostEqual(float(x),123.0)
+                self.assertEqual(x.unit,"cm")
+                self.assertEqual(str(x),"123 cm")
 
-        def test_unit_invert(self):
-            u = Unit("N*m/s^2")
-            self.assertEqual(u._invert(),Unit("s^2/N*m"))
+            def test_unit_add(self):
+                x = floatUnit("1.23 m")
+                y = floatUnit("1 cm")
+                z = x + y
+                self.assertAlmostEqual(float(z),1.24)
+                self.assertEqual(z.unit,"m")
+                self.assertEqual(str(z),"1.24 m")
 
-        def test_unit_mul(self):
-            u = Unit("m/s^2")
-            v = Unit("N*s")
-            w = u*v
-            self.assertEqual(w,Unit("N*m/s"))
+            def test_unit_sub(self):
+                x = floatUnit("1.23 m")
+                y = floatUnit("1 cm")
+                z = x - y
+                self.assertAlmostEqual(float(z),1.22)
+                self.assertEqual(z.unit,"m")
+                self.assertEqual(str(z),"1.22 m")
 
-        def test_unit_div(self):
-            u = Unit("m")
-            v = Unit("s")
-            self.assertEqual(u/v,Unit("m/s"))
+            def test_unit_invert(self):
+                u = Unit("N*m/s^2")
+                self.assertEqual(u._invert(),Unit("s^2/N*m"))
 
-        def test_unit_pow(self):
-            u = Unit("m")
-            self.assertEqual(u*u,u**2)
-            self.assertEqual(u*u*u,u**3)
-            self.assertEqual(1/u,Unit("/m"))
+            def test_unit_mul(self):
+                u = Unit("m/s^2")
+                v = Unit("N*s")
+                w = u*v
+                self.assertEqual(w,Unit("N*m/s"))
 
-    unittest.main()
+            def test_unit_div(self):
+                u = Unit("m")
+                v = Unit("s")
+                self.assertEqual(u/v,Unit("m/s"))
+
+            def test_unit_pow(self):
+                u = Unit("m")
+                self.assertEqual(u*u,u**2)
+                self.assertEqual(u*u*u,u**3)
+                self.assertEqual(1/u,Unit("/m"))
+
+        unittest.main()
+        exit(0)
+
+    try:
+        stack = []
+        unit = None
+
+        for arg in sys.argv[1:]:
+
+            if arg.startswith("--unit="):
+
+                _,unit = arg.split("=",1)
+
+            elif arg == '+':
+
+                a,b = stack[:2]
+                tail = stack[2:] if len(stack) > 2 else []
+                stack = [floatUnit(a)+floatUnit(b)] + tail
+
+            elif arg == '-':
+
+                a,b = stack[:2]
+                tail = stack[2:] if len(stack) > 2 else []
+                stack = [floatUnit(a)-floatUnit(b)] + tail
+
+            elif arg == 'x':
+
+                a,b = stack[:2]
+                tail = stack[2:] if len(stack) > 2 else []
+                stack = [floatUnit(a)*floatUnit(b)] + tail
+
+            elif arg == '-':
+
+                a,b = stack[:2]
+                tail = stack[2:] if len(stack) > 2 else []
+                stack = [floatUnit(a)/floatUnit(b)] + tail
+
+            elif arg == '^':
+
+                a,b = stack[:2]
+                tail = stack[2:] if len(stack) > 2 else []
+                stack = [floatUnit(a)**int(b)] + tail
+
+            else:
+
+                stack.insert(0,arg)
+
+        stack = [x if isinstance(x,floatUnit) else floatUnit(x) for x in stack]
+        print(",".join([str(x.convert(unit if unit else x.unit)) for x in stack]))
+
+    except UnitException as err:
+
+        print(f"ERROR [glunits]: {err}")
+
