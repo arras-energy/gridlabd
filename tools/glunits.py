@@ -6,10 +6,37 @@ Options:
 
 * `--unit=[UNIT[,...]]`: units to convert stack when output results
 
+* `--list`: list of primitives in unit dictionary
+
 The `glunits` tool support unit arithmetic and unit conversion for shell
-scripts and Python applications. All arguments are in RPN, e.g., "2 3 +".
-The number of comma-delimited units, if specified, must match the number
-of results in the stack.
+scripts and Python applications. All arguments are in RPN, e.g., "2 3 +". 
+
+The number of comma-delimited units, if specified, must match the number of
+results in the stack.
+
+Values may be provided with or without units. Values without units are
+considered compatible with values that have using, i.e., the same unit for
+summation and scalars for products.  Units must always be provided with a
+space separating the number from the unit.
+
+It is important to know that composite units are calculated as needed from
+primitive units, e.g., although `m/s` is not listed, it is supported.
+
+Supported operators include the following:
+
+* `+`, `add`, `sum`: addition
+
+* `-`, `sub`, `subtract`,`minus`: subtraction
+
+* `*`, `x`, `mul`, `multiply`, `prod`, `product`: multiplication
+
+* `/`, `div`, `divide``: division
+
+* `//`, `quo`, `quotient`, `floordiv`, `fdiv`: floor division (quotient)
+
+* `%`, `mod`, `modulo`, `rem`, `remainder`: modulo (remainder)
+
+* `^`, `**`, `pow`, `power`: power
 
 Examples:
 
@@ -392,7 +419,7 @@ class Unit:
     def _invert(self):
         return Unit(_join(self.terms,-1))
 
-    def matches(self,x:str|TypeVar('Unit'),exception=False):
+    def matches(self,x:str|TypeVar('Unit'),exception=False,strict=False):
         """Verifies that two units are compatible for add/subtract operations
 
         Arguments:
@@ -401,12 +428,18 @@ class Unit:
 
         * `exception (bool)`: raise exception on mismatch
 
+        * `strict (bool)`: match with `None` units fails
+
         Returns:
 
         * `bool`: `True` if matched, otherwise `False`
         """
         if isinstance(x,str):
             x = Unit(x)
+        elif isinstance(x,floatUnit):
+            x = x.unit
+        if x is None:
+            return not strict
         if self.args == x.args:
             return True
         if not exception:
@@ -448,33 +481,49 @@ class floatUnit:
 
     def __add__(self,x:float|int|str|TypeVar('floatUnit')) -> TypeVar('floatUnit'):
         if type(x) in [float,int]:
-            return floatUnit(self.value*x,self.unit)
-        elif isinstance(x,str):
+            return floatUnit(self.value+x,self.unit)
+        if isinstance(x,str):
             x = floatUnit(x)
+        if x.unit is None:
+            return floatUnit(self.value+x.value,self.unit)
+        if self.unit is None:
+            return floatUnit(self.value+x.value,x.unit)
         self.unit.matches(x.unit,True)
         return floatUnit(self.value+x.value/self.unit.scale*x.unit.scale,self.unit)
 
     def __sub__(self,x:float|int|str|TypeVar('floatUnit')) -> TypeVar('floatUnit'):
         if type(x) in [float,int]:
-            return floatUnit(self.value*x,self.unit)
-        elif isinstance(x,str):
+            return floatUnit(self.value-x,self.unit)
+        if isinstance(x,str):
             x = floatUnit(x)
+        if x.unit is None:
+            return floatUnit(self.value-x.value,self.unit)
+        if self.unit is None:
+            return floatUnit(self.value-x.value,x.unit)
         self.unit.matches(x.unit,True)
         return floatUnit(self.value-x.value/self.unit.scale*x.unit.scale,self.unit)
 
     def __radd__(self,x:float|int|str|TypeVar('floatUnit')) -> TypeVar('floatUnit'):
         if type(x) in [float,int]:
-            return floatUnit(self.value*x,self.unit)
-        elif isinstance(x,str):
+            return floatUnit(x+self.value,self.unit)
+        if isinstance(x,str):
             x = floatUnit(x)
+        if x.unit is None:
+            return floatUnit(x.value+self.value,self.unit)
+        if self.unit is None:
+            return floatUnit(x.value+self.value,x.unit)
         self.unit.matches(x.unit,True)
         return floatUnit(self.value+x.value/self.unit.scale*x.unit.scale,self.unit)
 
     def __rsub__(self,x:float|int|str|TypeVar('floatUnit')) -> TypeVar('floatUnit'):
         if type(x) in [float,int]:
-            return floatUnit(self.value*x,self.unit)
-        elif isinstance(x,str):
+            return floatUnit(x-self.value,self.unit)
+        if isinstance(x,str):
             x = floatUnit(x)
+        if x.unit is None:
+            return floatUnit(x.value-self.value,self.unit)
+        if self.unit is None:
+            return floatUnit(x.value-self.value,x.unit)
         self.unit.matches(x.unit,True)
         return floatUnit(-(self.value-x.value/self.unit.scale*x.unit.scale),self.unit)
 
@@ -484,26 +533,97 @@ class floatUnit:
     def __mul__(self,x:float|int|str|TypeVar('floatUnit')) -> TypeVar('floatUnit'):
         if type(x) in [float,int]:
             return floatUnit(self.value*x,self.unit)
-        elif isinstance(x,str):
+        if isinstance(x,str):
             x = floatUnit(x)
+        if x.unit is None:
+            return floatUnit(self.value*x.value,self.unit)
+        if self.unit is None:
+            return floatUnit(self.value*x.value,x.unit)
+        return floatUnit(self.value*x.value,self.unit*x.unit)
+
+    def __rmul__(self,x:float|int|str|TypeVar('floatUnit')) -> TypeVar('floatUnit'):
+        if type(x) in [float,int]:
+            return floatUnit(self.value*x,self.unit)
+        if isinstance(x,str):
+            x = floatUnit(x)
+        if x.unit is None:
+            return floatUnit(self.value*x.value,self.unit)
+        if self.unit is None:
+            return floatUnit(self.value*x.value,x.unit)
         return floatUnit(self.value*x.value,self.unit*x.unit)
 
     def __truediv__(self,x:float|int|str|TypeVar('floatUnit')) -> TypeVar('floatUnit'):
         if type(x) in [float,int]:
             return floatUnit(self.value/x,self.unit)
-        elif isinstance(x,str):
+        if isinstance(x,str):
             x = floatUnit(x)
+        if x.unit is None:
+            return floatUnit(self.value/x.value,self.unit)
+        if self.unit is None:
+            return floatUnit(self.value/x.value,x.unit)
         return floatUnit(self.value/x.value,self.unit/x.unit)
+
+    def __rtruediv__(self,x:float|int|str|TypeVar('floatUnit')) -> TypeVar('floatUnit'):
+        if type(x) in [float,int]:
+            return floatUnit(x/self.value,self.unit)
+        if isinstance(x,str):
+            x = floatUnit(x)
+        if x.unit is None:
+            return floatUnit(x.value/self.value,self.unit)
+        if self.unit is None:
+            return floatUnit(x.value/self.value,x.unit)
+        return floatUnit(x.value/self.value,self.unit/x.unit)
+
+    def __floordiv__(self,x:float|int|str|TypeVar('floatUnit')) -> TypeVar('floatUnit'):
+        if type(x) in [float,int]:
+            return floatUnit(self.value//x,self.unit)
+        if isinstance(x,str):
+            x = floatUnit(x)
+        if x.unit is None:
+            return floatUnit(self.value//x.value,self.unit)
+        if self.unit is None:
+            return floatUnit(self.value//x.value,x.unit)
+        return floatUnit(self.value//x.value,self.unit/x.unit)
+
+    def __rfloordiv__(self,x:float|int|str|TypeVar('floatUnit')) -> TypeVar('floatUnit'):
+        if type(x) in [float,int]:
+            return floatUnit(x//self.value,self.unit)
+        if isinstance(x,str):
+            x = floatUnit(x)
+        if x.unit is None:
+            return floatUnit(x.value//self.value,self.unit)
+        if self.unit is None:
+            return floatUnit(x.value//self.value,x.unit)
+        return floatUnit(x.value//self.value,self.unit/x.unit)
 
     def __mod__(self,x:float|int|str|TypeVar('floatUnit')) -> TypeVar('floatUnit'):
         if type(x) in [float,int]:
             return floatUnit(self.value%x,self.unit)
-        elif isinstance(x,str):
+        if isinstance(x,str):
             x = floatUnit(x)
+        if x.unit is None:
+            return floatUnit(self.value%x.value,self.unit)
+        if self.unit is None:
+            return floatUnit(self.value%x.value,x.unit)
         return floatUnit(self.value%x.value,self.unit/x.unit)
 
-    def __pow__(self,x:float|int|str|TypeVar('floatUnit')) -> TypeVar('floatUnit'):
-        raise NotImplementedError("TODO")
+    def __rmod__(self,x:float|int|str|TypeVar('floatUnit')) -> TypeVar('floatUnit'):
+        if type(x) in [float,int]:
+            return floatUnit(x%self.value,self.unit)
+        if isinstance(x,str):
+            x = floatUnit(x)
+        if x.unit is None:
+            return floatUnit(x.value%self.value,self.unit)
+        if self.unit is None:
+            return floatUnit(x.value%self.value,x.unit)
+        return floatUnit(x.value%self.value,self.unit/x.unit)
+
+    def __pow__(self,x:int) -> TypeVar('floatUnit'):
+        try:
+            n = int(x)
+            return floatUnit(self.value**n,self.unit**n)
+        except ValueError as err:
+            raise UnitException("only int power is allowed") from err
 
     def __lt__(self,x:float|int|str|TypeVar('floatUnit')) -> bool:
         raise NotImplementedError("TODO")
@@ -719,6 +839,11 @@ if __name__ == "__main__":
         unittest.main()
         exit(0)
 
+    elif sys.argv[1] == '--list':
+
+        print("\n".join([f"{x} = {y}" for x,y in SPECS.items]))
+        exit(0)
+
     try:
         stack = []
         unit = None
@@ -730,43 +855,55 @@ if __name__ == "__main__":
                 _,unit = arg.split("=",1)
                 unit = unit.split(",")
 
-            elif arg == '+':
+            elif arg in ['+','add','sum']:
 
                 a,b = stack[:2]
                 tail = stack[2:] if len(stack) > 2 else []
-                stack = [floatUnit(a)+floatUnit(b)] + tail
+                stack = [floatUnit(b)+a] + tail
 
-            elif arg == '-':
-
-                a,b = stack[:2]
-                tail = stack[2:] if len(stack) > 2 else []
-                stack = [floatUnit(a)-floatUnit(b)] + tail
-
-            elif arg == 'x':
+            elif arg in ['-','sub','subtract','minus']:
 
                 a,b = stack[:2]
                 tail = stack[2:] if len(stack) > 2 else []
-                stack = [floatUnit(a)*floatUnit(b)] + tail
+                stack = [floatUnit(b)-a] + tail
 
-            elif arg == '/':
-
-                a,b = stack[:2]
-                tail = stack[2:] if len(stack) > 2 else []
-                stack = [floatUnit(a)/floatUnit(b)] + tail
-
-            elif arg == '^':
+            elif arg in ['*','x','mul','multiply','prod','product']:
 
                 a,b = stack[:2]
                 tail = stack[2:] if len(stack) > 2 else []
-                stack = [floatUnit(a)**int(b)] + tail
+                stack = [floatUnit(b)*a] + tail
+
+            elif arg in ['/','div','divide']:
+
+                a,b = stack[:2]
+                tail = stack[2:] if len(stack) > 2 else []
+                stack = [floatUnit(b)/a] + tail
+
+            elif arg in ['//','quot','quotient','floordiv','fdiv']:
+
+                a,b = stack[:2]
+                tail = stack[2:] if len(stack) > 2 else []
+                stack = [floatUnit(b)//a] + tail
+
+            elif arg in ['%','mod','modulo','rem','remainder']:
+
+                a,b = stack[:2]
+                tail = stack[2:] if len(stack) > 2 else []
+                stack = [floatUnit(b)%a] + tail
+
+            elif arg in ['^','**','pow','power']:
+
+                a,b = stack[:2]
+                tail = stack[2:] if len(stack) > 2 else []
+                stack = [floatUnit(b)**a] + tail
 
             else:
 
                 stack.insert(0,arg)
 
-        stack = [x if isinstance(x,floatUnit) else floatUnit(x) for x in stack]
+        stack = [x if isinstance(x,floatUnit) else floatUnit(x) for x in reversed(stack)]
         if unit:
-            print(",".join([str(x.convert(y)) for x,y in zip(stack,reversed(unit))]))
+            print(",".join([str(x.convert(y)) for x,y in zip(stack,unit)]))
         else:
             print(",".join([str(x) for x in stack]))
 

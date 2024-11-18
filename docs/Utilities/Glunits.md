@@ -6,10 +6,37 @@ Options:
 
 * `--unit=[UNIT[,...]]`: units to convert stack when output results
 
+* `--list`: list of primitives in unit dictionary
+
 The `glunits` tool support unit arithmetic and unit conversion for shell
-scripts and Python applications. All arguments are in RPN, e.g., "2 3 +".
-The number of comma-delimited units, if specified, must match the number
-of results in the stack.
+scripts and Python applications. All arguments are in RPN, e.g., "2 3 +". 
+
+The number of comma-delimited units, if specified, must match the number of
+results in the stack.
+
+Values may be provided with or without units. Values without units are
+considered compatible with values that have using, i.e., the same unit for
+summation and scalars for products.  Units must always be provided with a
+space separating the number from the unit.
+
+It is important to know that composite units are calculated as needed from
+primitive units, e.g., although `m/s` is not listed, it is supported.
+
+Supported operators include the following:
+
+* `+`, `add`, `sum`: addition
+
+* `-`, `sub`, `subtract`,`minus`: subtraction
+
+* `*`, `x`, `mul`, `multiply`, `prod`, `product`: multiplication
+
+* `/`, `div`, `divide``: division
+
+* `//`, `quo`, `quotient`, `floordiv`, `fdiv`: floor division (quotient)
+
+* `%`, `mod`, `modulo`, `rem`, `remainder`: modulo (remainder)
+
+* `^`, `**`, `pow`, `power`: power
 
 Examples:
 
@@ -49,6 +76,8 @@ Arguments:
 * `x (str|Unit)`: unit to check against
 
 * `exception (bool)`: raise exception on mismatch
+
+* `strict (bool)`: match with `None` units fails
 
 Returns:
 

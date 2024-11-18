@@ -368,6 +368,8 @@ Arguments:
 
 * `exception (bool)`: raise exception on mismatch
 
+* `strict (bool)`: match with `None` units fails
+
 Returns:
 
 * `bool`: `True` if matched, otherwise `False`
