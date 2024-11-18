@@ -319,8 +319,17 @@ def _sub(a,b):
 
 
 class Unit:
-
+    """Unit handling class"""
     def __init__(self,unit):
+        """Unit class constructor
+
+        Arguments:
+
+        * `unit (str)`: unit specification
+
+        Unit object support arithmetic for units, e.g., addition, subtraction,
+        multiplication, division, powers, module, and boolean equality.
+        """
         spec = _derive(unit)
         self.args = spec[:6]
         self.scale = spec[6]
@@ -375,6 +384,18 @@ class Unit:
         return Unit(_join(self.terms,-1))
 
     def matches(self,x:str|TypeVar('Unit'),exception=False):
+        """Verifies that two units are compatible for add/subtract operations
+
+        Arguments:
+
+        * `x (str|Unit)`: unit to check against
+
+        * `exception (bool)`: raise exception on mismatch
+
+        Returns:
+
+        * `bool`: `True` if matched, otherwise `False`
+        """
         if isinstance(x,str):
             x = Unit(x)
         if self.args == x.args:
@@ -384,8 +405,20 @@ class Unit:
         raise UnitException("units do not match")
 
 class floatUnit:
+    """Float with unit class
 
-    def __init__(self,value:float|str,unit:str|None=None):
+    The `floatUnit` class support all floating point arithmetic.
+    """
+
+    def __init__(self,value:float|int||str,unit:str|None=None):
+        """Float with unit constructor
+
+        Arguments:
+
+        * `value (float|int|str)`: the floating point value (may include unit if `str`)
+
+        * `unit`: unit (if not included in `value`)
+        """
         self.unit = unit
         if type(value) is str and " " in value.strip():
             if isinstance(unit,str):
@@ -461,19 +494,19 @@ class floatUnit:
         return floatUnit(self.value%x.value,self.unit/x.unit)
 
     def __pow__(self,x:float|int|str|TypeVar('floatUnit')) -> TypeVar('floatUnit'):
-        pass
+        raise NotImplementedError("TODO")
 
     def __lt__(self,x:float|int|str|TypeVar('floatUnit')) -> bool:
-        pass
+        raise NotImplementedError("TODO")
 
     def __gt__(self,x:float|int|str|TypeVar('floatUnit')) -> bool:
-        pass
+        raise NotImplementedError("TODO")
 
     def __le__(self,x:str|TypeVar('Unit')) -> bool:
-        pass
+        raise NotImplementedError("TODO")
 
     def __ge__(self,x:str|TypeVar('Unit')) -> bool:
-        pass
+        raise NotImplementedError("TODO")
 
     def __eq__(self,x:str|TypeVar('Unit')) -> bool:
         if isinstance(x,float) or isinstance(x,int):
@@ -501,6 +534,12 @@ class floatUnit:
         return not self.__eq__(x)
 
     def convert(self,unit:str|TypeVar('Unit')) -> TypeVar('floatUnit'):
+        """Convert value to a different unit
+
+        Arguments:
+
+        * `unit (str|Unit)`: the unit to which the value should be convertor
+        """
         if isinstance(unit,str):
             unit = Unit(unit)
         self.unit.matches(unit,True)
