@@ -43,8 +43,8 @@ Examples:
     $ gridlabd glunits "32 degF" --unit=degC
     0 degC
 
-    $ gridlabd glunits "10 m/s^2" "5 lb" x --unit=N
-    22.6796 N
+    $ gridlabd glunits "32.2 ft/s^2" "5 lb" x --unit=N
+    22.2591 N
 
 """
 
