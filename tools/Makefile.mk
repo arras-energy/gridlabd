@@ -13,6 +13,7 @@ dist_pkgdata_DATA += tools/fire_report.py
 dist_pkgdata_DATA += tools/fit_filter.py
 dist_pkgdata_DATA += tools/gldserver.py
 dist_pkgdata_DATA += tools/glutils.py
+dist_pkgdata_DATA += tools/glunits.py
 dist_pkgdata_DATA += tools/gridlabd-editor.png
 dist_pkgdata_DATA += tools/gridlabd-editor.py
 dist_pkgdata_DATA += tools/group.py

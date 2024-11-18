@@ -1,18 +1,18 @@
 [[/docs/Utilities/Glutils]] -- GridLAB-D model access utilities
 
-Syntax: gridlabd glutils JSONFILE [OPTIONS ...]
+Syntax: `gridlabd glutils JSONFILE [OPTIONS ...]`
 
 Options:
 
-* --debug: enable traceback on exceptions
+* `--debug`: enable traceback on exceptions
 
-* --test: run a self test
+* `--test`: run a self test
 
-* graph:VAR: matrix analysis result
+* `graph:VAR`: matrix analysis result
 
-* node:VAR: node property vector
+* `node:VAR`: node property vector
 
-* line:VAR: line property vector
+* `line:VAR`: line property vector
 
 The `glutils` module is a `gridlabd` runtime model accessor library that can
 be used when running Python code in `gridlabd` modules. The accessors allow
@@ -31,36 +31,39 @@ identified by `from` and `to` properties in edges, or in the case of
 `bus_i` properties in vertices. The following structural property can be
 extracted using the `graph` option:
 
-* A: adjacency matrix
+* `A`: adjacency matrix
 
-* D: degree matrix
+* `D`: degree matrix
 
-* L: graph Laplacian matrix
+* `L`: graph Laplacian matrix
 
-* B: oriented incidence matrix
+* `B`: oriented incidence matrix
 
-* W: weighted real Laplacian matrix
+* `W`: weighted real Laplacian matrix
 
-* Wc: weighted complex Laplacian matrix
+* `Wc`: weighted complex Laplacian matrix
+
+All sparse matrices are output in `[[i,j],v]` format. The output can be used
+to load sparse matrices using the `scipy.sparse` package.
 
 Metadata arrays are also extract to support interpretation of the graph
 matrices. These include the following:
 
-* lines: list of line from/to tuples as an index into the `bus` list
+* `lines`: list of line from/to tuples as an index into the `bus` list
 
-* nodes: mapping of the node ids as an index into the `branch` list
+* `nodes`: mapping of the node ids as an index into the `branch` list
 
-* names: a list of the node and line object names in the model
+* `names`: a list of the node and line object names in the model
 
-* baseMVA: the baseMVA value, if found
+* `baseMVA`: the baseMVA value, if found
 
-* row: the `from` node index in the graph matrices
+* `row`: the `from` node index in the graph matrices
 
-* col: the `to` node index in the graph matrices
+* `col`: the `to` node index in the graph matrices
 
-* bus: the bus list
+* `bus`: the bus list
 
-* branch: the branch from/to list
+* `branch`: the branch from/to list
 
 The extraction process automatically generates the edge weights based on the
 line impedance. These are stored in `Y`, `Yc`, and `Z`.  All other properties
@@ -329,10 +332,6 @@ Returns:
 
 Get value, if any
 
-### `Property.rlock() -> None`
-
-Lock property for read
-
 ### `Property.set_object(value:str) -> None`
 
 Set the object name for this property
@@ -340,11 +339,3 @@ Set the object name for this property
 ### `Property.set_value(value:str | float | int | complex | bool | datetime.datetime) -> None`
 
 Set property value
-
-### `Property.unlock() -> None`
-
-Unlock property
-
-### `Property.wlock() -> None`
-
-Lock property for write
