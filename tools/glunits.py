@@ -1,9 +1,15 @@
 """Unit support
 
-Syntax: gridlabd glunit VALUE [VALUE OP [...]] [--unit=UNIT]
+Syntax: gridlabd glunits VALUE [VALUE OP [...]] [OPTIONS ...]
 
-The `glunit` tool support unit arithmetic and unit conversion for shell
-scripts and Python applications. All arguments are in RPN, e.g., "2 3 +"
+Options:
+
+* `--unit=[UNIT[,...]]`: units to convert stack when output results
+
+The `glunits` tool support unit arithmetic and unit conversion for shell
+scripts and Python applications. All arguments are in RPN, e.g., "2 3 +".
+The number of comma-delimited units, if specified, must match the number
+of results in the stack.
 
 Examples:
 
@@ -330,8 +336,8 @@ class Unit:
 
         * `unit (str)`: unit specification
 
-        Unit object support arithmetic for units, e.g., addition, subtraction,
-        multiplication, division, powers, module, and boolean equality.
+        Unit objects support arithmetic for units, e.g., addition, subtraction,
+        multiplication, division, powers, module, and boolean (non-)equality.
         """
         spec = _derive(unit)
         self.args = spec[:6]
@@ -410,7 +416,7 @@ class Unit:
 class floatUnit:
     """Float with unit class
 
-    The `floatUnit` class support all floating point arithmetic.
+    The `floatUnit` class supports all floating point arithmetic.
     """
 
     def __init__(self,value:float|int|str,unit:str|None=None):
@@ -722,6 +728,7 @@ if __name__ == "__main__":
             if arg.startswith("--unit="):
 
                 _,unit = arg.split("=",1)
+                unit = unit.split(",")
 
             elif arg == '+':
 
@@ -758,7 +765,10 @@ if __name__ == "__main__":
                 stack.insert(0,arg)
 
         stack = [x if isinstance(x,floatUnit) else floatUnit(x) for x in stack]
-        print(",".join([str(x.convert(unit if unit else x.unit)) for x in stack]))
+        if unit:
+            print(",".join([str(x.convert(y)) for x,y in zip(stack,reversed(unit))]))
+        else:
+            print(",".join([str(x) for x in stack]))
 
     except UnitException as err:
 

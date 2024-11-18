@@ -1,9 +1,15 @@
 [[/docs/Utilities/Glunits]] -- Unit support
 
-Syntax: gridlabd glunit VALUE [VALUE OP [...]] [--unit=UNIT]
+Syntax: gridlabd glunits VALUE [VALUE OP [...]] [OPTIONS ...]
 
-The `glunit` tool support unit arithmetic and unit conversion for shell
-scripts and Python applications. All arguments are in RPN, e.g., "2 3 +"
+Options:
+
+* `--unit=[UNIT[,...]]`: units to convert stack when output results
+
+The `glunits` tool support unit arithmetic and unit conversion for shell
+scripts and Python applications. All arguments are in RPN, e.g., "2 3 +".
+The number of comma-delimited units, if specified, must match the number
+of results in the stack.
 
 Examples:
 
@@ -30,8 +36,8 @@ Arguments:
 
 * `unit (str)`: unit specification
 
-Unit object support arithmetic for units, e.g., addition, subtraction,
-multiplication, division, powers, module, and boolean equality.
+Unit objects support arithmetic for units, e.g., addition, subtraction,
+multiplication, division, powers, module, and boolean (non-)equality.
 
 
 ### `Unit.matches(x:Union) -> None`
@@ -55,7 +61,7 @@ Returns:
 
 Float with unit class
 
-The `floatUnit` class support all floating point arithmetic.
+The `floatUnit` class supports all floating point arithmetic.
 
 
 ### `floatUnit(value:float | int | str, unit:str | None)`

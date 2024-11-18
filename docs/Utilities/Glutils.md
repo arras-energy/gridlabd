@@ -354,8 +354,8 @@ Arguments:
 
 * `unit (str)`: unit specification
 
-Unit object support arithmetic for units, e.g., addition, subtraction,
-multiplication, division, powers, module, and boolean equality.
+Unit objects support arithmetic for units, e.g., addition, subtraction,
+multiplication, division, powers, module, and boolean (non-)equality.
 
 
 ### `Unit.matches(x:Union) -> None`
@@ -379,7 +379,7 @@ Returns:
 
 Float with unit class
 
-The `floatUnit` class support all floating point arithmetic.
+The `floatUnit` class supports all floating point arithmetic.
 
 
 ### `floatUnit(value:float | int | str, unit:str | None)`
