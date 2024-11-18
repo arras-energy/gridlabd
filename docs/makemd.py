@@ -19,7 +19,7 @@ E_MISSING = 2
 E_SYNTAX = 3
 E_EXCEPTION = 9
 
-IGNORE = ['TypeVar','Model']
+IGNORE = ['TypeVar']
 
 class MakemdError(Exception):
     def __init__(self,msg,exitcode=None):
@@ -42,7 +42,7 @@ try:
     with open(os.path.join(PATH,NAME.title()+".md"),"w") as md:
 
         # output header docs
-        print(f"""[[/{PATH}/{NAME.title()}]] -- {module.__doc__}
+        print(f"""[[/{os.path.join(PATH,NAME.title())}]] -- {module.__doc__}
 """,file=md)
 
         # output classes
