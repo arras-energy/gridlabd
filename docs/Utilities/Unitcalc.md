@@ -38,6 +38,20 @@ Supported operators include the following:
 
 * `^`, `**`, `pow`, `power`: power
 
+The following stack operations are also supported:
+
+* `copy`: copy the head item
+
+* `pop`:
+
+* `rol`: rotate stack left
+
+* `ror`: rotate stack right
+
+* `rev`: reverse stack
+
+* `swap`, `exchange`: swap the top two stack items
+
 Examples:
 
     $ gridlabd unitcalc "32 degF" --unit=degC

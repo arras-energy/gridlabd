@@ -38,6 +38,20 @@ Supported operators include the following:
 
 * `^`, `**`, `pow`, `power`: power
 
+The following stack operations are also supported:
+
+* `copy`: copy the head item
+
+* `pop`:
+
+* `rol`: rotate stack left
+
+* `ror`: rotate stack right
+
+* `rev`: reverse stack
+
+* `swap`, `exchange`: swap the top two stack items
+
 Examples:
 
     $ gridlabd unitcalc "32 degF" --unit=degC
@@ -896,6 +910,35 @@ if __name__ == "__main__":
                 a,b = stack[:2]
                 tail = stack[2:] if len(stack) > 2 else []
                 stack = [floatUnit(b)**a] + tail
+
+            elif arg == "copy": # copy head item
+
+                if len(stack) > 0:
+                    stack = [stack[0]] + stack
+
+            elif arg == "ror": # rotate right
+
+                if len(stack) > 1:
+                    stack = stack[1:] + [stack[0]]
+
+            elif arg == "rol": # rotate left
+
+                if len(stack) > 1:
+                    stack = [stack[-1]] + stack[:-1]
+
+            elif arg in ["rev","reverse"]:
+
+                stack = list(reversed(stack))
+
+            elif arg == "pop": # remove head item
+
+                if len(stack) > 0:
+                    stack = stack[1:]
+
+            elif arg in ["swap","exchange"]: # swap top two items
+
+                if len(stack) > 1:
+                    stack = [stack[1],stack[0]] + stack[2:]
 
             else:
 
