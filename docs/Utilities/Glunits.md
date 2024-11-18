@@ -1,15 +1,17 @@
 [[/docs/Utilities/Glunits]] -- Unit support
 
-Syntax: gridlabd glunit VALUE VALUE OP [...] [--unit=UNIT]
+Syntax: gridlabd glunit VALUE [VALUE OP [...]] [--unit=UNIT]
 
 The `glunit` tool support unit arithmetic and unit conversion for shell
 scripts and Python applications. All arguments are in RPN, e.g., "2 3 +"
 
 Examples:
 
-    $ gridlabd glunit 50 degF --unit degC
+    $ gridlabd glunits "32 degF" --unit=degC
+    0 degC
 
-    $ gridlabd glunit 10 m/s^2 x 5 kg --unit N 
+    $ gridlabd glunits "10 m/s^2" "5 lb" x --unit=N
+    22.6796 N
 
 
 
