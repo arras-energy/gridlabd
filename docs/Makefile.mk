@@ -5,7 +5,7 @@ DOCS += docs/Utilities/Unitcalc.md
 
 %.md: FORCE
 	echo "Updating $@"
-	gridlabd python docs/makemd.py $(basename $(notdir $(shell echo "$@" | tr 'A-Z' 'a-z'))) $(dir $@)
+	$(DESTDIR)$(bindir)/gridlabd python docs/makemd.py $(basename $(notdir $(shell echo "$@" | tr 'A-Z' 'a-z'))) $(dir $@)
 
 docs/Utilities: $(DOCS)
 
