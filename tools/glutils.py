@@ -704,7 +704,7 @@ if __name__ == "__main__":
             assert "pp_bus_1" in model.objects(), "object 'pp_bus_1' not found in model"
             assert model.property("pp_bus_1","bus_i").get_value() == 1, "pp_bus_1.bus_1 is not 1"
 
-            with open("autotest/case14.txt","w") as txt:
+            with open("case14.txt","w") as txt:
                 for var in model.globals():
                     print("global",var,"get_object() ->",model.property(var).get_object(),file=txt)
                     print("global",var,"get_name() ->",model.property(var).get_name(),file=txt)

@@ -6,7 +6,11 @@ Options:
 
 * `--unit=[UNIT[,...]]`: units to convert stack when output results
 
-* `--list`: list of primitives in unit dictionary
+* `help`: display this help
+
+* `list`: list of primitives in unit dictionary
+
+* `test`: perform self-test
 
 The `unitcalc` tool support unit arithmetic and unit conversion for shell
 scripts and Python applications. All arguments are in RPN, e.g., "2 3 +". 
