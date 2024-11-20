@@ -1,5 +1,3 @@
-#option verbose
-#option debug
 module pypower
 {
     stop_on_failure FALSE;
