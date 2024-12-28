@@ -23,6 +23,8 @@ ipykernel,,,5.5.5
 ipyplot,,,1.1.1
 ipython,3,,8.10.0
 ipython,,,8.10.0
+kaleido,,,0.2.1
+marimo,,,0.10.6
 matplotlib,2,,3.3.3
 matplotlib_inline,,,0.1.6
 metar,,,1.9.0
@@ -34,6 +36,7 @@ pandas,,,2.2.2
 pandas_access,,,0.0.1
 Pillow,2,,9.3.0
 Pillow,,,9.3.0
+plotly,,,5.24.1
 PyGithub,2,,1.54.1
 pymysql,,,1.0.2
 PYPOWER,,,5.1.16
