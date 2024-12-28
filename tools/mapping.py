@@ -33,37 +33,49 @@ def main(argv):
         print([x for x in __doc__.split("\n") if x.startswith("Syntax: ")])
         exit(E_SYNTAX)
 
-    read_stdargs(argv)
+    args = read_stdargs(argv)
 
-    fig = Map(open("autotest/test_mapping_opt.json","r"),
-        nodedata={
-            "latitude":float,"longitude":float,
-            "voltage_A":lambda x:complex_unit(x,'d'),
-            "voltage_B":lambda x:complex_unit(x,'d'),
-            "voltage_C":lambda x:complex_unit(x,'d'),
-            "class":str,
-            },
-        linkdata={
-            # "power_in":lambda x:complex_unit(x,'j'),
-            # "power_out":lambda x:complex_unit(x,'j'),
-            # "current_in_A":lambda x:complex_unit(x,'j'),
-            # "current_in_B":lambda x:complex_unit(x,'j'),
-            # "current_in_C":lambda x:complex_unit(x,'j'),
-            }
-        )
-    fig.save("autotest/test_mapping.png",
-        center='auto',zoom=14,
-        )
+    fig = None
 
-    # map.show(
-    #     # text='name',
-    #     hover_name="name",
-    #     hover_data={
-    #         "name":False,"latitude":False,"longitude":False,
-    #         "class":True,
-    #         'voltage_A':True,'voltage_B':True,'voltage_C':True,
-    #         }
-    # )
+    for key,value in args:
+
+        if key in ["--save"]:
+
+            fig.save(value[0],center='auto',zoom=14)
+
+        elif key in ["--show"]:
+
+            fig.show(
+                hover_name="name",
+                hover_data={
+                    "name":False,"latitude":False,"longitude":False,
+                    "class":True,
+                    'voltage_A':True,'voltage_B':True,'voltage_C':True,
+                    }
+            )
+
+        elif fig is None:
+
+            fig = Map(open(key,"r"),
+                nodedata={
+                    "latitude":float,"longitude":float,
+                    "voltage_A":lambda x:complex_unit(x,'d'),
+                    "voltage_B":lambda x:complex_unit(x,'d'),
+                    "voltage_C":lambda x:complex_unit(x,'d'),
+                    "class":str,
+                    },
+                linkdata={
+                    # "power_in":lambda x:complex_unit(x,'j'),
+                    # "power_out":lambda x:complex_unit(x,'j'),
+                    # "current_in_A":lambda x:complex_unit(x,'j'),
+                    # "current_in_B":lambda x:complex_unit(x,'j'),
+                    # "current_in_C":lambda x:complex_unit(x,'j'),
+                    }
+                )
+
+        else:
+
+            error(f"'{key}={value}'' is invalid",E_SYNTAX)
 
 
 #
@@ -340,12 +352,14 @@ class Map:
 
 if __name__ == "__main__":
 
-    sys.argv = [__file__,"--test"]
+    # sys.argv = [__file__,"--test"]
 
     try:
         rc = main(sys.argv)
         exit(rc)
     except SystemExit:
+        pass
+    except KeyboardInterrupt:
         pass
     except Exception as exc:
         if DEBUG:

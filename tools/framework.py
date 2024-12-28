@@ -1,3 +1,4 @@
+"""Tool framework"""
 import os
 import sys
 import io
@@ -25,7 +26,8 @@ E_EXCEPTION = 9 # exception raised
 
 def read_stdargs(argv):
 
-    for arg in list(argv):
+    result = []
+    for arg in list(argv[1:]):
         if arg in ["--debug"]:
             DEBUG = True
             argv.remove(arg)
@@ -41,7 +43,13 @@ def read_stdargs(argv):
         elif arg in ["--warning"]:
             WARNING = False
             argv.remove(arg)
-    return argv
+        elif "=" in arg:
+            key,value = arg.split("=",1)
+            result.append((key,value.split(",")))
+        else:
+            result.append((arg,[]))
+
+    return result
 
 def output(*msg,**kwargs):
     if not SILENT:
