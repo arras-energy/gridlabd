@@ -3,6 +3,7 @@
 import os
 import io
 import json
+import math
 from collections import namedtuple
 import marimo as mo
 import subprocess
@@ -135,27 +136,74 @@ def render_map(model,**kwargs):
     map = px.scatter_map(_data,**_params,**kwargs)
     return map
 
+def float_unit(x):
+    return float(x.split(" ",1)[0])
+
+def complex_unit(x,form=None):
+    if form is str:
+        return x
+    z,u = x.split(" ",1)
+    z = complex(z)
+    if form is None:
+        return z
+    x,y = z.real,z.imag
+    if form in ['i','j']:
+        return f"{x:.2f}{y:+.2f}{form}"        
+    if form == 'rect':
+        return x,y
+    if form == 'd':
+        return f"{abs(z):.2f}{math.atan2(x,y)*180/3.1416:+.1f}d"
+    if form == 'r':
+        return f"{abs(z):.2f}{math.atan2(x,y):+.3f}r"
+    if form == 'real':
+        return z.real
+    if form == 'imag':
+        return z.imag
+    if form == 'mag':
+        return abs(z)
+    if form == 'arg':
+        return math.atan2(x,y)
+    if form == 'ang':
+        return math.atan2(x,y)*180/3.1416
+    return getattr(x,form)
+
+try:
+    import mapinfo as config
+except ModuleNotFoundError:
+    class config:
+        defaults = {
+            "lat" : "latitude",
+            "lon" : "longitude",
+            "map_style" : "open-street-map",
+            "zoom" : 2.7,
+            "center" : {"lat":40,"lon":-96},
+        }
+        network = {
+            "powerflow" : {
+                "ref":("bustype","SWING"),
+                "nodes":["from","to"],
+                },
+            "pypower" : {
+                "ref":("type","3"),
+                "nodes":["fbus","tbus"],
+                },
+        }
+        violation_color = {
+            "NONE" : (0,0,0),
+            "THERMAL" : (1,0,0),
+            "CURRENT" : (0.5,0,0),
+            "POWER" : (0,1,0),
+            "VOLTAGE" : (0,0,1),
+            "CONTROL" : (0,0,0.5),
+        }
+
 class Map:
 
-    defaults = {
-        "lat" : "latitude",
-        "lon" : "longitude",
-        "map_style" : "open-street-map",
-        "zoom" : 2.7,
-        "center" : {"lat":40,"lon":-96},
-    }
-    network = {
-        "powerflow" : {
-            "ref":("bustype","SWING"),
-            "nodes":["from","to"],
-            },
-        "pypower" : {
-            "ref":("type","3"),
-            "nodes":["fbus","tbus"],
-            },
-    }
+    defaults = config.defaults
+    network = config.network
+    violation_color = config.violation_color
 
-    def __init__(self,model=None,nodedata=[],linkdata=[],**options):
+    def __init__(self,model=None,nodedata={},linkdata={},**options):
         """Initialize"""
         self.options = options if options else {}
         self.data = pd.DataFrame({"latitude":[],"longitude":[]})
@@ -178,7 +226,7 @@ class Map:
             raise ValueError("model is not a valid str or io object")
         self.map = None
 
-    def read(self,data,nodedata=[],linkdata=[]):
+    def read(self,data,nodedata={},linkdata={}):
         """Read JSON data"""
         assert "application" in data, "invalid application data"
         assert data["application"] == "gridlabd", "invalid gridlabd model"
@@ -189,46 +237,154 @@ class Map:
         self.model = data
         self.extract_network(nodedata,linkdata)
 
-    def extract_network(self,nodedata=[],linkdata=[]):
+    def extract_network(self,nodedata={},linkdata={}):
         """Extract network data"""
         self.links = {}
         self.nodes = {}
         self.swing = set()
+
+        # add data needed for mapping
+        for x,y in {self.defaults["lat"]:float,self.defaults["lon"]:float}.items():
+            if x not in nodedata:
+                nodedata[x] = y
+        for x,y in {
+                "class":str,
+                "phases":str,
+                "flow_direction":str,
+                "violation_detected":str,
+                "power_out":lambda x:complex_unit(x,'real')
+                }.items():
+            if x not in linkdata:
+                linkdata[x] = y
+
+        # extract objects
         for name,data in self.model["objects"].items():
-            for module in self.model["modules"]:
+
+            # handle objects according to modules loaded
+            for module in [x for x in self.model["modules"] \
+                    if x in self.network]:
+
+                # get from/to tags used by the module
                 ftag,ttag = self.network[module]["nodes"]
+
+                # if tags present in data
                 if ftag in data and ttag in data:
+
+                    # get from/to nodes
                     n0,n1 = data[ftag],data[ttag]
+
+                    # extract link data
                     self.links[name] = {
                         "nodes": [n0,n1],
                         "data": {key:data[key] for key in linkdata if key in data},
                         }
+
+                    # extract node data
                     for n in [n0,n1]:
                         if not n in self.nodes:
                             self.nodes[n] = {
                                 "links":set(),
-                                "data":{key:self.model["objects"][n][key] for key in nodedata if key in self.model["objects"][n]},
+                                "data":{key:dtype(self.model["objects"][n][key]) \
+                                    for key,dtype in nodedata.items() \
+                                    if key in self.model["objects"][n]},
                                 }
                         self.nodes[n]["links"].add(name)
+
+                # record any swing nodes for future reference
                 elif self.network[module]["ref"][0] in data \
                         and data[self.network[module]["ref"][0]] == self.network[module]["ref"][1]:
                     self.swing.add(name)
-        # print(self.links,self.nodes,self.swing)
-        return
 
+        # contract mapping dataframe
+        self.data = pd.DataFrame(
+            data=[x["data"] for x in self.nodes.values()],
+            index=self.nodes.keys(),
+            columns=nodedata.keys(),
+            )
+        self.data.index.name = "name"
+        self.data.reset_index(inplace=True)
 
-    def render(self):
-        self.map = px.scatter_map(self.data,**self.options)
+        # return swing node list
+        return self.swing
+
+    def render(self,**options):
+        for key,value in options.items():
+            self.options[key] = value
+        for key,value in self.options.items():
+            if key == 'zoom' and value == 'auto':
+                self.options["zoom"] = 10
+            if key == 'center' and value == 'auto':
+                lat = self.defaults["lat"]
+                lon = self.defaults["lon"]
+                lat = (self.data[lat].min()+self.data[lat].max())/2
+                lon = (self.data[lon].min()+self.data[lon].max())/2
+                self.options["center"] = {"lat" : lat,"lon" : lon,}
+        self.map = px.scatter_map(self.data.dropna(),
+            **self.options)
+        lat,lon = [self.defaults[x] for x in ["lat","lon"]]
+        for key,value in self.links.items():
+            n0,n1 = [self.model["objects"][x] for x in value["nodes"]]
+            if lat in n0 and lon in n0 and lat in n1 and lon in n1:
+                data = value["data"]
+                phases = data["phases"]
+                width = len(phases)
+                color = "#"+"".join([f"{int(255*x):02x}" for x in self.violation_color[data["violation_detected"]]])
+                x0,y0,x2,y2 = float(n0[lat]),float(n0[lon]),float(n1[lat]),float(n1[lon])
+                x1,y1 = (x0+x2)/2,(y0+y2)/2
+                self.map.add_scattermap(
+                    lat=[x0,x2],
+                    lon=[y0,y2],
+                    line={
+                        "color": color,
+                        "width": width,
+                        },
+                    mode="lines",
+                    hoverinfo="skip",
+                    showlegend=False,
+                    )
+                power_out = complex_unit(data["power_out"],'real')
+                symbols = {
+                    "switch" : "square-stroked" if power_out<0.1 else "square",
+                    "transformer" : "circle-stroked",
+                    "regulator" : "circle-stroked",
+                    }
+                devtype = data["class"]
+                flow = data["flow_direction"]
+                if devtype in symbols:
+                    symbol = symbols[devtype]
+                else:
+                    symbol = "triangle"
+                    if "R" not in flow:
+                        direction = 1
+                    elif "F" not in flow:
+                        direction = -1
+                    else:
+                        symbol = "diamond"
+
+                self.map.add_scattermap(
+                    lat=[x1],
+                    lon=[y1],
+                    marker={
+                        "symbol" : symbol,
+                        "size": width+5,
+                        "allowoverlap": True,
+                        "color": color,
+                        "angle": math.atan2(direction*(y2-y0),direction*(x2-x0))*180/3.1416,
+                    },
+                    mode="markers",
+                    showlegend=False,
+                    hovertemplate=f"<extra></extra><b>{key}</b><br><br>" + "<br>".join([f"{x}={y}" for x,y in data.items()]),
+                    )
         return self.map
 
-    def show(self):
-        if not self.map:
-            self.render()
+    def show(self,**options):
+        if not self.map or options != self.options:
+            self.render(**options)
         self.map.show()
 
-    def save(self,name=None):
-        if not self.map:
-            self.render()
+    def save(self,name=None,**options):
+        if not self.map or options != self.options:
+            self.render(**options)
         self.map.write_image(name)
 
 if __name__ == "__main__":
@@ -240,8 +396,31 @@ if __name__ == "__main__":
         import kaleido
 
     map = Map(open("autotest/test_moutils.json","r"),
-        nodedata=["latitude","longitude","voltage_A","voltage_B","voltage_C"],
-        linkdata=["power_in","power_out"]
+        nodedata={
+            "latitude":float,"longitude":float,
+            "voltage_A":lambda x:complex_unit(x,'d'),
+            "voltage_B":lambda x:complex_unit(x,'d'),
+            "voltage_C":lambda x:complex_unit(x,'d'),
+            "class":str,
+            },
+        linkdata={
+            # "power_in":lambda x:complex_unit(x,'j'),
+            # "power_out":lambda x:complex_unit(x,'j'),
+            # "current_in_A":lambda x:complex_unit(x,'j'),
+            # "current_in_B":lambda x:complex_unit(x,'j'),
+            # "current_in_C":lambda x:complex_unit(x,'j'),
+            }
         )
-    map.save("autotest/test_moutils.png")
+    map.save("autotest/test_moutils.png",
+        center='auto',zoom=15,
+        )
+    map.show(
+        # text='name',
+        hover_name="name",
+        hover_data={
+            "name":False,"latitude":False,"longitude":False,
+            "class":True,
+            'voltage_A':True,'voltage_B':True,'voltage_C':True,
+            }
+)
 
