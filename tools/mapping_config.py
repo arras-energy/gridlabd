@@ -6,7 +6,7 @@ defaults = {
     "zoom" : 2.7,
     "center" : {"lat":40,"lon":-96},
     "text" : "name",
-}
+    }
 network = {
     "powerflow" : {
         "ref":("bustype","SWING"),
@@ -16,7 +16,7 @@ network = {
         "ref":("type","3"),
         "nodes":["fbus","tbus"],
         },
-}
+    }
 violation_color = {
     "NONE" : (0,0,0),
     "THERMAL" : (1,0,0),
@@ -24,7 +24,7 @@ violation_color = {
     "POWER" : (0,1,0),
     "VOLTAGE" : (0,0,1),
     "CONTROL" : (0,0,0.5),
-}
+    }
 node_options = {
     "textposition" : "top right",
     # Slows mapping down alot and doesn't display links
@@ -32,4 +32,4 @@ node_options = {
     #     "enabled" : False,
     #     "maxzoom" : 12,"
     # }
-}
+    }
