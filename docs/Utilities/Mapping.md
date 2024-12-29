@@ -43,6 +43,17 @@ To open a map in the default browser use the `--show` option, e.g.,
 
     gridlabd mapping mymodel.json --show
 
+See also:
+
+* [[/Module/Powerflow]]
+
+* [[/Module/Pypower]]
+
+* [Plotly Scattermapbox reference](https://plotly.com/python/reference/scattermapbox/)
+
+* [Plotly Scattermap reference](https://plotly.com/python/reference/scattermap/)
+
+
 
 
 # Classes
@@ -65,6 +76,16 @@ Arguments:
 
 * `options`: plotly scattermap options
 
+See also:
+
+* [[/Module/Powerflow]]
+
+* [[/Module/Pypower]]
+
+* https://plotly.com/python/reference/scattermapbox/
+
+* https://plotly.com/python/reference/scattermap/
+
 
 ### `Map.extract_network(nodedata:dict, linkdata:dict) -> list`
 
@@ -80,6 +101,12 @@ Returns:
 
 * list of swing busses found, if any
 
+See also:
+
+* [[/Module/Powerflow]]
+
+* [[/Module/Pypower]]
+
 
 ### `Map.read(data:dict, nodedata:dict, linkdata:dict) -> None`
 
@@ -93,6 +120,12 @@ Arguments:
 
 * `linkdata`: link data to extract/format
 
+See also:
+
+* [[/Module/Powerflow]]
+
+* [[/Module/Pypower]]
+
 
 ### `Map.render() -> plotly.graph_objects.Figure`
 
@@ -105,6 +138,12 @@ Arguments:
 Returns:
 
 * plotly figure
+
+See also:
+
+* https://plotly.com/python/reference/scattermapbox/
+
+* https://plotly.com/python/reference/scattermap/
 
 
 ### `Map.save(name:str) -> None`
@@ -123,6 +162,12 @@ Open the map in a browser window
 Arguments:
 
 * `options`: plotly render options
+
+See also:
+
+* https://plotly.com/python/reference/scattermapbox/
+
+* https://plotly.com/python/reference/scattermap/
 
 
 ---
@@ -148,13 +193,13 @@ Arguments:
 
 Returns:
 
-float: value (if form is 'mag','arg','ang','real','imag')
+* `float`: value (if form is 'mag','arg','ang','real','imag')
 
-str: formatted string (if form is 'i','j','d','r','unit','str')
+* `str`: formatted string (if form is 'i','j','d','r','unit','str')
 
-tuple[float]: tuple (if form is 'rect')
+* `tuple[float]`: tuple (if form is 'rect')
 
-complex: complex value (if form is 'conjugate' or None)
+* `complex`: complex value (if form is 'conjugate' or None)
 
 
 ---
@@ -180,7 +225,7 @@ Arguments:
 
 * `value`: the argument text
 
-* `default`): the default value to use for any options not specified
+* `default`: the default value to use for any options not specified
 
 Returns:
 
@@ -207,7 +252,7 @@ Returns:
 
 See also:
 
-* [https://docs.python.org/3/library/subprocess.html]
+* https://docs.python.org/3/library/subprocess.html
 
 
 ---

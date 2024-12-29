@@ -42,6 +42,17 @@ To generate a map image use the `--save` option, e.g.,
 To open a map in the default browser use the `--show` option, e.g.,
 
     gridlabd mapping mymodel.json --show
+
+See also:
+
+* [[/Module/Powerflow]]
+
+* [[/Module/Pypower]]
+
+* [Plotly Scattermapbox reference](https://plotly.com/python/reference/scattermapbox/)
+
+* [Plotly Scattermap reference](https://plotly.com/python/reference/scattermap/)
+
 """
 import os
 import sys
@@ -202,7 +213,7 @@ def get_options(value:str,default:dict=None) -> dict:
 
     * `value`: the argument text
 
-    * `default`): the default value to use for any options not specified
+    * `default`: the default value to use for any options not specified
 
     Returns:
 
@@ -251,6 +262,16 @@ class Map:
         * `linkdata`: data extraction/formatting for link hover
 
         * `options`: plotly scattermap options
+
+        See also: 
+
+        * [[/Module/Powerflow]]
+
+        * [[/Module/Pypower]]
+
+        * https://plotly.com/python/reference/scattermapbox/
+
+        * https://plotly.com/python/reference/scattermap/
         """
         self.options = options if options else {}
         self.data = pd.DataFrame({"latitude":[],"longitude":[]})
@@ -285,6 +306,12 @@ class Map:
         * `nodedata`: node data to extract/format
 
         * `linkdata`: link data to extract/format
+
+        See also:
+
+        * [[/Module/Powerflow]]
+
+        * [[/Module/Pypower]]
         """
         try:
             assert "application" in data, "invalid application data"
@@ -310,6 +337,12 @@ class Map:
         Returns:
 
         * list of swing busses found, if any
+
+        See also:
+
+        * [[/Module/Powerflow]]
+
+        * [[/Module/Pypower]]
         """
         self.links = {}
         self.nodes = {}
@@ -389,6 +422,12 @@ class Map:
         Returns:
 
         * plotly figure
+
+        See also: 
+
+        * https://plotly.com/python/reference/scattermapbox/
+
+        * https://plotly.com/python/reference/scattermap/
         """
         for key,value in options.items():
             self.options[key] = value
@@ -468,6 +507,12 @@ class Map:
         Arguments:
 
         * `options`: plotly render options
+
+        See also: 
+
+        * https://plotly.com/python/reference/scattermapbox/
+
+        * https://plotly.com/python/reference/scattermap/
         """
         if not self.map or options != self.options:
             self.render(**options)

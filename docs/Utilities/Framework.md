@@ -22,13 +22,13 @@ Arguments:
 
 Returns:
 
-float: value (if form is 'mag','arg','ang','real','imag')
+* `float`: value (if form is 'mag','arg','ang','real','imag')
 
-str: formatted string (if form is 'i','j','d','r','unit','str')
+* `str`: formatted string (if form is 'i','j','d','r','unit','str')
 
-tuple[float]: tuple (if form is 'rect')
+* `tuple[float]`: tuple (if form is 'rect')
 
-complex: complex value (if form is 'conjugate' or None)
+* `complex`: complex value (if form is 'conjugate' or None)
 
 
 ---
@@ -64,7 +64,7 @@ Returns:
 
 See also:
 
-* [https://docs.python.org/3/library/subprocess.html]
+* https://docs.python.org/3/library/subprocess.html
 
 
 ---
