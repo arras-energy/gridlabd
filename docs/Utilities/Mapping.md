@@ -78,7 +78,7 @@ Arguments:
 
 Returns:
 
-* list[str]: list of swing busses found, if any
+* list of swing busses found, if any
 
 
 ### `Map.read(data:dict, nodedata:dict, linkdata:dict) -> None`
@@ -104,7 +104,7 @@ Arguments:
 
 Returns:
 
-* plotly.graph_objects.Figure: a plotly figure
+* plotly figure
 
 
 ### `Map.save(name:str) -> None`
@@ -159,13 +159,20 @@ complex: complex value (if form is 'conjugate' or None)
 
 ---
 
-## `double_unit(x:str) -> None`
+## `double_unit(x:str) -> float`
 
 Convert a string with unit to a float
 
+* `x`: string representing real value
+
+Returns:
+
+* real value
+
+
 ---
 
-## `get_options(value:str, default:dict) -> None`
+## `get_options(value:str, default:dict) -> dict`
 
 Extract save/show options from argument value
 
@@ -177,24 +184,48 @@ Arguments:
 
 Returns:
 
-dict: the option values
+* the option values
 
 
 ---
 
-## `gridlabd() -> None`
+## `gridlabd(args:list) -> Optional`
 
 Simple gridlabd runner
 
+Arguments:
+
+* `args`: argument list
+
+* `bin`: enable direct call to gridlabd binary (bypasses shell and faster)
+
+* `kwargs`: options to pass to `subpocess.run`
+
+Returns:
+
+* Complete process object (see `subprocess.CompleteProcess`)
+
+See also:
+
+* [https://docs.python.org/3/library/subprocess.html]
+
+
 ---
 
-## `integer(x:str) -> None`
+## `integer(x:str) -> int`
 
 Convert a string to an integer
 
+* `x`: string representing integer value
+
+Returns:
+
+* integer value
+
+
 ---
 
-## `main(argv:list) -> None`
+## `main(argv:list) -> int`
 
 Command line processing
 
@@ -204,11 +235,50 @@ Arguments:
 
 Returns:
 
-
+* exit code
 
 
 ---
 
-## `version() -> None`
+## `open_glm(file:str, tmp:str, init:bool) -> io.TextIOWrapper`
+
+Open GLM file as JSON
+
+Arguments:
+
+* `file`: GLM filename
+
+* `tmp`: temporary folder to store JSON file
+
+* `init`: enable model initialization during conversion
+
+Return:
+
+* File handle to JSON file after conversion from GLM
+
+
+---
+
+## `read_stdargs(argv:list) -> list`
+
+Read framework options
+
+Arguments:
+
+* `argv`: the argument list from which to read framework options
+
+Returns:
+
+* Remaining arguments
+
+
+---
+
+## `version(terms:str) -> str`
 
 Get gridlabd version
+
+Returns:
+
+* GridLAB-D version info
+

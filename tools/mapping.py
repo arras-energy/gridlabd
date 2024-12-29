@@ -103,37 +103,7 @@ except ModuleNotFoundError:
             #     "maxzoom" : 12,"
         }
 
-def get_options(value:str,default:dict=None):
-    """Extract save/show options from argument value
-
-    Arguments:
-
-    * `value`: the argument text
-
-    * `default`): the default value to use for any options not specified
-
-    Returns:
-
-    dict: the option values
-    """
-    options = {} if default is None else default
-    if not value:
-        value = []
-    for key in value:
-        x,y = key.split(":",1)
-        try:
-            if x == "center" and ";" in y:
-                options[x] = {["lat","lon"][n]:float(z) for n,z in enumerate(y.split(";"))}
-            elif x in ["zoom","width","height"]:
-                options[x] = int(y)
-            else:
-                options[x] = y
-        except:
-            options[x] = y
-
-    return options
-
-def main(argv:list[str]):
+def main(argv:list[str]) -> int:
     """Command line processing
 
     Arguments:
@@ -142,7 +112,7 @@ def main(argv:list[str]):
 
     Returns:
 
-
+    * exit code
     """
     argc = len(argv)
 
@@ -192,7 +162,7 @@ def main(argv:list[str]):
         elif fig is None:
 
             if key.endswith(".glm"):
-                file = open_json(key)
+                file = open_glm(key)
             elif key.endswith(".json"):
                 file = open(key,"r")
             else:
@@ -224,6 +194,36 @@ def main(argv:list[str]):
             return E_SYNTAX
 
     return E_OK
+
+def get_options(value:str,default:dict=None) -> dict:
+    """Extract save/show options from argument value
+
+    Arguments:
+
+    * `value`: the argument text
+
+    * `default`): the default value to use for any options not specified
+
+    Returns:
+
+    * the option values
+    """
+    options = {} if default is None else default
+    if not value:
+        value = []
+    for key in value:
+        x,y = key.split(":",1)
+        try:
+            if x == "center" and ";" in y:
+                options[x] = {["lat","lon"][n]:float(z) for n,z in enumerate(y.split(";"))}
+            elif x in ["zoom","width","height"]:
+                options[x] = int(y)
+            else:
+                options[x] = y
+        except:
+            options[x] = y
+
+    return options
 
 class MapError(Exception):
     """Mapping exception"""
@@ -309,7 +309,7 @@ class Map:
 
         Returns:
 
-        * list[str]: list of swing busses found, if any
+        * list of swing busses found, if any
         """
         self.links = {}
         self.nodes = {}
@@ -388,7 +388,7 @@ class Map:
 
         Returns:
 
-        * plotly.graph_objects.Figure: a plotly figure
+        * plotly figure
         """
         for key,value in options.items():
             self.options[key] = value

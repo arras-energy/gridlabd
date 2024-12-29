@@ -1,4 +1,8 @@
-"""Tool framework"""
+"""Tool framework
+
+The `framework` module contains the infrastructure to support standardized
+implementation of tools in GridLAB-D.
+"""
 import os
 import sys
 import io
@@ -9,6 +13,11 @@ import unitcalc
 from typing import TypeVar
 import inspect
 import traceback
+
+EXEPATH = None
+EXEFILE = None
+EXENAME = None
+EXETYPE = None
 
 VERBOSE=False # enable verbose output to stderr
 QUIET=False # quiet error output to stderr
@@ -24,9 +33,21 @@ E_BADVALUE = 4 # bad value
 E_INTERRUPT = 8 # interrupted
 E_EXCEPTION = 9 # exception raised
 
-def read_stdargs(argv):
+def read_stdargs(argv:list[str]) -> list[str]:
+    """Read framework options
 
+    Arguments:
+
+    * `argv`: the argument list from which to read framework options
+
+    Returns:
+
+    * Remaining arguments
+    """
     result = []
+    EXEPATH = argv[0]
+    EXEFILE = os.path.basename(EXEPATH)
+    EXENAME,EXETYPE = os.path.splitext(EXEFILE)
     for arg in list(argv[1:]):
         if arg in ["--debug"]:
             DEBUG = True
@@ -51,40 +72,57 @@ def read_stdargs(argv):
 
     return result
 
-def output(*msg,**kwargs):
+def output(*msg:list,**kwargs):
     if not SILENT:
         print(*msg,file=sys.stdout,**kwargs)
 
-def exception(exc):
+def exception(exc:[TypeVar(Exception)|str]):
     if isinstance(exc,str):
         exc = MapError(exc)
     raise exc
 
-def error(msg:str,code:[int|None]=None,**kwargs):
+def error(*msg:list,code:[int|None]=None,**kwargs):
     if not QUIET:
         if code:
-            print(f"ERROR [{os.path.basename(sys.argv[0])}]: {msg} (code {repr(code)})",file=sys.stderr,**kwargs)
+            print(f"ERROR [{EXENAME}]: {' '.join(msg)} (code {repr(code)})",file=sys.stderr,**kwargs)
         else:
-            print(f"ERROR [{os.path.basename(sys.argv[0])}]: {msg}",file=sys.stderr,**kwargs)
+            print(f"ERROR [{EXENAME}]: {' '.join(msg)}",file=sys.stderr,**kwargs)
     if DEBUG:
         raise MappingError(msg)
     if not code is None:
         sys.exit(code)
 
-def verbose(msg,**kwargs):
+def verbose(*msg:list,**kwargs):
     if VERBOSE:
-        print(f"VERBOSE [{os.path.basename(sys.argv[0])}]: {msg}",file=sys.stderr,**kwargs)
+        print(f"VERBOSE [{EXENAME}]: {' '.join(msg)}",file=sys.stderr,**kwargs)
 
-def warning(msg,**kwargs):
+def warning(*msg:list,**kwargs):
     if WARNING:
-        print(f"WARNING [{os.path.basename(sys.argv[0])}]: {msg}",file=sys.stderr,**kwargs)
+        print(f"WARNING [{EXENAME}]: {' '.join(msg)}",file=sys.stderr,**kwargs)
 
-def debug(msg,**kwargs):
+def debug(*msg:list,**kwargs):
     if DEBUG:
-        print(f"DEBUG [{os.path.basename(sys.argv[0])}]: {msg}",file=sys.stderr,**kwargs)
+        print(f"DEBUG [{EXENAME}]: {' '.join(msg)}",file=sys.stderr,**kwargs)
 
-def gridlabd(*args, bin=True, **kwargs):
-    """Simple gridlabd runner"""
+def gridlabd(*args:list[str], bin=True, **kwargs) -> TypeVar('subprocess.CompletedProcess')|None:
+    """Simple gridlabd runner
+
+    Arguments:
+
+    * `args`: argument list
+
+    * `bin`: enable direct call to gridlabd binary (bypasses shell and faster)
+
+    * `kwargs`: options to pass to `subpocess.run`
+
+    Returns:
+
+    * Complete process object (see `subprocess.CompleteProcess`)
+
+    See also:
+
+    * [https://docs.python.org/3/library/subprocess.html]
+    """
     if not "capture_output" in kwargs:
         kwargs["capture_output"] = True
     try:
@@ -94,7 +132,21 @@ def gridlabd(*args, bin=True, **kwargs):
     except:
         return None
 
-def open_json(file,tmp=None,init=False):
+def open_glm(file:str,tmp:str=None,init:bool=False) -> TypeVar('io.TextIOWrapper'):
+    """Open GLM file as JSON
+
+    Arguments:
+
+    * `file`: GLM filename
+
+    * `tmp`: temporary folder to store JSON file
+
+    * `init`: enable model initialization during conversion
+
+    Return:
+
+    * File handle to JSON file after conversion from GLM
+    """
     if tmp is None:
         tmp = "/tmp"
     outfile = os.path.join(tmp,os.path.splitext(os.path.basename(file))[0]+".json")
@@ -103,17 +155,36 @@ def open_json(file,tmp=None,init=False):
         raise RuntimeError("GLM conversion to JSON failed")
     return open(outfile,"r")
 
-def version():
-    """Get gridlabd version"""
-    _version = gridlabd("--version")
+def version(terms:str=None) -> str:
+    """Get gridlabd version
+
+    Returns:
+
+    * GridLAB-D version info
+    """
+    _version = gridlabd(f"--version={terms}" if terms else "--version")
     return _version.stdout.decode('utf-8').strip() if _version and _version.returncode==0 else ""
 
-def double_unit(x:str):
-    """Convert a string with unit to a float"""
+def double_unit(x:str) -> float:
+    """Convert a string with unit to a float
+
+    * `x`: string representing real value
+
+    Returns:
+
+    * real value
+    """
     return float(x.split(" ",1)[0])
 
-def integer(x:str):
-    """Convert a string to an integer"""
+def integer(x:str) -> int:
+    """Convert a string to an integer
+
+    * `x`: string representing integer value
+
+    Returns:
+
+    * integer value
+    """
     return int(x)
 
 def complex_unit(x:str,
