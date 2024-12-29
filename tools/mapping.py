@@ -77,7 +77,6 @@ except ModuleNotFoundError:
             # "cluster" : {
             #     "enabled" : False,
             #     "maxzoom" : 12,"
-            # }
         }
 
 def get_options(value,default=None):
@@ -370,7 +369,6 @@ class Map:
                 lon = (self.data[lon].min()+self.data[lon].max())/2
                 self.options["center"] = {"lat" : lat,"lon" : lon,}
 
-        print(self.options)
         self.map = getattr(px,f"scatter_{config.mapper}")(self.data.dropna(),
             **self.options)
         lat,lon = [self.defaults[x] for x in ["lat","lon"]]
