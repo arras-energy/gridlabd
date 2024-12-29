@@ -1,0 +1,9 @@
+#!/bin/bash
+# Syntax: docs
+#
+# EXIT 0 - ok
+# EXIT 1 - test failed
+# EXIT 2 - syntax error
+#
+
+open https://docs.gridlabd.us/

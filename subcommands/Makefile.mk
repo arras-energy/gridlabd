@@ -5,6 +5,7 @@ bin_SCRIPTS += subcommands/gridlabd-check
 bin_SCRIPTS += subcommands/gridlabd-compare
 bin_SCRIPTS += subcommands/gridlabd-contributors
 bin_SCRIPTS += subcommands/gridlabd-convert
+bin_SCRIPTS += subcommands/gridlabd-docs
 bin_SCRIPTS += subcommands/gridlabd-geodata
 bin_SCRIPTS += subcommands/gridlabd-git
 bin_SCRIPTS += subcommands/gridlabd-help
