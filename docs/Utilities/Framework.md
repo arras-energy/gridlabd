@@ -13,12 +13,12 @@ Convert complex value with unit
 
 Arguments:
 
-* `form` (str|None): formatting (default is None). Valid values are
+* `form`: formatting (default is None). Valid values are
 ('i','j','d','r','rect','mag','arg','ang','conjugate','real','imag','unit','str')
 
-* `prec` (int): precision (default is 2)
+* `prec`: precision (default is 2)
 
-* `unit` (str|None): unit to convert to (default is None)
+* `unit`: unit to convert to (default is None)
 
 Returns:
 

@@ -1,9 +1,60 @@
 #!/bin/bash
-# Syntax: docs
-#
-# EXIT 0 - ok
-# EXIT 1 - test failed
-# EXIT 2 - syntax error
-#
+## Syntax: docs [OPTIONS ...]
+## 
+## Options:
+## 
+## * `-b|--branch BRANCH`: open docs from github branch BRANCH
+## 
+## * `-d|--document NAME`: open document NAME (must include full path)
+## 
+## * `-f|--folder DIR`: open folder DIR (must include root /)
+## 
+## * `-o|--organization ORG`: open docs from github owner ORG
+## 
+## Exit codes:
+## 
+## * `0`: ok
+## 
+## * `1`: invalid option
+## 
 
-open https://docs.gridlabd.us/
+ORG=$($GLD_BIN/gridlabd.bin --version=origin | cut -f4 -d/)
+BRA=$($GLD_BIN/gridlabd.bin --version=git-branch)
+DIR=/
+DOC=README.md
+EXE=$0
+
+E_OK=0
+E_SYNTAX=1
+
+while [ $# -gt 0 ]; do
+    case $1 in 
+    --organization|-o)
+        ORG=$2
+        shift
+        ;;
+    --branch|-b)
+        BRA=$2
+        shift
+        ;;
+    --folder|-f)
+        DIR=$2
+        shift
+        ;;
+    --help|-h|help)
+        grep '^## ' $EXE | cut -c4-
+        exit E_OK
+        ;;
+    --document|-d)
+        DOC=$2
+        shift
+        ;;
+    *)
+        echo "ERROR: option '$1' is invalid"
+        exit E_SYNTAX
+        ;;
+    esac
+    shift
+done
+
+open 'https://docs.gridlabd.us/index.html?owner='${ORG:-arras.energy}'&project=gridlabd&branch='${BRA:-master}'&folder='$DIR'&doc='$DOC
