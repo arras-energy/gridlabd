@@ -1,9 +1,11 @@
+mapper = "map" # "map" or "mapbox""
 defaults = {
     "lat" : "latitude",
     "lon" : "longitude",
-    "map_style" : "open-street-map",
+    f"{mapper}_style" : "open-street-map",
     "zoom" : 2.7,
     "center" : {"lat":40,"lon":-96},
+    "text" : "name",
 }
 network = {
     "powerflow" : {
@@ -22,4 +24,12 @@ violation_color = {
     "POWER" : (0,1,0),
     "VOLTAGE" : (0,0,1),
     "CONTROL" : (0,0,0.5),
+}
+node_options = {
+    "textposition" : "top right",
+    # Slows mapping down alot and doesn't display links
+    # "cluster" : {
+    #     "enabled" : False,
+    #     "maxzoom" : 12,"
+    # }
 }

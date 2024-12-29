@@ -1,6 +1,14 @@
 """Mapping utilities
 
-Syntax: gridlabd mapping [OPTIONS ...]
+Syntax: gridlabd mapping FILENAME [OPTIONS ...]
+
+Options:
+
+* `--save=FILENAME`:
+
+* `--show[=OPTIONS]`:
+
+* `
 
 """
 import os
@@ -24,6 +32,8 @@ import traceback
 
 from framework import *
 
+DEFAULT_MAPPER = "map" # "map" or "mapbox"
+
 #
 # Load custom mapping configuration (if any)
 #
@@ -34,12 +44,14 @@ try:
 except ModuleNotFoundError:
 
     class config:
+        mapper = DEFAULT_MAPPER
         defaults = {
             "lat" : "latitude",
             "lon" : "longitude",
-            "map_style" : "open-street-map",
+            f"{DEFAULT_MAPPER}x_style" : "open-street-map",
             "zoom" : 2.7,
             "center" : {"lat":40,"lon":-96},
+            "text" : "name",
         }
         network = {
             "powerflow" : {
@@ -59,15 +71,62 @@ except ModuleNotFoundError:
             "VOLTAGE" : (0,0,1),
             "CONTROL" : (0,0,0.5),
         }
+        node_options = {
+            "textposition" : "top right",
+            # Slows mapping down alot and doesn't display links
+            # "cluster" : {
+            #     "enabled" : False,
+            #     "maxzoom" : 12,"
+            # }
+        }
+
+def get_options(value,default=None):
+    """Extract save/show options from argument value
+
+    Arguments:
+
+    * `value` (str): the argument text
+
+    * `default` (dict): the default value to use for any options not specified
+
+    Returns:
+
+    dict: the option values
+    """
+    options = {} if default is None else default
+    if not value:
+        value = []
+    for key in value:
+        x,y = key.split(":",1)
+        try:
+            if x == "center" and ";" in y:
+                options[x] = {["lat","lon"][n]:float(z) for n,z in enumerate(y.split(";"))}
+            elif x in ["zoom","width","height"]:
+                options[x] = int(y)
+            else:
+                options[x] = y
+        except:
+            options[x] = y
+
+    return options
 
 def main(argv):
+    """Command line processing
 
+    Arguments:
+
+    * `argv` (list[str]): command line arguments
+
+    Returns:
+
+
+    """
     argc = len(argv)
 
-    if argc == 0:
+    if argc == 1:
 
-        print([x for x in __doc__.split("\n") if x.startswith("Syntax: ")])
-        exit(E_SYNTAX)
+        print("\n".join([x for x in __doc__.split("\n") if x.startswith("Syntax: ")]))
+        return E_SYNTAX
 
     args = read_stdargs(argv)
 
@@ -75,32 +134,58 @@ def main(argv):
 
     for key,value in args:
 
+        if key in ["-h","--help","help"]:
+
+            print(__doc__,file=sys.stdout)
+
+            return E_OK
+
         if key in ["--save"]:
 
-            fig.save(value[0],center='auto',zoom=14)
+            if len(value) == 0:
+                error("missing filename")
+                return E_MISSING
+
+            options = get_options(value[1:],{"center":"auto","zoom":14})
+            fig.save(value[0],**options)
 
         elif key in ["--show"]:
 
+            options = get_options(value,{"center":"auto","zoom":14})
             fig.show(
                 hover_name="name",
                 hover_data={
-                    "name":False,"latitude":False,"longitude":False,
+                    "name":False,
+                    "latitude":False,
+                    "longitude":False,
                     "class":True,
-                    'voltage_A':True,'voltage_B':True,'voltage_C':True,
-                    }
+                    'voltage_A':True,
+                    'voltage_B':True,
+                    'voltage_C':True,
+                    },
+                **options
             )
 
         elif fig is None:
 
-            fig = Map(open(key,"r"),
+            if key.endswith(".glm"):
+                file = open_json(key)
+            elif key.endswith(".json"):
+                file = open(key,"r")
+            else:
+                raise MapError("unknown input file format")
+            fig = Map(file,
                 nodedata={
-                    "latitude":float,"longitude":float,
-                    "voltage_A":lambda x:complex_unit(x,'d'),
-                    "voltage_B":lambda x:complex_unit(x,'d'),
-                    "voltage_C":lambda x:complex_unit(x,'d'),
-                    "class":str,
+                    "latitude": float,
+                    "longitude": float,
+                    "voltage_A": lambda x:complex_unit(x,'d'),
+                    "voltage_B": lambda x:complex_unit(x,'d'),
+                    "voltage_C": lambda x:complex_unit(x,'d'),
+                    "class": str,
                     },
                 linkdata={
+                    "status": str,
+                    "class": str,
                     # "power_in":lambda x:complex_unit(x,'j'),
                     # "power_out":lambda x:complex_unit(x,'j'),
                     # "current_in_A":lambda x:complex_unit(x,'j'),
@@ -111,10 +196,14 @@ def main(argv):
 
         else:
 
-            error(f"'{key}={value}'' is invalid",E_SYNTAX)
+            error(f"'{key}={value}'' is invalid")
 
+            return E_SYNTAX
+
+    return E_OK
 
 class MapError(Exception):
+    """Mapping exception"""
     pass
 
 class Map:
@@ -274,13 +363,15 @@ class Map:
         for key,value in self.options.items():
             if key == 'zoom' and value == 'auto':
                 self.options["zoom"] = 10
-            if key == 'center' and value == 'auto':
+            elif key == 'center' and value == 'auto':
                 lat = self.defaults["lat"]
                 lon = self.defaults["lon"]
                 lat = (self.data[lat].min()+self.data[lat].max())/2
                 lon = (self.data[lon].min()+self.data[lon].max())/2
                 self.options["center"] = {"lat" : lat,"lon" : lon,}
-        self.map = px.scatter_map(self.data.dropna(),
+
+        print(self.options)
+        self.map = getattr(px,f"scatter_{config.mapper}")(self.data.dropna(),
             **self.options)
         lat,lon = [self.defaults[x] for x in ["lat","lon"]]
         for key,value in self.links.items():
@@ -303,6 +394,8 @@ class Map:
                     hoverinfo="skip",
                     showlegend=False,
                     )
+                if hasattr(config,"node_options"):
+                    self.map.update_traces(**config.node_options,selector={"type":f"scatter{config.mapper}"})
                 power_out = complex_unit(data["power_out"],'real')
                 symbols = {
                     "switch" : "square-stroked" if power_out<0.1 else "square",
@@ -352,20 +445,29 @@ class Map:
 
 if __name__ == "__main__":
 
-    # sys.argv = [__file__,"--test"]
-
+    sys.argv = [__file__,"autotest/test_mapping_opt.json","--show"]
+    DEBUG = True
     try:
+
         rc = main(sys.argv)
         exit(rc)
+
     except SystemExit:
+
         pass
+
     except KeyboardInterrupt:
-        pass
+
+        exit(E_INTERRUPT)
+
     except Exception as exc:
+
         if DEBUG:
             raise exc
+
         if not QUIET:
             e_type,e_value,e_trace = sys.exc_info()
             tb = traceback.TracebackException(e_type,e_value,e_trace).stack[1]
             print(f"EXCEPTION [{os.path.basename(tb.filename)}@{tb.lineno}]: ({e_type.__name__}) {e_value}",file=sys.stderr)
+
         exit(E_EXCEPTION)

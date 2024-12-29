@@ -22,6 +22,7 @@ E_SYNTAX = 1 # syntax error
 E_INVALID = 2 # invalid argument/file
 E_MISSING = 3 # missing argument/file
 E_BADVALUE = 4 # bad value
+E_INTERRUPT = 8 # interrupted
 E_EXCEPTION = 9 # exception raised
 
 def read_stdargs(argv):
@@ -93,6 +94,15 @@ def gridlabd(*args, bin=True, **kwargs):
         )
     except:
         return None
+
+def open_json(file,tmp=None,init=False):
+    if tmp is None:
+        tmp = "/tmp"
+    outfile = os.path.join(tmp,os.path.splitext(os.path.basename(file))[0]+".json")
+    result = gridlabd("-I" if init else "-C",file,"-o",outfile)
+    if result.returncode != 0:
+        raise RuntimeError("GLM conversion to JSON failed")
+    return open(outfile,"r")
 
 def version():
     """Get gridlabd version"""
@@ -169,4 +179,4 @@ def complex_unit(x:str,
 
 if __name__ == "__main__":
 
-    raise NotImplementedError("cannot run framework as a tool")
+    raise NotImplementedError("cannot run framework as a script")
