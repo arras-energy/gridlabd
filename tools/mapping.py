@@ -48,18 +48,10 @@ import sys
 import io
 import json
 import math
-from collections import namedtuple
-import marimo as mo
-import subprocess
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
-import plotly.io as pio
-import random
-import kaleido
 import unitcalc
 from typing import TypeVar
-import inspect
 import traceback
 
 from framework import *
@@ -111,14 +103,14 @@ except ModuleNotFoundError:
             #     "maxzoom" : 12,"
         }
 
-def get_options(value,default=None):
+def get_options(value:str,default:dict=None):
     """Extract save/show options from argument value
 
     Arguments:
 
-    * `value` (str): the argument text
+    * `value`: the argument text
 
-    * `default` (dict): the default value to use for any options not specified
+    * `default`): the default value to use for any options not specified
 
     Returns:
 
@@ -141,12 +133,12 @@ def get_options(value,default=None):
 
     return options
 
-def main(argv):
+def main(argv:list[str]):
     """Command line processing
 
     Arguments:
 
-    * `argv` (list[str]): command line arguments
+    * `argv`: command line arguments
 
     Returns:
 
@@ -252,13 +244,13 @@ class Map:
 
         Arguments:
 
-        * `model` (str|io.TextIOWrapper|dict): dict, json file handle, json data
+        * `model`: dict, json file handle, json data
 
-        * `nodedata` (dict): data extraction/formatting for node hover
+        * `nodedata`: data extraction/formatting for node hover
 
-        * `linkdata` (dict): data extraction/formatting for link hover
+        * `linkdata`: data extraction/formatting for link hover
 
-        * `options` (dict): plotly scattermap options
+        * `options`: plotly scattermap options
         """
         self.options = options if options else {}
         self.data = pd.DataFrame({"latitude":[],"longitude":[]})
@@ -284,7 +276,16 @@ class Map:
         self.map = None
 
     def read(self,data:dict,nodedata:dict={},linkdata:dict={}):
-        """Read JSON data"""
+        """Read JSON data
+
+        Arguments:
+
+        * `data`: the gridlabd model data
+
+        * `nodedata`: node data to extract/format
+
+        * `linkdata`: link data to extract/format
+        """
         try:
             assert "application" in data, "invalid application data"
             assert data["application"] == "gridlabd", "invalid gridlabd model"
@@ -302,9 +303,9 @@ class Map:
 
         Arguments:
 
-        * `nodedata` (dict): nodedata to extract as key:format
+        * `nodedata`: nodedata to extract/format
 
-        * `linkdata` (dict): linkdata to extract as key:format
+        * `linkdata`: linkdata to extract/format
 
         Returns:
 
@@ -383,7 +384,7 @@ class Map:
 
         Arguments:
 
-        * `options` (dict): plotly scattermap options
+        * `options`: plotly scattermap options
 
         Returns:
 
@@ -466,7 +467,7 @@ class Map:
 
         Arguments:
 
-        * `options` (dict): plotly render options
+        * `options`: plotly render options
         """
         if not self.map or options != self.options:
             self.render(**options)
@@ -477,7 +478,7 @@ class Map:
 
         Arguments:
 
-        * `options` (dict): plotly render options
+        * `options`: plotly render options
         """
         if not self.map or options != self.options:
             self.render(**options)
