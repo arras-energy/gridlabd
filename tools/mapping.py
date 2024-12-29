@@ -4,12 +4,44 @@ Syntax: gridlabd mapping FILENAME [OPTIONS ...]
 
 Options:
 
-* `--save=FILENAME`:
+* `--save=FILENAME`: save the image to FILENAME
 
-* `--show[=OPTIONS]`:
+* `--show[=OPTIONS]`: open the image in a browser using the
+  `plotly.scattermap` options
 
-* `
+* `-h|--help|help`: output this help to stdout
 
+* `--debug`: enable debug and traceback output on exceptions to stderr
+
+* `--verbose`: enable verbose output to stderr
+
+* `--quiet`: disable error output to stderr
+
+* `--silent`: disable output to stdout
+
+* `--warning`: disable warning output to stderr
+
+Description:
+
+The `mapping` tool generates a map of the network contained in the model
+`FILENAME` using `plotly`'s `scattermap` or `scattermapbox` API.  The
+configuration file `mapping_config.py` specifies the mapping options
+according to the map style selected, e.g., `map` or `mapbox`. The default
+mapping configuration is found in the gridlabd shared folder.
+
+Two network modules are currently supported, `powerflow` and `pypower`.
+Symbols for various object types and hover popups can be configured in the
+mapping configuration file.
+
+Examples:
+
+To generate a map image use the `--save` option, e.g.,
+
+    gridlabd mapping mymodel.json --save=mymodel.png
+
+To open a map in the default browser use the `--show` option, e.g.,
+
+    gridlabd mapping mymodel.json --show
 """
 import os
 import sys
@@ -222,9 +254,9 @@ class Map:
 
         * `model` (str|io.TextIOWrapper|dict): dict, json file handle, json data
 
-        * `nodedata` (dict):
+        * `nodedata` (dict): data extraction/formatting for node hover
 
-        * `linkdata` (dict):
+        * `linkdata` (dict): data extraction/formatting for link hover
 
         * `options` (dict): plotly scattermap options
         """
@@ -430,13 +462,23 @@ class Map:
         return self.map
 
     def show(self,**options):
-        """Open the map in a browser window"""
+        """Open the map in a browser window
+
+        Arguments:
+
+        * `options` (dict): plotly render options
+        """
         if not self.map or options != self.options:
             self.render(**options)
         self.map.show()
 
     def save(self,name:str=None,**options):
-        """Save the map in a file"""
+        """Save the map in a file
+
+        Arguments:
+
+        * `options` (dict): plotly render options
+        """
         if not self.map or options != self.options:
             self.render(**options)
         self.map.write_image(name)
