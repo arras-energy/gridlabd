@@ -4,7 +4,6 @@ import sys
 import io
 import json
 import math
-from collections import namedtuple
 import subprocess
 import unitcalc
 from typing import TypeVar
