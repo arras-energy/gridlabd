@@ -1,4 +1,4 @@
-[[/docs/Utilities/Glutils]] -- GridLAB-D model access utilities
+[[/Utilities/Glutils]] -- GridLAB-D model access utilities
 
 Syntax: `gridlabd glutils JSONFILE [OPTIONS ...]`
 

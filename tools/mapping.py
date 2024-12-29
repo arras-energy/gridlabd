@@ -1,6 +1,6 @@
 """Mapping utilities
 
-Syntax: gridlabd mapping FILENAME [OPTIONS ...]
+Syntax: `gridlabd mapping FILENAME [OPTIONS ...]`
 
 Options:
 
