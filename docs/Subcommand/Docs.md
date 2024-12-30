@@ -15,7 +15,7 @@ Options:
 * `-o|--organization ORG`: open docs from github owner ORG
 
 Opens the document browser at the indicated folder and document
-on the specified branch of the organization's `gridlabd`` project.
+on the specified branch of the organization's `gridlabd` project.
 The default organization is `arras-energy`, the default branch is
 `master`, the default folder is `/`, and the default document is
 `README.md`.
