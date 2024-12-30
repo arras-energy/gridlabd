@@ -13,6 +13,7 @@
 ## 
 ## * `-o|--organization ORG`: open docs from github owner ORG
 ## 
+## * `--page`: open docs in page-only layout (no sidebar index)
 ## 
 ## Opens the document browser at the indicated folder and document
 ## on the specified branch of the organization's `gridlabd` project.
@@ -45,6 +46,7 @@ EXE=$0
 
 E_OK=0
 E_SYNTAX=1
+PAGE="index"
 
 while [ $# -gt 0 ]; do
     case $1 in 
@@ -68,6 +70,9 @@ while [ $# -gt 0 ]; do
         DOC=$2
         shift
         ;;
+    --page)
+        PAGE="_page"
+        ;;
     *)
         echo "ERROR: option '$1' is invalid"
         exit $E_SYNTAX
@@ -76,4 +81,4 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-open 'https://docs.gridlabd.us/index.html?owner='${ORG:-arras.energy}'&project=gridlabd&branch='${BRA:-master}'&folder='$DIR'&doc='$DOC
+open 'https://docs.gridlabd.us/'${PAGE}'.html?owner='${ORG:-arras.energy}'&project=gridlabd&branch='${BRA:-master}'&folder='$DIR'&doc='$DOC
