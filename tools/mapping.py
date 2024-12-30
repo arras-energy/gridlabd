@@ -531,8 +531,6 @@ class Map:
 
 if __name__ == "__main__":
 
-    sys.argv = [__file__,"autotest/test_mapping_opt.json","--show"]
-    DEBUG = True
     try:
 
         rc = main(sys.argv)

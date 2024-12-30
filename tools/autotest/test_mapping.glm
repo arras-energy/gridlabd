@@ -1,2 +1,9 @@
-#input "test_mapping_opt.json"
-#set compileonly=TRUE
+#ifexist "../test_mapping_opt.json"
+#define DIR=..
+#endif
+
+#system gridlabd mapping ${DIR:-.}/test_mapping_opt.json -o test_mapping.png
+
+#ifexist "../test_mapping.png"
+#on_exit 0 diff ../test_mapping.png test_mapping.png
+#endif
