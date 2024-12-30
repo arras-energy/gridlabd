@@ -117,12 +117,11 @@ object cvx
     data "A=test:A1";
     variables "y=test:y";
     objective "Minimize(sum_squares(A@y))";
-    constraints "y >= 1";
 }
 
 #set savefile=${modelname/.glm/.json}
 
 #ifexist "../test_cvx.txt"
-#on_exit 0 diff -I '^param_prob:' ../test_cvx.txt test_cvx.txt > gridlabd.diff
+#on_exit 0 diff -w -I '^param_prob:' ../test_cvx.txt test_cvx.txt > gridlabd.diff
 #endif
 
