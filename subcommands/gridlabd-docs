@@ -1,5 +1,5 @@
 #!/bin/bash
-## Syntax: docs [OPTIONS ...]
+## Syntax: gridlabd docs [OPTIONS ...]
 ## 
 ## Options:
 ## 
@@ -7,9 +7,18 @@
 ## 
 ## * `-d|--document NAME`: open document NAME (must include full path)
 ## 
+## * `-h|--help|help`: output this help
+## 
 ## * `-f|--folder DIR`: open folder DIR (must include root /)
 ## 
 ## * `-o|--organization ORG`: open docs from github owner ORG
+## 
+##
+## Opens the document browser at the indicated folder and document
+## on the specified branch of the organization's `gridlabd`` project.
+## The default organization is `arras-energy`, the default branch is
+## `master`, the default folder is `/`, and the default document is
+## `README.md`.
 ## 
 ## Exit codes:
 ## 
@@ -42,8 +51,8 @@ while [ $# -gt 0 ]; do
         shift
         ;;
     --help|-h|help)
-        grep '^## ' $EXE | cut -c4-
-        exit E_OK
+        grep '^## ' $EXE | cut -c4- | sed 's/`//g'
+        exit $E_OK
         ;;
     --document|-d)
         DOC=$2
@@ -51,7 +60,7 @@ while [ $# -gt 0 ]; do
         ;;
     *)
         echo "ERROR: option '$1' is invalid"
-        exit E_SYNTAX
+        exit $E_SYNTAX
         ;;
     esac
     shift
