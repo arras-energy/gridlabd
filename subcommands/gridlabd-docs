@@ -13,7 +13,7 @@
 ## 
 ## * `-o|--organization ORG`: open docs from github owner ORG
 ## 
-##
+## 
 ## Opens the document browser at the indicated folder and document
 ## on the specified branch of the organization's `gridlabd`` project.
 ## The default organization is `arras-energy`, the default branch is
@@ -25,6 +25,10 @@
 ## * `0`: ok
 ## 
 ## * `1`: invalid option
+## 
+## See also:
+## 
+## * https://docs.gridlabd.us/
 ## 
 
 ORG=$($GLD_BIN/gridlabd.bin --version=origin | cut -f4 -d/)
