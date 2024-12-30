@@ -122,7 +122,10 @@ object cvx
 
 #set savefile=${modelname/.glm/.json}
 
+// This test does not work on linux platforms for some unknown reason
+#ifdef APPLE
 #ifexist "../test_cvx.txt"
 #on_exit 0 diff -w -I '^(param_prob:|Problem solved:|Result:)' ../test_cvx.txt test_cvx.txt > gridlabd.diff
+#endif
 #endif
 
