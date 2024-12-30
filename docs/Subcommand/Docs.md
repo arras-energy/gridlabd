@@ -26,6 +26,12 @@ Exit codes:
 
 * `1`: invalid option
 
+Caveat:
+
+If you do not specify the folder and document, the documentation browser
+will reopen the previous document, if any was viewed recently. The default
+folder and document will only be opened on the first view in 24 hours.
+
 See Also:
 
 * https://docs.gridlabd.us/
