@@ -332,6 +332,7 @@ int cvx::init(OBJECT *parent)
         {
             exception("'import glutils as %s' failed (PYTHONPATH=%s)",(const char*)utils,getenv("PYTHONPATH"));
         }
+        PyModule_AddObject(gld,"glm",module);
         PyModule_AddObject(module,"gld",gld);
         PyDict_SetItemString(globals,utils,module);
     }
