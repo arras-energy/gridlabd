@@ -5,7 +5,6 @@ defaults = {
     f"{mapper}_style" : "open-street-map",
     "zoom" : 2.7,
     "center" : {"lat":40,"lon":-96},
-    "text" : "name",
     }
 network = {
     "powerflow" : {

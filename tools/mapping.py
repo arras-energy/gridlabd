@@ -83,10 +83,9 @@ except ModuleNotFoundError:
         defaults = {
             "lat" : "latitude",
             "lon" : "longitude",
-            f"{DEFAULT_MAPPER}x_style" : "open-street-map",
+            f"{DEFAULT_MAPPER}_style" : "open-street-map",
             "zoom" : 2.7,
             "center" : {"lat":40,"lon":-96},
-            "text" : "name",
         }
         network = {
             "powerflow" : {
