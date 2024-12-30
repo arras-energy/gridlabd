@@ -164,8 +164,8 @@ cvx::cvx(MODULE *module)
         gl_global_create("optimize::cvx_imports",PT_char1024,&imports,
             PT_DESCRIPTION, "CVX symbols to import", NULL);
 
-        gl_global_create("optimize::glutils",PT_char1024,&utils,
-            PT_DESCRIPTION, "global symbol to use as glutils.py import", NULL);
+        gl_global_create("optimize::network",PT_char1024,&utils,
+            PT_DESCRIPTION, "global symbol to use as network.py import", NULL);
 
         gl_global_create("optimize::cvx_problemdump",PT_char1024,&problemdump,
             PT_DESCRIPTION, "CVX problem dump filename", NULL);
@@ -327,10 +327,10 @@ int cvx::init(OBJECT *parent)
             Py_INCREF(defs);
         }
 
-        PyObject *module = PyImport_ImportModule("glutils");
+        PyObject *module = PyImport_ImportModule("network");
         if ( module == NULL )
         {
-            exception("'import glutils as %s' failed (PYTHONPATH=%s)",(const char*)utils,getenv("PYTHONPATH"));
+            exception("'import network as %s' failed (PYTHONPATH=%s)",(const char*)utils,getenv("PYTHONPATH"));
         }
         PyModule_AddObject(gld,"glm",module);
         PyModule_AddObject(module,"gld",gld);

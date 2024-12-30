@@ -1,6 +1,6 @@
 """GridLAB-D model access utilities
 
-Syntax: `gridlabd glutils JSONFILE [OPTIONS ...]`
+Syntax: `gridlabd network JSONFILE [OPTIONS ...]`
 
 Options:
 
@@ -14,14 +14,14 @@ Options:
 
 * `line:VAR`: line property vector
 
-The `glutils` module is a `gridlabd` runtime model accessor library that can
+The `network` module is a `gridlabd` runtime model accessor library that can
 be used when running Python code in `gridlabd` modules. The accessors allow
 Python code to read and write both global variables and object properties.
 The library also includes convenience methods to obtain a list global
 variables, and dictionaries of object, object header values, classes, class
 members, as well as property accessor that can perform unit conversion.
 
-The `glutils` module also includes a JSON model accessor that uses the same
+The `network` module also includes a JSON model accessor that uses the same
 underlying methods as the runtime accessor.
 
 The utilities include a number of useful graph theory methods to extract the
@@ -744,13 +744,13 @@ if __name__ == "__main__":
         lines = dict([x.split(':',3)[1:] for x in sys.argv[2:] if x.startswith("line:")])
         network = Network(model,matrix=matrix,nodemap=nodes,linemap=lines)
         for key in [x for x in sys.argv[2:] if not x.split(":")[1] in dir(network)]:
-            print(f"WARNING [glutils.py]: '{key}' is not a valid network analysis result",file=sys.stderr)
+            print(f"WARNING [network.py]: '{key}' is not a valid network analysis result",file=sys.stderr)
         extras = list(nodes) + list(lines)
         print(json.dumps(network.todict(extras={y:lambda x:x for y in extras}),indent=2))
 
     except Exception as err:
 
-        print(f"ERROR [glutils.py]: {err}",file=sys.stderr)
+        print(f"ERROR [network.py]: {err}",file=sys.stderr)
 
         if DEBUG:
             raise
