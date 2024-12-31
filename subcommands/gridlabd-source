@@ -1,0 +1,27 @@
+#!/bin/bash
+# Syntax: source FILE
+#
+# Read source file from repository
+#
+# EXIT 0 - ok
+# EXIT 1 - not found
+# EXIT 2 - syntax error
+#
+
+if [ $# -eq 0 ]; then
+    grep '^# Syntax: ' $0 | cut -f2- -d' '
+    exit 2
+fi
+
+ORIGIN=$(gridlabd.bin --version=origin)
+COMMIT=$(gridlabd.bin --version=commit)
+SOURCE=${ORIGIN/github.com/raw.githubusercontent.com}/$COMMIT/$1
+CODE=$(curl -sfLI $SOURCE | head -n 1 | cut -f2 -d' ')
+if [ $? -ne 0 -o $CODE -ne 200 ]; then
+    echo "ERROR [source]: $1 -> $CODE"
+    exit 1
+else
+    curl -sL $SOURCE
+fi
+
+exit 0
