@@ -15,6 +15,7 @@ dist_pkgdata_DATA += runtime/gridlabd.h
 dist_pkgdata_DATA += runtime/gridlabd.htm
 dist_pkgdata_DATA += runtime/gridlabd.jpg
 dist_pkgdata_DATA += runtime/gridlabd.js
+dist_pkgdata_DATA += runtime/gridlabd_py.py
 dist_pkgdata_DATA += runtime/gridlabd.rc
 dist_pkgdata_DATA += runtime/gridlabd.syn
 dist_pkgdata_DATA += runtime/load_b.png

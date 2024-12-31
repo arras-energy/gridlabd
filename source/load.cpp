@@ -8520,6 +8520,14 @@ Done:
 	{
 		fclose(fp);
 	}
+	if ( status == FAILED )
+	{
+		errno = EINVAL;
+	}
+	else
+	{
+		errno = 0;
+	}
 	return status;
 }
 
