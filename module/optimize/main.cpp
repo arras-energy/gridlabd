@@ -23,6 +23,7 @@ MODULE:market
 
 #include "optimize.h"
 #include "simple.h"
+#include "cvx.h"
 
 EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
 {
@@ -35,6 +36,7 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
 	INIT_MMF(optimize);
 
 	new simple(module);
+	new cvx(module);
 
 	/*** DO NOT EDIT NEXT LINE ***/
 	//NEWCLASS
