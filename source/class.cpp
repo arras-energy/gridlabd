@@ -637,7 +637,7 @@ size_t class_get_extendedcount(CLASS *oclass)
 	or \p NULL if no match found.
  **/
 CLASS *class_get_class_from_classname(CLASSNAME name, /**< a pointer to a \p NULL -terminated string containing the class name */
-									  CLASS *first) /**< optional reference to count of matches found */
+									  CLASS *first) /**< optional reference to class to start after */
 {
 	CLASS *oclass = NULL;
 	MODULE *mod = NULL;

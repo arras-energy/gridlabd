@@ -56,8 +56,10 @@ STATUS environment_start(int argc, /**< the number of arguments to pass to the e
 					IN_MYCONTEXT output_debug("dump to '%s' complete", global_dumpfile);
 				}
 			}
+			errno = EINVAL;
 			return FAILED;
 		}
+		errno = 0;
 		return SUCCESS;
 	}
 	else if (strcmp(global_environment,"matlab")==0)
@@ -70,9 +72,13 @@ STATUS environment_start(int argc, /**< the number of arguments to pass to the e
 		// server only mode (no GUI)
 		IN_MYCONTEXT output_verbose("starting server");
 		if (server_startup(argc,argv))
+		{
 			return exec_start();
+		}
 		else
+		{
 			return FAILED;
+		}
 	}
 	else if (strcmp(global_environment,"html")==0)
 	{
@@ -91,12 +97,18 @@ UseGui:
 			gui = gui_get_root();
 			if ( gui==NULL ) return FAILED;
 			if ( gui->hold )
+			{
 				return server_join();
+			}
 			else
+			{
 				return FAILED;
+			}
 		}
 		else
+		{
 			return FAILED;
+		}
 	}
 	else if (strcmp(global_environment,"X11")==0)
 	{
@@ -118,6 +130,7 @@ UseGui:
 			the <b>batch</b> environment is normally supported, although 
 			some builds can support other environments, such as <b>matlab</b>.
 		*/
+		errno = EINVAL;
 		return FAILED;
 	}
 }
