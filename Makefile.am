@@ -67,7 +67,7 @@ bin_PROGRAMS =
 bin_SCRIPTS =
 dist_doc_DATA =
 
-docs_targets =
+docs_targets = docs/Utilities
 
 check-target:
 	@test $(prefix) = $(shell $(top_srcdir)/build-aux/version.sh --install) || ( echo "ERROR [Makefile]: prefix '$(prefix)' and target '($(shell $(top_srcdir)/build-aux/version.sh --install))' mismatch; ./configure is outdated. Build using '--clean' option to fix this." > /dev/stderr ; false )
@@ -83,6 +83,7 @@ include $(top_srcdir)/utilities/Makefile.mk
 include $(top_srcdir)/python/Makefile.mk
 include $(top_srcdir)/geodata/Makefile.mk
 include $(top_srcdir)/subcommands/Makefile.mk
+include $(top_srcdir)/docs/Makefile.mk
 
 # approved modules
 include $(top_srcdir)/module/Makefile.mk
