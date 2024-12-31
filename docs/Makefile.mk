@@ -1,7 +1,7 @@
 
 DOCS = 
 DOCS += docs/Utilities/Framework.md
-DOCS += docs/Utilities/Glutils.md
+DOCS += docs/Utilities/Network.md
 DOCS += docs/Utilities/Mapping.md
 DOCS += docs/Utilities/Unitcalc.md
 
