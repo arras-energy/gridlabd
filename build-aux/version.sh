@@ -5,7 +5,8 @@
 ##
 ##   --version       the version, e.g., 4.3.1
 ##   --number        the build number, e.g., 230701
-##   --branch        the branch, e.g., master
+##   --branch        the branch, e.g., master (with _ fixes)
+##   --truebranch    the true branch name (without _ fixes)
 ##   --gitversion    the version of github, e.g., 2.34.1
 ##   --install       the install folder path name, e.g., /usr/local/opt/gridlabd/4.3.1-230426-master-ubuntu_22-x86_64
 ##   --name          the install folder base name, /usr/local/opt/gridlabd/4.3.1-230426-master-ubuntu_22-x86_64
@@ -33,7 +34,8 @@ PAT=`sed -En 's/#define REV_PATCH ([0-9]+).*/\1/p' $FIL | tr -d '\n'`
 PKG=`sed -En 's/#define PACKAGE "([a-z]+)".*/\1/p' $FIL | tr -d '\n'`
 NAM=`sed -En 's/#define PACKAGE_NAME "([-A-Za-z ]+)".*/\1/p' $FIL | tr -d '\n'`
 NUM=`git log --max-count=1 --pretty=format:"%ai" | cut -c 3,4,6,7,9,10`
-BRA=`git rev-parse --abbrev-ref HEAD | git rev-parse --abbrev-ref HEAD | tr -c A-Za-z0-9 _ | sed 's/_+/_/g;s/_$//;s/^_//'`
+BRA=`git rev-parse --abbrev-ref HEAD | tr -c A-Za-z0-9 _ | sed 's/_+/_/g;s/_$//;s/^_//'`
+TRU=`git rev-parse --abbrev-ref HEAD`
 GIT=`git --version | cut -f3 -d' '`
 ORG=`git remote get-url origin | cut -f4- -d/`
 if [ "$(uname -s)" == "Darwin" ]; then
@@ -50,6 +52,8 @@ case $1 in
         echo "$MAJ.$MIN.$PAT" ;;
     --branch | -b)
         echo "$BRA" ;;
+    --truebranch)
+        echo "$TRU" ;;
     --gitversion | -g)
         echo "$GIT" ;;
     --number | -n)
