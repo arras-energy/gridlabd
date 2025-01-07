@@ -91,11 +91,6 @@ def to_csv(data,end="\n",sep=",",quote='"',na="",index="name"):
 
 def main(argv:list[str]) -> int:
 
-    if len(argv) == 1:
-
-        print("\n".join([x for x in __doc__.replace("`","").split("\n") if x.startswith("Syntax: ")]))
-        return app.E_SYNTAX
-
     options = app.read_stdargs(argv)
 
     model = None
@@ -228,7 +223,18 @@ class Editor:
         return result
 
     def delete(self,*args,**kwargs):
+        """Delete objects
 
+        Arguments:
+
+        * `args`: object name pattern followed by desired properties patterns (if any)
+
+        * `kwargs`: key and value patterns to match properties
+        
+        Returns:
+
+        `dict`: deleted object properties
+        """        
         objects = self.data["objects"]
         result = {}
         if kwargs:
@@ -260,6 +266,18 @@ class Editor:
         return result
 
     def modify(self,*args,**kwargs):
+        """Modify object properties
+
+        Arguments:
+
+        * `args`: object name pattern followed by desired properties patterns (if any)
+
+        * `kwargs`: key and value patterns to match properties
+        
+        Returns:
+
+        `dict`: object properties prior to modification
+        """
         objects = self.data["objects"]
         result = {}
         for pattern in args:
@@ -272,7 +290,18 @@ class Editor:
         return result
 
     def add(self,*args,**kwargs):
+        """Add objects
 
+        Arguments:
+
+        * `args`: object name pattern followed by desired properties patterns (if any)
+
+        * `kwargs`: key and value patterns to match properties
+        
+        Returns:
+
+        `dict`: object properties added
+        """        
         assert "class" in kwargs, "no object class specified"
         oclass = kwargs["class"]
         result = {}
@@ -299,32 +328,12 @@ class Editor:
 
 if __name__ == "__main__":
 
-    # sys.argv = [__file__,
-    #     "autotest/ieee13.glm",
-    #     "--verbose",
-    #     "--debug",
-
-    #     "list",
-    #     "list=class:load",
-    #     "list=Node6[1-4],id:3[23]",
-
-    #     "get=Node6,GFA.*",
-    #     "get=Node,class,id:3[1-3]",
-
-    #     "delete=Node633",
-    #     "delete=(from|to):Node633",
-    #     "delete=XFMR,(from|to):Node633",
-    #     "--save=ieee13.json",
-
-    #     "add=Node14,class:node,bustype:SWING",
-    #     "--save=ieee13.json",
-
-    #     "modify=Node633,class:substation",
-
-    #     "globals=version,clock:2020-01-01 00:00:00 PST",
-    #     ]
-
     try:
+
+        if len(sys.argv) == 1:
+
+            print("\n".join([x for x in __doc__.replace("`","").split("\n") if x.startswith("Syntax: ")]))
+            exit(app.E_SYNTAX)
 
         rc = main(sys.argv)
         exit(rc)
