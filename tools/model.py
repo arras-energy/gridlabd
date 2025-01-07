@@ -1,4 +1,4 @@
-"""Model edit tool
+"""Model editor tool
 
 Syntax: `gridlabd model FILENAME [COMMANDS ...] [OPTIONS ...]`
 
@@ -8,11 +8,55 @@ Options:
 
 Commands:
 
-* `delete=NAME`: delete object NAME from model
+* `add=NAME,PROPERTY:VALUE[,...]`: add an object
+
+* `delete=PATTERN[,PROPERTY:VALUE]`: delete objects
+
+* `get=PATTERN[,PROPERTY:VALUE`: get object data
+
+* `globals=[PATTERN|NAME][,PROPERTY:VALUE]: get/set globals
+
+* `copy=PATTERN[,PROPERTY:VALUE]: copy objects 
+
+* `list=PATTERN[,PROPERTY:VALUE]`: list objects
+
+* `modify=PATTERN,PROPERTY:VALUE[,...]`: modify object data
+
+* `move=PATTERN[,PROPERTY:VALUE]: move objects 
 
 Description:
 
-* 
+The model editor utility allows command-line and python-based editing of models.
+
+PATTERN is a regular expression used to match object or global names. PROPERTY
+and VALUE can be regular expressions or a property name and value tuple for
+get or set operations, respectively. When comma-separated patterns are
+allowed, they are interpreted as `and` operations. Note that the `add`
+command does not use regular expressions for NAME.
+
+Output is always generated as a CSV table with property names in the header row.
+
+Commands that modify or delete objects or data will output the old value(s).
+
+The output FILENAME format is limited to JSON.
+
+Caveat:
+
+The model editor does not check whether the action will result in a faulty
+model, e.g., deleting a node that is referened by a link, add a property that
+is not valie for the class, or changing an object property to something invalid.
+
+Examples:
+
+    gridlabd model ieee13.glm list='Node6[1-4],id:3[23]'
+    gridlabd model ieee13.glm get='Node6,GFA.*'
+    gridlabd model ieee13.glm get='Node633,class,id'
+    gridlabd model ieee13.glm delete=Node633 --save=ieee13.json
+    gridlabd model ieee13.glm delete=(from|to):Node633 --save=ieee13_out.json
+    gridlabd model ieee13.glm delete=XFMR,(from|to):Node633 --save=ieee13_out.json
+    gridlabd model ieee13.glm add=Node14,class:node,bustype:SWING --save=ieee13_out.json
+    gridlabd model ieee13.glm modify=Node633,class:substation --save=ieee13_out.json
+    
 """
 
 import sys
@@ -21,6 +65,29 @@ import json
 import re
 import traceback
 import framework as app
+import pandas as pd
+
+def to_csv(data,end="\n",sep=",",quote='"',na="",index="name"):
+    if isinstance(data,list):
+        return end.join([str(x) for x in data if type(x) in [str,float,int,bool,type(None)]])
+    elif isinstance(data,dict):
+        fields = set()
+        for n,values in enumerate(data.values()):
+            if isinstance(values,dict):
+                fields |= set(list(values.keys()))
+            else:
+                print(data,file=sys.stderr)
+                raise ValueError(f"row {n} data is not a dict")
+        fields = list(fields)
+        result = [[index]+fields]
+        for name,values in data.items():
+            row = dict(zip([na]*len(fields),list(fields)))
+            for key,value in values.items():
+                row[key] = f'{quote}{value}{quote}' if sep in value else str(value)
+            result.append([name]+[row[x] if x in row else na for x in fields])
+        return end.join([sep.join(row) for row in result])
+    elif type(x) in [str,float,int,bool,type(None)]:
+        return str(data)
 
 def main(argv:list[str]) -> int:
 
@@ -33,11 +100,9 @@ def main(argv:list[str]) -> int:
 
     model = None
     output = None
+    form = to_csv
 
     for key,value in options:
-
-        app.verbose("key = ",key)
-        app.verbose("value = ",value)
 
         # help
         if key in ["-h","--help","help"]:
@@ -51,31 +116,20 @@ def main(argv:list[str]) -> int:
             if len(output) == 1:
                 output.append("w")
 
+        # format
+        elif key in ["--json"]:
+            form = json.dumps
+
         # commands
-        elif key in [x for x in dir(GlmEditor) if not x.startswith("_")]:
+        elif key in [x for x in dir(Editor) if not x.startswith("_")]:
 
             kwargs = {x:y for x,y in [z.split(":",1) for z in value if ":" in z]}
             args = [x for x in value if not ":" in x]
-            app.verbose("args =",args)
-            app.verbose("kwargs =",kwargs)
-            if "json" in args:
-                form = json.dumps
-                args.remove("json")
-            else:
-                form = None
             call = getattr(model,key)
-            app.verbose(call.__name__,args,kwargs)
+            app.verbose(f"{call.__name__}({','.join([repr(x) for x in args])}{',' if args and kwargs else ''}{','.join([x+'='+repr(y) for x,y in kwargs.items()])})")
             result = call(*args,**kwargs)
-            app.verbose("->",result)
-            if form is None:
-                if isinstance(result,list):
-                    form = lambda y:"\n".join([str(x) for x in y])
-                elif isinstance(result,dict):
-                    form = lambda z:"\n".join([f"{x}:{str(y)}" for x,y in z.items()])
-                else:
-                    raise ValueError("result is not a list or dict")
-            if result:
-                app.output(form(result),file=sys.stderr)
+            app.verbose(f"{' '*len(call.__name__)} ->",result)
+            app.output(form(result),file=sys.stderr)
 
         # file
         elif model is None:
@@ -92,7 +146,8 @@ def main(argv:list[str]) -> int:
 
                 raise RuntimeError("invalid model file type")
 
-            model = GlmEditor(json.load(file))
+            model = Editor(json.load(file))
+            file.close()
 
         # invalid
         else:
@@ -101,12 +156,16 @@ def main(argv:list[str]) -> int:
 
     if output:
         with open(*output) as fh:
-            json.dump(model.data,fh,indent=4)
+            if output[0].endswith(".json"):
+                json.dump(model.data,fh,indent=4)
+            else:
+                raise RuntimeError("unsupported output file format")
 
     return app.E_OK
 
-class GlmEditor:
-
+class Editor:
+    """GLM Model Editor
+    """
     def __init__(self,data:dict):
         assert "application" in data, "data does not valid application data"
         assert data["application"] == "gridlabd", "data is not a valid gridlabd model"
@@ -117,7 +176,7 @@ class GlmEditor:
 
         Arguments:
 
-        * `args`: object name filter patterns (and'ed, default is ".*")
+        * `args`: object name patterns (and'ed, default is ".*")
 
         * `kwargs`: property criteria patterns (and'ed, default is ".*")
 
@@ -126,13 +185,20 @@ class GlmEditor:
         `list`: object names matching criteria
         """
         objects = self.data["objects"]
-        if not args:
-            result = list(objects.items())
-        else:
+        if args:
             for pattern in args:
                 result = [x for x,y in objects.items() if re.match(pattern,x)]
-        for key,pattern in kwargs.items():
-            result = [x for x in result if re.match(pattern,objects[x][key])]
+        elif kwargs:
+            if args:
+                result = []
+                for pattern in args:
+                    result.append([x for x in list(objects) if re.match(pattern,x)])
+            else:
+                result = list(objects)
+            for key,pattern in kwargs.items():
+                result = [x for x in result if re.match(pattern,objects[x][key])]
+        else:
+            result = list(objects)
         return result
 
     def get(self,*args,**kwargs):
@@ -140,9 +206,9 @@ class GlmEditor:
 
         Arguments:
 
-        * `args`: object name followed by desired properties pattern (default is ".*")
+        * `args`: object name pattern followed by desired properties patterns (if any)
 
-        * `kwargs`: Ignored
+        * `kwargs`: key and value patterns to match properties
         
         Returns:
 
@@ -150,45 +216,59 @@ class GlmEditor:
         """
         result = {}
         for name,data in [(x,y) for x,y in self.data["objects"].items() if re.match(args[0],x)]:
-            for pattern in args[1:]:
-                for key,value in data.items():
+            result[name] = {}
+            for key,value in data.items():
+                for pattern in args[1:]:
                     if re.match(pattern,key):
-                        result[f"{name}.{key}"] = value
+                        result[name][key] = value
+                for pattern1,pattern2 in kwargs.items():
+                    if re.match(pattern1,key) and re.match(pattern2,value):
+                        result[name][key] = value
+
         return result
 
     def delete(self,*args,**kwargs):
 
         objects = self.data["objects"]
-        result = []
+        result = {}
         if kwargs:
-            for name in list(objects):
+            for name in objects:
                 for key,pattern in kwargs.items():
-                    if name in result:
+                    if name in list(result):
                         break
                     for x,y in objects[name].items():
                         if re.match(key,x) and re.match(pattern,y):
-                            result.append(name)
+                            result[name] = objects[name]
                             break
-            for name in list(result):
-                keep = False
-                for pattern in args:
-                    if re.match(pattern,name):
-                        keep = True
-                        break
-                if not keep:
-                    result.remove(name)
+            if args:
+                for name in list(result):
+                    keep = False
+                    for pattern in args:
+                        if re.match(pattern,name):
+                            keep = True
+                            break
+                    if not keep:
+                        del result[name]
         elif args:
-            for name in list(objects):
+            for name in objects:
                 for pattern in args:
                     if re.match(pattern,name):
-                        result.append(name)
+                        result[name] = objects[name]
                         break
+        for name in result:
+            del self.data["objects"][name]
         return result
 
     def modify(self,*args,**kwargs):
-
-        result = []
-        raise NotImplementedError("modify is TODO")
+        objects = self.data["objects"]
+        result = {}
+        for pattern in args:
+            for name,data in self.data["objects"].items():
+                if re.match(pattern,name):
+                    result[name] = {}
+                    for key,value in kwargs.items():
+                        result[name][key] = data[key]
+                        self.data["objects"][name][key] = value
         return result
 
     def add(self,*args,**kwargs):
@@ -201,25 +281,48 @@ class GlmEditor:
             assert key == "class" or key in values, f"property '{key}' is not valid for class '{oclass}'"
             values[key] = value
         for name in args:
-            self.data["objects"][name] = result[name] = values
+            result[name] = {}
+            self.data["objects"][name] = values
+            for key,value in values.items():
+                result[name][key] = value
+        return result
+
+    def globals(self,*args,**kwargs):
+
+        result = {}
+        for name in args:
+            result[name] = self.data["globals"][name]
+        for name,value in kwargs.items():
+            result[name] = self.data["globals"][name]
+            self.data["globals"][name]["value"] = value
         return result
 
 if __name__ == "__main__":
 
-    sys.argv = [__file__,
-        "autotest/ieee13.glm",
-        # "list=Node6[1-4],id:3[23]",
-        # "get=Node6,GFA.*",
-        # "get=Node633,class,id",
-        # "delete=Node633",
-        # "delete=(from|to):Node633",
-        # "delete=XFMR,(from|to):Node633",
-        # "add=Node14,class:node,bustype:SWING",
-        "modify=Node14,class:substation",
-        "--save=ieee13_out.json",
-        # "--verbose",
-        # "--debug"
-        ]
+    # sys.argv = [__file__,
+    #     "autotest/ieee13.glm",
+    #     "--verbose",
+    #     "--debug",
+
+    #     "list",
+    #     "list=class:load",
+    #     "list=Node6[1-4],id:3[23]",
+
+    #     "get=Node6,GFA.*",
+    #     "get=Node,class,id:3[1-3]",
+
+    #     "delete=Node633",
+    #     "delete=(from|to):Node633",
+    #     "delete=XFMR,(from|to):Node633",
+    #     "--save=ieee13.json",
+
+    #     "add=Node14,class:node,bustype:SWING",
+    #     "--save=ieee13.json",
+
+    #     "modify=Node633,class:substation",
+
+    #     "globals=version,clock:2020-01-01 00:00:00 PST",
+    #     ]
 
     try:
 
@@ -241,7 +344,7 @@ if __name__ == "__main__":
 
         if not app.QUIET:
             e_type,e_value,e_trace = sys.exc_info()
-            tb = traceback.TracebackException(e_type,e_value,e_trace).stack[2]
+            tb = traceback.TracebackException(e_type,e_value,e_trace).stack[-1]
             print(f"EXCEPTION [{app.EXEFILE}@{tb.lineno}]: ({e_type.__name__}) {e_value}",file=sys.stderr)
 
         exit(app.E_EXCEPTION)

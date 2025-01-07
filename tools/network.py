@@ -686,7 +686,7 @@ if __name__ == "__main__":
             assert not "gld" in globals(), "not running as static model ('gld' is built-in)"
 
             source = "tools/autotest/case14.py"
-            python = os.path.join("/tmp",os.path.basename(source))
+            python = os.path.join(".",os.path.basename(source))
             glmfile = python.replace(".py",".glm")
             target = python.replace(".py",".json")
             os.system(f"gridlabd source {source} > {python}")
