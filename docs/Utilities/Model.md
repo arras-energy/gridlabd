@@ -8,48 +8,43 @@ Options:
 
 Commands:
 
-* `add=PROPERTIES`: add an object
+* `add=NAME,PROPERTY:VALUE[,...]`: add an object
 
-* `class=PATTERN`: define/modify a class
+* `delete=PATTERN[,PROPERTY:VALUE]`: delete objects
 
-* `delete=PATTERN`: delete object NAME from model
+* `get=PATTERN[,PROPERTY:VALUE`: get object data
 
-* `get=PATTERN`: get object data
+* `globals=[PATTERN|NAME][,PROPERTY:VALUE]: get/set globals
 
-* `list=PATTERN`: list objects
+* `copy=PATTERN[,PROPERTY:VALUE]: copy objects 
 
-* `modify=PROPERTIES`: modify object data
+* `list=PATTERN[,PROPERTY:VALUE]`: list objects
 
-* `module=PATTERN`: add a module
+* `modify=PATTERN,PROPERTY:VALUE[,...]`: modify object data
 
-* `headers=PATTERN`: get header data
-
-* `types=PATTERN`: get data type information
+* `move=PATTERN[,PROPERTY:VALUE]: move objects 
 
 Description:
 
-The model editor utility allow command-line and python-based editing of models.
+The model editor utility allows command-line and python-based editing of models.
 
-Patterns are generally of the form `KEY` or `KEY:VALUE` where both `KEY` and
-`VALUE` are regular expressions.  Multiple patterns can be provided using
-comma separators.
+PATTERN is a regular expression used to match object or global names. PROPERTY
+and VALUE can be regular expressions or a property name and value tuple for
+get or set operations, respectively. When comma-separated patterns are
+allowed, they are interpreted as `and` operations. Note that the `add`
+command does not use regular expressions for NAME.
 
-`PROPERTIES` are provided in the form `KEY:VALUE`, where `KEY` is a regular
-expression, and multiple properties are comma-separated.
+Output is always generated as a CSV table with property names in the header row.
 
-Commands that modify or delete the model will return the old value.
+Commands that modify or delete objects or data will output the old value(s).
+
+The output FILENAME format is limited to JSON.
 
 Caveat:
 
-Note that primary patterns must occur only once. For example the following
-does not work as expected:
-
-    gridlabd model ieee13.glm modules=power:major,power:minor
-
-because the pattern "power" occurs twice. Only the last instance will be used.
-Instead use the following:
-
-    gridlabd model ieee13.glm modules=power:major|minor
+The model editor does not check whether the action will result in a faulty
+model, e.g., deleting a node that is referened by a link, add a property that
+is not valie for the class, or changing an object property to something invalid.
 
 Examples:
 
@@ -60,7 +55,7 @@ Examples:
     gridlabd model ieee13.glm delete=(from|to):Node633 --save=ieee13_out.json
     gridlabd model ieee13.glm delete=XFMR,(from|to):Node633 --save=ieee13_out.json
     gridlabd model ieee13.glm add=Node14,class:node,bustype:SWING --save=ieee13_out.json
-    gridlabd model ieee13.glm modify=Node14,class:substation --save=ieee13_out.json
+    gridlabd model ieee13.glm modify=Node633,class:substation --save=ieee13_out.json
     
 
 
@@ -78,9 +73,9 @@ Get object properties
 
 Arguments:
 
-* `args`: object name followed by desired properties pattern (default is ".*")
+* `args`: object name pattern followed by desired properties patterns (if any)
 
-* `kwargs`: Ignored
+* `kwargs`: key and value patterns to match properties
 
 Returns:
 
@@ -93,28 +88,11 @@ Generate a list of objects
 
 Arguments:
 
-* `args`: object name refilter patterns (and'ed, default is ".*")
+* `args`: object name patterns (and'ed, default is ".*")
 
 * `kwargs`: property criteria patterns (and'ed, default is ".*")
 
 Returns:
 
 `list`: object names matching criteria
-
-
-# Functions
-
-## `refilter() -> None`
-
-Filter a list or dict using a RE pattern
-
-Arguments:
-
-* pattern: the RE to use for matching values
-
-* values: the list or dict of values from which matches are drawn
-
-Returns:
-
-* matching values
 
