@@ -1,0 +1,8 @@
+// test_add_meter.glm
+
+module powerflow;
+
+object transformer_configuration
+{
+    connection_type WYEWYE;
+}
