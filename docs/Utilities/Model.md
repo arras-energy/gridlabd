@@ -67,6 +67,36 @@ Examples:
 GLM Model Editor
 
 
+### `Editor.add() -> None`
+
+Add objects
+
+Arguments:
+
+* `args`: object name pattern followed by desired properties patterns (if any)
+
+* `kwargs`: key and value patterns to match properties
+
+Returns:
+
+`dict`: object properties added
+
+
+### `Editor.delete() -> None`
+
+Delete objects
+
+Arguments:
+
+* `args`: object name pattern followed by desired properties patterns (if any)
+
+* `kwargs`: key and value patterns to match properties
+
+Returns:
+
+`dict`: deleted object properties
+
+
 ### `Editor.get() -> None`
 
 Get object properties
@@ -82,6 +112,21 @@ Returns:
 `dict`: object properties
 
 
+### `Editor.globals() -> None`
+
+Read/write globals
+
+Arguments:
+
+* `args`: globals name pattern followed by desired properties patterns (if any)
+
+* `kwargs`: key and value patterns to get/set globals
+
+Returns:
+
+`dict`: global properties added
+
+
 ### `Editor.list() -> None`
 
 Generate a list of objects
@@ -95,4 +140,19 @@ Arguments:
 Returns:
 
 `list`: object names matching criteria
+
+
+### `Editor.modify() -> None`
+
+Modify object properties
+
+Arguments:
+
+* `args`: object name pattern followed by desired properties patterns (if any)
+
+* `kwargs`: key and value patterns to match properties
+
+Returns:
+
+`dict`: object properties prior to modification
 

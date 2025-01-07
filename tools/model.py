@@ -317,7 +317,18 @@ class Editor:
         return result
 
     def globals(self,*args,**kwargs):
+        """Read/write globals
 
+        Arguments:
+
+        * `args`: globals name pattern followed by desired properties patterns (if any)
+
+        * `kwargs`: key and value patterns to get/set globals
+        
+        Returns:
+
+        `dict`: global properties added
+        """        
         result = {}
         for name in args:
             result[name] = self.data["globals"][name]
