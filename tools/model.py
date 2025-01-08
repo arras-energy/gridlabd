@@ -28,17 +28,18 @@ Description:
 
 The model editor utility allows command-line and python-based editing of models.
 
-`PATTERN` is a regular expression used to match object or global names. `PROPERTY`
-and `VALUE` can be regular expressions or a property name and value tuple for
-get or set operations, respectively. When comma-separated patterns are
-allowed, they are interpreted as `and` operations. Note that the `add`
-command does not use regular expressions for `NAME`.
+`PATTERN` is a regular expression used to match objects or global variable
+names. `PROPERTY` and `VALUE` can be regular expressions or a property name
+and value tuple for get or set operations, respectively. When comma-separated
+patterns are allowed, they are interpreted as `and` operations. Note that the
+`add` command does not use regular expressions for `NAME`, which are
+interpreted literally.
 
-Output is always generated as a CSV table with property names in the header row.
+Commands that modify or delete objects or data will output the old value
+(s). Output is always generated to `stdout` as a CSV table with property
+names in the header row.
 
-Commands that modify or delete objects or data will output the old value(s).
-
-The output `FILENAME` format is limited to JSON.
+The save `FILENAME` format is limited to JSON.
 
 Caveat:
 
