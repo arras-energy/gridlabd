@@ -1,12 +1,10 @@
-[[/Utilities/Glutils]] -- GridLAB-D model access utilities
+[[/Utilities/Network]] -- GridLAB-D model access utilities
 
 Syntax: `gridlabd network JSONFILE [OPTIONS ...]`
 
 Options:
 
 * `--debug`: enable traceback on exceptions
-
-* `--test`: run a self test
 
 * `graph:VAR`: matrix analysis result
 

@@ -1,0 +1,9 @@
+#ifmissing "case14.json"
+#system cp ../case14.json case14.json
+#endif
+
+#system gridlabd network case14.json > case14.txt
+
+#ifexist "../case14.txt"
+#on_exit 0 diff -I"^global" ../case14.txt case14.txt > gridlabd.diff
+#endif

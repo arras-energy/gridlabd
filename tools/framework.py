@@ -2,6 +2,54 @@
 
 The `framework` module contains the infrastructure to support standardized
 implementation of tools in GridLAB-D.
+
+Example:
+
+~~~
+import framework as app
+
+def main(argv):
+
+    if len(argv) == 1:
+
+        print("\n".join([x for x in __doc__.split("\n") if x.startswith("Syntax: ")]))
+        return app.E_SYNTAX
+
+    args = read_stdargs(argv)
+
+    for key,value in args:
+
+        if key in ["-h","--help","help"]:
+            print(__doc__,file=sys.stdout)
+        else:
+            error(f"'{key}={value}' is invalid")
+            return app.E_INVALID
+
+    return app.E_OK
+
+if __name__ == "__main__":
+
+    try:
+
+        rc = main(sys.argv)
+        exit(rc)
+
+    except KeyboardInterrupt:
+
+        exit(app.E_INTERRUPT)
+
+    except Exception as exc:
+
+        if DEBUG:
+            raise exc
+
+        if not QUIET:
+            e_type,e_value,e_trace = sys.exc_info()
+            tb = traceback.TracebackException(e_type,e_value,e_trace).stack[1]
+            print(f"EXCEPTION [{app.EXEFILE}@{tb.lineno}]: ({e_type.__name__}) {e_value}",file=sys.stderr)
+
+        exit(app.E_EXCEPTION)
+~~~
 """
 import os
 import sys
@@ -45,23 +93,31 @@ def read_stdargs(argv:list[str]) -> list[str]:
     * Remaining arguments
     """
     result = []
+    global EXEPATH
     EXEPATH = argv[0]
+    global EXEFILE
     EXEFILE = os.path.basename(EXEPATH)
+    global EXENAME,EXETYPE
     EXENAME,EXETYPE = os.path.splitext(EXEFILE)
     for arg in list(argv[1:]):
         if arg in ["--debug"]:
+            global DEBUG
             DEBUG = True
             argv.remove(arg)
         elif arg in ["--verbose"]:
+            global VERBOSE
             VERBOSE = True
             argv.remove(arg)
         elif arg in ["--quiet"]:
+            global QUIET
             QUIET = True
             argv.remove(arg)
         elif arg in ["--silent"]:
+            global SILENT
             SILENT = True
             argv.remove(arg)
         elif arg in ["--warning"]:
+            global WARNING
             WARNING = False
             argv.remove(arg)
         elif "=" in arg:
@@ -69,14 +125,25 @@ def read_stdargs(argv:list[str]) -> list[str]:
             result.append((key,value.split(",")))
         else:
             result.append((arg,[]))
-
+    debug("DEBUG =",DEBUG)
+    debug("EXEFILE =",EXEFILE)
+    debug("EXENAME =",EXENAME)
+    debug("EXEPATH =",EXEPATH)
+    debug("EXETYPE =",EXETYPE)
+    debug("QUIET =",QUIET)
+    debug("SILENT =",SILENT)
+    debug("VERBOSE =",VERBOSE)
+    debug("WARNING =",WARNING)
+    debug("ARGV =",result)
     return result
 
 def output(*msg:list,**kwargs):
+    if not "file" in kwargs:
+        kwargs["file"] = sys.stdout
     if not SILENT:
-        print(*msg,file=sys.stdout,**kwargs)
+        print(*msg,**kwargs)
 
-def exception(exc:[TypeVar(Exception)|str]):
+def exception(exc:[TypeVar('Exception')|str]):
     if isinstance(exc,str):
         exc = MapError(exc)
     raise exc
@@ -84,9 +151,9 @@ def exception(exc:[TypeVar(Exception)|str]):
 def error(*msg:list,code:[int|None]=None,**kwargs):
     if not QUIET:
         if code:
-            print(f"ERROR [{EXENAME}]: {' '.join(msg)} (code {repr(code)})",file=sys.stderr,**kwargs)
+            print(f"ERROR [{EXENAME}]: {' '.join([str(x) for x in msg])} (code {repr(code)})",file=sys.stderr,**kwargs)
         else:
-            print(f"ERROR [{EXENAME}]: {' '.join(msg)}",file=sys.stderr,**kwargs)
+            print(f"ERROR [{EXENAME}]: {' '.join([str(x) for x in msg])}",file=sys.stderr,**kwargs)
     if DEBUG:
         raise MappingError(msg)
     if not code is None:
@@ -94,15 +161,15 @@ def error(*msg:list,code:[int|None]=None,**kwargs):
 
 def verbose(*msg:list,**kwargs):
     if VERBOSE:
-        print(f"VERBOSE [{EXENAME}]: {' '.join(msg)}",file=sys.stderr,**kwargs)
+        print(f"VERBOSE [{EXENAME}]: {' '.join([str(x) for x in msg])}",file=sys.stderr,**kwargs)
 
 def warning(*msg:list,**kwargs):
     if WARNING:
-        print(f"WARNING [{EXENAME}]: {' '.join(msg)}",file=sys.stderr,**kwargs)
+        print(f"WARNING [{EXENAME}]: {' '.join([str(x) for x in msg])}",file=sys.stderr,**kwargs)
 
 def debug(*msg:list,**kwargs):
     if DEBUG:
-        print(f"DEBUG [{EXENAME}]: {' '.join(msg)}",file=sys.stderr,**kwargs)
+        print(f"DEBUG [{EXENAME}]: {' '.join([str(x) for x in msg])}",file=sys.stderr,**kwargs)
 
 def gridlabd(*args:list[str], bin=True, **kwargs) -> TypeVar('subprocess.CompletedProcess')|None:
     """Simple gridlabd runner
@@ -125,14 +192,21 @@ def gridlabd(*args:list[str], bin=True, **kwargs) -> TypeVar('subprocess.Complet
     """
     if not "capture_output" in kwargs:
         kwargs["capture_output"] = True
+    result = None
     try:
-        return subprocess.run(
-            ["gridlabd.bin" if bin else "gridlabd"] + list(args), **kwargs
-        )
+        cmd = ["gridlabd.bin" if bin and "GLD_BIN" in os.environ else "gridlabd"] + list(args)
+        debug(f"Running {cmd} with options {kwargs}")
+        result = subprocess.run(cmd,**kwargs)
+        return result
     except:
         return None
 
-def open_glm(file:str,tmp:str=None,init:bool=False) -> TypeVar('io.TextIOWrapper'):
+def open_glm(file:str,
+        tmp:str=None,
+        init:bool=False,
+        exception=True,
+        passthru=True,
+        ) -> TypeVar('io.TextIOWrapper'):
     """Open GLM file as JSON
 
     Arguments:
@@ -143,17 +217,31 @@ def open_glm(file:str,tmp:str=None,init:bool=False) -> TypeVar('io.TextIOWrapper
 
     * `init`: enable model initialization during conversion
 
+    * `exception`: enable raising exception instead of returning (None,result)
+
+    * `passthru`: enable passing stderr output through to app
+
     Return:
 
     * File handle to JSON file after conversion from GLM
     """
     if tmp is None:
-        tmp = "/tmp"
+        tmp = "."
     outfile = os.path.join(tmp,os.path.splitext(os.path.basename(file))[0]+".json")
     result = gridlabd("-I" if init else "-C",file,"-o",outfile)
+    if passthru:
+        for msg in result.stderr.decode("utf-8").split("\n"):
+            if WARNING and msg.startswith("WARNING "):
+                output(msg,file=sys.stderr)
+            elif not QUIET and msg.startswith("ERROR ") or msg.startswith("FATAL "):
+                output(msg,file=sys.stderr)
+            elif VERBOSE and msg.startswith("VERBOSE "):
+                output(msg,file=sys.stderr)
     if result.returncode != 0:
-        raise RuntimeError("GLM conversion to JSON failed")
-    return open(outfile,"r")
+        if exception:
+            raise RuntimeError("GLM conversion to JSON failed")
+        return None,result
+    return open(outfile,"r"),result
 
 def version(terms:str=None) -> str:
     """Get gridlabd version

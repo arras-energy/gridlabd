@@ -6,8 +6,6 @@ Options:
 
 * `--debug`: enable traceback on exceptions
 
-* `--test`: run a self test
-
 * `graph:VAR`: matrix analysis result
 
 * `node:VAR`: node property vector
@@ -664,12 +662,6 @@ class Network:
 #
 if __name__ == "__main__":
 
-    try:
-        Unit("s")
-    except:
-        print(Unit.units)
-        raise
-
     if len(sys.argv) == 1:
         print("\n".join([x for x in __doc__.split("\n") if x.startswith("Syntax")]))
         exit(1)
@@ -680,59 +672,6 @@ if __name__ == "__main__":
         exit(0)
 
     try:
-
-        if sys.argv[1] == "--test":
-
-            assert not "gld" in globals(), "not running as static model ('gld' is built-in)"
-
-            source = "tools/autotest/case14.py"
-            python = os.path.join("/tmp",os.path.basename(source))
-            glmfile = python.replace(".py",".glm")
-            target = python.replace(".py",".json")
-            os.system(f"gridlabd source {source} > {python}")
-            os.system(f"cd /tmp; gridlabd convert {os.path.basename(python)} {os.path.basename(glmfile)}")
-            os.system(f"gridlabd -C {glmfile} -o {target}")
-
-            model = JsonModel(target)
-            
-            assert "bus" in model.classes(), "class 'bus' not found in model"
-            assert "bus_i" in model.classes()["bus"], "class 'bus' missing property 'bus_i'"
-
-            assert "pypower::version" in model.globals(), "global 'pypower::version' not found in model"
-            assert model.property("pypower::version").get_value() == 2, "pypower::version value is not 2"
-
-            assert "pp_bus_1" in model.objects(), "object 'pp_bus_1' not found in model"
-            assert model.property("pp_bus_1","bus_i").get_value() == 1, "pp_bus_1.bus_1 is not 1"
-
-            with open("case14.txt","w") as txt:
-                for var in model.globals():
-                    print("global",var,"get_object() ->",model.property(var).get_object(),file=txt)
-                    print("global",var,"get_name() ->",model.property(var).get_name(),file=txt)
-                    print("global",var,"get_value() ->",model.property(var).get_value(),file=txt)
-                    print("global",var,"property() ->",model.property(var).get_initial(),file=txt)
-
-                for obj in model.objects():
-                    for var in model.properties(obj):
-                        print(obj,var,"property().get_object() ->",model.property(obj,var).get_object(),file=txt)
-                        print(obj,var,"property().get_name() ->",model.property(obj,var).get_name(),file=txt)
-                        init = model.property(obj,var).get_initial()
-                        print(obj,var,"property().get_initial() ->",init,file=txt)
-                        value = model.property(obj,var).get_value()
-                        print(obj,var,"property().get_value() ->",value,file=txt)
-                        if not value is None or not init is None:
-                            model.property(obj,var).set_value(init if value is None else value)
-                            assert model.property(obj,var).get_value()==value, "value changed"
-
-            network = Network(model,matrix=['W'],nodemap={"_D":"Pd"})
-            np.set_printoptions(precision=1)
-            assert network.B.shape == (20,14), "B shape is incorrect"
-            assert network.W.shape == (14,14), "W shape is incorrect"
-            assert network.refbus == [1], "refbus is incorrect"
-            assert len(network.Y) == 20, "Y size is incorrect"
-            assert len(network._D) == 14, "_D size is incorrect"
-            assert network.islands() == 1, "incorrect number of islands"
-
-            exit(0)
 
         DEBUG = "--debug" in sys.argv
         if DEBUG:

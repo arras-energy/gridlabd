@@ -41,7 +41,7 @@
 ORG=$($GLD_BIN/gridlabd.bin --version=origin | cut -f4 -d/)
 BRA=$($GLD_BIN/gridlabd.bin --version=git-branch)
 DIR=/
-DOC=README.md
+DOC=/README.md
 EXE=$0
 
 E_OK=0
