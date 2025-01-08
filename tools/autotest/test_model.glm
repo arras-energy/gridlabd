@@ -5,7 +5,7 @@ import json
 import model
 import framework as app
 
-fh = app.open_glm("ieee13.glm")[0]
+fh = open("ieee13.json","r")
 data = model.Editor(json.load(fh))
 assert data.list("Node") == ['Node633', 'Node630', 'Node632', 'Node650', 'Node680', 'Node684']
 assert data.get("Node633","id") == {'Node633': {'id':'32'}}
