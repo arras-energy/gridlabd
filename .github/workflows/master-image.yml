@@ -42,7 +42,7 @@ jobs:
 
   buildUbuntu22FastS3:
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     environment: Integration
     container:
       image: ubuntu:jammy
@@ -78,7 +78,7 @@ jobs:
         sudo sh ./build.sh --upload --release
 
   buildAWSUbuntuAMI:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     environment: Integration
     needs: [buildUbuntu22FastS3,buildMacos13FastS3]
 
@@ -234,6 +234,6 @@ jobs:
           version=$(./build-aux/version.sh --version)
           build=$(./build-aux/version.sh --number)
           branch=$(./build-aux/version.sh --branch)
-          curl -f -X POST "https://version.gridlabd.us/update_latest" \
-            -H "Content-Type: application/json" \
-            -d "{\"version\": \"$version\", \"build\": \"$build\", \"branch\": \"$branch\", \"sk\": \"${{ secrets.MASTERSK }}\"}"
+          # curl -f -X POST "https://version.gridlabd.us/update_latest" \
+          #   -H "Content-Type: application/json" \
+          #   -d "{\"version\": \"$version\", \"build\": \"$build\", \"branch\": \"$branch\", \"sk\": \"${{ secrets.MASTERSK }}\"}"

@@ -6,13 +6,13 @@ Options:
 
 * `--debug`: enable traceback on exceptions
 
-* `--test`: run a self test
-
 * `graph:VAR`: matrix analysis result
 
 * `node:VAR`: node property vector
 
 * `line:VAR`: line property vector
+
+Description:
 
 The `network` module is a `gridlabd` runtime model accessor library that can
 be used when running Python code in `gridlabd` modules. The accessors allow
@@ -71,6 +71,14 @@ of lines/branches or nodes/buses can be extracted as a vector using the
 `line` and `node` options, respectively by defining the mapping, e.g.,
 `node:VAR:PROPERTY`, where `VAR` is any string not already used for graph
 matrices and impedance vectors.
+
+Examples:
+
+The following example extracts the graph Laplacian for the IEEE 13 bus model.
+
+    gridlabd source tools/autotest/case14.json
+    gridlabd network case14.json graph:L
+
 """
 
 import os
@@ -265,6 +273,9 @@ class GldModel(Model):
         self.cache = {}
         super().__init__(gld)
 
+    def modules(self) -> list:
+        return list(gld.modules)
+
     def objects(self) -> dict:
         """Get objects in model
 
@@ -333,6 +344,9 @@ class JsonModel(Model):
         import json
         self.data = json.load(open(jsonfile,"r"))
         super().__init__(self.data)
+
+    def modules(self) -> list:
+        return list(self.data["modules"])
 
     def objects(self) -> dict:
         """Get objects in model"""
@@ -449,12 +463,13 @@ class Network:
         """
         result = {x:getattr(self,x) for x in ["lines","nodes","names","refbus",
                 "baseMVA","row","col",
-                ]}
+                ] if x in dir(self)}
         result['Y'] = [round(x,precision) for x in network.Y]
         for x in ["Z","Yc"]:
             result[x] = [f"{round(x.real,precision):f}{round(x.imag,precision):+f}j" for x in getattr(self,x)]
         for x in ["bus","branch"]:
-            result[x] = getattr(self,x).round(precision).tolist()
+            if x in dir(self):
+                result[x] = getattr(self,x).round(precision).tolist()
         for x in self.RESULTS:
             if x in dir(self):
                 value = getattr(self,x).tocoo()
@@ -497,6 +512,10 @@ class Network:
             raise ValueError("force is not boolean or None")
 
         if not hasattr(self,'nodes') or not hasattr(self,'lines') or update:
+
+            # check for presence of pypower data
+            if not "pypower" in model.modules():
+                raise ValueError("model does not refer to pypower module")
 
             # initialize the extract arrays
             self.last = now
@@ -664,12 +683,6 @@ class Network:
 #
 if __name__ == "__main__":
 
-    try:
-        Unit("s")
-    except:
-        print(Unit.units)
-        raise
-
     if len(sys.argv) == 1:
         print("\n".join([x for x in __doc__.split("\n") if x.startswith("Syntax")]))
         exit(1)
@@ -680,59 +693,6 @@ if __name__ == "__main__":
         exit(0)
 
     try:
-
-        if sys.argv[1] == "--test":
-
-            assert not "gld" in globals(), "not running as static model ('gld' is built-in)"
-
-            source = "tools/autotest/case14.py"
-            python = os.path.join("/tmp",os.path.basename(source))
-            glmfile = python.replace(".py",".glm")
-            target = python.replace(".py",".json")
-            os.system(f"gridlabd source {source} > {python}")
-            os.system(f"cd /tmp; gridlabd convert {os.path.basename(python)} {os.path.basename(glmfile)}")
-            os.system(f"gridlabd -C {glmfile} -o {target}")
-
-            model = JsonModel(target)
-            
-            assert "bus" in model.classes(), "class 'bus' not found in model"
-            assert "bus_i" in model.classes()["bus"], "class 'bus' missing property 'bus_i'"
-
-            assert "pypower::version" in model.globals(), "global 'pypower::version' not found in model"
-            assert model.property("pypower::version").get_value() == 2, "pypower::version value is not 2"
-
-            assert "pp_bus_1" in model.objects(), "object 'pp_bus_1' not found in model"
-            assert model.property("pp_bus_1","bus_i").get_value() == 1, "pp_bus_1.bus_1 is not 1"
-
-            with open("case14.txt","w") as txt:
-                for var in model.globals():
-                    print("global",var,"get_object() ->",model.property(var).get_object(),file=txt)
-                    print("global",var,"get_name() ->",model.property(var).get_name(),file=txt)
-                    print("global",var,"get_value() ->",model.property(var).get_value(),file=txt)
-                    print("global",var,"property() ->",model.property(var).get_initial(),file=txt)
-
-                for obj in model.objects():
-                    for var in model.properties(obj):
-                        print(obj,var,"property().get_object() ->",model.property(obj,var).get_object(),file=txt)
-                        print(obj,var,"property().get_name() ->",model.property(obj,var).get_name(),file=txt)
-                        init = model.property(obj,var).get_initial()
-                        print(obj,var,"property().get_initial() ->",init,file=txt)
-                        value = model.property(obj,var).get_value()
-                        print(obj,var,"property().get_value() ->",value,file=txt)
-                        if not value is None or not init is None:
-                            model.property(obj,var).set_value(init if value is None else value)
-                            assert model.property(obj,var).get_value()==value, "value changed"
-
-            network = Network(model,matrix=['W'],nodemap={"_D":"Pd"})
-            np.set_printoptions(precision=1)
-            assert network.B.shape == (20,14), "B shape is incorrect"
-            assert network.W.shape == (14,14), "W shape is incorrect"
-            assert network.refbus == [1], "refbus is incorrect"
-            assert len(network.Y) == 20, "Y size is incorrect"
-            assert len(network._D) == 14, "_D size is incorrect"
-            assert network.islands() == 1, "incorrect number of islands"
-
-            exit(0)
 
         DEBUG = "--debug" in sys.argv
         if DEBUG:

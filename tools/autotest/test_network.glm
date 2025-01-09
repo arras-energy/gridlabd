@@ -1,0 +1,32 @@
+// #system gridlabd model get IEEE/13
+// #gridlabd -I 13.glm -o 13.json
+// 
+// #begin python
+// import json, network
+// model=json.load(open("13.json","r"))
+// network.FILETYPE="network"
+// result=network.get_powerflow_network(model["objects"])
+// tojson = lambda X,F: [[[x,y],F(z)] for x,y,z in zip(X.coords[0].tolist(),X.coords[1].tolist(),X.data.tolist())]
+// json.dump({
+//     "N": result["N"],
+//     "M": result["M"],
+//     "line": result["line"],
+//     "Z": [f"{x.real:g}{x.imag:+g}j" for x in result["Z"].tolist()],
+//     "R": result["R"].tolist(),
+//     "row" : result["row"],
+//     "col" : result["col"],
+//     "A" : tojson(result["A"],int),
+//     "I" : tojson(result["I"],str),
+//     "L" : tojson(result["L"],str),
+//     "J" : tojson(result["J"],int),
+//     },open("test_network.json","w"),indent=4)
+// #end
+#ifmissing "case14.json"
+#system cp ../case14.json case14.json
+#endif
+
+#system gridlabd network case14.json > case14.txt
+
+#ifexist "../case14.txt"
+#on_exit 0 diff -I"^global" ../case14.txt case14.txt > gridlabd.diff
+#endif
