@@ -12,7 +12,7 @@ jobs:
     environment: Integration
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
       # this is to fix GIT not liking owner of the checkout dir
     - name: Set ownership
@@ -42,7 +42,7 @@ jobs:
 
   buildUbuntu22FastS3:
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     environment: Integration
     container:
       image: ubuntu:jammy
@@ -58,7 +58,7 @@ jobs:
         unzip awscliv2.zip
         sudo ./aws/install
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v2
@@ -78,12 +78,12 @@ jobs:
         sudo sh ./build.sh --upload --release
 
   buildAWSUbuntuAMI:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     environment: Integration
     needs: [buildUbuntu22FastS3,buildMacos13FastS3]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
       # this is to fix GIT not liking owner of the checkout dir
     - name: Set ownership
@@ -134,7 +134,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -169,7 +169,7 @@ jobs:
     environment: Integration
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
       # this is to fix GIT not liking owner of the checkout dir
     - name: Set ownership
@@ -204,7 +204,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
   
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -234,6 +234,6 @@ jobs:
           version=$(./build-aux/version.sh --version)
           build=$(./build-aux/version.sh --number)
           branch=$(./build-aux/version.sh --branch)
-          curl -f -X POST "https://version.gridlabd.us/update_latest" \
-            -H "Content-Type: application/json" \
-            -d "{\"version\": \"$version\", \"build\": \"$build\", \"branch\": \"$branch\", \"sk\": \"${{ secrets.MASTERSK }}\"}"
+          # curl -f -X POST "https://version.gridlabd.us/update_latest" \
+          #   -H "Content-Type: application/json" \
+          #   -d "{\"version\": \"$version\", \"build\": \"$build\", \"branch\": \"$branch\", \"sk\": \"${{ secrets.MASTERSK }}\"}"

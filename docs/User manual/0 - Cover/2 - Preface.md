@@ -44,7 +44,7 @@ The appendices contain the following
 
  - A thorough GLM language reference
 
- - References for Java, Matlab®, ODBC, gnutools, Microsoft® Visual Studio® and methods for interface GridLAB-D with other systems
+ - References for Java, Matlab®, gnutools, Microsoft® Visual Studio® and methods for interface GridLAB-D with other systems
 
 ## What not to expect from this manual
 

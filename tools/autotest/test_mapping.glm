@@ -1,0 +1,9 @@
+#ifexist "../test_mapping_opt.json"
+#define DIR=..
+#endif
+
+#system gridlabd mapping ${DIR:-.}/test_mapping_opt.json --save='test_mapping.png,map_style:white-bg'
+
+#ifexist "../test_mapping.png"
+#on_exit 0 test -f test_mapping.png
+#endif

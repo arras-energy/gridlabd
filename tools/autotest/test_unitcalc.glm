@@ -1,0 +1,6 @@
+#system gridlabd unitcalc test
+#system gridlabd unitcalc list > test_unitcalc.txt
+
+#ifexist ../test_unitcalc.txt
+#on_exit 0 diff ../test_unitcalc.txt test_unitcalc.txt > gridlabd.diff
+#endif

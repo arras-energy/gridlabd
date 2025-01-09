@@ -87,8 +87,8 @@ private:
 
 private:
 	bool is_dynamic; // true if parent is a gen otherwise false
-	gencost *costobj;
 	TIMESTAMP last_t;
+	gencost *costobj;
 	double last_Sm;
 
 public:
