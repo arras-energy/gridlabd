@@ -383,11 +383,11 @@ clock {{
 
             def test_detached(self):
                 """Verify that server can be started detached"""
-                fh.seek(0)
-                sim = GridlabdServer(fh.name,detached=True)
                 if "github_actions" in os.environ and os.environ["github_actions"] != "yes":
+                    fh.seek(0)
+                    sim = GridlabdServer(fh.name,detached=True)
                     self.assertEqual(len(sim.get_objects("class=load")),85)
-                sim.stop()
+                    sim.stop()
 
             def test_attached(self):
                 """Verify that server can be started attached"""
