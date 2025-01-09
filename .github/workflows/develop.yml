@@ -7,6 +7,7 @@ on:
     branches: [develop]
 
 jobs:
+
   build:
 
     runs-on: ubuntu-latest
@@ -30,6 +31,15 @@ jobs:
         export OPENFIDO_PIP_OPTIONS=--user
         curl -sL https://raw.githubusercontent.com/openfido/cli/main/install.sh | sudo sh
         
+  validate:
+
+    runs-on: ubuntu-latest
+    needs: [build]
+
+    steps:
+
+    - uses: actions/checkout@v4
+
     - name: Validate system
       run: sudo gridlabd -D keep_progress=TRUE -T 0 --validate -D github_actions=yes || ( sudo utilities/save_validation_errors ; false )
 
