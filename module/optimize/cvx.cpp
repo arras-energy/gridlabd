@@ -21,6 +21,7 @@ cvx *cvx::defaults = NULL;
 
 // convenience objects
 PyObject *gld = NULL;
+PyObject *mod_list = NULL;
 PyObject *class_dict = NULL;
 PyObject *global_list = NULL;
 PyObject *object_dict = NULL;
@@ -188,9 +189,11 @@ cvx::cvx(MODULE *module)
 
         // create gld global
         gld = PyModule_New("gld");
+        mod_list = PyList_New(0);
         class_dict = PyDict_New();
         global_list = PyList_New(0);
         object_dict = PyDict_New();
+        PyModule_AddObject(gld,"modules",mod_list);
         PyModule_AddObject(gld,"classes",class_dict);
         PyModule_AddObject(gld,"globals",global_list);
         PyModule_AddObject(gld,"objects",object_dict);
@@ -315,8 +318,14 @@ int cvx::init(OBJECT *parent)
             PyList_Append(global_list,PyUnicode_FromString(var->prop->name));
         }
 
+        // construct module list
+        for ( MODULE *module = gl_module_getfirst() ; module != NULL ; module = module->next )
+        {
+            PyList_Append(mod_list,PyUnicode_FromString(module->name));
+        }
+
         // construct class data dictionary
-        for ( CLASS *oclass = callback->class_getfirst() ; oclass != NULL ; oclass = oclass->next )
+        for ( CLASS *oclass = gl_class_get_first() ; oclass != NULL ; oclass = oclass->next )
         {
             PyObject *defs = PyList_New(0);
             for ( PROPERTY *prop = oclass->pmap ; prop != NULL && prop->oclass == oclass ; prop = prop->next )
