@@ -12,6 +12,8 @@ Options:
 
 * `line:VAR`: line property vector
 
+Description:
+
 The `network` module is a `gridlabd` runtime model accessor library that can
 be used when running Python code in `gridlabd` modules. The accessors allow
 Python code to read and write both global variables and object properties.
@@ -69,6 +71,14 @@ of lines/branches or nodes/buses can be extracted as a vector using the
 `line` and `node` options, respectively by defining the mapping, e.g.,
 `node:VAR:PROPERTY`, where `VAR` is any string not already used for graph
 matrices and impedance vectors.
+
+Examples:
+
+The following example extracts the graph Laplacian for the IEEE 13 bus model.
+
+    gridlabd source tools/autotest/case14.json
+    gridlabd network case14.json graph:L
+
 """
 
 import os
@@ -263,6 +273,9 @@ class GldModel(Model):
         self.cache = {}
         super().__init__(gld)
 
+    def modules(self) -> list:
+        return list(gld.modules)
+
     def objects(self) -> dict:
         """Get objects in model
 
@@ -331,6 +344,9 @@ class JsonModel(Model):
         import json
         self.data = json.load(open(jsonfile,"r"))
         super().__init__(self.data)
+
+    def modules(self) -> list:
+        return list(self.data["modules"])
 
     def objects(self) -> dict:
         """Get objects in model"""
@@ -447,12 +463,13 @@ class Network:
         """
         result = {x:getattr(self,x) for x in ["lines","nodes","names","refbus",
                 "baseMVA","row","col",
-                ]}
+                ] if x in dir(self)}
         result['Y'] = [round(x,precision) for x in network.Y]
         for x in ["Z","Yc"]:
             result[x] = [f"{round(x.real,precision):f}{round(x.imag,precision):+f}j" for x in getattr(self,x)]
         for x in ["bus","branch"]:
-            result[x] = getattr(self,x).round(precision).tolist()
+            if x in dir(self):
+                result[x] = getattr(self,x).round(precision).tolist()
         for x in self.RESULTS:
             if x in dir(self):
                 value = getattr(self,x).tocoo()
@@ -495,6 +512,10 @@ class Network:
             raise ValueError("force is not boolean or None")
 
         if not hasattr(self,'nodes') or not hasattr(self,'lines') or update:
+
+            # check for presence of pypower data
+            if not "pypower" in model.modules():
+                raise ValueError("model does not refer to pypower module")
 
             # initialize the extract arrays
             self.last = now

@@ -2,7 +2,7 @@
 DOCS = 
 DOCS += docs/Utilities/Framework.md
 DOCS += docs/Utilities/Network.md
-DOCS += docs/Utilities/Model.md
+DOCS += docs/Utilities/Edit.md
 DOCS += docs/Utilities/Mapping.md
 DOCS += docs/Utilities/Unitcalc.md
 
