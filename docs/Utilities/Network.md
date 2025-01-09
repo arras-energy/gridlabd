@@ -76,9 +76,8 @@ Examples:
 
 The following example extracts the graph Laplacian for the IEEE 13 bus model.
 
-    gridlabd model get IEEE/13
-    gridlabd -C 13.glm -o 13.json
-    gridlabd network 13.json graph:L
+    gridlabd source tools/autotest/case14.json
+    gridlabd network case14.json graph:L
 
 
 
