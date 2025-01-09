@@ -1,5 +1,18 @@
 #!/bin/bash
-# Syntax: version [--dryrun] COMMAND [ARGUMENTS ...]
+## Syntax: gridlabd version [--dryrun] COMMAND [ARGUMENTS ...]
+## Commands:
+##   help                    get this list of commands
+##   check [-v|-q|-w|-f]     check for a newer version
+##     -v                      enable verbose output
+##     -q                      disable all output
+##     -w                      only output warnings and errors and log check result
+##     -f                      force check regardless of no-version-check 
+##   list [<pattern>]        get a list of available versions
+##   show                    show the current active version
+##   set [<pattern>]         set the active version
+##   source                  open source code of the active version
+##   delete [-a|<pattern>]   delete versions
+##     -a                      delete all version except current one
 
 EXE="$(basename $0)"
 BIN=${0/-version/.bin}
@@ -33,22 +46,7 @@ esac
 
 function version-help()
 {
-	cat <<-END
-Syntax: gridlabd version [--dryrun] COMMAND [ARGUMENTS ...]
-Commands:
-  help                    get this list of commands
-  check [-v|-q|-w|-f]     check for a newer version
-    -v                      enable verbose output
-    -q                      disable all output
-    -w                      only output warnings and errors and log check result
-    -f                      force check regardless of no-version-check 
-  list [<pattern>]        get a list of available versions
-  show                    show the current active version
-  set [<pattern>]         set the active version
-  source                  open source code of the active version
-  delete [-a|<pattern>]   delete versions
-    -a                      delete all version except current one
-END
+	grep '^## ' $0 | cut -c4- > /dev/stdout
 }
 
 function version-check()
@@ -69,17 +67,6 @@ function version-check()
 	[ "$1" == "-v" ] && echo "REMOTE/$branch $remote"
 	${BIN} --version="-ge $remote" 2>/dev/null || ( ( [ "$1" != "-q" -a "$1" != "-w" ] && warning "$version ($branch) is outdated" ) ; exit 0 )
 
-    # Using curl command to check the version
-    version_check_response=$(curl -sL "https://version.gridlabd.us/?v=${submitversion}&b=${branch}")
-    if [[ $version_check_response == '{"message":"Internal Server Error"}' ]]; then
-    	exit 0
-    elif [[ $version_check_response != '"ok"' ]]; then
-        warning "Your version is outdated. The latest version information is: $version_check_response"
-        exit 0
-    fi
-    
-    [ "$1" != "-q" -a "$1" != "-w" ] && echo "$version ($branch) is ok"
-    [ "$1" == "-w" ] && ( curl -sL "http://version.gridlabd.us/?v=${submitversion}&b=${branch}" >/dev/null & )
     exit 0
 }
 
