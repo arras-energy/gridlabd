@@ -12,6 +12,8 @@ Options:
 
 * `line:VAR`: line property vector
 
+Description:
+
 The `network` module is a `gridlabd` runtime model accessor library that can
 be used when running Python code in `gridlabd` modules. The accessors allow
 Python code to read and write both global variables and object properties.
@@ -69,6 +71,15 @@ of lines/branches or nodes/buses can be extracted as a vector using the
 `line` and `node` options, respectively by defining the mapping, e.g.,
 `node:VAR:PROPERTY`, where `VAR` is any string not already used for graph
 matrices and impedance vectors.
+
+Examples:
+
+The following example extracts the graph Laplacian for the IEEE 13 bus model.
+
+    gridlabd model get IEEE/13
+    gridlabd -C 13.glm -o 13.json
+    gridlabd network 13.json graph:L
+
 
 
 
