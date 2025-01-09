@@ -318,6 +318,7 @@ TIMESTAMP powerplant::precommit(TIMESTAMP t0)
 			set_state_of_charge(Et/get_storage_capacity());
 		}
 	}
+	last_t = t0;
 
 	// post costs
 	if ( costobj != NULL )
