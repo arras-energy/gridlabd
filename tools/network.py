@@ -76,9 +76,8 @@ Examples:
 
 The following example extracts the graph Laplacian for the IEEE 13 bus model.
 
-    gridlabd model get IEEE/13
-    gridlabd -C 13.glm -o 13.json
-    gridlabd network 13.json graph:L
+    gridlabd source tools/autotest/case14.json
+    gridlabd network case14.json graph:L
 
 """
 
@@ -274,6 +273,9 @@ class GldModel(Model):
         self.cache = {}
         super().__init__(gld)
 
+    def modules(self) -> list:
+        return list(gld.modules)
+
     def objects(self) -> dict:
         """Get objects in model
 
@@ -342,6 +344,9 @@ class JsonModel(Model):
         import json
         self.data = json.load(open(jsonfile,"r"))
         super().__init__(self.data)
+
+    def modules(self) -> list:
+        return list(self.data["modules"])
 
     def objects(self) -> dict:
         """Get objects in model"""
@@ -458,12 +463,13 @@ class Network:
         """
         result = {x:getattr(self,x) for x in ["lines","nodes","names","refbus",
                 "baseMVA","row","col",
-                ]}
+                ] if x in dir(self)}
         result['Y'] = [round(x,precision) for x in network.Y]
         for x in ["Z","Yc"]:
             result[x] = [f"{round(x.real,precision):f}{round(x.imag,precision):+f}j" for x in getattr(self,x)]
         for x in ["bus","branch"]:
-            result[x] = getattr(self,x).round(precision).tolist()
+            if x in dir(self):
+                result[x] = getattr(self,x).round(precision).tolist()
         for x in self.RESULTS:
             if x in dir(self):
                 value = getattr(self,x).tocoo()
@@ -506,6 +512,10 @@ class Network:
             raise ValueError("force is not boolean or None")
 
         if not hasattr(self,'nodes') or not hasattr(self,'lines') or update:
+
+            # check for presence of pypower data
+            if not "pypower" in model.modules():
+                raise ValueError("model does not refer to pypower module")
 
             # initialize the extract arrays
             self.last = now
