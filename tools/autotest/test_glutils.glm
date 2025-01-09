@@ -1,5 +1,0 @@
-#system gridlabd network --test
-
-#ifexist "../case14.txt"
-#on_exit 0 diff -I"^global" ../case14.txt case14.txt > gridlabd.diff
-#endif

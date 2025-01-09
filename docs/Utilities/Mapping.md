@@ -178,7 +178,7 @@ Mapping exception
 
 # Functions
 
-## `complex_unit(x:str, form:str, prec:str, unit:str) -> None`
+## `complex_unit() -> None`
 
 Convert complex value with unit
 
@@ -204,7 +204,7 @@ Returns:
 
 ---
 
-## `double_unit(x:str) -> float`
+## `double_unit() -> float`
 
 Convert a string with unit to a float
 
@@ -217,7 +217,7 @@ Returns:
 
 ---
 
-## `get_options(value:str, default:dict) -> dict`
+## `get_options() -> dict`
 
 Extract save/show options from argument value
 
@@ -234,7 +234,7 @@ Returns:
 
 ---
 
-## `gridlabd(args:list) -> Optional`
+## `gridlabd() -> Optional`
 
 Simple gridlabd runner
 
@@ -257,7 +257,7 @@ See also:
 
 ---
 
-## `integer(x:str) -> int`
+## `integer() -> int`
 
 Convert a string to an integer
 
@@ -270,7 +270,7 @@ Returns:
 
 ---
 
-## `main(argv:list) -> int`
+## `main() -> int`
 
 Command line processing
 
@@ -285,7 +285,7 @@ Returns:
 
 ---
 
-## `open_glm(file:str, tmp:str, init:bool) -> io.TextIOWrapper`
+## `open_glm() -> io.TextIOWrapper`
 
 Open GLM file as JSON
 
@@ -297,6 +297,10 @@ Arguments:
 
 * `init`: enable model initialization during conversion
 
+* `exception`: enable raising exception instead of returning (None,result)
+
+* `passthru`: enable passing stderr output through to app
+
 Return:
 
 * File handle to JSON file after conversion from GLM
@@ -304,7 +308,7 @@ Return:
 
 ---
 
-## `read_stdargs(argv:list) -> list`
+## `read_stdargs() -> list`
 
 Read framework options
 
@@ -319,7 +323,7 @@ Returns:
 
 ---
 
-## `version(terms:str) -> str`
+## `version() -> str`
 
 Get gridlabd version
 
