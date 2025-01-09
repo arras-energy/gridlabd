@@ -42,7 +42,7 @@ jobs:
 
   buildUbuntu22FastS3:
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     environment: Integration
     container:
       image: ubuntu:jammy
@@ -78,7 +78,7 @@ jobs:
         sudo sh ./build.sh --upload --release
 
   buildAWSUbuntuAMI:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     environment: Integration
     needs: [buildUbuntu22FastS3,buildMacos13FastS3]
 
