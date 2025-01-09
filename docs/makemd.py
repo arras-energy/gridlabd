@@ -83,7 +83,7 @@ try:
             else:
                 print("\n---",file=md)
             NL='\n'
-            args = [f"{x}:{t.__name__}" for x,t in item.__annotations__.items() if x != "return"]
+            args = [f"{x}:{t.__name__}" for x,t in item.__annotations__.items() if hasattr(t,__name__) and x != "return"]
             returns = item.__annotations__['return'].__name__ if 'return' in item.__annotations__ and hasattr(item.__annotations__['return'],'__name__') else 'None'
             docs = NL.join([x.strip() for x in item.__doc__.split(NL)])
             print(f"\n## `{item.__name__}({', '.join(args)}) -> {returns}`{NL*2}{docs}",file=md)
