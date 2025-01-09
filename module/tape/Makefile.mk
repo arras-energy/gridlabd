@@ -23,7 +23,6 @@ module_tape_tape_la_SOURCES += module/tape/histogram.cpp module/tape/histogram.h
 module_tape_tape_la_SOURCES += module/tape/loadshape.cpp module/tape/loadshape.h
 module_tape_tape_la_SOURCES += module/tape/tape.cpp module/tape/tape.h
 module_tape_tape_la_SOURCES += module/tape/memory.cpp module/tape/memory.h
-module_tape_tape_la_SOURCES += module/tape/odbc.cpp module/tape/odbc.h
 
 module_tape_tape_la_SOURCES += module/tape/multi_recorder.cpp
 module_tape_tape_la_SOURCES += module/tape/collector.cpp

@@ -101,7 +101,6 @@ public:
 		{
 			r *= m/old;
 			i *= m/old;
-			return m;
 		}
 		else
 		{
@@ -109,6 +108,7 @@ public:
 			r = m;
 			i = 0;
 		}
+		return m;
 	};
 	inline double Arg(void) const /**< compute angle */
 	{
@@ -1303,6 +1303,7 @@ typedef struct s_callbacks {
 		char *(*exception_msg)(void);
 	} exception;
 	struct {
+		GLOBALVAR *(*get_next)(GLOBALVAR *var);
 		GLOBALVAR *(*create)(const char *name, ...);
 		STATUS (*setvar)(const char *def,...);
 		char *(*getvar)(const char *name, char *buffer, int size);
@@ -1423,6 +1424,7 @@ typedef struct s_callbacks {
 		PyObject *main;
 		PyObject *(*import)(const char *module, const char *path);
 		bool (*call)(PyObject *pModule, const char *method, const char *vargsfmt, va_list varargs, void *result);
+		PyObject *(*property_type)(void);
 	} python;
 	long unsigned int magic; /* used to check structure alignment */
 } CALLBACKS; /**< core callback function table */
@@ -1450,15 +1452,20 @@ typedef FUNCTIONADDR function;
 /// @return a pointer to a static buffer containing the object's name
 inline char* gl_name(OBJECT *my, char *buffer, size_t size)
 {
-	char temp[256];
 	if(my == NULL || buffer == NULL) return NULL;
+	int len = 0;
 	if (my->name==NULL)
-		sprintf(temp,"%s:%d", my->oclass->name, my->id);
+	{
+		len = snprintf(buffer,size,"%s:%d", my->oclass->name, my->id);
+	}
 	else
-		sprintf(temp,"%s", my->name);
-	if(size < strlen(temp))
+	{
+		len = snprintf(buffer,size,"%s", my->name);
+	}
+	if ( len == size )
+	{
 		return NULL;
-	strcpy(buffer, temp);
+	}
 	return buffer;
 }
 

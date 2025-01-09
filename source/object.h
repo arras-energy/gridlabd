@@ -248,6 +248,7 @@ typedef struct s_callbacks {
 		const char *(*exception_msg)(void);
 	} exception;
 	struct {
+		GLOBALVAR *(*get_next)(GLOBALVAR *var);
 		GLOBALVAR *(*create)(const char *name, ...);
 		STATUS (*setvar)(const char *def,...);
 		const char *(*getvar)(const char *name, char *buffer, size_t size);
@@ -355,7 +356,7 @@ typedef struct s_callbacks {
 	struct {
 		randomvar *(*getnext)(randomvar*);
 		size_t (*getspec)(char *, size_t, const randomvar *);
-	} randomvar;
+	} randomvars;
 	struct {
 		unsigned int (*major)(void);
 		unsigned int (*minor)(void);
@@ -368,6 +369,7 @@ typedef struct s_callbacks {
 		PyObject *main;
 		PyObject *(*import)(const char *module, const char *path);
 		bool (*call)(PyObject *pModule, const char *method, const char *vargsfmt, va_list varargs, void *result);
+		PyObject *(*property_type)(void);
 	} python;
 	long unsigned int magic; /* used to check structure alignment */
 } CALLBACKS; /**< core callback function table */

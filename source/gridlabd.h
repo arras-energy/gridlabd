@@ -1336,6 +1336,8 @@ inline DEPRECATED int gl_gethour(TIMESTAMP t)
 #define gl_get_oflags DEPRECATED (*callback->get_oflags)
 /**@}*/
 
+#define gl_global_get_next DEPRECATED (*callback->global.get_next)
+
 #ifdef __cplusplus
 
 /******************************************************************************
@@ -1598,13 +1600,13 @@ inline DEPRECATED const char *gl_module_find_transform_function(TRANSFORMFUNCTIO
 /**@}*/
 
 #ifdef __cplusplus
-inline DEPRECATED randomvar *gl_randomvar_getfirst(void) { return callback->randomvar.getnext(NULL); };
-inline DEPRECATED randomvar *gl_randomvar_getnext(randomvar *var) { return callback->randomvar.getnext(var); };
-inline DEPRECATED size_t gl_randomvar_getspec(char *str, size_t size, const randomvar *var) { return callback->randomvar.getspec(str,size,var); };
+inline DEPRECATED randomvar *gl_randomvar_getfirst(void) { return callback->randomvars.getnext(NULL); };
+inline DEPRECATED randomvar *gl_randomvar_getnext(randomvar *var) { return callback->randomvars.getnext(var); };
+inline DEPRECATED size_t gl_randomvar_getspec(char *str, size_t size, const randomvar *var) { return callback->randomvars.getspec(str,size,var); };
 #else
-#define gl_randomvar_getfirst DEPRECATED (*callback->randomvar.getnext)(NULL)
-#define gl_randomvar_getnext DEPRECATED (*callback->randomvar.getnext) /* randomvar *(*randomvar.getnext)(randomvar*) */
-#define gl_randomvar_getspec DEPRECATED (*callback->randomvar.getspec) /* size_t (*randomvar.getspec(char*,size_t,randomvar*) */
+#define gl_randomvar_getfirst DEPRECATED (*callback->randomvars.getnext)(NULL)
+#define gl_randomvar_getnext DEPRECATED (*callback->randomvars.getnext) /* randomvar *(*randomvar.getnext)(randomvar*) */
+#define gl_randomvar_getspec DEPRECATED (*callback->randomvars.getspec) /* size_t (*randomvar.getspec(char*,size_t,randomvar*) */
 #endif
 
 /******************************************************************************
@@ -2220,8 +2222,20 @@ private:
 public: 
 
 	// Constructor: gld_class
+	inline gld_class(const char *name) 
+	{
+		CLASS *oclass = gl_class_get_by_name(name,NULL);
+		if ( oclass == NULL )
+		{
+			static char buffer[1024];
+			snprintf(buffer,sizeof(buffer)-1,"class '%s' not found",name);
+			throw (const char*)buffer; 
+		}
+		core = *oclass; 
+	};
 	// This is a blocker implementation to prevent direct creation of a class for now.
 	inline gld_class(void) { throw "gld_class constructor not permitted"; };
+
 
 	// Operatior: CLASS*
 	// Cast to CLASS
@@ -2290,6 +2304,28 @@ public:
 	// Method: get_next
 	// Get the next class
 	inline gld_class* get_next(void) { return (gld_class*)core.next; };
+
+public:
+
+	// Method: get_property
+	// Find a property
+	inline gld_property *get_property(const char *name, bool exception_ok = false) 
+	{
+		for ( PROPERTY *prop = core.pmap ; prop != NULL ; prop = prop->next )
+		{
+			if ( strcmp(prop->name,name) == 0 )
+			{
+				return (gld_property*)prop;
+			}
+		}
+		if ( exception_ok )
+		{
+			static char buffer[1024];
+			snprintf(buffer,sizeof(buffer)-1,"property '%s' not found",name);
+			throw (const char*)buffer;
+		}
+		return NULL;
+	};
 };
 
 /*	Class: gld_function
@@ -2447,7 +2483,7 @@ public:
 	
 	// Method: is_valid
 	// Check whether the unit is valid
-	inline bool is_valid(void) { return (UNIT*)&core != NULL && core.name[0]!='\0'; };
+	inline bool is_valid(void) { return core.name[0]!='\0'; };
 
 public: 
 
@@ -2727,8 +2763,45 @@ public:
 // Parameters:
 // buffer - a char* reference to the buffer containing the value
 // len - a size_t indicating the size of the buffer
-// This implements a method handler. If the len is zero, the value should be read from the
-// buffer. If the len is non-zero, the value should be written to the buffer.
+//
+// This implements a method handler. The method handler prototype is
+//
+// int CLASSNAME::METHODNAME(
+//     char *buffer, // read/write buffer (NULL for size request)
+//     size_t len // write buffer len (0 for read request or size check)
+//     )
+// {
+//     if ( buffer == NULL ) // compute size of write request
+//     {
+//         size_t result = WRITE_BUFFER_SIZE();
+//         if ( len == 0 )
+//         {
+//             // return length of result only
+//             return result;
+//         }
+//         else
+//         {
+//             // return non-zero if len > length of result
+//             return len>result ? result : 0;
+//         }
+//     }
+//     else if ( len == 0 ) // read buffer into object data
+//     {
+//         // return number of characters read from buffer
+//         return READ_BUFFER();
+//     }
+//     else // write object data into buffer
+//     {
+//         // return number of characters written to buffer
+//         return WRITE_BUFFER();
+//     }
+// }
+//
+// If the len is zero, the value should be read from the buffer. If the len is
+// non-zero, the value should be written to the buffer. If the buffer is
+// NULL, then the size is computed. If len is zero, the result size is is
+// returned. If len is non-zero, then the result size is returned if len is
+// greater, otherwise 0 is returned.
 #define IMPL_METHOD(C,X) int C::X(char *buffer, size_t len) 
 
 // Function: setbits
@@ -3442,7 +3515,7 @@ public:
 	inline gld_string get_string(const size_t sz=1024)
 	{
 		gld_string res;
-		char buf[1024];
+		char buf[1024]="";
 		if ( sizeof(buf)<sz ) throw "get_string() over size limit";
 		if ( to_string(buf,(int)sz)>=0 )
 			res = buf;

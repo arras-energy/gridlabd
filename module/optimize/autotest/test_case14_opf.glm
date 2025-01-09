@@ -1,0 +1,44 @@
+module pypower
+{
+    stop_on_failure FALSE;
+}
+class bus
+{
+    double gen[MW]; // total generation at bus
+    double price[$/MWh]; // cost at bus
+    double Vdc[pu*V]; // DC bus voltage 
+}
+
+// This autotest does not work on LINUX systems for unknown reason
+#ifdef APPLE
+
+#setenv PYTHONPATH=.:..
+#input "${modelname/_opf.glm/_opt.py}" -t pypower
+module optimize
+{
+    cvx_problemdump "${modelname/glm/txt}";
+}
+object cvx
+{
+    name "dcopf";
+    event "PRECOMMIT";
+    data "D=bus:Pd";
+    data "P=bus:price";
+    variables "v=bus:Vdc;g=bus:gen";
+    objective "cvx.Minimize(P@g)";
+    constraints "L@v-g+D==0";
+    constraints "v[0]==0.0";
+    constraints "g>=0";
+    presolve "G=glm.Network();L=G.L.todense()";
+    postsolve """
+        np.set_printoptions(precision=1,sign=' ',floatmode='fixed',linewidth=None)
+        print(G.names,file=__dump__)
+        print(f'V = {v.value.round(1)}',file=__dump__)
+        print(f'g = {g.value} = {sum(g.value):6.1f} MW',file=__dump__)
+        print(f'D = {np.array(D)} = {sum(D):6.1f} MW',file=__dump__)
+    """;
+}
+
+#set savefile=${modelname/glm/json}
+
+#endif
