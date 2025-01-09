@@ -6,7 +6,7 @@
 
 import sys
 import json
-import model
+import edit
 import framework as app
 
 fh = app.open_glm("ieee13.glm")[0]

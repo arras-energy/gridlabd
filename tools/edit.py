@@ -1,6 +1,6 @@
 """Model editor tool
 
-Syntax: `gridlabd model FILENAME [COMMANDS ...] [OPTIONS ...]`
+Syntax: `gridlabd edit FILENAME [COMMANDS ...] [OPTIONS ...]`
 
 Options:
 
@@ -49,14 +49,14 @@ is not valid for the class, or changing an object property to something invalid.
 
 Examples:
 
-    gridlabd model ieee13.glm list='Node6[1-4],id:3[23]'
-    gridlabd model ieee13.glm get='Node6,GFA.*'
-    gridlabd model ieee13.glm get='Node633,class,id'
-    gridlabd model ieee13.glm delete=Node633 --save=ieee13.json
-    gridlabd model ieee13.glm delete=(from|to):Node633 --save=ieee13_out.json
-    gridlabd model ieee13.glm delete=XFMR,(from|to):Node633 --save=ieee13_out.json
-    gridlabd model ieee13.glm add=Node14,class:node,bustype:SWING --save=ieee13_out.json
-    gridlabd model ieee13.glm modify=Node633,class:substation --save=ieee13_out.json
+    gridlabd edit ieee13.glm list='Node6[1-4],id:3[23]'
+    gridlabd edit ieee13.glm get='Node6,GFA.*'
+    gridlabd edit ieee13.glm get='Node633,class,id'
+    gridlabd edit ieee13.glm delete=Node633 --save=ieee13.json
+    gridlabd edit ieee13.glm delete=(from|to):Node633 --save=ieee13_out.json
+    gridlabd edit ieee13.glm delete=XFMR,(from|to):Node633 --save=ieee13_out.json
+    gridlabd edit ieee13.glm add=Node14,class:node,bustype:SWING --save=ieee13_out.json
+    gridlabd edit ieee13.glm modify=Node633,class:substation --save=ieee13_out.json
     
 """
 
