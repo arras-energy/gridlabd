@@ -17,7 +17,7 @@ fi
 
 if [ ! -f $EXE ]; then
     SOURCE=$($GLD_BIN/gridlabd.bin --version=origin | cut -f4- -d/)
-    curl -sL https://raw.githubusercontent.com/$SOURCE-marimo/refs/heads/main/source/$1.py > $EXE
+    curl -sL https://raw.githubusercontent.com/arras-energy/marimo/refs/heads/main/source/$1.py > $EXE
     if [ $? -ne 0 ]; then
         rm -f $EXE
         echo "$1 not found"
