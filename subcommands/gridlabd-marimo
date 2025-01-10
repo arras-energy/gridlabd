@@ -1,0 +1,7 @@
+#!/bin/bash
+## Syntax: gridlabd marimo ARGS
+## 
+## Run marimo in gridlabd environment.
+## 
+
+marimo $*

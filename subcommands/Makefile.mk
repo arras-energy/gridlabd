@@ -15,6 +15,7 @@ bin_SCRIPTS += subcommands/gridlabd-library
 bin_SCRIPTS += subcommands/gridlabd-loaddata
 bin_SCRIPTS += subcommands/gridlabd-lock
 bin_SCRIPTS += subcommands/gridlabd-manual
+bin_SCRIPTS += subcommands/gridlabd-marimo
 bin_SCRIPTS += subcommands/gridlabd-matrix
 bin_SCRIPTS += subcommands/gridlabd-model
 bin_SCRIPTS += subcommands/gridlabd-openfido
