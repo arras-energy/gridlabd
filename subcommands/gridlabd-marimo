@@ -28,6 +28,12 @@
 ## GridLAB-D marimo notebooks are distributed from the GitHub arras-energy
 ## repository `marimo`.
 ##
+## Caveats:
+## 
+## * Master branches only return the "official" index published in
+##   `source/.index`. All other branches return a list of all Python files in
+##   `source/`.
+## 
 ## See also:
 ## 
 ## * https://github.com/arras-energy/marimo
@@ -70,7 +76,11 @@ function index()
     #
     # Display a list of available notebooks online
     #
-    curl -sL -H 'Cache-Control: no-cache' $URL/.index 2>>$LOG
+    if [ "$(gridlabd.bin --version=branch)" == "master" ]; then
+        curl -sL -H 'Cache-Control: no-cache' $URL/.index 2>>$LOG
+    else
+        curl -L https://api.github.com/repos/arras-energy/marimo/contents/source 2>>$LOG | grep '"name": ".*\.py",' /tmp/index.json | cut -f2 -d: | cut -f1 -d. | tr -cd "A-Za-z0-9_\\n"
+    fi
 }
 
 function getlist()
