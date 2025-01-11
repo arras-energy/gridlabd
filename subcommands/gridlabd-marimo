@@ -114,8 +114,12 @@ function download()
 {
     EXE=$LIB/$1.py
     ETAG=$LIB/.etag/$1
-    if [ ! -f $EXE -a -z "$(index | grep $1)" ]; then
-        error "no such notebook published" E_NOTFOUND
+    if [ ! -f $EXE ]; then
+        if [ -z "$(index | grep $1)" ]; then
+            error "no such notebook published" E_NOTFOUND
+        else
+            rm -f $ETAG 2>>$LOG
+        fi
     fi
     if [ -f $ETAG ]; then
         curl -sL -H 'Cache-Control: no-cache' --etag-compare $ETAG --etag-save $ETAG $URL/$1.py > $EXE 2>>$LOG
