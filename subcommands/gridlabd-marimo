@@ -70,7 +70,7 @@ function index()
     #
     # Display a list of available notebooks online
     #
-    curl -sL $URL/.index 2>>$LOG
+    curl -sL -H 'Cache-Control: no-cache' $URL/.index 2>>$LOG
 }
 
 function getlist()
@@ -108,9 +108,9 @@ function download()
         error "no such notebook published" E_NOTFOUND
     fi
     if [ -f $ETAG ]; then
-        curl -sL --etag-compare $ETAG --etag-save $ETAG $URL/$1.py > $EXE 2>>$LOG
+        curl -sL -H 'Cache-Control: no-cache' --etag-compare $ETAG --etag-save $ETAG $URL/$1.py > $EXE 2>>$LOG
     else
-        curl -sL --etag-save $ETAG $URL/$1.py > $EXE 2>>$LOG
+        curl -sL -H 'Cache-Control: no-cache' --etag-save $ETAG $URL/$1.py > $EXE 2>>$LOG
     fi
     if [ $? -ne 0 ]; then
         cat $EXE >>$LOG
