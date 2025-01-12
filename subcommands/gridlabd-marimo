@@ -79,7 +79,7 @@ function index()
     if [ "$(gridlabd.bin --version=branch)" == "master" ]; then
         curl -sL -H 'Cache-Control: no-cache' $URL/.index 2>>$LOG
     else
-        curl -L https://api.github.com/repos/arras-energy/marimo/contents/source 2>>$LOG | grep '"name": ".*\.py",' /tmp/index.json | cut -f2 -d: | cut -f1 -d. | tr -cd "A-Za-z0-9_\\n"
+        curl -L -H 'Cache-Control: no-cache' https://api.github.com/repos/arras-energy/marimo/contents/source 2>>$LOG | grep '"name": ".*\.py",' | cut -f2 -d: | cut -f1 -d. | tr -cd "A-Za-z0-9_\\n"
     fi
 }
 
@@ -188,9 +188,11 @@ while [ $# -gt 0 ]; do
             ;;
         index) # list of available apps
             index
+            exit $E_OK
             ;;
         list) # list of active apps
             getlist
+            exit $E_OK
             ;;
         stop)
             PID=$(getpid $2)
@@ -198,6 +200,7 @@ while [ $# -gt 0 ]; do
                 kill $PID
             fi
             shift 1
+            exit $E_OK
             ;;
         -*)
             error "option '$1' is invalid" E_SYNTAX
@@ -210,6 +213,7 @@ while [ $# -gt 0 ]; do
             else
                 open $LOC
             fi
+            exit $E_OK
             ;;
     esac
     shift 1
