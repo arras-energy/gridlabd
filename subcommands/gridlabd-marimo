@@ -79,7 +79,7 @@ function index()
     if [ "$(gridlabd.bin --version=branch)" == "master" ]; then
         curl -sL -H 'Cache-Control: no-cache' $URL/.index 2>>$LOG
     else
-        curl -L -H 'Cache-Control: no-cache' https://api.github.com/repos/arras-energy/marimo/contents/source 2>>$LOG | grep '"name": ".*\.py",' | cut -f2 -d: | cut -f1 -d. | tr -cd "A-Za-z0-9_\\n"
+        curl -sL -H 'Cache-Control: no-cache' https://api.github.com/repos/arras-energy/marimo/contents/source 2>>$LOG | grep '"name": ".*\.py",' | cut -f2 -d: | cut -f1 -d. | tr -cd "A-Za-z0-9_\\n"
     fi
 }
 
