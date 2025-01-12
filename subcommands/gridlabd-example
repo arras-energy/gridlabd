@@ -1,0 +1,158 @@
+#!/bin/bash
+## Syntax: gridlabd example [OPTIONS...] COMMAND [ARGS...]
+## 
+## Options:
+## 
+## * `-h|--help|help`: get this help output
+## 
+## * `--verbose`: enable verbose output
+## 
+## * `index`: get an index of available examples
+## 
+## * `get NAME`: download an example
+## 
+## * `open NAME`: open an example
+## 
+## Description:
+## 
+## Access gridlabd examples.
+## 
+## To list the examples available:
+## 
+##     gridlabd example index
+## 
+## To download an example
+## 
+##     gridlabd example get NAME
+## 
+## To open an example
+## 
+##     gridlabd example open NAME
+## 
+## See also:
+## 
+## * `gridlabd model`
+## 
+
+EXE=$(basename $0)
+URL=https://raw.githubusercontent.com/arras-energy/gridlabd-examples/refs/heads/master
+
+E_OK=0
+E_SYNTAX=1
+E_INVALID=2
+E_MISSING=3
+E_NOTFOUND=4
+E_EXISTS=5
+
+function error()
+{
+    echo "ERROR [$EXE]: $1" >>/dev/stderr
+    test -z "$2" || exit $(eval 'echo $'$2)
+}
+
+function main()
+{
+    while [ $# -gt 0 ]; do
+
+        case $1 in
+
+        -h|--help|help)
+
+            grep '^## ' $0 | cut -c4-
+            ;;
+
+        --verbose)
+
+            set -x
+            ;;
+
+        index)
+
+            index
+            ;;
+
+        get)
+
+            if [ $# -eq 1 ]; then
+                error "missing example name" E_MISSING
+            fi
+            get $2
+            shift 1
+            ;;
+
+        open)
+
+            if [ $# -eq 1 ]; then
+                error "missing example name" E_MISSING
+            fi
+            open $2
+            shift 1
+            ;;
+
+        *)
+            error "'$1' is invalid" E_INVALID
+            ;;
+
+        esac
+        shift 1
+    done
+}
+
+function index()
+{
+    curl -sL -H "Cache-Control: no-cache" $URL/.index
+}
+
+function get()
+{
+    if [ -d $1 ]; then
+        error "folder '$1' already exists" E_EXISTS
+    fi
+    rm -rf .$1
+    mkdir .$1
+    curl -sL --fail-with-body -H "Cache-Control: no-cache" $URL/$1/.index > .$1/.index
+    if [ $? -ne 0 ]; then
+        MSG=$(cat .$1/.index)
+        rm -rf .$1
+        if [ ${MSG%:*} -eq 404 ]; then
+            error "example '$1' not found or missing index" E_INVALID
+        else
+            error "HTTP Error $MSG" E_INVALID
+        fi
+    fi
+    for FILE in $(cat .$1/.index); do
+        echo -n Downloading $1...
+        curl -sL --fail-with-body -H "Cache-Control: no-cache" $URL/$1/$FILE > .$1/$FILE
+        if [ $? -ne 0 ]; then
+            MSG=$(cat .$1/$FILE)
+            rm -rf .$1
+            if [ ${MSG%:*} -eq 404 ]; then
+                error "file '$1/$FILE' not found" E_INVALID
+            else
+                error "HTTP Error $MSG" E_INVALID
+            fi
+        fi
+        echo ok
+    done
+    mv .$1 $1
+}
+
+function open()
+{
+    if [ -f $1/.openrc ]; then
+        cd $1
+        /bin/bash .openrc
+    elif [ -d $1/ ]; then
+        ${OPEN:-/usr/bin/open} $1/
+    else
+        error "'$1' not found" E_NOTFOUND
+    fi
+}
+
+if [ $# -eq 0 ]; then
+    grep '^## Syntax: ' $0 | cut -c4-
+    exit $E_SYNTAX
+else
+    main $*
+    exit $E_OK
+fi
