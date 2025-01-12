@@ -1,0 +1,220 @@
+#!/bin/bash
+## Syntax: gridlabd marimo [OPTIONS ...] [COMMAND] [NOTEBOOK]
+## 
+## Options:
+## 
+##   `--debug`: send log to /dev/stderr
+## 
+##   `-h|--help|help`: get this help
+## 
+##   `--pid`: get the process id for the notebook (if any)
+## 
+##   `--url`: get the URL for the notebook (if any)
+## 
+##   `--verbose`: echo script to stderr
+## 
+##   `--wait`: wait for marimo server to exit
+## 
+## Commands:
+## 
+##   `index`: get list of available notebooks that can be downloaded
+## 
+##   `list`: list open marimo notebooks
+## 
+##   `stop`: stops the marimo notebook
+## 
+## Run a gridlabd marimo notebook.
+## 
+## GridLAB-D marimo notebooks are distributed from the GitHub arras-energy
+## repository `marimo`.
+##
+## Caveats:
+## 
+## * Master branches only return the "official" index published in
+##   `source/.index`. All other branches return a list of all Python files in
+##   `source/`.
+## 
+## See also:
+## 
+## * https://github.com/arras-energy/marimo
+## * https://docs.marimo.io/
+## 
+
+LIB=$GLD_ETC/marimo
+LOG=$LIB/marimo.log
+URL=https://raw.githubusercontent.com/arras-energy/marimo/refs/heads/main/source
+WAIT=no
+
+E_OK=0
+E_SYNTAX=1
+E_FAIL=2
+E_NOTFOUND=3
+E_MISSING=4
+
+function error()
+{
+    # error MESSAGE [EXITCODE]
+    #
+    # Display an error message and optionally exit with EXITCODE
+    #
+    echo "ERROR: $1" > /dev/stderr
+    test -z "$2" || exit $(eval 'echo $'$2)
+}
+
+function warning()
+{
+    # warning MESSAGE
+    #
+    # Display a warning message and optionally exit with EXITCODE
+    #
+    echo "WARNING: $1" > /dev/stderr    
+}
+
+function index()
+{
+    # index
+    #
+    # Display a list of available notebooks online
+    #
+    if [ "$(gridlabd.bin --version=branch)" == "master" ]; then
+        curl -sL -H 'Cache-Control: no-cache' $URL/.index 2>>$LOG
+    else
+        curl -L -H 'Cache-Control: no-cache' https://api.github.com/repos/arras-energy/marimo/contents/source 2>>$LOG | grep '"name": ".*\.py",' | cut -f2 -d: | cut -f1 -d. | tr -cd "A-Za-z0-9_\\n"
+    fi
+}
+
+function getlist()
+{
+    basename -s .py $(ps -ax | grep bin/marimo | grep -v grep | sed -r 's/ +/ /g' | cut -f7 -d' ') 2>>$LOG
+}
+
+function getpid()
+{
+    EXE=$LIB/$1.py
+    ps ax | grep bin/marimo | grep $EXE | cut -f1 -d' ' 2>>$LOG
+}
+
+function getinfo()
+{
+    for PID in $*; do
+        lsof -i -P -a -p $PID | tail -n +1 2>>$LOG
+    done
+}
+
+function geturl()
+{
+    PID=$(getpid $1)
+    if [ ! -z "$PID" ]; then
+        LOC=$(lsof -i -P -a -p $PID | grep '(LISTEN)' | sed -r 's/ +/ /g' | cut -f9 -d' ' 2>>$LOG)
+        echo "http://$LOC/"
+    fi
+}
+
+function download()
+{
+    EXE=$LIB/$1.py
+    ETAG=$LIB/.etag/$1
+    if [ ! -f $EXE ]; then
+        if [ -z "$(index | grep $1)" ]; then
+            error "no such notebook published" E_NOTFOUND
+        else
+            rm -f $ETAG 2>>$LOG
+        fi
+    fi
+    if [ -f $ETAG ]; then
+        curl -sL -H 'Cache-Control: no-cache' --etag-compare $ETAG --etag-save $ETAG $URL/$1.py > $EXE 2>>$LOG
+    else
+        curl -sL -H 'Cache-Control: no-cache' --etag-save $ETAG $URL/$1.py > $EXE 2>>$LOG
+    fi
+    if [ $? -ne 0 ]; then
+        cat $EXE >>$LOG
+        rm -f $EXE $ETAG 2>>$LOG
+        error "unable to download '$1'" E_FAIL
+    fi    
+}
+
+function start()
+{
+    EXE=$LIB/$1.py
+    if [ ! -f $EXE ]; then
+        error "$1 not found" E_NOTFOUND
+    fi
+    if [ $WAIT == no ]; then
+        marimo run $EXE 1>>$LOG 2>&1 &
+    else
+        marimo run $EXE 2>>$LOG
+    fi
+}
+
+function stop()
+{
+    echo ""
+}
+
+mkdir -p $LIB/.etag
+echo "*** COMMAND = '$0 $*' ***" >>$LOG
+
+if [ $# -eq 0 ]; then
+    grep '^## ' $0 | cut -c4-
+    exit $E_SYNTAX
+fi
+
+if [ -z "$GLD_ETC" ]; then
+    error "missing gridlabd environment" E_MISSING
+fi
+
+while [ $# -gt 0 ]; do
+    case $1 in
+        --debug)
+            LOG=/dev/stderr
+            ;;
+        --help|-h|help)
+            cat $0 | grep '^## ' | cut -c4-
+            exit $E_OK
+            ;;
+        --pid)
+            getpid $2
+            shift 1
+            ;;
+        --url)
+            geturl $2
+            shift 1
+            ;;
+        --verbose)
+            set -x
+            ;;
+        --wait)
+            WAIT=yes
+            ;;
+        index) # list of available apps
+            index
+            exit $E_OK
+            ;;
+        list) # list of active apps
+            getlist
+            exit $E_OK
+            ;;
+        stop)
+            PID=$(getpid $2)
+            if [ ! -z "$PID" ]; then
+                kill $PID
+            fi
+            shift 1
+            exit $E_OK
+            ;;
+        -*)
+            error "option '$1' is invalid" E_SYNTAX
+            ;;
+        *)
+            LOC=$(geturl $1)
+            if [ -z "$LOC" ]; then
+                download $1
+                start $1
+            else
+                open $LOC
+            fi
+            exit $E_OK
+            ;;
+    esac
+    shift 1
+done

@@ -1,0 +1,40 @@
+module pypower
+{
+    stop_on_failure FALSE;
+}
+class bus
+{
+    double gen[MW]; // total generation at bus
+    double price[$/MWh]; // cost at bus
+    double Vdc[pu*V]; // DC bus voltage 
+}
+#input "case14.py" -t pypower
+modify pp_bus_7.price 10.0;
+module optimize
+{
+    cvx_problemdump "example3.txt";
+}
+object cvx
+{
+    name "dcopf";
+    event "PRECOMMIT";
+    data "D=bus:Pd";
+    data "P=bus:price";
+    variables "v=bus:Vdc;g=bus:gen";
+    presolve "G=glm.Network()";
+    objective "cvx.Minimize(P@g)";
+    constraints "G.baseMVA*G.W@v-g+D==0";
+    constraints "v[G.refbus if G.refbus else 0]==0.0";
+    constraints "g>=0";
+    postsolve """
+        np.set_printoptions(precision=1,sign=' ',floatmode='fixed',linewidth=None)
+        print(f'v = {v.value.round(1)}',file=__dump__)
+        print(f'g = {g.value.round(1)} = {sum(g.value):6.1f} MW',file=__dump__)
+        print(f'D = {np.array(D).round(1)} = {sum(D):6.1f} MW',file=__dump__)
+        V = G.B@v.value
+        L = V*G.Y*V.T
+        print(f'losses = {L} = {sum(L):6.1f} MW',file=__dump__)
+    """;
+}
+
+#set savefile=${modelname/glm/json}

@@ -1,0 +1,131 @@
+// test_cvx.glm
+
+#set suppress_repeat_messages=FALSE
+//#option verbose
+//#option debug
+#set randomseed=1
+clock
+{
+    timezone America/Seattle;
+    starttime "2020-01-01 00:00:00 PST";
+    stoptime "2020-01-02 00:00:00 PST";
+}
+
+module optimize
+{
+    message_flags VERBOSE;
+    cvx_failure_handling WARN;
+    cvx_imports Variable,sum_squares,Minimize;
+    cvx_problemdump "test_cvx.txt";
+}
+
+class test
+{
+    randomvar A0;
+    randomvar A1;
+    randomvar A2;
+    randomvar A3;
+    randomvar b0;
+    randomvar b1;
+    double x;
+    double y;
+    double mu;
+    double lambda;
+}
+
+module pypower;
+module tape
+{
+    csv_header_type NAME;
+}
+object test:..3
+{
+    parent problem-x;
+    name `test_{id}`;
+    groupid "test_group";
+    latitude 37.5;
+    longitude -122.5;
+    A0 "type:normal(0,1);refresh:1h";
+    A1 "type:normal(0,1);refresh:1h";
+    A2 "type:normal(0,1);refresh:1h";
+    A3 "type:normal(0,1);refresh:1h";
+    b0 "type:normal(0,1);refresh:1h";
+    b1 "type:normal(0,1);refresh:1h";
+    x 0.0;
+    y 0.0;
+    object recorder
+    {
+        file `test_cvx_{id}.csv`;
+        property "A0,x,y";
+        interval -1;
+    };
+}
+
+object cvx
+{
+    name "least-squares";
+    event INIT;
+    presolve """
+        m=20
+        n=15
+        np.random.seed(1)
+        A=np.random.rand(m,n)
+        b=np.random.rand(m)
+        x=Variable(n)
+        """;
+    objective "Minimize(sum_squares(A@x-b))";
+    postsolve "print('Residual 2-norm:',round(cvx.norm(A@x-b,p=2).value,6),file=__dump__,flush=True)";
+}
+
+object cvx
+{
+    name "linear-program";
+    event FINALIZE;
+    presolve """
+        m=15
+        n=10
+        np.random.seed(1)
+        s0 = np.random.randn(m)
+        lamb0 = np.maximum(-s0, 0)
+        s0 = np.maximum(s0, 0)
+        x0 = np.random.randn(n)
+        A = np.random.randn(m, n)
+        b = A @ x0 + s0
+        c = -A.T @ lamb0
+        x = Variable(n)
+        """;
+    objective "Minimize(c.T@x)";
+    constraints "A@x<=b";
+    postsolve "print('Dual value:',__cvx__['linear-program']['constraints'][0].dual_value.round(6),file=__dump__,flush=True)";
+}
+
+object cvx 
+{
+    name "problem-x";
+    event INIT;
+    variables "x=test:x";
+    data "A=test:A0"; // ,test.A1,test.A2,test.A3;b1=test.b1;b2=test.b2";
+    objective "Minimize(sum_squares(A@x))";
+    constraints "x >= 1";
+}
+
+object cvx 
+{
+    parent "problem-x";
+    name "problem-y";
+    event SYNC;
+    data "A=test:A1";
+    variables "y=test:y";
+    objective "Minimize(sum_squares(A@y))";
+    constraints "y >= 1";
+}
+
+#set savefile=${modelname/.glm/.json}
+
+// This test does not work on linux platforms for some unknown reason
+#ifdef APPLE
+#ifexist "../test_cvx.txt"
+#on_exit 0 diff -w -I '^(param_prob:|Problem solved:|Result:)' ../test_cvx.txt test_cvx.txt > gridlabd.diff
+#endif
+#endif
+

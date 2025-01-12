@@ -1,0 +1,28 @@
+#include "example1.glm"
+module optimize
+{
+    cvx_problemdump "example2.txt";    
+}
+clock
+{
+    starttime "2020-01-01 00:00:00";
+    stoptime "2020-01-02 00:00:00";
+}
+class example
+{
+    randomvar b;
+    double x[W];
+}
+object example:..20
+{
+    b "type:normal(0,1); refresh:1h; min:0; max:1";
+}
+modify least-squares.data "b=example:b";
+modify least-squares.variables "x=example:x";
+modify least-squares.event "INIT|PRECOMMIT";
+modify least-squares.presolve """
+    if __cvx__['least-squares']['event'] == 'INIT':
+        np.random.seed(1)
+        A=np.random.rand(len(b),len(b))
+    """;
+modify least-squares.objective "Minimize(sum_squares(A@x-b))";
