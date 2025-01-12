@@ -3,25 +3,29 @@
 ## 
 ## Options:
 ## 
-##   `--debug`: send log to /dev/stderr
+## * `--debug`: send log to /dev/stderr
 ## 
-##   `-h|--help|help`: get this help
+## * `-h|--help|help`: get this help
 ## 
-##   `--pid`: get the process id for the notebook (if any)
+## * `--pid`: get the process id for the notebook (if any)
 ## 
-##   `--url`: get the URL for the notebook (if any)
+## * `--upgrade`: upgrade marimo to latest version
 ## 
-##   `--verbose`: echo script to stderr
+## * `--url`: get the URL for the notebook (if any)
 ## 
-##   `--wait`: wait for marimo server to exit
+## * `--verbose`: echo script to stderr
+## 
+## * `--wait`: wait for marimo server to exit
 ## 
 ## Commands:
 ## 
-##   `index`: get list of available notebooks that can be downloaded
+## * `edit NOTEBOOK`: open the notebook in the marimo editor
 ## 
-##   `list`: list open marimo notebooks
+## * `index`: get list of available notebooks that can be downloaded
 ## 
-##   `stop`: stops the marimo notebook
+## * `list`: list open marimo notebooks
+## 
+## * `stop NOTEBOOK`: stops the marimo notebook
 ## 
 ## Run a gridlabd marimo notebook.
 ## 
@@ -29,6 +33,13 @@
 ## repository `marimo`.
 ##
 ## Caveats:
+## 
+## * Notebook servers stay active until they are stopped, even if you close
+##   the browser window.
+## 
+## * The `stop` command cannot stop notebooks opened with the `edit` command.
+##   These can only be stopped by directly interrupting the server or using
+##   the shutdown `(x)` button in the browser.
 ## 
 ## * Master branches only return the "official" index published in
 ##   `source/.index`. All other branches return a list of all Python files in
@@ -148,7 +159,48 @@ function start()
 
 function stop()
 {
-    echo ""
+    if [ $# -eq 0 ]; then
+        error "stop missing notebook name" E_MISSING
+    fi
+    PID=$(getpid $1)
+    if [ ! -z "$PID" ]; then
+        kill $PID
+    fi
+}
+
+function edit()
+{
+    if [ $# -eq 0 ]; then
+        error "missing notebook name" E_MISSING
+    elif [ "$(gridlabd.bin --version=branch)" == "master" ]; then
+        error "you must use a development version of gridlabd" E_FAIL
+    fi
+    if [ -d gridlabd-marimo ]; then
+        ( cd gridlabd-marimo ; git pull )
+    else
+        git clone https://github.com/arras-energy/marimo gridlabd-marimo
+    fi
+    if [ ! -d gridlabd-marimo/source ]; then
+        error "clone failed" E_FAIL
+    else
+        if [ ! -f gridlabd-marimo/source/$1.py ]; then
+            echo "Creating gridlabd-marimo/source/$1.py"
+        fi
+        ( cd gridlabd-marimo/source ; marimo edit $1.py )
+    fi
+    warning "don't forget to add/commit/push when done editing"
+}
+
+function open()
+{
+    LOC=$(geturl $1)
+    if [ -z "$LOC" ]; then
+        download $1
+        start $1
+    else
+        open $LOC
+    fi
+
 }
 
 mkdir -p $LIB/.etag
@@ -176,6 +228,10 @@ while [ $# -gt 0 ]; do
             getpid $2
             shift 1
             ;;
+        --upgrade)
+            python3 -m pip install --upgrade marimo
+            shift 1
+            ;;
         --url)
             geturl $2
             shift 1
@@ -195,25 +251,18 @@ while [ $# -gt 0 ]; do
             exit $E_OK
             ;;
         stop)
-            PID=$(getpid $2)
-            if [ ! -z "$PID" ]; then
-                kill $PID
-            fi
+            stop $2
             shift 1
-            exit $E_OK
+            ;;
+        edit)
+            edit $2
+            shift 1
             ;;
         -*)
             error "option '$1' is invalid" E_SYNTAX
             ;;
         *)
-            LOC=$(geturl $1)
-            if [ -z "$LOC" ]; then
-                download $1
-                start $1
-            else
-                open $LOC
-            fi
-            exit $E_OK
+            open $1
             ;;
     esac
     shift 1
