@@ -32,6 +32,7 @@ a warning is printed to stderr.
 """
 
 import sys
+import os
 import framework as app
 
 def main(argv):
@@ -68,9 +69,18 @@ if __name__ == "__main__":
     try:
 
         if len(sys.argv) == 1:
-
-            print("\n".join([x for x in __doc__.split("\n") if x.startswith("Syntax: ")]),file=sys.stderr)
-            exit(app.E_SYNTAX)
+            glmfile = f"test_{os.path.splitext(os.path.basename(__file__))[0]}.glm"
+            glmpath = os.path.join(os.path.dirname(__file__),"autotest")
+            if os.path.exists(os.path.join(glmpath,glmfile)) \
+                    and os.getcwd() == os.path.dirname(__file__) \
+                    and "GLD_BIN" in os.environ:
+                app.warning(f"running autotest file refresh {glmfile}...")
+                rc = os.system(f"gridlabd.bin -W {glmpath} {glmfile}")
+                exit(rc)
+            else:
+                print("\n".join([x for x in __doc__.split("\n") if x.startswith("Syntax: ")]),file=sys.stderr)
+                exit(app.E_SYNTAX)
+            fi
 
         rc = main(sys.argv)
         exit(rc)
