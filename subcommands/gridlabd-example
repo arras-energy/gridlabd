@@ -1,0 +1,77 @@
+#!/bin/bash
+## Syntax: gridlabd example [OPTIONS...] COMMAND [ARGS...]
+## 
+## Options:
+## 
+## Access gridlabd examples.
+## 
+## See also:
+## * `gridlabd model`
+
+OUTPUT=/dev/stdout
+ERRORS=/dev/stderr
+URL=https://raw.githubusercontent.com/arras-energy/gridlabd-examples/refs/heads/master
+
+E_OK=0
+E_SYNTAX=1
+
+function error()
+{
+    echo "ERROR: $1" >>$ERRORS
+    test -z "$2" || exit $(eval 'echo $'$2)
+}
+
+function main()
+{
+    if [ $# -eq 0 ]; then
+        grep '^## Syntax: ' $0 | cut -c4- >>$OUTPUT
+        exit $E_SYNTAX
+    fi
+
+    while [ $# -ge 0 ]; do
+        case $0 in
+
+        -h|--help|help)
+
+            grep '^## ' $0 | cut -c4- >>$OUTPUT
+            exit $E_OK
+            ;;
+
+        --verbose)
+
+            set +x
+            ;;
+
+        index)
+            index
+            exit $E_OK
+            ;;
+
+
+
+        *)
+            error "'$1' is invalid" E_INVALID
+            ;;
+
+        esac
+        shift 1
+    done
+}
+
+function index()
+{
+    curl -sL $URL/.index 2>>$ERROR
+}
+
+function get()
+{
+
+}
+
+function open()
+{
+
+}
+
+main
+exit $E_OK
