@@ -1,14 +1,11 @@
 
-docs: docs/Utilities
+docs: docs/Tools
 
 DOCS_UTILITIES = 
-DOCS_UTILITIES += docs/Utilities/Framework.md
-DOCS_UTILITIES += docs/Utilities/Network.md
-DOCS_UTILITIES += docs/Utilities/Edit.md
-DOCS_UTILITIES += docs/Utilities/Mapping.md
-DOCS_UTILITIES += docs/Utilities/Unitcalc.md
 
-docs/Utilities: $(DOCS_UTILITIES)
+include $(top_srcdir)/docs/Tools/Makefile.mk
+
+docs/Tools: $(DOCS_UTILITIES)
 	echo "Updating $@..."
 
 %.md: FORCE

@@ -1,4 +1,4 @@
-[[/Utilities/Nsrdb_weather]] -- NSRDB weather data utility
+[[/Tools/Nsrdb_weather]] -- NSRDB weather data utility
 
 # Synopsis
 

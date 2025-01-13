@@ -1,4 +1,4 @@
-[[/Utilities/Mapping]] -- Mapping utilities
+[[/Tools/Mapping]] -- Mapping utilities
 
 Syntax: `gridlabd mapping FILENAME [OPTIONS ...]`
 
