@@ -9,6 +9,8 @@
 ## 
 ## * `--pid`: get the process id for the notebook (if any)
 ## 
+## * `-R|--repo`: change marimo repository (default `arras-energy/marimo`)
+## 
 ## * `--upgrade`: upgrade marimo to latest version
 ## 
 ## * `--url`: get the URL for the notebook (if any)
@@ -16,6 +18,8 @@
 ## * `--verbose`: echo script to stderr
 ## 
 ## * `--wait`: wait for marimo server to exit
+## 
+## * `-W|--workdir`: change work directory (default `gridlabd-marimo`)
 ## 
 ## Commands:
 ## 
@@ -53,14 +57,25 @@
 
 LIB=$GLD_ETC/marimo
 LOG=$LIB/marimo.log
-URL=https://raw.githubusercontent.com/arras-energy/marimo/refs/heads/main/source
 WAIT=no
+WORKDIR=gridlabd-marimo
 
 E_OK=0
 E_SYNTAX=1
 E_FAIL=2
 E_NOTFOUND=3
 E_MISSING=4
+
+function repo()
+{
+    if [ $# -eq 0 ]; then
+        error "missing repo name" E_MISSING
+    fi
+    URL=https://raw.githubusercontent.com/$1/refs/heads/main/source
+    API=https://api.github.com/repos/$1/contents/source
+    GIT=https://github.com/$1
+}
+repo arras-energy/marimo
 
 function error()
 {
@@ -90,7 +105,7 @@ function index()
     if [ "$(gridlabd.bin --version=branch)" == "master" ]; then
         curl -sL -H 'Cache-Control: no-cache' $URL/.index 2>>$LOG
     else
-        curl -sL -H 'Cache-Control: no-cache' https://api.github.com/repos/arras-energy/marimo/contents/source 2>>$LOG | grep '"name": ".*\.py",' | cut -f2 -d: | cut -f1 -d. | tr -cd "A-Za-z0-9_\\n"
+        curl -sL -H 'Cache-Control: no-cache' $API 2>>$LOG | grep '"name": ".*\.py",' | cut -f2 -d: | cut -f1 -d. | tr -cd "A-Za-z0-9_\\n"
     fi
 }
 
@@ -175,20 +190,30 @@ function edit()
     elif [ "$(gridlabd.bin --version=branch)" == "master" ]; then
         error "you must use a development version of gridlabd" E_FAIL
     fi
-    if [ -d gridlabd-marimo ]; then
-        ( cd gridlabd-marimo ; git pull )
+    if [ -d "$WORKDIR" ]; then
+        ORIGIN=$(cd "$WORKDIR"; git remote get-url origin)
+        if [ "$URL" != "$ORIGIN" ]; then
+            warning "repository '$GIT' does not match '$WORKDIR' origin '$ORIGIN', unable to pull"
+        elif [ ! -d "$WORKDIR/.git" ]; then
+            warning "'$WORKDIR' is not a git repository (you cannot commit changes), unable to pull"
+        else
+            ( cd "$WORKDIR" ; git pull )
+        fi
     else
-        git clone https://github.com/arras-energy/marimo gridlabd-marimo
+        git clone $GIT "$WORKDIR" || error "clone failed" E_FAIL
     fi
-    if [ ! -d gridlabd-marimo/source ]; then
+    if [ ! -d "$WORKDIR/source" ]; then
         error "clone failed" E_FAIL
     else
-        if [ ! -f gridlabd-marimo/source/$1.py ]; then
-            echo "Creating gridlabd-marimo/source/$1.py"
+        if [ ! -f "$WORKDIR/source/$1.py" ]; then
+            echo "Creating '$WORKDIR/source/$1.py'"
         fi
-        ( cd gridlabd-marimo/source ; marimo edit $1.py )
+        echo "Opening marimo notebook..." >/dev/stderr
+        ( cd "$WORKDIR/source" ; marimo edit "$1.py" )
     fi
-    warning "don't forget to add/commit/push when done editing"
+    if [ -d "$WORKDIR/.git" ]; then
+        warning "don't forget to add/commit/push changes to '$WORKDIR' when done editing"
+    fi
 }
 
 function open()
@@ -228,6 +253,10 @@ while [ $# -gt 0 ]; do
             getpid $2
             shift 1
             ;;
+        -R|--repo)
+            repo $2
+            shift 1
+            ;;
         --upgrade)
             python3 -m pip install --upgrade marimo
             shift 1
@@ -241,6 +270,13 @@ while [ $# -gt 0 ]; do
             ;;
         --wait)
             WAIT=yes
+            ;;
+        -W|--workdir)
+            if [ $# -eq 1 ]; then
+                error "missing folder name" E_MISSING
+            fi
+            WORKDIR=$2
+            shift
             ;;
         index) # list of available apps
             index
