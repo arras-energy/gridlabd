@@ -111,20 +111,13 @@ function index()
 
 function getlist()
 {
-    basename -s .py $(ps -ax | grep bin/marimo | grep -v grep | sed -r 's/ +/ /g' | cut -f7 -d' ') 2>>$LOG
+    basename -s .py $(ps -ax | grep bin/marimo | grep -v grep | sed -r 's/ +/ /g' | rev | cut -f1 -d'/' | rev ) 2>>$LOG
 }
 
 function getpid()
 {
     EXE=$LIB/$1.py
     ps ax | grep bin/marimo | grep $EXE | cut -f1 -d' ' 2>>$LOG
-}
-
-function getinfo()
-{
-    for PID in $*; do
-        lsof -i -P -a -p $PID | tail -n +1 2>>$LOG
-    done
 }
 
 function geturl()
@@ -228,6 +221,21 @@ function open()
 
 }
 
+function status()
+{
+    LIST=$(getlist)
+    if [ ! -z "$LIST" ]; then
+        FORMAT="%-16.16s %-6.6s %-32.32s\n"
+        printf "$FORMAT" Name PID URL
+        printf "$FORMAT" ---------------- ------ --------------------------------
+        for APP in $LIST; do
+            APPPID=$(getpid $APP)
+            APPURL=$(geturl $APP)
+            printf "$FORMAT" $APP $APPPID $APPURL
+        done
+    fi
+}
+
 mkdir -p $LIB/.etag
 echo "*** COMMAND = '$0 $*' ***" >>$LOG
 
@@ -280,6 +288,10 @@ while [ $# -gt 0 ]; do
             ;;
         index) # list of available apps
             index
+            exit $E_OK
+            ;;
+        status)
+            status
             exit $E_OK
             ;;
         list) # list of active apps
