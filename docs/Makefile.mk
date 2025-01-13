@@ -1,15 +1,17 @@
 
-DOCS = 
-DOCS += docs/Utilities/Framework.md
-DOCS += docs/Utilities/Network.md
-DOCS += docs/Utilities/Edit.md
-DOCS += docs/Utilities/Mapping.md
-DOCS += docs/Utilities/Unitcalc.md
+docs: docs/Utilities
+
+DOCS_UTILITIES = 
+DOCS_UTILITIES += docs/Utilities/Framework.md
+DOCS_UTILITIES += docs/Utilities/Network.md
+DOCS_UTILITIES += docs/Utilities/Edit.md
+DOCS_UTILITIES += docs/Utilities/Mapping.md
+DOCS_UTILITIES += docs/Utilities/Unitcalc.md
+
+docs/Utilities: $(DOCS_UTILITIES)
+	echo "Updating $@..."
 
 %.md: FORCE
-	echo "Updating $@"
 	$(DESTDIR)$(bindir)/gridlabd python docs/makemd.py $(basename $(notdir $(shell echo "$@" | tr 'A-Z' 'a-z'))) $(dir $@)
-
-docs/Utilities: $(DOCS)
 
 FORCE:
