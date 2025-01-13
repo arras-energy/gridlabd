@@ -1,10 +1,9 @@
-"""Marimo utilities
-"""
+"""Marimo utilities for gridlabd marimo apps"""
 import os
 import io
 import json
 import math
-from collections import namedtuple
+from typing import TypeVar
 import marimo as mo
 import subprocess
 import pandas as pd
@@ -13,7 +12,26 @@ import plotly.graph_objects as go
 import plotly.io as pio
 import random
 
-def gridlabd(*args, bin=True, **kwargs):
+def gridlabd(*args:list, 
+    bin:bool=True, 
+    **kwargs:dict,
+    ) -> TypeVar('subprocess.CompletedProcess'):
+    """Run gridlabd
+
+    Arguments:
+
+    * `*args`: command line options
+
+    * `bin`: enable direct binary runner (faster but disables subcommands and tools)
+
+    * `**kwargs`: subprocess run options
+
+    Returns:
+
+    * `subprocess.CompletedProcess`: process info on success
+
+    * `None`: on failure
+    """
     if not "capture_output" in kwargs:
         kwargs["capture_output"] = True
     try:
@@ -29,7 +47,17 @@ def _icon(name):
 version = gridlabd("--version")
 version = version.stdout.decode('utf-8').strip() if version and version.returncode==0 else ""
 
-def render_sidebar(upload):
+def render_sidebar(upload:TypeVar('marimo.FileUploadResults')) -> TypeVar('marimo.Html'):
+    """Render app sidebar
+
+    Arguments:
+
+    * `upload`: marimo upload object
+
+    Returns:
+
+    * `marimo.Html`: rendered Html object
+    """
     items = {
         f"**{upload.name(0)}**" : {
             "#/map": f"{_icon('locate')} Map",
@@ -54,7 +82,21 @@ def render_sidebar(upload):
         mo.nav_menu(helps,orientation="vertical"),
         ])
 
-def model(source,folder=None):
+def model(source:TypeVar('marimo.FileUploadResults'),
+    folder:str=None,
+    ):
+    """Extract model data
+
+    Arguments:
+
+    * `source`: marimo upload object
+
+    * `folder`: working folder (default is current folder)
+
+    Returns:
+
+    * `namedtuple`: contents of model dictionary
+    """
     if not folder:
         folder = os.getcwd()
     _pathname = os.path.join(folder,source.name(0))
@@ -74,6 +116,7 @@ def model(source,folder=None):
     _io = open(_jsonname,"r")
     _model = json.load(_io)
     mo.stop("application" not in _model,"model does not contain GridLAB-D application data")
+    from collections import namedtuple
     return namedtuple("model",_model.keys())(*_model.values()),_result
 
 def _table(model,module=None):
@@ -97,30 +140,63 @@ def _table(model,module=None):
     ]
     return mo.md("\n".join(["<table>"] + _items + ["</table>"]))
 
-def render_globals(model,module=None):
+def render_globals(model:TypeVar('namedtuple'),
+    module:dict=None,
+    ) -> TypeVar('marimo.Html'):
+    """Render globals
+
+    Arguments:
+
+    * `model`: model object
+
+    Returns:
+
+    * `marimo.Html`: rendered Html object
+    """
     result = {"System": _table(model)}
     if module is None:
         for module in model.modules:
             result[module.replace("_", " ").title()] = _table(model,module)
     return mo.vstack([mo.md("# Globals"),mo.ui.tabs(result)])
 
-def render_modules(model):
+def render_modules(model:TypeVar('namedtuple')) -> TypeVar('marimo.Html'):
+    # TODO """Render modules"""
     return mo.md("# Modules")
 
-def render_status(model):
+def render_status(model:TypeVar('namedtuple')) -> TypeVar('marimo.Html'):
+    """Render status
+
+    Arguments:
+
+    * `model`: model object
+
+    Returns:
+
+    * `marimo.Html`: rendered Html object
+    """
     modelname = os.path.splitext(os.path.basename(model.globals['modelname']['value']))[0]
     n_objects = len(model.objects)
     return mo.md(f"# {modelname}\n{n_objects} objects found.")
 
-def render_classes(model):
+def render_classes(model:TypeVar('namedtuple')) -> TypeVar('marimo.Html'):
+    # TODO """Render classes"""
     return mo.md("# Classes")
 
 # Render objects
-def _objects(model,cls):
-    # return mo.vstack([mo.md(x) for x,y in model.objects.items() if y["class"] == cls and "latitude" not in y and "longitude" not in y])
+def _objects(model:TypeVar('namedtuple'),cls):
     return mo.vstack([mo.md(x) for x,y in model.objects.items() if y["class"] == cls])
 
-def render_objects(model):
+def render_objects(model:TypeVar('namedtuple')) -> TypeVar('marimo.Html'):
+    """Render objects
+
+    Arguments:
+
+    * `model`: model object
+
+    Returns:
+
+    * `marimo.Html`: rendered Html object
+    """
     def _name(x):
         return x.replace('_',' ').title()
 
@@ -130,7 +206,17 @@ def render_objects(model):
                   mo.accordion(_stacks,multiple=True)
                   ])
 
-def render_map(model,**kwargs):
+def render_map(model:TypeVar('namedtuple'),**kwargs) -> TypeVar('marimo.Html'):
+    """Render geodata as map
+
+    Arguments:
+
+    * `model`: model object
+
+    Returns:
+
+    * `marimo.Html`: rendered Html object
+    """
     _data = pd.DataFrame({"latitude":[],"longitude":[]})
     _params = {"lat":"latitude","lon":"longitude","map_style":"open-street-map"}
     if not "zoom" in kwargs:
@@ -140,10 +226,55 @@ def render_map(model,**kwargs):
     map = px.scatter_map(_data,**_params,**kwargs)
     return map
 
-def float_unit(x):
+def float_unit(x:str) -> float:
+    """Convert float with units"""
     return float(x.split(" ",1)[0])
 
-def complex_unit(x,form=None):
+def complex_unit(x:str,form:str=None) -> complex:
+    """Convert complex with units
+    
+    Arguments:
+
+    * `x`: complex number
+
+    * `form`: desired format
+
+    Valid forms:
+
+    * `None`: complex number
+
+    * `rect`: return complex value in rectangular form (x,y)
+
+    * `polar`: return complex value in polar form (mag,arg)
+
+    * `i` or `j`: return rectangular form in `i` or `j` format
+
+    * `d` or `r`: return polar form in degree or radians
+
+    * `real`: return real part
+
+    * `imag`: return imaginary part
+
+    * `mag`: return magnitude of z
+
+    * `arg`: return angle of x in radians
+
+    * `ang`: return angle of x in degree
+
+    * *other*: return attribute of `x`
+
+        Returns:
+    
+    Returns:
+
+    * `complex`: complex value (`form` is `None`)
+
+    * `float`: real value (`form` in [`real`,`imag`,`mag`,`ang`,`arg`])
+
+    * `tuple`: complex components (`form` in [`rect`,`polar`])
+
+    * `str`: formatting complex value (`form` in [`i`,`j`,`d`,`r`])
+    """
     if form is str:
         return x
     z,u = x.split(" ",1)
@@ -155,8 +286,10 @@ def complex_unit(x,form=None):
         return f"{x:.2f}{y:+.2f}{form}"        
     if form == 'rect':
         return x,y
+    if form == 'polar':
+        return abs(z),math.atans(x,y)
     if form == 'd':
-        return f"{abs(z):.2f}{math.atan2(x,y)*180/3.1416:+.1f}d"
+        return f"{abs(z):.2f}{math.atan2(x,y)*180/math.pi:+.1f}d"
     if form == 'r':
         return f"{abs(z):.2f}{math.atan2(x,y):+.3f}r"
     if form == 'real':
@@ -168,7 +301,7 @@ def complex_unit(x,form=None):
     if form == 'arg':
         return math.atan2(x,y)
     if form == 'ang':
-        return math.atan2(x,y)*180/3.1416
+        return math.atan2(x,y)*180/math.pi
     return getattr(x,form)
 
 try:
@@ -202,13 +335,33 @@ except ModuleNotFoundError:
         }
 
 class Map:
-
+    """Map rendering class"""
     defaults = config.defaults
     network = config.network
     violation_color = config.violation_color
 
-    def __init__(self,model=None,nodedata={},linkdata={},**options):
-        """Initialize"""
+    def __init__(self=TypeVar('Self'),
+        model:[str|TypeVar('io.TextIOWrapper')|None]=None,
+        nodedata:dict={},
+        linkdata:dict={},
+        **options:dict,
+        ) -> TypeVar('Self'):
+        """Construct map rendering object from model object
+
+        Arguments:
+
+        * `model`: model object
+
+        * `nodedata`: node data extraction dictionary (key is property name
+          and value is form converter function)
+
+        * `linkdata`: link data extraction dictionary (key is property name
+          and value is form converter function)
+
+        Returns:
+
+        * `moutils.Map`: map rendering object
+        """
         self.options = options if options else {}
         self.data = pd.DataFrame({"latitude":[],"longitude":[]})
         for key,value in self.defaults.items():
@@ -230,8 +383,23 @@ class Map:
             raise ValueError("model is not a valid str or io object")
         self.map = None
 
-    def read(self,data,nodedata={},linkdata={}):
-        """Read JSON data"""
+    def read(self,
+        data:dict,
+        nodedata:dict={},
+        linkdata:dict={},
+        ):
+        """Read JSON data from model dictionary into model object
+
+        Arguments:
+
+        * `data`: model data
+
+        * `nodedata`: node data extraction dictionary (key is property name
+          and value is form converter function)
+
+        * `linkdata`: link data extraction dictionary (key is property name
+          and value is form converter function)
+        """
         assert "application" in data, "invalid application data"
         assert data["application"] == "gridlabd", "invalid gridlabd model"
         assert "version" in data, "missing gridlabd version"
@@ -241,8 +409,26 @@ class Map:
         self.model = data
         self.extract_network(nodedata,linkdata)
 
-    def extract_network(self,nodedata={},linkdata={}):
-        """Extract network data"""
+    def extract_network(self,
+        nodedata:dict={},
+        linkdata:dict={},
+        ) -> list[str]:
+        """Extract network data
+
+        Arguments:
+
+        * `data`: model data
+
+        * `nodedata`: node data extraction dictionary (key is property name
+          and value is form converter function)
+
+        * `linkdata`: link data extraction dictionary (key is property name
+          and value is form converter function)
+
+        Returns:
+
+        * `list[str]`: list of swing busses (if any)
+        """
         self.links = {}
         self.nodes = {}
         self.swing = set()
@@ -311,7 +497,19 @@ class Map:
         # return swing node list
         return self.swing
 
-    def render(self,**options):
+    def render(self,
+        **options,
+        ) -> TypeVar('marimo.Html'):
+        """Render map
+
+        Arguments:
+
+        * `**options`: `plotly.express.scatter_map` options
+
+        Returns:
+
+        * `marimo.Html`: marimo Html object
+        """
         for key,value in options.items():
             self.options[key] = value
         for key,value in self.options.items():
@@ -373,7 +571,7 @@ class Map:
                         "size": width+5,
                         "allowoverlap": True,
                         "color": color,
-                        "angle": math.atan2(direction*(y2-y0),direction*(x2-x0))*180/3.1416,
+                        "angle": math.atan2(direction*(y2-y0),direction*(x2-x0))*180/math.pi,
                     },
                     mode="markers",
                     showlegend=False,
@@ -381,12 +579,31 @@ class Map:
                     )
         return self.map
 
-    def show(self,**options):
+    def show(self,
+        **options:dict,
+        ):
+        """Show a map in the default web browser
+
+        Arguments:
+
+        * `**options`: `plotly.express.scattermap` options
+        """
         if not self.map or options != self.options:
             self.render(**options)
         self.map.show()
 
-    def save(self,name=None,**options):
+    def save(self,
+        name=None,
+        **options,
+        ):
+        """Save a map to a file
+
+        Arguments:
+
+        * `name`: filename
+
+        * `**options`: `plotly.express.scattermap` options
+        """
         if not self.map or options != self.options:
             self.render(**options)
         self.map.write_image(name)
@@ -418,12 +635,13 @@ if __name__ == "__main__":
     map.save("autotest/test_moutils.png",
         center='auto',zoom=15,
         )
-    map.show(
-        # text='name',
-        hover_name="name",
-        hover_data={
-            "name":False,"latitude":False,"longitude":False,
-            "class":True,
-            'voltage_A':True,'voltage_B':True,'voltage_C':True,
-            }
+    if not 'github_actions' in os.environ or os.environ['github_actions'] != "no":
+        map.show(
+            # text='name',
+            hover_name="name",
+            hover_data={
+                "name":False,"latitude":False,"longitude":False,
+                "class":True,
+                'voltage_A':True,'voltage_B':True,'voltage_C':True,
+                }
 )
