@@ -29,6 +29,8 @@
 ## 
 ## * `list`: list open marimo notebooks
 ## 
+## * `status`: list details of active notebooks
+##
 ## * `stop NOTEBOOK`: stops the marimo notebook
 ## 
 ## Run a gridlabd marimo notebook.
