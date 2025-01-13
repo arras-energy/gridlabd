@@ -54,7 +54,9 @@ def render_sidebar(upload):
         mo.nav_menu(helps,orientation="vertical"),
         ])
 
-def model(source,folder="/tmp"):
+def model(source,folder=None):
+    if not folder:
+        folder = os.getcwd()
     _pathname = os.path.join(folder,source.name(0))
     _dir,_file = os.path.dirname(_pathname),os.path.basename(_pathname)
     _name,_ext = os.path.splitext(_file)
@@ -106,7 +108,9 @@ def render_modules(model):
     return mo.md("# Modules")
 
 def render_status(model):
-    return mo.md(f"# {get_modelname()}\n{len(model.objects)} objects found.")
+    modelname = os.path.splitext(os.path.basename(model.globals['modelname']['value']))[0]
+    n_objects = len(model.objects)
+    return mo.md(f"# {modelname}\n{n_objects} objects found.")
 
 def render_classes(model):
     return mo.md("# Classes")
