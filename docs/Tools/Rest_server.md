@@ -1,4 +1,4 @@
-[[/Utilities/Rest_server]] -- GridLAB-D REST API Server
+[[/Tools/Rest_server]] -- GridLAB-D REST API Server
 
 # Synopsis
 
@@ -38,4 +38,4 @@ The GridLAB-D REST server provides gridlabd simulation control through a Flask A
 
 # See also
 
-* [[/Utilities/Rest_client]]
+* [[/Tools/Rest_client]]

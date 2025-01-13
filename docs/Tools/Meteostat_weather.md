@@ -1,4 +1,4 @@
-[[/Utilities/Meteostat_weather]] - Meteostat weather access
+[[/Tools/Meteostat_weather]] - Meteostat weather access
 
 # Synopsis
 

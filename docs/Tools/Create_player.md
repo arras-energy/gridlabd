@@ -1,4 +1,4 @@
-[[/Utilities/Create_player]] - Player object creation tool
+[[/Tools/Create_player]] - Player object creation tool
 
 # Synopsis
 

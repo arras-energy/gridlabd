@@ -1,5 +1,5 @@
 # Syntax: create_filter NAME NUMERATOR DENOMINATOR [OPTIONS ...]
-"""[[/Utilities/Create_filter]] - Create a filter from a transfer function
+"""[[/Tools/Create_filter]] - Create a filter from a transfer function
 
 SYNOPSIS
 
@@ -47,7 +47,7 @@ model, with 8 bits of resolution and a dynamic range of (0,1):
 
 SEE ALSO
 
-* [[/Utilities/Fit_filter]]
+* [[/Tools/Fit_filter]]
 """
 
 import sys, os

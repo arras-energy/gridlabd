@@ -1,4 +1,4 @@
-[[/Utilities/Noaa_forecast]] -- NOAA weather forecast utility
+[[/Tools/Noaa_forecast]] -- NOAA weather forecast utility
 
 # Synopsis
 

@@ -1,4 +1,4 @@
-[[/Utilities/Framework]] -- Tool framework
+[[/Tools/Framework]] -- Tool framework
 
 The `framework` module contains the infrastructure to support standardized
 implementation of tools in GridLAB-D.

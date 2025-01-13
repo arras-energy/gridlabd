@@ -1,4 +1,4 @@
-[[/Utilities/Network]] -- GridLAB-D model access utilities
+[[/Tools/Network]] -- GridLAB-D model access utilities
 
 Syntax: `gridlabd network JSONFILE [OPTIONS ...]`
 

@@ -1,4 +1,4 @@
-[[/Utilities/Market_data]] - ISO market data download tool
+[[/Tools/Market_data]] - ISO market data download tool
 
 # Synopsis
 
@@ -67,7 +67,7 @@ option.
 
 # See also
 
-* [[/Utilities/Market_model]]
+* [[/Tools/Market_model]]
 
 ISO Data Sources:
 * [CAISO](https://caiso.com/)
