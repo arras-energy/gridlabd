@@ -58,6 +58,12 @@ See also:
 
 # Classes
 
+## ApplicationError
+
+Application exception
+
+---
+
 ## Map
 
 Mapping class
@@ -243,6 +249,8 @@ Arguments:
 * `args`: argument list
 
 * `bin`: enable direct call to gridlabd binary (bypasses shell and faster)
+
+* `output_to`: run postprocessor on output to stdout
 
 * `kwargs`: options to pass to `subpocess.run`
 

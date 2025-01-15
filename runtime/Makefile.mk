@@ -32,6 +32,7 @@ dist_pkgdata_DATA += runtime/regulator_b.png
 dist_pkgdata_DATA += runtime/regulator_g.png
 dist_pkgdata_DATA += runtime/regulator_k.png
 dist_pkgdata_DATA += runtime/regulator_r.png
+dist_pkgdata_DATA += runtime/resource.csv
 dist_pkgdata_DATA += runtime/switch_b.png
 dist_pkgdata_DATA += runtime/switch_g.png
 dist_pkgdata_DATA += runtime/switch_k.png

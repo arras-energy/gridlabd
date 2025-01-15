@@ -35,6 +35,7 @@ dist_pkgdata_DATA += tools/noaa_forecast.py
 dist_pkgdata_DATA += tools/nsrdb_weather.py
 dist_pkgdata_DATA += tools/pole_analysis.py
 dist_pkgdata_DATA += tools/read_dlp.py
+dist_pkgdata_DATA += tools/resource.py
 dist_pkgdata_DATA += tools/rest_client.py
 dist_pkgdata_DATA += tools/rest_server.py
 dist_pkgdata_DATA += tools/rest_server_config.py
