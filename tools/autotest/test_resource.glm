@@ -1,0 +1,11 @@
+#system gridlabd resource --format=csv --index=weather > test_resource.txt
+
+#begin python
+from resource import Resource
+import json
+print(json.dumps(Resource().index(name='weather'),indent=4),file=open('test_resource.txt','a'))
+#end
+
+#ifexist "../test_resource.txt"
+#on_exit 0 diff ../test_resource.txt test_resource.txt > gridlabd.diff
+#endif
