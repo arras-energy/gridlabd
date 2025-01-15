@@ -20,7 +20,7 @@ Options:
 
 * `--properties=RESOURCE`: get a list of resource properties
 
-* `--silent`: support all output exception results
+* `--silent`: suppress all output exception results
 
 * `--verbose`: enable verbose output
 
