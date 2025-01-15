@@ -20,6 +20,7 @@ Options:
 """
 
 import sys
+import json
 import framework as app
 
 def main(argv):
@@ -38,7 +39,15 @@ def main(argv):
 
         elif key in ["--system"]:
 
-            raise NotImplementedError("TODO")
+            if not value:
+
+                data = json.loads(app.gridlabd("--globals=json").stdout.decode('utf-8'))
+                for item in ["city","region","county","state","country"]:
+                    print(f"{item}: {data[item]['value'] if item in data else '(none)'}")
+
+            else:
+
+                raise NotImplementedError("TODO")
 
         elif key in ["--find"]:
 
