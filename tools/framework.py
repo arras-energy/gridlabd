@@ -65,12 +65,12 @@ if __name__ == "__main__":
 
     except Exception as exc:
 
-        if DEBUG:
+        if app.DEBUG:
             raise exc
 
-        if not QUIET:
+        if not app.QUIET:
             e_type,e_value,e_trace = sys.exc_info()
-            tb = traceback.TracebackException(e_type,e_value,e_trace).stack[1]
+            tb = app.traceback.TracebackException(e_type,e_value,e_trace).stack[1]
             print(f"EXCEPTION [{app.EXEFILE}@{tb.lineno}]: ({e_type.__name__}) {e_value}",file=sys.stderr)
 
         exit(app.E_EXCEPTION)
