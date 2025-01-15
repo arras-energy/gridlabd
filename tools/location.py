@@ -22,6 +22,7 @@ Options:
 import sys
 import json
 import framework as app
+import geocoder
 
 def main(argv):
 
@@ -32,18 +33,70 @@ def main(argv):
 
     args = app.read_stdargs(argv)
 
+    def output_raw(data,**kwargs):
+        print(data,**kwargs)
+
+    def output_csv(data,**kwargs):
+        if isinstance(data,list):
+            print("\n".join(data))
+        elif isinstance(data,dict):
+            print("\n".join([f"{x},{y}" for x,y in data.items()]))
+        else:
+            raise ResourceError(f"unable to output '{type(data)}' as CSV")
+
+    def output_json(data,**kwargs):
+        print(json.dumps(data,**kwargs))
+
+    outputter = output_raw
+    outputter_options = {}
+
     for key,value in args:
 
         if key in ["-h","--help","help"]:
             print(__doc__,file=sys.stdout)
+
+        elif key in ["--format"]:
+
+            if len(value) == 0:
+
+                app.error("missing format")
+                return app.E_MISSING
+
+            
+            elif value[0] == "csv":
+
+                if len(value) > 1:
+                    app.error(f"invalid format options '{','.join(value[1:])}'")
+                    return app.E_INVALID
+                outputter = output_csv
+
+            elif value[0] == "json":
+
+                options = {x:y for x,y in [z.split(":",1) for z in value[1:]]} if len(value) > 1 else {}
+                _bool = lambda x: x=="true" if x in ["true","false"] else None,
+                for x,y in {
+                    "indent": int,
+                    "skipkeys": _bool,
+                    "ensure_ascii": _bool,
+                    "check_circular": _bool,
+                    "allow_nan": _bool,
+                    "sort_keys": _bool,
+                }.items():
+                    try:
+                        options[x] = y(options[x])
+                    except:
+                        pass
+                outputter = output_json
+                outputter_options = options
 
         elif key in ["--system"]:
 
             if not value:
 
                 data = json.loads(app.gridlabd("--globals=json").stdout.decode('utf-8'))
-                for item in ["city","region","county","state","country"]:
-                    print(f"{item}: {data[item]['value'] if item in data else '(none)'}")
+                result = {}
+                for item in ["city","county","state","region","country"]:
+                    result[item] = data[item]['value'] if item in data else ""
 
             else:
 
@@ -51,11 +104,22 @@ def main(argv):
 
         elif key in ["--find"]:
 
-            raise NotImplementedError("TODO")
+            if not value:
+
+                data = geocoder.ip('me')
+                result = {}
+                for item in ["city","county","state","region","country"]:
+                    result[item] = getattr(data,item) if hasattr(data,item) else ""
+
+            else:
+
+                raise NotImplementedError("TODO")
 
         else:
             error(f"'{key}={value}' is invalid")
             return app.E_INVALID
+
+    outputter(result,**outputter_options)
 
     return app.E_OK
 
@@ -65,7 +129,7 @@ if __name__ == "__main__":
 
         # TODO: development testing -- delete when done writing code
         if not sys.argv[0]:
-            sys.argv = [__file__,"--system"]
+            sys.argv = [__file__,"--format=json,indent:4","--find"]
 
         rc = main(sys.argv)
         exit(rc)
