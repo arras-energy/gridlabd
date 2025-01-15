@@ -1,30 +1,30 @@
 """Online resource accessor
 
-Syntax: gridlabd resource [OPTIONS ...]
+Syntax: `gridlabd resource [OPTIONS ...]`
 
 Options:
 
-    --content=RESOURCE,INDEX: download RESOURCE located at INDEX
+* `--content=RESOURCE,INDEX`: download RESOURCE located at INDEX
 
-    --debug: enable traceback on exceptions
+* `--debug`: enable traceback on exceptions
 
-    -h|--help|help: get this help
+* `-h|--help|help`: get this help
 
-    --format=[raw|csv|json]: output format
+* `--format=[raw|csv|json]`: output format
 
-    --index=RESOURCE: get index for RESOURCE
+* `--index=RESOURCE`: get index for RESOURCE
 
-    --list[=FORMAT[,OPTIONS[,...]]: list the available resources
+* `--list[=FORMAT[,OPTIONS[,...]]`: list the available resources
 
-    --quiet: suppress error output
+* `--quiet`: suppress error output
 
-    --properties=RESOURCE
+* `--properties=RESOURCE`: get a list of resource properties
 
-    --silent: support all output exception results
+* `--silent`: support all output exception results
 
-    --verbose: enable verbose output
+* `--verbose`: enable verbose output
 
-    --warning: disable warning output
+* `--warning`: disable warning output
 
 Description:
 
@@ -111,6 +111,8 @@ class Resource:
         """Get resource properties
 
         """
+        if not kwargs["name"] in self.data.index:
+            raise ResourceError(f"'{kwargs['name']}' not found")
         result = {"resource":kwargs["name"]}
         for key,value in dict(zip(self.data.columns,self.data.loc[kwargs['name']].tolist())).items():
             try:
@@ -128,6 +130,11 @@ class Resource:
 
         """
         spec = self.properties(passthru=['index'],**kwargs)
+
+        if not spec['index']:
+
+            raise ResourceError(f"{spec['resource']} has no index")
+
         return self._download(spec['protocol'],spec['hostname'],spec['port'],spec['index'],
             output_to=lambda x:x.strip().split("\n"))
 
@@ -136,6 +143,11 @@ class Resource:
 
         """
         spec = self.properties(**kwargs)
+
+        if not spec['content']:
+
+            raise ResourceError(f"{spec['resource']} has not content")
+
         return self._download(spec['protocol'],spec['hostname'],spec['port'],spec['content'])
 
 def main(argv):
@@ -282,7 +294,8 @@ def main(argv):
 if __name__ == "__main__":
 
     # local development test
-    if sys.argv[0] == "":
+    # TODO: remove this block when done developint
+    if not sys.argv[0]:
 
         # sys.argv.extend(["--list"])
         # sys.argv.extend(["--format=csv","--list"])
@@ -301,6 +314,10 @@ if __name__ == "__main__":
         # sys.argv.extend(["--content=weather,WA-Seattle_Seattletacoma_Intl_A.tmy3,csv"])
         # sys.argv.extend(["--format=csv","--content=weather,WA-Seattle_Seattletacoma_Intl_A.tmy3,csv"])
         # sys.argv.extend(["--format=json","--content=weather,WA-Seattle_Seattletacoma_Intl_A.tmy3,csv"])
+
+        # sys.argv.extend(["--index=localhost"]) # should be an error
+        # sys.argv.extend(["--content=localhost"]) # should be an error
+        # sys.argv.extend(["--content=junk"]) # should be an error
 
         pass
 
