@@ -22,6 +22,7 @@ dist_pkgdata_DATA += tools/group.py
 dist_pkgdata_DATA += tools/insights.py
 dist_pkgdata_DATA += tools/install.py
 dist_pkgdata_DATA += tools/isone.py
+dist_pkgdata_DATA += tools/location.py
 dist_pkgdata_DATA += tools/mapping.py
 dist_pkgdata_DATA += tools/mapping_config.py
 dist_pkgdata_DATA += tools/market_data.py
