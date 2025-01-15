@@ -14,6 +14,9 @@ Options:
 
 * `--verbose`: enable verbose output, if any
 
+* `--system[=LOCATION]`: get/set the default location
+
+* `--find[=LOCATION]`: get location settings
 """
 
 import sys
@@ -32,6 +35,15 @@ def main(argv):
 
         if key in ["-h","--help","help"]:
             print(__doc__,file=sys.stdout)
+
+        elif key in ["--system"]:
+
+            raise NotImplementedError("TODO")
+
+        elif key in ["--find"]:
+
+            raise NotImplementedError("TODO")
+
         else:
             error(f"'{key}={value}' is invalid")
             return app.E_INVALID
@@ -44,7 +56,7 @@ if __name__ == "__main__":
 
         # TODO: development testing -- delete when done writing code
         if not sys.argv[0]:
-            sys.argv = ["selftest","--debug"]
+            sys.argv = [__file__,"--system"]
 
         rc = main(sys.argv)
         exit(rc)
@@ -55,12 +67,12 @@ if __name__ == "__main__":
 
     except Exception as exc:
 
-        if DEBUG:
+        if app.DEBUG:
             raise exc
 
-        if not QUIET:
+        if not app.QUIET:
             e_type,e_value,e_trace = sys.exc_info()
-            tb = traceback.TracebackException(e_type,e_value,e_trace).stack[1]
+            tb = app.traceback.TracebackException(e_type,e_value,e_trace).stack[1]
             print(f"EXCEPTION [{app.EXEFILE}@{tb.lineno}]: ({e_type.__name__}) {e_value}",file=sys.stderr)
 
         exit(app.E_EXCEPTION)
