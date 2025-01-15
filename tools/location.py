@@ -1,6 +1,6 @@
 """Location tool
 
-Syntax: gridlabd location [OPTIONS ...] [FILENAME KEY[=VALUE] ...]
+Syntax: `gridlabd location [OPTIONS ...] [FILENAME=KEY[:VALUE][,...] ...]`
 
 Options:
 
@@ -50,8 +50,19 @@ The keys and globals handled by the `location` tools include the following:
 
 * `country`: the location's country
 
-The number
+Examples:
 
+Get the current location
+
+    gridlabd location --find
+
+Display the default location
+
+    gridlabd location --system
+
+Set the location in a model file
+
+    gridlabd location ieee123.json=country:US,state:CA,county:Kern,city:Bakersfield
 """
 
 import sys
