@@ -6,7 +6,7 @@ Options:
 
 * `--debug`: enable debug traceback on exception
 
-* `--find[=LOCATION]`: get location settings
+* `--find[=KEY[:VALUE][,...]]`: get location settings
 
 * `--format=FORMAT[,OPTION[:VALUE[,...]]]
 
@@ -14,7 +14,7 @@ Options:
 
 * `--silent`: suppress all error messages
 
-* `--system[=LOCATION]`: get/set the default location
+* `--system[=KEY[:VALUE][,...]]`: get/set the default location
 
 * `--verbose`: enable verbose output, if any
 
