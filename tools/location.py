@@ -1,6 +1,6 @@
 """Location tool
 
-Syntax: gridlabd location [OPTIONS ...]
+Syntax: gridlabd location [OPTIONS ...] [FILENAME KEY[=VALUE] ...]
 
 Options:
 
@@ -17,12 +17,49 @@ Options:
 * `--system[=LOCATION]`: get/set the default location
 
 * `--find[=LOCATION]`: get location settings
+
+Description:
+
+The `location` tool allows configuration of the location of a model.
+
+The `location` tool `--system` option is used to setup the system's default
+location for models when not location data is not specified in the model.
+
+The `location` tool `--find` options can identify the current location of a
+system or a location based on partial information.
+
+The keys and globals handled by the `location` tools include the following:
+
+* `latitude`: the location's latitude
+
+* `longitude`: the location's longitude
+
+* `number`: the location's street number, if any
+
+* `street`: the location's street name
+
+* `zipcode`: the location's postal code
+
+* `city`: the location's city
+
+* `county`: the location's county
+
+* `state`: the location's state
+
+* `region`: the location's region
+
+* `country`: the location's country
+
+The number
+
 """
 
 import sys
 import json
 import framework as app
 import geocoder
+
+location_keys = ["latitude","longitude","number","street","zipcode","city","county","state","region","country"]
 
 def main(argv):
 
@@ -95,7 +132,7 @@ def main(argv):
 
                 data = json.loads(app.gridlabd("--globals=json").stdout.decode('utf-8'))
                 result = {}
-                for item in ["city","county","state","region","country"]:
+                for item in location_keys:
                     result[item] = data[item]['value'] if item in data else ""
 
             else:
@@ -108,12 +145,14 @@ def main(argv):
 
                 data = geocoder.ip('me')
                 result = {}
-                for item in ["city","county","state","region","country"]:
+                for item in location_keys:
                     result[item] = getattr(data,item) if hasattr(data,item) else ""
 
             else:
 
                 raise NotImplementedError("TODO")
+
+
 
         else:
             error(f"'{key}={value}' is invalid")
