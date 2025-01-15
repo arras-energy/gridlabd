@@ -3,6 +3,20 @@
 The `framework` module contains the infrastructure to support standardized
 implementation of tools in GridLAB-D.
 
+Standard options:
+
+The following options are processed by `read_stdargs()`:
+
+* `--debug`: enable debug traceback on exception
+
+* `--quiet`: suppress error messages
+
+* `--silent`: suppress all error messages
+
+* `--warning`: suppress warning messages
+
+* `--verbose`: enable verbose output, if any
+
 Example:
 
 ~~~
@@ -10,26 +24,37 @@ import framework as app
 
 def main(argv):
 
+    # handle no options case -- typically a cry for help
     if len(argv) == 1:
 
         print("\n".join([x for x in __doc__.split("\n") if x.startswith("Syntax: ")]))
         return app.E_SYNTAX
 
-    args = read_stdargs(argv)
+    # handle stardard app arguments --debug, --warning, --verbose, --quiet, --silent
+    args = app.read_stdargs(argv)
 
     for key,value in args:
 
         if key in ["-h","--help","help"]:
             print(__doc__,file=sys.stdout)
+
+        # TODO: add options here
+
         else:
             error(f"'{key}={value}' is invalid")
             return app.E_INVALID
+
+    # TODO: code implementation here, if any
 
     return app.E_OK
 
 if __name__ == "__main__":
 
     try:
+
+        # TODO: development testing -- delete when done writing code
+        if not sys.argv[0]:
+            sys.argv = ["selftest","--debug"]
 
         rc = main(sys.argv)
         exit(rc)
@@ -138,17 +163,43 @@ def read_stdargs(argv:list[str]) -> list[str]:
     return result
 
 def output(*msg:list,**kwargs):
+    """General message output
+
+    Arguments:
+
+    * `msg`: message to output
+
+    * `**kwargs`: print options
+
+    Messages are suppressed when the `--silent` option is used.
+    """
     if not "file" in kwargs:
         kwargs["file"] = sys.stdout
     if not SILENT:
         print(*msg,**kwargs)
 
 def exception(exc:[TypeVar('Exception')|str]):
+    """Exception message output
+
+    Arguments:
+
+    * `exc`: exception to raise
+    """
     if isinstance(exc,str):
         exc = MapError(exc)
     raise exc
 
 def error(*msg:list,code:[int|None]=None,**kwargs):
+    """Error message output
+
+    Arguments:
+
+    * `msg`: message to output
+
+    * `**kwargs`: print options
+
+    Messages are suppressed when the `--quiet` option is used.
+    """
     if not QUIET:
         if code:
             print(f"ERROR [{EXENAME}]: {' '.join([str(x) for x in msg])} (code {repr(code)})",file=sys.stderr,**kwargs)
@@ -160,14 +211,44 @@ def error(*msg:list,code:[int|None]=None,**kwargs):
         sys.exit(code)
 
 def verbose(*msg:list,**kwargs):
+    """Verbose message output
+
+    Arguments:
+
+    * `msg`: message to output
+
+    * `**kwargs`: print options
+
+    Messages are enabled when the `--verbose` option is used.
+    """
     if VERBOSE:
         print(f"VERBOSE [{EXENAME}]: {' '.join([str(x) for x in msg])}",file=sys.stderr,**kwargs)
 
 def warning(*msg:list,**kwargs):
+    """Warning message output
+
+    Arguments:
+
+    * `msg`: message to output
+
+    * `**kwargs`: print options
+
+    Messages are suppress when the `--warning` option is used.
+    """
     if WARNING:
         print(f"WARNING [{EXENAME}]: {' '.join([str(x) for x in msg])}",file=sys.stderr,**kwargs)
 
 def debug(*msg:list,**kwargs):
+    """Debugging message output
+
+    Arguments:
+
+    * `msg`: message to output
+
+    * `**kwargs`: print options
+
+    Messages are enabled when the `--debug` option is used.
+    """
     if DEBUG:
         print(f"DEBUG [{EXENAME}]: {' '.join([str(x) for x in msg])}",file=sys.stderr,**kwargs)
 
