@@ -204,6 +204,21 @@ Returns:
 
 ---
 
+## `debug() -> None`
+
+Debugging message output
+
+Arguments:
+
+* `msg`: message to output
+
+* `**kwargs`: print options
+
+Messages are enabled when the `--debug` option is used.
+
+
+---
+
 ## `double_unit() -> float`
 
 Convert a string with unit to a float
@@ -213,6 +228,32 @@ Convert a string with unit to a float
 Returns:
 
 * real value
+
+
+---
+
+## `error() -> None`
+
+Error message output
+
+Arguments:
+
+* `msg`: message to output
+
+* `**kwargs`: print options
+
+Messages are suppressed when the `--quiet` option is used.
+
+
+---
+
+## `exception() -> None`
+
+Exception message output
+
+Arguments:
+
+* `exc`: exception to raise
 
 
 ---
@@ -308,6 +349,21 @@ Return:
 
 ---
 
+## `output() -> None`
+
+General message output
+
+Arguments:
+
+* `msg`: message to output
+
+* `**kwargs`: print options
+
+Messages are suppressed when the `--silent` option is used.
+
+
+---
+
 ## `read_stdargs() -> list`
 
 Read framework options
@@ -323,6 +379,21 @@ Returns:
 
 ---
 
+## `verbose() -> None`
+
+Verbose message output
+
+Arguments:
+
+* `msg`: message to output
+
+* `**kwargs`: print options
+
+Messages are enabled when the `--verbose` option is used.
+
+
+---
+
 ## `version() -> str`
 
 Get gridlabd version
@@ -330,4 +401,19 @@ Get gridlabd version
 Returns:
 
 * GridLAB-D version info
+
+
+---
+
+## `warning() -> None`
+
+Warning message output
+
+Arguments:
+
+* `msg`: message to output
+
+* `**kwargs`: print options
+
+Messages are suppress when the `--warning` option is used.
 
