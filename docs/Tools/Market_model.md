@@ -1,4 +1,4 @@
-[[/Utilities/Market_model]] -- Create market model from ISO data
+[[/Tools/Market_model]] -- Create market model from ISO data
 
 # Synopsis
 
@@ -96,4 +96,4 @@ omits the LMP data in the input file.
 
 # See also
 
-* [[/Utilities/Market_data]]
+* [[/Tools/Market_data]]

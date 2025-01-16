@@ -46,4 +46,4 @@ model, with 8 bits of resolution and a dynamic range of (0,1):
 
 # See also
 
-* [[/Utilities/Fit_filter]]
+* [[/Tools/Fit_filter]]

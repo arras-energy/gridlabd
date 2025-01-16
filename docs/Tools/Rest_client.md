@@ -1,4 +1,4 @@
-[[/Utilities/Rest_client]] -- REST API Client
+[[/Tools/Rest_client]] -- REST API Client
 
 # Synopsis
 
@@ -20,4 +20,4 @@ The REST API client provide a convenience class to access a `gridlabd rest_serve
 
 # See also
 
-* [[/Utilities/Rest_server]]
+* [[/Tools/Rest_server]]

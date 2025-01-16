@@ -1,4 +1,4 @@
-[[/Utilities/Create_poles]] -- Creates poles and pole mounts for networks
+[[/Tools/Create_poles]] -- Creates poles and pole mounts for networks
 
 # Synopsis
 
@@ -111,6 +111,6 @@ The `create_poles` subcommand is a python extra command. It is not supported dir
 
 * [[/Module/Powerflow/Pole]]
 * [[/Module/Powerflow/Pole_mount]]
-* [[/Utilities/Library]]
-* [[/Utilities/Noaa_forecast]]
-* [[/Utilities/Nsrdb_weather]]
+* [[/Tools/Library]]
+* [[/Tools/Noaa_forecast]]
+* [[/Tools/Nsrdb_weather]]

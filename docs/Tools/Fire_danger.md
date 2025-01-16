@@ -1,4 +1,4 @@
-[[/Utilities/Fire_danger]] -- Fire danger forecast data tool
+[[/Tools/Fire_danger]] -- Fire danger forecast data tool
 
 # Synopsis
 

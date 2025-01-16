@@ -1,4 +1,4 @@
-[[/Utilities/Edit]] -- Model editor tool
+[[/Tools/Edit]] -- Model editor tool
 
 Syntax: `gridlabd edit FILENAME [COMMANDS ...] [OPTIONS ...]`
 

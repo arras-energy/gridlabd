@@ -1,4 +1,4 @@
-[[/Utilities/Metar2glm]] - METAR to GLM realtime weather
+[[/Tools/Metar2glm]] - METAR to GLM realtime weather
 
 # Synopsis
 
