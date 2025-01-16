@@ -6,17 +6,19 @@ Options:
 
 * `--debug`: enable debug traceback on exception
 
+* `--find[=KEY[:VALUE][,...]]`: get location settings
+
+* `--format=FORMAT[,OPTION[:VALUE[,...]]]
+
 * `--quiet`: suppress error messages
 
 * `--silent`: suppress all error messages
 
-* `--warning`: suppress warning messages
+* `--system[=KEY[:VALUE][,...]]`: get/set the default location
 
 * `--verbose`: enable verbose output, if any
 
-* `--system[=LOCATION]`: get/set the default location
-
-* `--find[=LOCATION]`: get location settings
+* `--warning`: suppress warning messages
 
 Description:
 
@@ -29,6 +31,10 @@ is stored in `GLD_ETC/location_config.glm
 
 The `location` tool `--find` options can identify the current location of a
 system or a location based on partial information.
+
+Location setting on `FILENAME` will be performed in place, i.e., the file will
+first be read and the it will be written with the new values. The result
+output to stdout will be the previous values.
 
 The keys and globals handled by the `location` tools include the following:
 
@@ -67,4 +73,79 @@ Set the location in a model file
 
     gridlabd location ieee123.json=country:US,state:CA,county:Kern,city:Bakersfield
 
+
+
+# Functions
+
+## `find() -> dict`
+
+Find location data
+
+Arguments:
+
+* `kwargs`: Partial location data (see `system()`). None return IP location.
+
+Returns:
+
+* Location data
+
+
+---
+
+## `get_location() -> None`
+
+TODO
+
+---
+
+## `main() -> int`
+
+Main location routine
+
+Arguments:
+
+* `argv`: command line argument list
+
+Returns:
+
+* Exit code
+
+
+---
+
+## `set_location() -> None`
+
+TODO
+
+---
+
+## `system() -> dict`
+
+Get/set system location settings
+
+Arguments:
+
+* `latitude`: new latitude
+
+* `longitude`: new longitude
+
+* `number`: new street number
+
+* `street`: new street name
+
+* `zipcode`: new zipcode
+
+* `city`: new city
+
+* `county`: new county
+
+* `state`: new state
+
+* `region`: new region
+
+* `country`: new country
+
+Returns:
+
+* previous location settings
 
