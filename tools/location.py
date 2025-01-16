@@ -40,12 +40,7 @@ The keys and globals handled by the `location` tools include the following:
 
 * `latitude`: the location's latitude
 
-
 * `longitude`: the location's longitude
-
-* `number`: the location's street number, if any
-
-* `street`: the location's street name
 
 * `zipcode`: the location's postal code
 
@@ -82,7 +77,22 @@ import framework as app
 import geocoder
 import edit
 
-location_keys = ["latitude","longitude","number","street","zipcode","city","county","state","region","country"]
+LOCATIONKEYS = ["latitude","longitude","city","zipcode","county","state","region","country"]
+PROVIDER = "arcgis"
+PROVIDERCONFIG = {
+    "arcgis" : {
+        "lat" : "latitude",
+        "lng" : "longitude",
+        "city" : "city",
+        "postal" : "zipcode",
+        "raw.address.RegionAbbr" : "state",
+        "raw.address.Subregion" : "county",
+        "country" : "country",
+    }
+}
+
+class LocationError(Exception):
+    """Location exception"""
 
 def system(**kwargs) -> dict:
     """Get/set system location settings
@@ -116,14 +126,13 @@ def system(**kwargs) -> dict:
     glm = os.path.join(os.environ["GLD_ETC"],"location.glm")
     data = json.loads(app.gridlabd(glm,"--globals=json").stdout.decode('utf-8'))
     result = {}
-    for item in location_keys:
+    for item in LOCATIONKEYS:
         result[item] = data[item]['value'] if item in data else ""
 
     save = dict(result)
     for x,y in kwargs.items():
         if not x in save:
-            error(f"'{x}' is not a valid location key")
-            return app.E_INVALID
+            raise LocationError(f"'{x}' is not a valid location key")
         save[x] = y
 
     if save != result:
@@ -134,7 +143,7 @@ def system(**kwargs) -> dict:
                 print(f'#{setter} {x}="{y}"',file=fh)
     return result
 
-def find(**kwargs) -> dict:
+def find(*address) -> dict:
     """Find location data
 
     Arguments:
@@ -145,27 +154,52 @@ def find(**kwargs) -> dict:
 
     * Location data
     """
-    if not kwargs:
+    if len(address) == 0 or not address[0]:
 
         data = geocoder.ip('me')
         result = {}
-        for item in location_keys:
+        for item in LOCATIONKEYS:
             result[item] = getattr(data,item) if hasattr(data,item) else ""
+        if not result:
+            raise LocationError("unable to find current location")
+        address = (f"{result['city']}, {result['state']}, {result['country']}",)
 
-    else:
-
-        raise NotImplementedError("TODO")
+    result = []
+    for item in address:
+        location = getattr(geocoder,PROVIDER)(address)
+        data = getattr(geocoder,PROVIDER)(location.latlng,method='reverse')
+        if data.ok:
+            found = {}
+            for key,value in PROVIDERCONFIG[PROVIDER].items():
+                for subkey in key.split("."):
+                    found[value] = (found[value] if value in found else data.json)[subkey]
+            for key,value in found.items():
+                found[key] = str(value)
+            result.append(found)
+        else:
+            raise LocationError("no location found")
 
     return result
 
 def set_location(file,**kwargs):
     """TODO"""
-    raise NotImplementedError("TODO")
+    data = json.load(open(file,"r"))
+    result = {x:(data["globals"][x]["value"] if x in data["globals"] else "") for x in LOCATIONKEYS}
+    for key,value in kwargs.items():
+        if not key in LOCATIONKEYS:
+            raise LocationError(f"'{key}' is not a valid location key")
+        data["globals"][key] = {
+            "type" : "char32",
+            "access" : "public",
+            "value" : value,
+        }
+    json.dump(data,open(file,"w"),indent=4)
+    return result
 
 def get_location(file):
     """TODO"""
     data = json.load(open(file,"r"))
-    result = {x:(data["globals"][x]["value"] if x in data["globals"] else "") for x in location_keys}
+    result = {x:(data["globals"][x]["value"] if x in data["globals"] else "") for x in LOCATIONKEYS}
     return result
 
 def main(argv:list) -> int:
@@ -203,6 +237,7 @@ def main(argv:list) -> int:
     outputter = output_raw
     outputter_options = {}
 
+    result = []
     for key,value in args:
 
         if key in ["-h","--help","help"]:
@@ -249,8 +284,8 @@ def main(argv:list) -> int:
 
         elif key in ["--find"]:
 
-            options = dict([x.split(":",1) for x in value])
-            result = find(**options)
+            address = [",".join(value)]
+            result.extend(find(*address))
 
         elif os.path.exists(key):
 
@@ -273,12 +308,15 @@ if __name__ == "__main__":
 
     try:
 
-        # TODO: development testing -- delete when done writing code
-        if not sys.argv[0]:
-            # sys.argv = [__file__,"--system=number:2575,street:Sand Hill Rd,city:Menlo Park,state:CA,region:west,country:US"]
-            # sys.argv = [__file__,"--find"]
-            # sys.argv = [__file__,"autotest/test_moutils.json"]
-            sys.argv = [__file__,"autotest/test_moutils.json=city:Seattle"]
+        # TODO: development testing -- only needed when developing/debugging
+        # if not sys.argv[0]:
+        #     # sys.argv = [__file__,"--system"]
+        #     # sys.argv = [__file__,"--system=city:Menlo Park,state:CA,region:west,country:US"]
+        #     # sys.argv = [__file__,"--find"]
+        #     # sys.argv = [__file__,"--find=2575 Sand Hill Rd, Menlo Park, CA, USA"]
+        #     # sys.argv = [__file__,"--find=2575 Sand Hill Rd, Menlo Park, CA","--find=7443 87th Dr NE, Marysville, WA"]
+        #     # sys.argv = [__file__,"autotest/test_moutils.json"]
+        #     # sys.argv = [__file__,"autotest/test_moutils.json=city:Seattle"]
 
         rc = main(sys.argv)
         exit(rc)
