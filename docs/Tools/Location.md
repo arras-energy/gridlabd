@@ -40,12 +40,7 @@ The keys and globals handled by the `location` tools include the following:
 
 * `latitude`: the location's latitude
 
-
 * `longitude`: the location's longitude
-
-* `number`: the location's street number, if any
-
-* `street`: the location's street name
 
 * `zipcode`: the location's postal code
 
@@ -74,6 +69,12 @@ Set the location in a model file
     gridlabd location ieee123.json=country:US,state:CA,county:Kern,city:Bakersfield
 
 
+
+# Classes
+
+## LocationError
+
+Location exception
 
 # Functions
 
