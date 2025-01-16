@@ -54,6 +54,13 @@ The keys and globals handled by the `location` tools include the following:
 
 * `country`: the location's country
 
+Caveat:
+
+Although the `--find` option allows multiple addresses to be resolved, it is
+certainly not efficient to do more than a few queries this way. If you need
+to resolve large number of addresses then you should use the batch feature of
+the `geocoder` module.
+
 Examples:
 
 Get the current location
@@ -67,6 +74,7 @@ Display the default location
 Set the location in a model file
 
     gridlabd location ieee123.json=country:US,state:CA,county:Kern,city:Bakersfield
+
 """
 
 import os
@@ -94,7 +102,35 @@ PROVIDERCONFIG = {
 class LocationError(Exception):
     """Location exception"""
 
-def system(**kwargs) -> dict:
+class Location:
+
+    def __init__(self,**kwargs):
+
+        for key,value in kwargs.items():
+            if not key in LOCATIONKEYS:
+                raise LocationError(f"'{key}' is not a valid location key")
+            setattr(self,key,value)
+        for key in LOCATIONKEYS:
+            if not hasattr(self,key):
+                setattr(self,key,"")
+
+    def __repr__(self):
+        return str(dict(self.items()))
+
+    def __getitem__(self,key):
+
+        return getattr(self,key)
+
+    def keys(self):
+        return LOCATIONKEYS
+
+    def values(self):
+        return [getattr(self,x) for x in LOCATIONKEYS]
+
+    def items(self):
+        return [(x,getattr(self,x)) for x in LOCATIONKEYS]
+
+def system(**kwargs:dict) -> dict:
     """Get/set system location settings
 
     Arguments:
@@ -141,9 +177,9 @@ def system(**kwargs) -> dict:
             for x,y in save.items():
                 setter = "set" if x in data else "define"
                 print(f'#{setter} {x}="{y}"',file=fh)
-    return result
+    return Location(**result)
 
-def find(*address) -> dict:
+def find(*address:list[str]) -> dict:
     """Find location data
 
     Arguments:
@@ -179,10 +215,21 @@ def find(*address) -> dict:
         else:
             raise LocationError("no location found")
 
-    return result
+    return [Location(**x) for x in result]
 
-def set_location(file,**kwargs):
-    """TODO"""
+def set_location(file:str,**kwargs) -> dict:
+    """Set location in file
+
+    Arguments:
+
+    * `file`: file in which to set location data
+
+    * `**kwargs`: location data
+
+    Returns:
+
+    * Previous values
+    """
     data = json.load(open(file,"r"))
     result = {x:(data["globals"][x]["value"] if x in data["globals"] else "") for x in LOCATIONKEYS}
     for key,value in kwargs.items():
@@ -194,13 +241,22 @@ def set_location(file,**kwargs):
             "value" : value,
         }
     json.dump(data,open(file,"w"),indent=4)
-    return result
+    return Location(**result)
 
-def get_location(file):
-    """TODO"""
+def get_location(file:str) -> dict:
+    """Get location data in file
+
+    Arguments:
+
+    * `file`: file from which to get location data
+
+    Returns:
+
+    * Current values
+    """
     data = json.load(open(file,"r"))
     result = {x:(data["globals"][x]["value"] if x in data["globals"] else "") for x in LOCATIONKEYS}
-    return result
+    return Location(**result)
 
 def main(argv:list) -> int:
     """Main location routine
@@ -225,14 +281,23 @@ def main(argv:list) -> int:
 
     def output_csv(data,**kwargs):
         if isinstance(data,list):
-            print("\n".join(data))
-        elif isinstance(data,dict):
-            print("\n".join([f"{x},{y}" for x,y in data.items()]))
+            print(",".join(LOCATIONKEYS))
+            for item in data:
+                print(",".join([str(item[x]) for x in LOCATIONKEYS]))
+        elif isinstance(data,Location):
+            print(",".join(LOCATIONKEYS))
+            print(",".join([str(data[x]) for x in LOCATIONKEYS]))
         else:
-            raise ResourceError(f"unable to output '{type(data)}' as CSV")
+            raise LocationError(f"unable to output '{type(data)}' as CSV")
 
     def output_json(data,**kwargs):
-        print(json.dumps(data,**kwargs))
+        if isinstance(data,list):
+            print(json.dumps([dict(x.items()) for x in data],**kwargs))
+        elif isinstance(data,Location):
+            print(json.dumps(dict(data.items()),**kwargs))
+        else:
+            raise LocationError(f"unable to output '{type(data)}' as CSV")
+
 
     outputter = output_raw
     outputter_options = {}
@@ -310,13 +375,21 @@ if __name__ == "__main__":
 
         # TODO: development testing -- only needed when developing/debugging
         # if not sys.argv[0]:
-        #     # sys.argv = [__file__,"--system"]
-        #     # sys.argv = [__file__,"--system=city:Menlo Park,state:CA,region:west,country:US"]
-        #     # sys.argv = [__file__,"--find"]
-        #     # sys.argv = [__file__,"--find=2575 Sand Hill Rd, Menlo Park, CA, USA"]
-        #     # sys.argv = [__file__,"--find=2575 Sand Hill Rd, Menlo Park, CA","--find=7443 87th Dr NE, Marysville, WA"]
-        #     # sys.argv = [__file__,"autotest/test_moutils.json"]
-        #     # sys.argv = [__file__,"autotest/test_moutils.json=city:Seattle"]
+        #     options = []
+        #     # options = ["--format=raw"]
+        #     # options = ["--format=csv"]
+        #     # options = ["--format=json,indent:4"]
+        #     # options = ["--debug","--format=raw"]
+        #     # options = ["--debug","--format=csv"]
+        #     # options = ["--debug","--format=json,indent:4"]
+
+        #     # sys.argv = [__file__,*options,"--system"]
+        #     # sys.argv = [__file__,*options,"--system=city:Menlo Park,state:CA,region:west,country:US"]
+        #     # sys.argv = [__file__,*options,"--find"]
+        #     # sys.argv = [__file__,*options,"--find=2575 Sand Hill Rd, Menlo Park, CA, USA"]
+        #     # sys.argv = [__file__,*options,"--find=2575 Sand Hill Rd, Menlo Park, CA","--find=7443 87th Dr NE, Marysville, WA"]
+        #     # sys.argv = [__file__,*options,"autotest/test_moutils.json"]
+        #     # sys.argv = [__file__,*options,"autotest/test_moutils.json=city:Seattle"]
 
         rc = main(sys.argv)
         exit(rc)

@@ -54,6 +54,13 @@ The keys and globals handled by the `location` tools include the following:
 
 * `country`: the location's country
 
+Caveat:
+
+Although the `--find` option allows multiple addresses to be resolved, it is
+certainly not efficient to do more than a few queries this way. If you need
+to resolve large number of addresses then you should use the batch feature of
+the `geocoder` module.
+
 Examples:
 
 Get the current location
@@ -67,6 +74,7 @@ Display the default location
 Set the location in a model file
 
     gridlabd location ieee123.json=country:US,state:CA,county:Kern,city:Bakersfield
+
 
 
 
@@ -93,9 +101,18 @@ Returns:
 
 ---
 
-## `get_location() -> None`
+## `get_location() -> dict`
 
-TODO
+Get location data in file
+
+Arguments:
+
+* `file`: file from which to get location data
+
+Returns:
+
+* Current values
+
 
 ---
 
@@ -114,9 +131,20 @@ Returns:
 
 ---
 
-## `set_location() -> None`
+## `set_location() -> dict`
 
-TODO
+Set location in file
+
+Arguments:
+
+* `file`: file in which to set location data
+
+* `**kwargs`: location data
+
+Returns:
+
+* Previous values
+
 
 ---
 
