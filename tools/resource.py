@@ -65,6 +65,9 @@ class ResourceError(app.ApplicationError):
 
 class Resource:
     """Resource class"""
+
+    TIMEOUT = 5
+
     def __init__(self,file=None):
         """Construct resource object
 
@@ -72,8 +75,11 @@ class Resource:
 
         * `file`: resource file (default is $GLD_ETC/resource.csv)
         """
+
         # default file is from GLD_ETC
-        if not file and "GLD_ETC" in os.environ:
+        if os.path.exists("../runtime/resource.csv"):
+            file = "../runtime/resource.csv"
+        elif not file and "GLD_ETC" in os.environ:
             file = os.path.join(os.environ["GLD_ETC"],"resource.csv")
             if not os.path.exists(file):
                 file = None
@@ -82,7 +88,9 @@ class Resource:
         self.data = pd.read_csv(file,
             index_col=0,
             na_filter=False,
-            )
+            comment="#",
+            ).to_dict('index')
+        # print(self.data)
 
         # get globals from gridlabd
         self.globals = app.gridlabd("--globals=json",
@@ -97,24 +105,47 @@ class Resource:
         self.globals["branch"] = self.globals["version.branch"]
         self.request = None
 
-    def _download(self,protocol,hostname,port,path,output_to=lambda x:x):
-        url = f"{protocol}://{hostname}:{port}{path}"
-        req = requests.get(url)
+    def _download(self,
+            protocol,port,hostname,content,
+            output_to=lambda x:x,headers={},
+            **kwargs):
+        url = f"{protocol}://{hostname}:{port}{content}"
+        print(url)
+        try:
+            req = requests.get(url,headers=headers,timeout=self.TIMEOUT)
+            req.raise_for_status()
+        except Exception as err:
+            raise err from err
         self.request = req
         self.request.url = url
-        if req.status_code == 200:
-            return output_to(req.content.decode("utf-8"))
-        else:
-            return None
+        app.debug(f"downloading '{url}' with headers={req.request.headers}")
+        return output_to(req.content.decode("utf-8"))
+
+    def _headers(self,
+            protocol,port,hostname,content,
+            output_to=lambda x:x,headers={},
+            **kwargs):
+        url = f"{protocol}://{hostname}:{port}{content}"
+        print(url)
+        try:
+            req = requests.head(url,headers=headers,timeout=self.TIMEOUT)
+            req.raise_for_status()
+        except Exception as err:
+            raise err from err
+        self.request = req
+        self.request.url = url
+        app.debug(f"downloading '{url}' with headers={req.request.headers}")
+        return output_to(req.headers)
 
     def properties(self,passthru='*',**kwargs):
         """Get resource properties
 
         """
-        if not kwargs["name"] in self.data.index:
-            raise ResourceError(f"'{kwargs['name']}' not found")
-        result = {"resource":kwargs["name"]}
-        for key,value in dict(zip(self.data.columns,self.data.loc[kwargs['name']].tolist())).items():
+        name = kwargs['name']
+        if not name in self.data:
+            raise ResourceError(f"'{name}' not found")
+        result = {"resource":name}
+        for key,value in self.data[name].items():
             try:
                 result[key] = value.format(**kwargs,**self.globals) if type(value) is str else value
             except KeyError:
@@ -129,26 +160,59 @@ class Resource:
         """Get resource index (if any)
 
         """
-        spec = self.properties(passthru=['index'],**kwargs)
+        if not 'passthru' in kwargs:
+            kwargs['passthru'] = '*'
+        spec = self.properties(**kwargs)
 
         if not spec['index']:
 
             raise ResourceError(f"{spec['resource']} has no index")
 
-        return self._download(spec['protocol'],spec['hostname'],spec['port'],spec['index'],
-            output_to=lambda x:x.strip().split("\n"))
+        spec['content'] = spec['index']
+        del spec['index']
+
+        return self._download(
+            headers={'Accept':'text/plain'},
+            output_to=lambda x:x.strip().split("\n"),
+            **spec)
+
+    def headers(self,**kwargs):
+        """Get resource header
+
+        """
+        if not 'passthru' in kwargs:
+            kwargs['passthru'] = '*'
+        spec = self.properties(**kwargs)
+
+        if not spec['content']:
+
+            raise ResourceError(f"{spec['resource']} has no content")
+
+        return self._headers(
+            headers = {
+                'Accept': spec['mimetype'] if spec['mimetype'] else '*/*',
+                'Connection': 'close',
+                },
+            **spec)
 
     def content(self,**kwargs):
         """Get resource content
 
         """
+        if not 'passthru' in kwargs:
+            kwargs['passthru'] = '*'
         spec = self.properties(**kwargs)
 
         if not spec['content']:
 
             raise ResourceError(f"{spec['resource']} has not content")
 
-        return self._download(spec['protocol'],spec['hostname'],spec['port'],spec['content'])
+        return self._download(
+            headers = {
+                'Accept': spec['mimetype'] if spec['mimetype'] else '*/*',
+                'Connection': 'close',
+                },
+            **spec)
 
 def main(argv):
 
@@ -169,11 +233,18 @@ def main(argv):
             print("\n".join(data))
         elif isinstance(data,dict):
             print("\n".join([f"{x},{y}" for x,y in data.items()]))
+        elif isinstance(data,str):
+            data = pd.read_csv(io.StringIO(data),dtype=str)
+            print(data.to_csv())
         else:
             raise ResourceError(f"unable to output '{type(data)}' as CSV")
 
     def output_json(data,**kwargs):
-        print(json.dumps(data,**kwargs))
+        if isinstance(data,str):
+            data = pd.read_csv(io.StringIO(data),dtype=str)
+            print(data.to_json(indent=2))
+        else:
+            print(json.dumps(data,**kwargs))
 
     outputter = output_raw
     outputter_options = {}
@@ -293,33 +364,53 @@ def main(argv):
 
 if __name__ == "__main__":
 
-    # local development test
-    # TODO: remove this block when done developint
+    # local development tests
+    # TODO: comment this block entire when done developing
     if not sys.argv[0]:
 
+        #
+        # Test library functions (comprehensive scan of all contents)
+        #
+        TESTLIST = [] # None => all resources
+        resource = Resource()
+        for name in resource.data if TESTLIST is None else TESTLIST:
+            print(f"*** {name} ***")
+            print("Properties:")
+            for key,value in resource.properties(name=name).items():
+                print(f"  {key}: {repr(value)}")
+            try:
+                index = resource.index(name=name)
+                if index:
+                    for item in index:
+                        content = resource.headers(name=name,index=item)
+                        print(f"{name}/{item}... {content['content-length']} bytes",flush=True)
+            except ResourceError as err:
+                print(f"{name}... {err}")
+
+
+        #
+        # Test command line options (e.g., one at a time)
+        #
+
+        # options = ["--debug","--format=csv"]
+        # options = ["--debug","--format=json,indent:4"]
         # sys.argv.extend(["--list"])
-        # sys.argv.extend(["--format=csv","--list"])
-        # sys.argv.extend(["--format=json","--list"])
-        # sys.argv.extend(["--format=json,indent:4","--list"])
+        # sys.argv.extend([*options,"--list"])
 
-        # sys.argv.extend(["--index"]) # should be an error
-        # sys.argv.extend(["--index=weather"])
-        # sys.argv.extend(["--format=json","--index=weather"])
-        # sys.argv.extend(["--format=json,indent:4","--index=weather"])
+        # sys.argv.extend([*options,"--index"]) # should be an error
+        # sys.argv.extend([*options,"--index=weather"])
 
-        # sys.argv.extend(["--properties"])
-        # sys.argv.extend(["--properties=weather"])
-        # sys.argv.extend(["--debug","--format=json,indent:4","--properties=weather"])
+        # sys.argv.extend([*options,"--properties"])
+        # sys.argv.extend([*options,"--properties=weather"])
 
-        # sys.argv.extend(["--content=weather,WA-Seattle_Seattletacoma_Intl_A.tmy3,csv"])
-        # sys.argv.extend(["--format=csv","--content=weather,WA-Seattle_Seattletacoma_Intl_A.tmy3,csv"])
-        # sys.argv.extend(["--format=json","--content=weather,WA-Seattle_Seattletacoma_Intl_A.tmy3,csv"])
+        # sys.argv.extend([*options,"--content=weather,WA-Seattle_Seattletacoma_Intl_A.tmy3,csv"])
 
-        # sys.argv.extend(["--index=localhost"]) # should be an error
-        # sys.argv.extend(["--content=localhost"]) # should be an error
-        # sys.argv.extend(["--content=junk"]) # should be an error
+        # sys.argv.extend([*options,"--index=localhost"]) # should be an error
+        # sys.argv.extend([*options,"--content=localhost"]) # should be an error
+        # sys.argv.extend([*options,"--content=junk"]) # should be an error
 
-        pass
+        print("Tests completed")
+        quit(0)
 
     try:
 

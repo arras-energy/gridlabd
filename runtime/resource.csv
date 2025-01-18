@@ -1,40 +1,40 @@
-resource,protocol,port,hostname,index,content,deprecation,comment
+resource,protocol,port,hostname,index,content,mimetype,deprecation,comment
 localhost,http,6267-6279,127.0.0.1,,,,Server mode support (see https://docs.gridlabd.us/)
-buildings,https,443,buildings.gridlabd.us.s3-website-us-west-1.amazonaws.com,,/{country}/{state}_{county}.csv.gz,,Compiled AutoBEM4 building data
-code,https,443,github.com,,/{organization}/gridlabd/releases/tag/{version},,Github release code repository
-code-dev,https,443,github.com,,/{organization}/gridlabd/tree/{branch},,Github development code repository
-develop.code,https,443,develop.code.gridlabd.us
-develop.source,https,443,develop.source.gridlabd.us
-dmg,https,443,dmg.gridlabd.us
-docker,https,443,docker.gridlabd.us
-docs-dev,https,443,docs-dev.gridlabd.us
-docs,https,443,docs.gridlabd.us
-elevation,https,443,elevation.gridlabd.us
-examples,https,443,examples.gridlabd.us
-geodata-dev,https,443,geodata-dev.gridlabd.us
-geodata,https,443,geodata.gridlabd.us
-gridchat,https,443,gridchat.gridlabd.us
-gridlabd,https,443,gridlabd.us
-help,https,443,help.gridlabd.us
-icons,https,443,icons.gridlabd.us
-install-dev,https,443,install-dev.gridlabd.us
-issues,https,443,issues.gridlabd.us
-library,https,443,library.gridlabd.us
-master.code,https,443,master.code.gridlabd.us
-master.source,https,443,master.source.gridlabd.us
-models,https,443,models.gridlabd.us
-news,https,443,news.gridlabd.us
-openfido,https,443,openfido.gridlabd.us
-source,https,443,source.gridlabd.us
-status-dev,https,443,status-dev.gridlabd.us
-status,https,443,status.gridalbd.us
-tariff,https,443,tariff.gridlabd.us
-template,https,443,template.gridlabd.us
-test,https,443,test.gridlabd.us
-training,https,443,training.gridlabd.us
-tutorials-dev,https,443,tutorials-dev.gridlabd.us
-tutorials,https,443,tutorials.gridlabd.us
-version,https,443,version.gridlabd.us
-weather,https,443,raw.githubusercontent.com,/{organization}/gridlabd-weather/master/{country}/.index,/{organization}/gridlabd-weather/master/{country}/{index},,TMY3 weather data repository
-www-dev,https,443,www-dev.gridlabd.us
-www,https,443,www.gridlabd.us
+buildings,http,80,buildings.gridlabd.us.s3-website-us-west-1.amazonaws.com,/index,/{index},,,Compiled AutoBEM4 building data
+#code,https,443,github.com,,/{organization}/gridlabd/releases/tag/{version},,Github release code repository
+#code-dev,https,443,github.com,,/{organization}/gridlabd/tree/{branch},,Github development code repository
+#develop.code,https,443,develop.code.gridlabd.us
+#develop.source,https,443,develop.source.gridlabd.us
+#dmg,https,443,dmg.gridlabd.us
+#docker,https,443,docker.gridlabd.us
+#docs-dev,https,443,docs-dev.gridlabd.us
+#docs,https,443,docs.gridlabd.us
+#elevation,https,443,elevation.gridlabd.us
+#examples,https,443,examples.gridlabd.us
+#geodata-dev,https,443,geodata-dev.gridlabd.us
+#geodata,https,443,geodata.gridlabd.us
+#gridchat,https,443,gridchat.gridlabd.us
+#gridlabd,https,443,gridlabd.us
+#help,https,443,help.gridlabd.us
+#icons,https,443,icons.gridlabd.us
+#install-dev,https,443,install-dev.gridlabd.us
+#issues,https,443,issues.gridlabd.us
+#library,https,443,library.gridlabd.us
+#master.code,https,443,master.code.gridlabd.us
+#master.source,https,443,master.source.gridlabd.us
+#models,https,443,models.gridlabd.us
+#news,https,443,news.gridlabd.us
+#openfido,https,443,openfido.gridlabd.us
+#source,https,443,source.gridlabd.us
+#status-dev,https,443,status-dev.gridlabd.us
+#status,https,443,status.gridalbd.us
+#tariff,https,443,tariff.gridlabd.us
+#template,https,443,template.gridlabd.us
+#test,https,443,test.gridlabd.us
+#training,https,443,training.gridlabd.us
+#tutorials-dev,https,443,tutorials-dev.gridlabd.us
+#tutorials,https,443,tutorials.gridlabd.us
+#version,https,443,version.gridlabd.us
+weather,https,443,raw.githubusercontent.com,/{organization}/gridlabd-weather/master/index,/{organization}/gridlabd-weather/master/{index},,,TMY3 weather data repository
+#www-dev,https,443,www-dev.gridlabd.us
+#www,https,443,www.gridlabd.us
