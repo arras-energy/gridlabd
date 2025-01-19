@@ -22,6 +22,8 @@ Options:
 
 * `--silent`: suppress all output exception results
 
+* `--test[=PATTERN]`: test resources matching pattern (default is '.*')
+
 * `--verbose`: enable verbose output
 
 * `--warning`: disable warning output
@@ -51,10 +53,12 @@ import sys
 import os
 import io
 import json
+import re
 import pandas as pd
 import framework as app
 import subprocess
 import requests
+from typing import *
 
 pd.options.display.max_columns = None
 pd.options.display.max_colwidth = None
@@ -90,7 +94,6 @@ class Resource:
             na_filter=False,
             comment="#",
             ).to_dict('index')
-        # print(self.data)
 
         # get globals from gridlabd
         self.globals = app.gridlabd("--globals=json",
@@ -110,7 +113,6 @@ class Resource:
             output_to=lambda x:x,headers={},
             **kwargs):
         url = f"{protocol}://{hostname}:{port}{content}"
-        print(url)
         try:
             req = requests.get(url,headers=headers,timeout=self.TIMEOUT)
             req.raise_for_status()
@@ -126,7 +128,6 @@ class Resource:
             output_to=lambda x:x,headers={},
             **kwargs):
         url = f"{protocol}://{hostname}:{port}{content}"
-        print(url)
         try:
             req = requests.head(url,headers=headers,timeout=self.TIMEOUT)
             req.raise_for_status()
@@ -137,12 +138,19 @@ class Resource:
         app.debug(f"downloading '{url}' with headers={req.request.headers}")
         return output_to(req.headers)
 
-    def properties(self,passthru='*',**kwargs):
+    def list(self,pattern:str='.*') -> list[str]:
+        """Get a list of available resources
+
+        Argument
+        """
+        return sorted([x for x in self.data if re.match(pattern,x)])
+
+    def properties(self,passthru:str='*',**kwargs:dict) -> dict:
         """Get resource properties
 
         """
         name = kwargs['name']
-        if not name in self.data:
+        if not name in self.list():
             raise ResourceError(f"'{name}' not found")
         result = {"resource":name}
         for key,value in self.data[name].items():
@@ -156,7 +164,7 @@ class Resource:
                 raise
         return result
 
-    def index(self,**kwargs):
+    def index(self,**kwargs:dict) -> Union[str,list,dict]:
         """Get resource index (if any)
 
         """
@@ -176,7 +184,7 @@ class Resource:
             output_to=lambda x:x.strip().split("\n"),
             **spec)
 
-    def headers(self,**kwargs):
+    def headers(self,**kwargs:dict) -> Union[str,list,dict]:
         """Get resource header
 
         """
@@ -195,9 +203,16 @@ class Resource:
                 },
             **spec)
 
-    def content(self,**kwargs):
+    def content(self,**kwargs:dict) -> str:
         """Get resource content
 
+        Arguments:
+
+        * `**kwargs`: options (see `properties()`)
+
+        Returns:
+
+        * Resource contents
         """
         if not 'passthru' in kwargs:
             kwargs['passthru'] = '*'
@@ -218,7 +233,7 @@ def main(argv):
 
     if len(argv) == 1:
 
-        print("\n".join([x for x in __doc__.split("\n") if x.startswith("Syntax: ")]))
+        print("\n".join([x for x in __doc__.split("\n") if x.startswith("Syntax: ")]),file=sys.stderr)
         return app.E_SYNTAX
 
     args = app.read_stdargs(argv)
@@ -235,7 +250,7 @@ def main(argv):
             print("\n".join([f"{x},{y}" for x,y in data.items()]))
         elif isinstance(data,str):
             data = pd.read_csv(io.StringIO(data),dtype=str)
-            print(data.to_csv())
+            print(data.to_csv(**kwargs))
         else:
             raise ResourceError(f"unable to output '{type(data)}' as CSV")
 
@@ -253,7 +268,7 @@ def main(argv):
 
         if key in ["-h","--help","help"]:
 
-            print(__doc__,file=sys.stdout)
+            print(__doc__)
             return app.E_OK
         
         elif key in ["--format"]:
@@ -297,7 +312,7 @@ def main(argv):
 
         elif key in ["--list"]:
 
-            outputter(resources.data.index.tolist(),**outputter_options)
+            outputter(resources.list(*value),**outputter_options)
             return app.E_OK
 
         elif key in ["--properties"]:
@@ -322,7 +337,7 @@ def main(argv):
                 app.error("missing resource name")
                 return E_MISSING
             for item in value: # TODO only one allowed
-                if not item in resources.data.index:
+                if not item in resources.data:
                     app.error(f"'{item}' is not a valid resource name")
                     return app.E_NOTFOUND
                 outputter(resources.index(name=item),**outputter_options)
@@ -354,6 +369,12 @@ def main(argv):
                 return E_FAILED
             return app.E_OK
 
+        elif key in ["--test"]:
+            for pattern in value if value else ['.*']:
+                rc = test(pattern)
+                if re != app.E_OK:
+                    return rc
+
         else:
             app.error(f"'{key}={value}' is invalid")
             return app.E_INVALID
@@ -361,6 +382,32 @@ def main(argv):
 
 
     return app.E_OK
+
+def test(pattern='.*'):
+    resource = Resource()
+    tested = 0
+    failed = 0
+    checked = 0
+    for name in resource.list(pattern):
+        print(f"*** Testing resource '{name}' ***",file=sys.stderr)
+        print("Properties:",file=sys.stderr)
+        for key,value in resource.properties(name=name).items():
+            print(f"  {key}: {repr(value)}",file=sys.stderr)
+        try:
+            index = resource.index(name=name)
+            if index:
+                for item in index:
+                    tested += 1
+                    content = resource.headers(name=name,index=item)
+                    size = content['content-length']
+                    checked += int(size.split()[0])
+                    print(f"{name}/{item}... {size} bytes",flush=True,file=sys.stderr)
+        except ResourceError as err:
+            failed += 1
+            print(f"FAILED: {name}... {err}",file=sys.stderr)
+
+    print(f"Tested {tested} resources ({checked/1e6:.1f} MB) with {failed} failures",file=sys.stderr)
+    return app.E_OK if failed == 0 else app.E_FAILED
 
 if __name__ == "__main__":
 
@@ -371,46 +418,34 @@ if __name__ == "__main__":
         #
         # Test library functions (comprehensive scan of all contents)
         #
-        TESTLIST = [] # None => all resources, empty list => skip test
-        resource = Resource()
-        for name in resource.data if TESTLIST is None else TESTLIST:
-            print(f"*** {name} ***")
-            print("Properties:")
-            for key,value in resource.properties(name=name).items():
-                print(f"  {key}: {repr(value)}")
-            try:
-                index = resource.index(name=name)
-                if index:
-                    for item in index:
-                        content = resource.headers(name=name,index=item)
-                        print(f"{name}/{item}... {content['content-length']} bytes",flush=True)
-            except ResourceError as err:
-                print(f"{name}... {err}")
+        # sys.argv = [__file__,"--test"]
+        sys.argv = [__file__,"--test=building"]
 
 
         #
         # Test command line options (e.g., one at a time)
         #
 
+        options = ["--format=csv"]
         # options = ["--debug","--format=csv"]
         # options = ["--debug","--format=json,indent:4"]
-        # sys.argv.extend(["--list"])
-        # sys.argv.extend([*options,"--list"])
+        
+        # sys.argv = [__file__,*options,"--list"]
+        # sys.argv = [__file__,*options,"--list=[a-l]"]
 
-        # sys.argv.extend([*options,"--index"]) # should be an error
-        # sys.argv.extend([*options,"--index=weather"])
+        # sys.argv = [__file__,*options,"--index"] # should be an error
+        # sys.argv = [__file__,*options,"--index=buildings"]
+        # sys.argv = [__file__,*options,"--index=elevation"]
+        # sys.argv = [__file__,*options,"--index=weather"]
 
-        # sys.argv.extend([*options,"--properties"])
-        # sys.argv.extend([*options,"--properties=weather"])
+        # sys.argv = [__file__,*options,"--properties"]
+        # sys.argv = [__file__,*options,"--properties=weather"]
 
-        # sys.argv.extend([*options,"--content=weather,WA-Seattle_Seattletacoma_Intl_A.tmy3,csv"])
+        # sys.argv = [__file__,*options,"--content=weather,WA-Seattle_Seattletacoma_Intl_A.tmy3,csv"]
 
-        # sys.argv.extend([*options,"--index=localhost"]) # should be an error
-        # sys.argv.extend([*options,"--content=localhost"]) # should be an error
-        # sys.argv.extend([*options,"--content=junk"]) # should be an error
-
-        print("Tests completed")
-        quit(0)
+        # sys.argv = [__file__,*options,"--index=localhost"] # should be an error
+        # sys.argv = [__file__,*options,"--content=localhost"] # should be an error
+        # sys.argv = [__file__,*options,"--content=junk"] # should be an error
 
     try:
 

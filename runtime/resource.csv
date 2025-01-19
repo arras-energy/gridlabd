@@ -9,7 +9,7 @@ buildings,http,80,buildings.gridlabd.us.s3-website-us-west-1.amazonaws.com,/inde
 #docker,https,443,docker.gridlabd.us
 #docs-dev,https,443,docs-dev.gridlabd.us
 #docs,https,443,docs.gridlabd.us
-elevation,https,443,s3.us-west-1.amazonaws.com,/elevation.gridlabd.us/index,/elevation.gridlabd.us{index},image/tiff,,Ground elevation data
+elevation,https,443,s3.us-west-1.amazonaws.com,/elevation.gridlabd.us/index,/elevation.gridlabd.us/{index},image/tiff,,Ground elevation data
 #examples,https,443,examples.gridlabd.us
 #geodata-dev,https,443,geodata-dev.gridlabd.us
 #geodata,https,443,geodata.gridlabd.us
