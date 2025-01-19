@@ -83,6 +83,7 @@ import json
 import math
 import subprocess
 import unitcalc
+import geocoder
 from typing import TypeVar
 import inspect
 import traceback
@@ -103,8 +104,13 @@ E_SYNTAX = 1 # syntax error
 E_INVALID = 2 # invalid argument/file
 E_MISSING = 3 # missing argument/file
 E_BADVALUE = 4 # bad value
+E_NOTFOUND = 5 # value not found
+E_FAILED = 6 # operation failed
 E_INTERRUPT = 8 # interrupted
 E_EXCEPTION = 9 # exception raised
+
+class ApplicationError(Exception):
+    """Application exception"""
 
 def read_stdargs(argv:list[str]) -> list[str]:
     """Read framework options
@@ -186,7 +192,7 @@ def exception(exc:[TypeVar('Exception')|str]):
     * `exc`: exception to raise
     """
     if isinstance(exc,str):
-        exc = MapError(exc)
+        exc = ApplicationError(exc)
     raise exc
 
 def error(*msg:list,code:[int|None]=None,**kwargs):
@@ -206,7 +212,7 @@ def error(*msg:list,code:[int|None]=None,**kwargs):
         else:
             print(f"ERROR [{EXENAME}]: {' '.join([str(x) for x in msg])}",file=sys.stderr,**kwargs)
     if DEBUG:
-        raise MappingError(msg)
+        raise ApplicationError(*msg)
     if not code is None:
         sys.exit(code)
 
@@ -252,7 +258,11 @@ def debug(*msg:list,**kwargs):
     if DEBUG:
         print(f"DEBUG [{EXENAME}]: {' '.join([str(x) for x in msg])}",file=sys.stderr,**kwargs)
 
-def gridlabd(*args:list[str], bin=True, **kwargs) -> TypeVar('subprocess.CompletedProcess')|None:
+def gridlabd(*args:list[str], 
+    bin=True, 
+    output_to=None,
+    **kwargs,
+    ) -> TypeVar('subprocess.CompletedProcess')|None:
     """Simple gridlabd runner
 
     Arguments:
@@ -260,6 +270,8 @@ def gridlabd(*args:list[str], bin=True, **kwargs) -> TypeVar('subprocess.Complet
     * `args`: argument list
 
     * `bin`: enable direct call to gridlabd binary (bypasses shell and faster)
+
+    * `output_to`: run postprocessor on output to stdout
 
     * `kwargs`: options to pass to `subpocess.run`
 
@@ -278,9 +290,16 @@ def gridlabd(*args:list[str], bin=True, **kwargs) -> TypeVar('subprocess.Complet
         cmd = ["gridlabd.bin" if bin and "GLD_BIN" in os.environ else "gridlabd"] + list(args)
         debug(f"Running {cmd} with options {kwargs}")
         result = subprocess.run(cmd,**kwargs)
-        return result
+        return output_to(result.stdout.decode("utf-8")) if output_to else result
     except:
         return None
+
+LOCATION = None
+def location(refresh=False):
+    global LOCATION
+    if refresh or LOCATION is None:
+        LOCATION = geocoder.ip('me').geojson['features'][0]['properties']
+    return LOCATION
 
 def open_glm(file:str,
         tmp:str=None,
@@ -320,7 +339,7 @@ def open_glm(file:str,
                 output(msg,file=sys.stderr)
     if result.returncode != 0:
         if exception:
-            raise RuntimeError("GLM conversion to JSON failed")
+            raise ApplicationError("GLM conversion to JSON failed")
         return None,result
     return open(outfile,"r"),result
 
@@ -418,4 +437,4 @@ def complex_unit(x:str,
 
 if __name__ == "__main__":
 
-    raise NotImplementedError("cannot run framework as a script")
+    raise ApplicationError("cannot run framework as a script")
