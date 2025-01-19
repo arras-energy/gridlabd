@@ -59,6 +59,8 @@ import framework as app
 import subprocess
 import requests
 from typing import *
+from PIL import Image
+import numpy as np
 
 pd.options.display.max_columns = None
 pd.options.display.max_colwidth = None
@@ -71,6 +73,20 @@ class Resource:
     """Resource class"""
 
     TIMEOUT = 5
+
+    mimetypes = {
+        ".csv.gz" : lambda x: pd.read_csv(io.BytesIO(x.content),compression="gzip",low_memory=False),
+        ".csv" : lambda x: pd.read_csv(io.StringIO(x.content.decode("utf-8")),low_memory=False),
+        ".json" : lambda x: json.load(io.StringIO(x.content.decode("utf-8"))),
+        ".tif" : lambda x: np.array(Image.open(io.BytesIO(x.content))),
+        ".tmy3" : lambda x: pd.read_csv(io.StringIO(x.content.decode("utf-8")),
+                low_memory=False,
+                skiprows=1,
+                header=[0],
+                index_col=[0],
+                parse_dates=[[0,1]],
+                ),
+    }
 
     def __init__(self,file=None):
         """Construct resource object
@@ -121,6 +137,9 @@ class Resource:
         self.request = req
         self.request.url = url
         app.debug(f"downloading '{url}' with headers={req.request.headers}")
+        for mimetype,process in self.mimetypes.items():
+            if content.endswith(mimetype):
+                return process(req)
         return output_to(req.content.decode("utf-8"))
 
     def _headers(self,
@@ -362,7 +381,7 @@ def main(argv):
                 return app.E_NOTFOUND
 
             result = resources.content(name=value[0],index=source)
-            if result:
+            if not result is None:
                 outputter(result,**outputter_options)
             else:
                 app.error(f"{resources.request.url}: {resources.request.content.decode('utf-8')}")
@@ -419,16 +438,19 @@ if __name__ == "__main__":
         # Test library functions (comprehensive scan of all contents)
         #
         # sys.argv = [__file__,"--test"]
-        sys.argv = [__file__,"--test=building"]
-
+        # sys.argv = [__file__,"--test=buildings"]
+        # sys.argv = [__file__,"--test=elevation"]
+        # sys.argv = [__file__,"--test=examples"]
+        # sys.argv = [__file__,"--test=weather"]
 
         #
         # Test command line options (e.g., one at a time)
         #
 
-        options = ["--format=csv"]
-        # options = ["--debug","--format=csv"]
-        # options = ["--debug","--format=json,indent:4"]
+        options = []
+        # options.extend(["--debug"])
+        # options.extend(["--format=csv"])
+        # options.extend(["--format=json,indent:4"])
         
         # sys.argv = [__file__,*options,"--list"]
         # sys.argv = [__file__,*options,"--list=[a-l]"]
@@ -436,12 +458,19 @@ if __name__ == "__main__":
         # sys.argv = [__file__,*options,"--index"] # should be an error
         # sys.argv = [__file__,*options,"--index=buildings"]
         # sys.argv = [__file__,*options,"--index=elevation"]
+        # sys.argv = [__file__,*options,"--index=examples"]
         # sys.argv = [__file__,*options,"--index=weather"]
 
         # sys.argv = [__file__,*options,"--properties"]
+        # sys.argv = [__file__,*options,"--properties=buildings"]
+        # sys.argv = [__file__,*options,"--properties=elevation"]
+        # sys.argv = [__file__,*options,"--properties=examples"]
         # sys.argv = [__file__,*options,"--properties=weather"]
 
-        # sys.argv = [__file__,*options,"--content=weather,WA-Seattle_Seattletacoma_Intl_A.tmy3,csv"]
+        # sys.argv = [__file__,*options,"--content=buildings,US/ME_Aroostook.csv.gz"]
+        # sys.argv = [__file__,*options,"--content=elevation,10m/31N_112W.tif"]
+        # sys.argv = [__file__,*options,"--content=examples,geodata/IEEE-123.json"]
+        # sys.argv = [__file__,*options,"--content=weather,US/WA-Seattle_Seattletacoma_Intl_A.tmy3"]
 
         # sys.argv = [__file__,*options,"--index=localhost"] # should be an error
         # sys.argv = [__file__,*options,"--content=localhost"] # should be an error
