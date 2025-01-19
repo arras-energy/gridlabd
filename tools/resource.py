@@ -371,7 +371,7 @@ if __name__ == "__main__":
         #
         # Test library functions (comprehensive scan of all contents)
         #
-        TESTLIST = [] # None => all resources
+        TESTLIST = [] # None => all resources, empty list => skip test
         resource = Resource()
         for name in resource.data if TESTLIST is None else TESTLIST:
             print(f"*** {name} ***")
