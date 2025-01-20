@@ -54,7 +54,6 @@ autotest/autotest/test_R5-25.00-1_NR.glm
 autotest/autotest/test_R5-35.00-1.glm
 autotest/autotest/test_R5-35.00-1_NR.glm
 autotest/autotest/test_model_save_opt.glm
-build-aux/.gitignore
 build-aux/README.md
 build-aux/clean_dirs.sh
 build-aux/python3.sh
@@ -90,7 +89,6 @@ cloud/websites/geodata.gridlabd.us/update_utility.py
 cloud/websites/geodata.gridlabd.us/vegetation/index.html
 cloud/websites/geodata.gridlabd.us/vegetation/update_vegetation.py
 cloud/websites/geodata.gridlabd.us/vegetation/update_vegetation_xfh.py
-cloud/websites/install.gridlabd.us/.gitignore
 cloud/websites/install.gridlabd.us/README.md
 cloud/websites/install.gridlabd.us/build-image.sh
 cloud/websites/install.gridlabd.us/index.html
@@ -113,10 +111,8 @@ cloud/websites/version.gridlabd.us/robots.txt
 cloud/websites/version.gridlabd.us/terraform/main.tf
 cloud/websites/www.gridlabd.us/index.html
 configure.ac
-converters/.gitignore
 converters/Makefile.mk
 converters/README.md
-converters/autotest/.gitignore
 converters/autotest/IEEE-123-cyme.mdb
 converters/autotest/IEEE-123.glm
 converters/autotest/IEEE-123.tmy3
@@ -1170,7 +1166,6 @@ docs/slac-logo.png
 docs/stanford-logo.png
 docs/update_html.py
 docs/update_pdf.sh
-documents/.gitignore
 documents/Powell et al, Fast Solutions in Power Systems Simulation through Coupling with a Data Driven Power Flow Model for Voltage Estimation (2019).pdf
 documents/gridlabd.glm
 documents/index.html
@@ -1192,14 +1187,13 @@ geodata/geodata_utility.py
 geodata/geodata_vegetation.py
 geodata/geodata_weather.py
 gridlabd.spec.in
-image/.gitignore
 image/README.md
 image/create.sh
+index
 install.sh
 install/README.md
 install/ubuntu_20.sh
 install/ubuntu_22.sh
-m4/.gitignore
 m4/README.md
 m4/ax_lib_superlu.m4
 m4/ax_lib_xerces.m4
@@ -1783,7 +1777,6 @@ module/mysql/recorder.cpp
 module/mysql/recorder.h
 module/mysql/validate.no
 module/optimize/Makefile.mk
-module/optimize/autotest/.gitignore
 module/optimize/autotest/test_case118_opf.glm
 module/optimize/autotest/test_case118_opf.txt
 module/optimize/autotest/test_case118_opt.py
@@ -1807,7 +1800,6 @@ module/optimize/autotest/test_minimum.glm
 module/optimize/autotest/test_opf.glm
 module/optimize/cvx.cpp
 module/optimize/cvx.h
-module/optimize/examples/.gitignore
 module/optimize/examples/case14.py
 module/optimize/examples/example1.glm
 module/optimize/examples/example2.glm
@@ -1819,12 +1811,10 @@ module/optimize/particle_swarm_optimization.cpp
 module/optimize/particle_swarm_optimization.h
 module/optimize/simple.cpp
 module/optimize/simple.h
-module/powerflow/.gitignore
 module/powerflow/Makefile.mk
 module/powerflow/OHLConductors.glm
 module/powerflow/agricultural.cpp
 module/powerflow/agricultural.h
-module/powerflow/autotest/.gitignore
 module/powerflow/autotest/IEEE_13_node_impedance_dump.glm
 module/powerflow/autotest/PSV.player
 module/powerflow/autotest/SPIM_frequency.player
@@ -2344,7 +2334,6 @@ module/powerflow/capacitor.h
 module/powerflow/check_powerflow.py
 module/powerflow/currdump.cpp
 module/powerflow/currdump.h
-module/powerflow/data/.gitignore
 module/powerflow/data/CEUS/README.md
 module/powerflow/data/CEUS/grocery.xls
 module/powerflow/data/CEUS/health.xls
@@ -2512,7 +2501,6 @@ module/powernet/powernet.h
 module/powernet/validate.no
 module/pypower/Makefile.mk
 module/pypower/README.md
-module/pypower/autotest/.gitignore
 module/pypower/autotest/case.glm
 module/pypower/autotest/case118.py
 module/pypower/autotest/case14.py
@@ -2867,7 +2855,6 @@ module/residential/waterheater.h
 module/residential/zipload.cpp
 module/residential/zipload.h
 module/resilience/Makefile.mk
-module/resilience/autotest/.gitignore
 module/resilience/autotest/test_IEEE123_link_outages.glm
 module/resilience/autotest/test_IEEE123_link_outages.py
 module/resilience/autotest/test_metrics.glm
@@ -2877,7 +2864,6 @@ module/resilience/autotest/test_metrics_meter_violation_detected.csv
 module/resilience/autotest/test_metrics_report.csv
 module/resilience/cost.cpp
 module/resilience/cost.h
-module/resilience/docs/.gitignore
 module/resilience/docs/230kV_example.csv
 module/resilience/docs/230kV_example_canopycover.csv
 module/resilience/docs/230kV_example_elevation.tif
@@ -3041,7 +3027,6 @@ module/transactive/house.h
 module/transactive/main.cpp
 module/transactive/transactive.h
 module/transactive/validate.no
-python/.gitignore
 python/Makefile.mk
 python/README.md
 python/autotest/test_external_callback.glm
@@ -3133,7 +3118,6 @@ python/external/stanford/project.py
 python/external/stanford/result.py
 python/external/stanford/script.py
 python/external/stanford/simulation.py
-python/extras/.gitignore
 python/extras/buildmodel.py
 python/extras/csv_merge/csv_merge.py
 python/extras/dataframe.py
@@ -3239,7 +3223,6 @@ setup/darwin_23.sh
 setup/ubuntu_20.sh
 setup/ubuntu_22.sh
 setup/ubuntu_24-x86_64.sh
-source/.gitignore
 source/Comments.txt
 source/GUI.MACOSX
 source/Languages.txt
@@ -3248,7 +3231,6 @@ source/Project.txt
 source/README.md
 source/aggregate.cpp
 source/aggregate.h
-source/autotest/.gitignore
 source/autotest/ceus.csv
 source/autotest/check_correlation.py
 source/autotest/check_dotted_name.py
@@ -3687,7 +3669,6 @@ subcommands/gridlabd-trace
 subcommands/gridlabd-validate
 subcommands/gridlabd-version
 subcommands/gridlabd-weather
-third_party/.gitignore
 third_party/CBLAS/Makefile.mk
 third_party/CBLAS/caxpy.c
 third_party/CBLAS/ccopy.c
@@ -3984,7 +3965,6 @@ third_party/tnt_126/tnt_vec.h
 third_party/tnt_126/tnt_version.h
 tools/Makefile.mk
 tools/README.md
-tools/autotest/.gitignore
 tools/autotest/IEEE-123.tmy3
 tools/autotest/case14.json
 tools/autotest/case14.py
