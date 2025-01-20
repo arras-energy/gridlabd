@@ -484,7 +484,7 @@ if __name__ == "__main__":
         # sys.argv = [__file__,*options,"--properties=examples"]
         # sys.argv = [__file__,*options,"--properties=weather"]
 
-        sys.argv = [__file__,*options,"--content=buildings,US/ME_Aroostook.csv.gz"]
+        # sys.argv = [__file__,*options,"--content=buildings,US/ME_Aroostook.csv.gz"]
         # sys.argv = [__file__,*options,"--content=code,COPYRIGHT"]
         # sys.argv = [__file__,*options,"--content=elevation,10m/31N_112W.tif"]
         # sys.argv = [__file__,*options,"--content=examples,geodata/IEEE-123.json"]
