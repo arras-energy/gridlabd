@@ -473,6 +473,7 @@ if __name__ == "__main__":
         # sys.argv = [__file__,*options,"--list=[a-l]"]
 
         # sys.argv = [__file__,*options,"--index=buildings"]
+        sys.argv = [__file__,*options,"--index=code"]
         # sys.argv = [__file__,*options,"--index=elevation"]
         # sys.argv = [__file__,*options,"--index=examples"]
         # sys.argv = [__file__,*options,"--index=weather"]
