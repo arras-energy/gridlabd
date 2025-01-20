@@ -73,6 +73,7 @@ class Resource:
     """Resource class"""
 
     TIMEOUT = 5
+    PROPERTIES = []
 
     mimetypes = {
         ".csv.gz" : lambda x: pd.read_csv(io.BytesIO(x.content),compression="gzip",low_memory=False),
@@ -109,7 +110,9 @@ class Resource:
             index_col=0,
             na_filter=False,
             comment="#",
-            ).to_dict('index')
+            )
+        self.PROPERTIES = list(self.data.columns)
+        self.data = self.data.to_dict('index')
 
         # get globals from gridlabd
         self.globals = app.gridlabd("--globals=json",
@@ -260,7 +263,10 @@ def main(argv):
     resources = Resource()
 
     def output_raw(data,**kwargs):
-        print(data,**kwargs)
+        if isinstance(data,np.ndarray):
+            print(data.tolist(),**kwargs)
+        else:
+            print(data,**kwargs)
 
     def output_csv(data,**kwargs):
         if isinstance(data,list):
@@ -270,6 +276,10 @@ def main(argv):
         elif isinstance(data,str):
             data = pd.read_csv(io.StringIO(data),dtype=str)
             print(data.to_csv(**kwargs))
+        elif isinstance(data,pd.DataFrame):
+            print(data.to_csv(**kwargs))
+        elif isinstance(data,np.ndarray):
+            print(np.savetxt("/dev/stdout",data,**kwargs))
         else:
             raise ResourceError(f"unable to output '{type(data)}' as CSV")
 
@@ -277,6 +287,10 @@ def main(argv):
         if isinstance(data,str):
             data = pd.read_csv(io.StringIO(data),dtype=str)
             print(data.to_json(indent=2))
+        elif isinstance(data,pd.DataFrame):
+            print(data.to_json(**kwargs))
+        elif isinstance(data,np.ndarray):
+            print(json.dumps(data.tolist(),**kwargs))
         else:
             print(json.dumps(data,**kwargs))
 
@@ -300,9 +314,10 @@ def main(argv):
             
             elif value[0] == "csv":
 
-                if len(value) > 1:
-                    app.error(f"invalid format options '{','.join(value[1:])}'")
-                    return app.E_INVALID
+                # if len(value) > 1:
+                #     app.error(f"invalid format options '{','.join(value[1:])}'")
+                #     return app.E_INVALID
+                outputter_options = {x:y for x,y in [z.split(":",1) for z in value[1:]]} if len(value) > 1 else {}
                 outputter = output_csv
 
             elif value[0] == "json":
@@ -342,12 +357,12 @@ def main(argv):
                 raise ResourceError(f"invalid option '{options[0]}")
                 return E_INVALID
             if value:
-                if not value in resources.data.index:
+                if not value in list(resources.data):
                     app.error(f"'{item}' is not a valid resource name")
                     return app.E_NOTFOUND
                 data = resources.properties(name=value)
             else:
-                data = resources.data.columns.tolist()
+                data = resources.PROPERTIES
             outputter(data,**outputter_options)
             return app.E_OK
 
@@ -450,12 +465,13 @@ if __name__ == "__main__":
         options = []
         # options.extend(["--debug"])
         # options.extend(["--format=csv"])
+        # options.extend(["--format=csv,fmt:.0f"])
         # options.extend(["--format=json,indent:4"])
+        # options.extend(["--format=json,indent:4,orient:index"])
         
         # sys.argv = [__file__,*options,"--list"]
         # sys.argv = [__file__,*options,"--list=[a-l]"]
 
-        # sys.argv = [__file__,*options,"--index"] # should be an error
         # sys.argv = [__file__,*options,"--index=buildings"]
         # sys.argv = [__file__,*options,"--index=elevation"]
         # sys.argv = [__file__,*options,"--index=examples"]
@@ -472,6 +488,7 @@ if __name__ == "__main__":
         # sys.argv = [__file__,*options,"--content=examples,geodata/IEEE-123.json"]
         # sys.argv = [__file__,*options,"--content=weather,US/WA-Seattle_Seattletacoma_Intl_A.tmy3"]
 
+        # sys.argv = [__file__,*options,"--index"] # should be an error
         # sys.argv = [__file__,*options,"--index=localhost"] # should be an error
         # sys.argv = [__file__,*options,"--content=localhost"] # should be an error
         # sys.argv = [__file__,*options,"--content=junk"] # should be an error
@@ -492,7 +509,7 @@ if __name__ == "__main__":
 
         if not app.QUIET:
             e_type,e_value,e_trace = sys.exc_info()
-            tb = app.traceback.TracebackException(e_type,e_value,e_trace).stack[1]
+            tb = app.traceback.TracebackException(e_type,e_value,e_trace).stack[-1]
             print(f"EXCEPTION [{app.EXEFILE}@{tb.lineno}]: ({e_type.__name__}) {e_value}",file=sys.stderr)
 
         exit(app.E_EXCEPTION)
