@@ -133,6 +133,7 @@ class Resource:
             **kwargs):
         url = f"{protocol}://{hostname}:{port}{content}"
         try:
+            app.verbose(f"requests.get(url={repr(url)},headers={headers},timeout={self.TIMEOUT})")
             req = requests.get(url,headers=headers,timeout=self.TIMEOUT)
             req.raise_for_status()
         except Exception as err:
@@ -151,6 +152,7 @@ class Resource:
             **kwargs):
         url = f"{protocol}://{hostname}:{port}{content}"
         try:
+            app.verbose(f"requests.head(url={repr(url)},headers={headers},timeout={self.TIMEOUT})")
             req = requests.head(url,headers=headers,timeout=self.TIMEOUT)
             req.raise_for_status()
         except Exception as err:
@@ -463,7 +465,8 @@ if __name__ == "__main__":
         #
 
         options = []
-        # options.extend(["--debug"])
+        options.extend(["--debug"])
+        options.extend(["--verbose"])
         # options.extend(["--format=csv"])
         # options.extend(["--format=csv,fmt:.0f"])
         # options.extend(["--format=json,indent:4"])
