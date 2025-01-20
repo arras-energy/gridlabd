@@ -308,7 +308,7 @@ $(prefix)/src:
 
 index: weather library template
 	@echo Updating file index...
-	@git ls-files | grep -v '^\.' > index
+	@git ls-files | grep -v '^\.' | grep -v '/\.' > index
 
 html-local: module-html developer-html troubleshooting-html
 	@mkdir -p $(prefix)/share/doc/developer

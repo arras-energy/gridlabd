@@ -703,6 +703,12 @@ GLOBAL char32 global_city INIT("");
 /* Variable: global_organization */
 GLOBAL char1024 global_organization INIT("arras-energy");
 
+/* Variable: global_origin */
+GLOBAL char1024 global_origin INIT(BUILD_ORIGIN);
+
+/* Variable: global_gitbranch */
+GLOBAL char1024 global_gitbranch INIT(BUILD_BRANCH);
+
 /* Variable: global_json_complex_format */
 #define JCF_STRING  0x0000
 #define JCF_LIST    0x0001

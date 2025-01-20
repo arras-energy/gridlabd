@@ -463,7 +463,7 @@ if __name__ == "__main__":
         #
 
         options = []
-        # options.extend(["--debug"])
+        options.extend(["--debug"])
         # options.extend(["--format=csv"])
         # options.extend(["--format=csv,fmt:.0f"])
         # options.extend(["--format=json,indent:4"])
@@ -473,7 +473,7 @@ if __name__ == "__main__":
         # sys.argv = [__file__,*options,"--list=[a-l]"]
 
         # sys.argv = [__file__,*options,"--index=buildings"]
-        sys.argv = [__file__,*options,"--index=code"]
+        # sys.argv = [__file__,*options,"--index=code"]
         # sys.argv = [__file__,*options,"--index=elevation"]
         # sys.argv = [__file__,*options,"--index=examples"]
         # sys.argv = [__file__,*options,"--index=weather"]
@@ -485,6 +485,7 @@ if __name__ == "__main__":
         # sys.argv = [__file__,*options,"--properties=weather"]
 
         # sys.argv = [__file__,*options,"--content=buildings,US/ME_Aroostook.csv.gz"]
+        sys.argv = [__file__,*options,"--content=code,COPYRIGHT"]
         # sys.argv = [__file__,*options,"--content=elevation,10m/31N_112W.tif"]
         # sys.argv = [__file__,*options,"--content=examples,geodata/IEEE-123.json"]
         # sys.argv = [__file__,*options,"--content=weather,US/WA-Seattle_Seattletacoma_Intl_A.tmy3"]
