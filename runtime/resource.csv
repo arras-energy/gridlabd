@@ -28,7 +28,7 @@ models,https,443,raw.githubusercontent.com,/{organization}/gridlabd-models/maste
 # source,https,443,source.gridlabd.us
 # status-dev,https,443,status-dev.gridlabd.us
 # status,https,443,status.gridalbd.us
-# tariff,https,443,tariff.gridlabd.us
+tariff,https,443,s3.us-west-1.amazonaws.com,/tariff.gridlabd.us/index,/tariff.gridlabd.us/{index},image/png,,GridLAB-D tariff data library
 # template,https,443,template.gridlabd.us
 # test,https,443,test.gridlabd.us
 # training,https,443,training.gridlabd.us
