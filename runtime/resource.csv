@@ -2,6 +2,10 @@ resource,protocol,port,hostname,index,content,mimetype,deprecation,comment
 localhost,http,6267-6279,127.0.0.1,,,,Server mode support (see https://docs.gridlabd.us/)
 buildings,http,80,buildings.gridlabd.us.s3-website-us-west-1.amazonaws.com,/index,/{index},,,Compiled AutoBEM4 building data
 code,https,443,raw.githubusercontent.com,/{origin}/refs/heads/{gitbranch}/index,/{origin}/refs/heads/{gitbranch}/{index},Github release code repository
+#code-dev,https,443,github.com,,/{organization}/gridlabd/tree/{gitbranch},,,Github development code repository
+#develop.code,https,443,develop.code.gridlabd.us
+#develop.source,https,443,develop.source.gridlabd.us
+#dmg,https,443,dmg.gridlabd.us
 #docker,https,443,hub.docker.com,/v2/repositories/lfenergy/arras/tags/?page_size=1000,/v2/repositories/lfenergy/arras/{index},*/*,,Dockerhub list of repositories
 #docs-dev,https,443,docs-dev.gridlabd.us
 #docs,https,443,docs.gridlabd.us

@@ -58,8 +58,8 @@ import pandas as pd
 import framework as app
 import subprocess
 import requests
-from typing import *
-from PIL import Image
+from typing import TypeVar, Union
+import PIL
 import numpy as np
 
 pd.options.display.max_columns = None
@@ -79,7 +79,7 @@ class Resource:
         ".csv.gz" : lambda x: pd.read_csv(io.BytesIO(x.content),compression="gzip",low_memory=False),
         ".csv" : lambda x: pd.read_csv(io.StringIO(x.content.decode("utf-8")),low_memory=False),
         ".json" : lambda x: json.load(io.StringIO(x.content.decode("utf-8"))),
-        ".tif" : lambda x: np.array(Image.open(io.BytesIO(x.content))),
+        ".tif" : lambda x: np.array(PIL.Image.open(io.BytesIO(x.content))),
         ".tmy3" : lambda x: pd.read_csv(io.StringIO(x.content.decode("utf-8")),
                 low_memory=False,
                 skiprows=1,
@@ -253,8 +253,17 @@ class Resource:
                 },
             **spec)
 
-def main(argv):
+def main(argv:list) -> int:
+    """Resource tool main routine
 
+    Arguments:
+
+    * `argv`: command line arguments
+
+    Returns:
+
+    * Exit code
+    """
     if len(argv) == 1:
 
         print("\n".join([x for x in __doc__.split("\n") if x.startswith("Syntax: ")]),file=sys.stderr)
@@ -420,6 +429,16 @@ def main(argv):
     return app.E_OK
 
 def test(pattern='.*'):
+    """Run tests on resources that match the specified pattern
+
+    Arguments:
+
+    * `pattern`: the resource name as a regular expression
+
+    Returns:
+
+    * Exit code: E_OK on success, E_FAILED on failure
+    """
     resource = Resource()
     tested = 0
     failed = 0
@@ -465,8 +484,8 @@ if __name__ == "__main__":
         #
 
         options = []
-        options.extend(["--debug"])
-        options.extend(["--verbose"])
+        # options.extend(["--debug"])
+        # options.extend(["--verbose"])
         # options.extend(["--format=csv"])
         # options.extend(["--format=csv,fmt:.0f"])
         # options.extend(["--format=json,indent:4"])
@@ -483,6 +502,7 @@ if __name__ == "__main__":
 
         # sys.argv = [__file__,*options,"--properties"]
         # sys.argv = [__file__,*options,"--properties=buildings"]
+        # sys.argv = [__file__,*options,"--properties=code"]
         # sys.argv = [__file__,*options,"--properties=elevation"]
         # sys.argv = [__file__,*options,"--properties=examples"]
         # sys.argv = [__file__,*options,"--properties=weather"]
