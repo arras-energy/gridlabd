@@ -205,7 +205,10 @@ class Resource:
         del spec['index']
 
         return self._download(
-            headers={'Accept':'text/plain'},
+            headers={
+                'Accept':'text/plain',
+                'Cache-Control':'no-cache',
+                },
             output_to=lambda x:x.strip().split("\n"),
             **spec)
 
@@ -225,6 +228,7 @@ class Resource:
             headers = {
                 'Accept': spec['mimetype'] if spec['mimetype'] else '*/*',
                 'Connection': 'close',
+                'Cache-Control':'no-cache',
                 },
             **spec)
 
@@ -505,6 +509,7 @@ if __name__ == "__main__":
         # sys.argv = [__file__,*options,"--index=geodata"]
         # sys.argv = [__file__,*options,"--index=icons"]
         # sys.argv = [__file__,*options,"--index=library"]
+        # sys.argv = [__file__,*options,"--index=models"]
         # sys.argv = [__file__,*options,"--index=weather"]
 
         # sys.argv = [__file__,*options,"--properties"]
@@ -515,6 +520,7 @@ if __name__ == "__main__":
         # sys.argv = [__file__,*options,"--properties=geodata"]
         # sys.argv = [__file__,*options,"--properties=icons"]
         # sys.argv = [__file__,*options,"--properties=library"]
+        # sys.argv = [__file__,*options,"--properties=models"]
         # sys.argv = [__file__,*options,"--properties=weather"]
 
         # sys.argv = [__file__,*options,"--content=buildings,US/ME_Aroostook.csv.gz"]
@@ -523,7 +529,8 @@ if __name__ == "__main__":
         # sys.argv = [__file__,*options,"--content=examples,geodata/IEEE-123.json"]
         # sys.argv = [__file__,*options,"--content=geodata,census/income_CA.csv"]
         # sys.argv = [__file__,*options,"--content=icons,pole.png"]
-        sys.argv = [__file__,*options,"--content=library,US/CA/SLAC/pole_configuration.glm"]
+        # sys.argv = [__file__,*options,"--content=library,US/CA/SLAC/pole_configuration.glm"]
+        # sys.argv = [__file__,*options,"--content=models,gridlabd-4/IEEE/13.glm"]
         # sys.argv = [__file__,*options,"--content=weather,US/WA-Seattle_Seattletacoma_Intl_A.tmy3"]
 
         # sys.argv = [__file__,*options,"--index"] # should be an error

@@ -22,7 +22,7 @@ icons,https,443,s3.us-west-1.amazonaws.com,/icons.gridlabd.us/index,/icons.gridl
 library,https,443,raw.githubusercontent.com,/{organization}/gridlabd-library/master/index,/{organization}/gridlabd-library/master/{index},,,GridLAB-D object library
 # master.code,https,443,master.code.gridlabd.us
 # master.source,https,443,master.source.gridlabd.us
-# models,https,443,models.gridlabd.us
+models,https,443,raw.githubusercontent.com,/{organization}/gridlabd-models/master/index,/{organization}/gridlabd-models/master/{index},,,GridLAB-D model library
 # news,https,443,news.gridlabd.us
 # openfido,https,443,openfido.gridlabd.us
 # source,https,443,source.gridlabd.us
