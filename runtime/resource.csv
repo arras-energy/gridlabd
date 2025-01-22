@@ -19,7 +19,7 @@ geodata,https,443,s3.us-west-1.amazonaws.com,/geodata.gridlabd.us/index,/geodata
 icons,https,443,s3.us-west-1.amazonaws.com,/icons.gridlabd.us/index,/icons.gridlabd.us/{index},image/png,,GridLAB-D object icon library
 # install-dev,https,443,install-dev.gridlabd.us
 # issues,https,443,issues.gridlabd.us
-# library,https,443,library.gridlabd.us
+library,https,443,raw.githubusercontent.com,/{organization}/gridlabd-library/master/index,/{organization}/gridlabd-library/master/{index},,,GridLAB-D object library
 # master.code,https,443,master.code.gridlabd.us
 # master.source,https,443,master.source.gridlabd.us
 # models,https,443,models.gridlabd.us
