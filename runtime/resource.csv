@@ -29,7 +29,7 @@ models,https,443,raw.githubusercontent.com,/{organization}/gridlabd-models/maste
 # status-dev,https,443,status-dev.gridlabd.us
 # status,https,443,status.gridalbd.us
 tariff,https,443,s3.us-west-1.amazonaws.com,/tariff.gridlabd.us/index,/tariff.gridlabd.us/{index},image/png,,GridLAB-D tariff data library
-# template,https,443,template.gridlabd.us
+template,https,443,raw.githubusercontent.com,/{organization}/gridlabd-template/master/index,/{organization}/gridlabd-template/master/{index},,,GridLAB-D analysis template library
 # test,https,443,test.gridlabd.us
 # training,https,443,training.gridlabd.us
 # tutorials-dev,https,443,tutorials-dev.gridlabd.us

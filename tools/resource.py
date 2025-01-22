@@ -511,6 +511,7 @@ if __name__ == "__main__":
         # sys.argv = [__file__,*options,"--index=library"]
         # sys.argv = [__file__,*options,"--index=models"]
         # sys.argv = [__file__,*options,"--index=tariff"]
+        # sys.argv = [__file__,*options,"--index=template"]
         # sys.argv = [__file__,*options,"--index=weather"]
 
         # sys.argv = [__file__,*options,"--properties"]
@@ -523,6 +524,7 @@ if __name__ == "__main__":
         # sys.argv = [__file__,*options,"--properties=library"]
         # sys.argv = [__file__,*options,"--properties=models"]
         # sys.argv = [__file__,*options,"--properties=tariff"]
+        # sys.argv = [__file__,*options,"--properties=template"]
         # sys.argv = [__file__,*options,"--properties=weather"]
 
         # sys.argv = [__file__,*options,"--content=buildings,US/ME_Aroostook.csv.gz"]
@@ -534,6 +536,7 @@ if __name__ == "__main__":
         # sys.argv = [__file__,*options,"--content=library,US/CA/SLAC/pole_configuration.glm"]
         # sys.argv = [__file__,*options,"--content=models,gridlabd-4/IEEE/13.glm"]
         # sys.argv = [__file__,*options,"--content=tariff,rates.csv.gz"]
+        # sys.argv = [__file__,*options,"--content=template,US/CA/SLAC/electrification/electrification.md"]
         # sys.argv = [__file__,*options,"--content=weather,US/WA-Seattle_Seattletacoma_Intl_A.tmy3"]
 
         # sys.argv = [__file__,*options,"--index"] # should be an error
