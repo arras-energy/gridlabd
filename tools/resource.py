@@ -560,23 +560,4 @@ if __name__ == "__main__":
         # sys.argv = [__file__,*options,"--content=localhost"] # should be an error
         # sys.argv = [__file__,*options,"--content=junk"] # should be an error
 
-    try:
-
-        rc = main(sys.argv)
-        exit(rc)
-
-    except KeyboardInterrupt:
-
-        exit(app.E_INTERRUPT)
-
-    except Exception as exc:
-
-        if app.DEBUG:
-            raise exc
-
-        if not app.QUIET:
-            e_type,e_value,e_trace = sys.exc_info()
-            tb = app.traceback.TracebackException(e_type,e_value,e_trace).stack[-1]
-            print(f"EXCEPTION [{app.EXEFILE}@{tb.lineno}]: ({e_type.__name__}) {e_value}",file=sys.stderr)
-
-        exit(app.E_EXCEPTION)
+    app.run(main)

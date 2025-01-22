@@ -435,6 +435,41 @@ def complex_unit(x:str,
     # raw property (i.e., real, imag, conjugate)
     return getattr(x,form)
 
+def run(main:callable,exit=exit,print=print):
+    """Run a main function under this app framework
+
+    Arguments:
+
+    * `main`: the main function to run
+
+    * `exit`: the exit function to call (default is `exit`)
+
+    * `print`: the print funtion to call on exceptions (default is `print`)
+
+    This function does not return. When the app is done it calls exit.
+    """
+    try:
+
+        rc = main(sys.argv)
+        exit(rc)
+
+    except KeyboardInterrupt:
+
+        exit(app.E_INTERRUPT)
+
+    except Exception as exc:
+
+        if DEBUG:
+            raise exc
+
+        if not QUIET:
+            e_type,e_value,e_trace = sys.exc_info()
+            tb = traceback.TracebackException(e_type,e_value,e_trace).stack[-1]
+            print(f"EXCEPTION [{EXEFILE}@{tb.lineno}]: ({e_type.__name__}) {e_value}",file=sys.stderr)
+
+        exit(E_EXCEPTION)
+
+
 if __name__ == "__main__":
 
     raise ApplicationError("cannot run framework as a script")
