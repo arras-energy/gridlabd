@@ -36,13 +36,13 @@ Valid formats include `json` and `csv` (the default is 'raw').
 
 Examples:
 
-The following command list the properties on the online weather resources
+The following command lists the released versions
+
+    gridlabd resource --index=version
+
+The following command lists the properties on the online weather resources
 
     gridlabd resource --properties=weather
-
-The following command lists the online weather resource index
-
-    gridlabd resource --index=weather
 
 The following command retrieves the online weather data for the specified location
 
@@ -204,12 +204,21 @@ class Resource:
         spec['content'] = spec['index']
         del spec['index']
 
+        if "@" in spec['content']:
+            spec['content'],key = spec['content'].split("@",1)
+            mimetype = "application/json"
+            output_as = lambda x: [y[key] for y in json.loads(x)]
+        else:
+            mimetype = "text/plain"
+            output_as = lambda x: x.strip().split("\n")
+
+
         return self._download(
             headers={
-                'Accept':'text/plain',
+                'Accept':mimetype,
                 'Cache-Control':'no-cache',
                 },
-            output_to=lambda x:x.strip().split("\n"),
+            output_to=output_as,
             **spec)
 
     def headers(self,**kwargs:dict) -> Union[str,list,dict]:
@@ -249,7 +258,7 @@ class Resource:
 
         if not spec['content']:
 
-            raise ResourceError(f"{spec['resource']} has not content")
+            raise ResourceError(f"{spec['resource']} has no content")
 
         return self._download(
             headers = {
@@ -485,6 +494,10 @@ if __name__ == "__main__":
         # sys.argv = [__file__,"--test=geodata"]
         # sys.argv = [__file__,"--test=icons"]
         # sys.argv = [__file__,"--test=library"]
+        # sys.argv = [__file__,"--test=models"]
+        # sys.argv = [__file__,"--test=tariff"]
+        # sys.argv = [__file__,"--test=template"]
+        # sys.argv = [__file__,"--test=version"]
         # sys.argv = [__file__,"--test=weather"]
 
         #
@@ -512,6 +525,7 @@ if __name__ == "__main__":
         # sys.argv = [__file__,*options,"--index=models"]
         # sys.argv = [__file__,*options,"--index=tariff"]
         # sys.argv = [__file__,*options,"--index=template"]
+        # sys.argv = [__file__,*options,"--index=version"]
         # sys.argv = [__file__,*options,"--index=weather"]
 
         # sys.argv = [__file__,*options,"--properties"]
@@ -525,6 +539,7 @@ if __name__ == "__main__":
         # sys.argv = [__file__,*options,"--properties=models"]
         # sys.argv = [__file__,*options,"--properties=tariff"]
         # sys.argv = [__file__,*options,"--properties=template"]
+        # sys.argv = [__file__,*options,"--properties=version"]
         # sys.argv = [__file__,*options,"--properties=weather"]
 
         # sys.argv = [__file__,*options,"--content=buildings,US/ME_Aroostook.csv.gz"]
@@ -537,6 +552,7 @@ if __name__ == "__main__":
         # sys.argv = [__file__,*options,"--content=models,gridlabd-4/IEEE/13.glm"]
         # sys.argv = [__file__,*options,"--content=tariff,rates.csv.gz"]
         # sys.argv = [__file__,*options,"--content=template,US/CA/SLAC/electrification/electrification.md"]
+        # sys.argv = [__file__,*options,"--content=version,4.3.2"]
         # sys.argv = [__file__,*options,"--content=weather,US/WA-Seattle_Seattletacoma_Intl_A.tmy3"]
 
         # sys.argv = [__file__,*options,"--index"] # should be an error

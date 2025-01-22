@@ -36,13 +36,13 @@ Valid formats include `json` and `csv` (the default is 'raw').
 
 Examples:
 
-The following command list the properties on the online weather resources
+The following command lists the released versions
+
+    gridlabd resource --index=version
+
+The following command lists the properties on the online weather resources
 
     gridlabd resource --properties=weather
-
-The following command lists the online weather resource index
-
-    gridlabd resource --index=weather
 
 The following command retrieves the online weather data for the specified location
 

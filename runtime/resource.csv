@@ -34,7 +34,7 @@ template,https,443,raw.githubusercontent.com,/{organization}/gridlabd-template/m
 # training,https,443,training.gridlabd.us
 # tutorials-dev,https,443,tutorials-dev.gridlabd.us
 # tutorials,https,443,tutorials.gridlabd.us
-# version,https,443,version.gridlabd.us
+version,https,443,api.github.com,/repos/{organization}/gridlabd/releases@name,,,,Version information
 weather,https,443,raw.githubusercontent.com,/{organization}/gridlabd-weather/master/index,/{organization}/gridlabd-weather/master/{index},,,TMY3 weather data repository
 # www-dev,https,443,www-dev.gridlabd.us
 # www,https,443,www.gridlabd.us
