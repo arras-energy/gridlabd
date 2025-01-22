@@ -59,7 +59,7 @@ import framework as app
 import subprocess
 import requests
 from typing import TypeVar, Union
-import PIL
+from PIL import Image
 import numpy as np
 
 pd.options.display.max_columns = None
@@ -79,7 +79,8 @@ class Resource:
         ".csv.gz" : lambda x: pd.read_csv(io.BytesIO(x.content),compression="gzip",low_memory=False),
         ".csv" : lambda x: pd.read_csv(io.StringIO(x.content.decode("utf-8")),low_memory=False),
         ".json" : lambda x: json.load(io.StringIO(x.content.decode("utf-8"))),
-        ".tif" : lambda x: np.array(PIL.Image.open(io.BytesIO(x.content))),
+        ".tif" : lambda x: np.array(Image.open(io.BytesIO(x.content))),
+        ".png" : lambda x: np.array(Image.open(io.BytesIO(x.content))),
         ".tmy3" : lambda x: pd.read_csv(io.StringIO(x.content.decode("utf-8")),
                 low_memory=False,
                 skiprows=1,
@@ -477,6 +478,8 @@ if __name__ == "__main__":
         # sys.argv = [__file__,"--test=buildings"]
         # sys.argv = [__file__,"--test=elevation"]
         # sys.argv = [__file__,"--test=examples"]
+        # sys.argv = [__file__,"--test=geodata"]
+        # sys.argv = [__file__,"--test=icons"]
         # sys.argv = [__file__,"--test=weather"]
 
         #
@@ -499,6 +502,7 @@ if __name__ == "__main__":
         # sys.argv = [__file__,*options,"--index=elevation"]
         # sys.argv = [__file__,*options,"--index=examples"]
         # sys.argv = [__file__,*options,"--index=geodata"]
+        # sys.argv = [__file__,*options,"--index=icons"]
         # sys.argv = [__file__,*options,"--index=weather"]
 
         # sys.argv = [__file__,*options,"--properties"]
@@ -507,6 +511,7 @@ if __name__ == "__main__":
         # sys.argv = [__file__,*options,"--properties=elevation"]
         # sys.argv = [__file__,*options,"--properties=examples"]
         # sys.argv = [__file__,*options,"--properties=geodata"]
+        # sys.argv = [__file__,*options,"--properties=icons"]
         # sys.argv = [__file__,*options,"--properties=weather"]
 
         # sys.argv = [__file__,*options,"--content=buildings,US/ME_Aroostook.csv.gz"]
@@ -514,6 +519,7 @@ if __name__ == "__main__":
         # sys.argv = [__file__,*options,"--content=elevation,10m/31N_112W.tif"]
         # sys.argv = [__file__,*options,"--content=examples,geodata/IEEE-123.json"]
         # sys.argv = [__file__,*options,"--content=geodata,census/income_CA.csv"]
+        # sys.argv = [__file__,*options,"--content=icons,pole.png"]
         # sys.argv = [__file__,*options,"--content=weather,US/WA-Seattle_Seattletacoma_Intl_A.tmy3"]
 
         # sys.argv = [__file__,*options,"--index"] # should be an error
