@@ -498,6 +498,7 @@ if __name__ == "__main__":
         # sys.argv = [__file__,*options,"--index=code"]
         # sys.argv = [__file__,*options,"--index=elevation"]
         # sys.argv = [__file__,*options,"--index=examples"]
+        # sys.argv = [__file__,*options,"--index=geodata"]
         # sys.argv = [__file__,*options,"--index=weather"]
 
         # sys.argv = [__file__,*options,"--properties"]
@@ -505,12 +506,14 @@ if __name__ == "__main__":
         # sys.argv = [__file__,*options,"--properties=code"]
         # sys.argv = [__file__,*options,"--properties=elevation"]
         # sys.argv = [__file__,*options,"--properties=examples"]
+        # sys.argv = [__file__,*options,"--properties=geodata"]
         # sys.argv = [__file__,*options,"--properties=weather"]
 
         # sys.argv = [__file__,*options,"--content=buildings,US/ME_Aroostook.csv.gz"]
         # sys.argv = [__file__,*options,"--content=code,COPYRIGHT"]
         # sys.argv = [__file__,*options,"--content=elevation,10m/31N_112W.tif"]
         # sys.argv = [__file__,*options,"--content=examples,geodata/IEEE-123.json"]
+        # sys.argv = [__file__,*options,"--content=geodata,census/income_CA.csv"]
         # sys.argv = [__file__,*options,"--content=weather,US/WA-Seattle_Seattletacoma_Intl_A.tmy3"]
 
         # sys.argv = [__file__,*options,"--index"] # should be an error
