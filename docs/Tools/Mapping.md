@@ -250,6 +250,10 @@ Arguments:
 
 Messages are suppressed when the `--quiet` option is used.
 
+If `--debug` is enabled, an exception is raised with a traceback.
+
+If the exit `code` is specified, exit is called with the code.
+
 
 ---
 
@@ -260,6 +264,8 @@ Exception message output
 Arguments:
 
 * `exc`: exception to raise
+
+If `exc` is a string, an `ApplicationError` exception is raised.
 
 
 ---
@@ -383,6 +389,38 @@ Arguments:
 Returns:
 
 * Remaining arguments
+
+
+---
+
+## `run() -> None`
+
+Run a main function under this app framework
+
+Arguments:
+
+* `main`: the main function to run
+
+* `exit`: the exit function to call (default is `exit`)
+
+* `print`: the print funtion to call on exceptions (default is `print`)
+
+This function does not return. When the app is done it calls exit.
+
+
+---
+
+## `syntax() -> None`
+
+Print syntax message
+
+Arguments:
+
+* `docs`: the application's __doc__ string
+
+* `print`: the print function to use (default is `print`)
+
+This function does not return. When the function is done it calls exit(E_SYNTAX)
 
 
 ---

@@ -22,13 +22,12 @@ Example:
 ~~~
 import framework as app
 
-def main(argv):
+def main(argv:list[str]) -> int:
 
     # handle no options case -- typically a cry for help
     if len(argv) == 1:
 
-        print("\n".join([x for x in __doc__.split("\n") if x.startswith("Syntax: ")]))
-        return app.E_SYNTAX
+        app.syntax(__doc__)
 
     # handle stardard app arguments --debug, --warning, --verbose, --quiet, --silent
     args = app.read_stdargs(argv)
@@ -38,42 +37,21 @@ def main(argv):
         if key in ["-h","--help","help"]:
             print(__doc__,file=sys.stdout)
 
-        # TODO: add options here
+        # add your options here
 
         else:
-            error(f"'{key}={value}' is invalid")
+
+            app.error(f"'{key}={value}' is invalid")
             return app.E_INVALID
 
-    # TODO: code implementation here, if any
+    # implement your code here
 
+    # normal termination condigion
     return app.E_OK
 
 if __name__ == "__main__":
 
-    try:
-
-        # TODO: development testing -- delete when done writing code
-        if not sys.argv[0]:
-            sys.argv = ["selftest","--debug"]
-
-        rc = main(sys.argv)
-        exit(rc)
-
-    except KeyboardInterrupt:
-
-        exit(app.E_INTERRUPT)
-
-    except Exception as exc:
-
-        if app.DEBUG:
-            raise exc
-
-        if not app.QUIET:
-            e_type,e_value,e_trace = sys.exc_info()
-            tb = app.traceback.TracebackException(e_type,e_value,e_trace).stack[1]
-            print(f"EXCEPTION [{app.EXEFILE}@{tb.lineno}]: ({e_type.__name__}) {e_value}",file=sys.stderr)
-
-        exit(app.E_EXCEPTION)
+    app.run(main)
 ~~~
 """
 import os
@@ -190,6 +168,8 @@ def exception(exc:[TypeVar('Exception')|str]):
     Arguments:
 
     * `exc`: exception to raise
+
+    If `exc` is a string, an `ApplicationError` exception is raised.
     """
     if isinstance(exc,str):
         exc = ApplicationError(exc)
@@ -205,6 +185,10 @@ def error(*msg:list,code:[int|None]=None,**kwargs):
     * `**kwargs`: print options
 
     Messages are suppressed when the `--quiet` option is used.
+
+    If `--debug` is enabled, an exception is raised with a traceback.
+
+    If the exit `code` is specified, exit is called with the code.
     """
     if not QUIET:
         if code:
@@ -434,6 +418,20 @@ def complex_unit(x:str,
 
     # raw property (i.e., real, imag, conjugate)
     return getattr(x,form)
+
+def syntax(docs:str,print=print):
+    """Print syntax message
+
+    Arguments:
+
+    * `docs`: the application's __doc__ string
+
+    * `print`: the print function to use (default is `print`)
+
+    This function does not return. When the function is done it calls exit(E_SYNTAX)
+    """
+    print("\n".join([x for x in docs.split("\n") if x.startswith("Syntax: ")]))
+    exit(E_SYNTAX)
 
 def run(main:callable,exit=exit,print=print):
     """Run a main function under this app framework

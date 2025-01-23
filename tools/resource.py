@@ -280,8 +280,7 @@ def main(argv:list) -> int:
     """
     if len(argv) == 1:
 
-        print("\n".join([x for x in __doc__.split("\n") if x.startswith("Syntax: ")]),file=sys.stderr)
-        return app.E_SYNTAX
+        app.syntax(__doc__)
 
     args = app.read_stdargs(argv)
     
