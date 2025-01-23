@@ -1,1 +1,1 @@
-{'latitude': '', 'longitude': '', 'city': '', 'zipcode': '', 'county': '', 'state': '', 'region': 'CA', 'country': 'US'}
+{'latitude': '', 'longitude': '', 'city': '', 'zipcode': '', 'county': '', 'state': '', 'region': '', 'country': 'US'}

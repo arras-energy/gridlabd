@@ -23,6 +23,7 @@ if [ -d $TOP/.git ]; then
 		echo "#define REV_YEAR $(date '+%Y')" >> $FIL
 		echo "#define BUILD_NAME \"$(git remote | head -n 1)\"" >> $FIL
 		echo "#define BUILD_URL \"$(git remote -v | head -n 1 | cut -f1 -d' ' | cut -f2 | sed -e 's/\.git//')\"" >> $FIL
+		echo "#define BUILD_ORIGIN \"$(git remote -v | head -n 1 | cut -f1 -d' ' | cut -f2 | sed -e 's/\.git//' | cut -f4- -d/)\"" >> $FIL
 		echo "#define BUILD_BRANCH \"$(git rev-parse --abbrev-ref HEAD | tr -d '\n' )\"" >> $FIL
 		echo "#define BUILD_SYSTEM \"$(uname -s)\"" >> $FIL
 		echo "#define BUILD_RELEASE \"$(uname -sr)\"" >> $FIL
@@ -52,7 +53,8 @@ else
 		echo "#define BRANCH \"<unknown>\"" >> $FIL
 		echo "#define REV_YEAR $(date '+%Y')" >> $FIL
 		echo "#define BUILD_NAME \"download\"" >> $FIL
-		echo "#define BUILD_URL \"http://gridlabd.org/\"" >> $FIL
+		echo "#define BUILD_URL \"http://source.gridlabd.us/\"" >> $FIL
+		echo "#define BUILD_ORIGIN \"arras-energy/gridlabd\"" >> $FIL
 		echo "#define BUILD_BRANCH \"<unknown>\"" >> $FIL
 		echo "#define BUILD_SYSTEM \"$(uname -s)\"" >> $FIL
 		echo "#define BUILD_RELEASE \"$(uname -sr)\"" >> $FIL

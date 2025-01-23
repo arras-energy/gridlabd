@@ -692,10 +692,22 @@ GLOBAL int32 global_loader_linenum INIT(0);
 GLOBAL char8 global_country INIT("US");
 
 /* Variable: global_region */
-GLOBAL char32 global_region INIT("CA");
+GLOBAL char32 global_region INIT("");
+
+/* Variable: global_locality */
+GLOBAL char32 global_locality INIT("");
+
+/* Variable: global_city */
+GLOBAL char32 global_city INIT("");
 
 /* Variable: global_organization */
-GLOBAL char1024 global_organization INIT("SLAC");
+GLOBAL char1024 global_organization INIT("arras-energy");
+
+/* Variable: global_origin */
+GLOBAL char1024 global_origin INIT(BUILD_ORIGIN);
+
+/* Variable: global_gitbranch */
+GLOBAL char1024 global_gitbranch INIT(BUILD_BRANCH);
 
 /* Variable: global_json_complex_format */
 #define JCF_STRING  0x0000

@@ -1,0 +1,88 @@
+[
+    "US/CA_Alameda.csv.gz",
+    "US/CA_Contra_Costa.csv.gz",
+    "US/CA_Los_Angeles.csv.gz",
+    "US/CA_Orange.csv.gz",
+    "US/CA_Riverside.csv.gz",
+    "US/CA_San_Bernardino.csv.gz",
+    "US/CA_San_Diego.csv.gz",
+    "US/CA_San_Francisco.csv.gz",
+    "US/CA_San_Mateo.csv.gz",
+    "US/CA_Santa_Clara.csv.gz",
+    "US/ME_Androscoggin.csv.gz",
+    "US/ME_Aroostook.csv.gz",
+    "US/ME_Cumberland.csv.gz",
+    "US/ME_Franklin.csv.gz",
+    "US/ME_Hancock.csv.gz",
+    "US/ME_Kennebec.csv.gz",
+    "US/ME_Knox.csv.gz",
+    "US/ME_Lincoln.csv.gz",
+    "US/ME_Oxford.csv.gz",
+    "US/ME_Penobscot.csv.gz",
+    "US/ME_Piscataquis.csv.gz",
+    "US/ME_Sagadahoc.csv.gz",
+    "US/ME_Somerset.csv.gz",
+    "US/ME_Waldo.csv.gz",
+    "US/ME_Washington.csv.gz",
+    "US/ME_York.csv.gz",
+    "US/NH_Belknap.csv.gz",
+    "US/NH_Carroll.csv.gz",
+    "US/NH_Cheshire.csv.gz",
+    "US/NH_Coos.csv.gz",
+    "US/NH_Grafton.csv.gz",
+    "US/NH_Hillsborough.csv.gz",
+    "US/NH_Merrimack.csv.gz",
+    "US/NH_Rockingham.csv.gz",
+    "US/NH_Strafford.csv.gz",
+    "US/NH_Sullivan.csv.gz",
+    "US/TN_Hamilton.csv.gz"
+]
+*** Testing resource 'buildings' ***
+Properties:
+  resource: 'buildings'
+  protocol: 'http'
+  port: '80'
+  hostname: 'buildings.gridlabd.us.s3-website-us-west-1.amazonaws.com'
+  index: '/index'
+  content: '/{index}'
+  mimetype: ''
+  deprecation: ''
+  comment: 'Compiled AutoBEM4 building data'
+buildings/US/CA_Alameda.csv.gz... 18632521 bytes
+buildings/US/CA_Contra_Costa.csv.gz... 15657475 bytes
+buildings/US/CA_Los_Angeles.csv.gz... 119942371 bytes
+buildings/US/CA_Orange.csv.gz... 35373139 bytes
+buildings/US/CA_Riverside.csv.gz... 35813122 bytes
+buildings/US/CA_San_Bernardino.csv.gz... 32401374 bytes
+buildings/US/CA_San_Diego.csv.gz... 40106258 bytes
+buildings/US/CA_San_Francisco.csv.gz... 9616400 bytes
+buildings/US/CA_San_Mateo.csv.gz... 9042463 bytes
+buildings/US/CA_Santa_Clara.csv.gz... 20501437 bytes
+buildings/US/ME_Androscoggin.csv.gz... 2435518 bytes
+buildings/US/ME_Aroostook.csv.gz... 2882124 bytes
+buildings/US/ME_Cumberland.csv.gz... 6800068 bytes
+buildings/US/ME_Franklin.csv.gz... 1261789 bytes
+buildings/US/ME_Hancock.csv.gz... 2577025 bytes
+buildings/US/ME_Kennebec.csv.gz... 3678406 bytes
+buildings/US/ME_Knox.csv.gz... 1606996 bytes
+buildings/US/ME_Lincoln.csv.gz... 1634632 bytes
+buildings/US/ME_Oxford.csv.gz... 2024315 bytes
+buildings/US/ME_Penobscot.csv.gz... 4441180 bytes
+buildings/US/ME_Piscataquis.csv.gz... 1030636 bytes
+buildings/US/ME_Sagadahoc.csv.gz... 1172538 bytes
+buildings/US/ME_Somerset.csv.gz... 2163186 bytes
+buildings/US/ME_Waldo.csv.gz... 1635656 bytes
+buildings/US/ME_Washington.csv.gz... 1670936 bytes
+buildings/US/ME_York.csv.gz... 5920601 bytes
+buildings/US/NH_Belknap.csv.gz... 2112766 bytes
+buildings/US/NH_Carroll.csv.gz... 2268762 bytes
+buildings/US/NH_Cheshire.csv.gz... 1918629 bytes
+buildings/US/NH_Coos.csv.gz... 986734 bytes
+buildings/US/NH_Grafton.csv.gz... 2107669 bytes
+buildings/US/NH_Hillsborough.csv.gz... 6474492 bytes
+buildings/US/NH_Merrimack.csv.gz... 3239426 bytes
+buildings/US/NH_Rockingham.csv.gz... 6095088 bytes
+buildings/US/NH_Strafford.csv.gz... 2249422 bytes
+buildings/US/NH_Sullivan.csv.gz... 1206218 bytes
+buildings/US/TN_Hamilton.csv.gz... 6563451 bytes
+Tested 37 resources (415.2 MB) with 0 failures
