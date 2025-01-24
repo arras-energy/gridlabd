@@ -74,7 +74,7 @@ jobs:
         sh ./setup.sh --local
         sh ./build.sh --system --parallel --upload --release
 
-buildMacos15FastS3:
+  buildMacos15FastS3:
 
     runs-on: macos-15
     environment: Integration
