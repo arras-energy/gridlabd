@@ -235,7 +235,7 @@ jobs:
 
   buildUbuntuDockerhub:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment: Integration
     needs: buildUbuntu24FastS3
 
