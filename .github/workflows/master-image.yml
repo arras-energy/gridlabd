@@ -72,7 +72,7 @@ jobs:
     - name: Deploy to S3
       run: |
         sudo mkdir -p /usr/local/opt/gridlabd
-        chmod 2777 /usr/local/opt/gridlabd
+        sudo chmod 2777 /usr/local/opt/gridlabd
         sh ./setup.sh --local
         sh ./build.sh --system --parallel --upload --release
 
@@ -108,7 +108,7 @@ jobs:
     - name: Deploy to S3
       run: |
         sudo mkdir -p /usr/local/opt/gridlabd
-        chmod 2777 /usr/local/opt/gridlabd
+        sudo chmod 2777 /usr/local/opt/gridlabd
         sh ./setup.sh --local
         sh ./build.sh --system --parallel --upload --release
 
@@ -274,7 +274,7 @@ jobs:
         tags: lfenergy/arras:latest, lfenergy/arras:${{ env.VERSION }}
 
   updateS3websites:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment: Integration
 
     steps:
@@ -307,7 +307,7 @@ jobs:
 
   versionUpdate:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment: Integration
     needs: buildAWSUbuntuAMI
 
