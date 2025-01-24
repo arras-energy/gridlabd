@@ -72,8 +72,9 @@ jobs:
     - name: Deploy to S3
       run: |
         sudo mkdir -p /usr/local/opt/gridlabd
-        sudo ./setup.sh --local
-        sudo ./build.sh --system --parallel --upload --release
+        chmod 2777 /usr/local/opt/gridlabd
+        sh ./setup.sh --local
+        sh ./build.sh --system --parallel --upload --release
 
   buildMacos15FastS3:
 
@@ -107,8 +108,9 @@ jobs:
     - name: Deploy to S3
       run: |
         sudo mkdir -p /usr/local/opt/gridlabd
-        sudo ./setup.sh --local
-        sudo ./build.sh --system --parallel --upload --release
+        chmod 2777 /usr/local/opt/gridlabd
+        sh ./setup.sh --local
+        sh ./build.sh --system --parallel --upload --release
 
   buildUbuntu22FastS3:
 
