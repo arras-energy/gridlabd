@@ -156,7 +156,7 @@ jobs:
     runs-on: ubuntu-24.04
     environment: Integration
     container:
-      image: ubuntu:jammy
+      image: ubuntu:noble
 
     steps:
       # this is to fix GIT not liking owner of the checkout dir
