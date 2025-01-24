@@ -73,6 +73,7 @@ jobs:
       run: |
         sudo mkdir -p /usr/local/opt/gridlabd
         sudo chmod 2777 /usr/local/opt/gridlabd
+        brew install gdal
         sh ./setup.sh --local
         sh ./build.sh --system --parallel --upload --release
 
@@ -109,6 +110,7 @@ jobs:
       run: |
         sudo mkdir -p /usr/local/opt/gridlabd
         sudo chmod 2777 /usr/local/opt/gridlabd
+        brew install gdal
         sh ./setup.sh --local
         sh ./build.sh --system --parallel --upload --release
 
