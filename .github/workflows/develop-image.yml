@@ -71,6 +71,7 @@ jobs:
 
     - name: Deploy to S3
       run: |
+        sudo mkdir -p /usr/local/opt/gridlabd
         sh ./setup.sh --local
         sh ./build.sh --system --parallel --upload --release
 
@@ -105,6 +106,7 @@ jobs:
 
     - name: Deploy to S3
       run: |
+        sudo mkdir -p /usr/local/opt/gridlabd
         sh ./setup.sh --local
         sh ./build.sh --system --parallel --upload --release
 
