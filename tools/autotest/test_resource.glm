@@ -1,0 +1,17 @@
+// get resource indexes
+#begin python
+from resource import Resource
+import json
+with open('test_resource.txt','w') as fh:
+    for resource in Resource().list("buildings"):
+        try:
+            print(json.dumps(Resource().index(name=resource),indent=4),file=fh)
+        except Exception as err:
+            print(err,file=fh)
+#end
+
+#system gridlabd resource --test=buildings 1>>test_resource.txt 2>&1
+
+#ifexist "../test_resource.txt"
+#on_exit 0 diff ../test_resource.txt test_resource.txt > gridlabd.diff
+#endif

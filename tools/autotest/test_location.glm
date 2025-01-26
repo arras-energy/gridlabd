@@ -1,0 +1,6 @@
+#system rm -f ${GLD_ETC}/location.glm
+#system gridlabd location --system > test_location.txt
+
+#ifexist "../test_location.txt"
+#on_exit 0 diff ../test_location.txt test_location.txt > gridlabd.diff
+#endif

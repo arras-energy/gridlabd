@@ -1,4 +1,4 @@
-[[/Utilities/Unitcalc]] -- Unit support
+[[/Tools/Unitcalc]] -- Unit support
 
 Syntax: gridlabd unitcalc VALUE [VALUE OP [...]] [OPTIONS ...]
 

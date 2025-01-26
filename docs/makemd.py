@@ -19,7 +19,7 @@ E_MISSING = 2
 E_SYNTAX = 3
 E_EXCEPTION = 9
 
-IGNORE = ['TypeVar']
+IGNORE = ['TypeVar','Union']
 
 class MakemdError(Exception):
     def __init__(self,msg,exitcode=None):
@@ -48,7 +48,7 @@ try:
         # output classes
         first = True
         for item in [getattr(module,x) for x in dir(module) if inspect.isclass(getattr(module,x))]:
-            if not item.__doc__ or item.__name__ in IGNORE:
+            if not item.__doc__ or item.__name__ in IGNORE or isinstance(item,type(os)):
                 continue
             if first:
                 print("\n# Classes",file=md)
