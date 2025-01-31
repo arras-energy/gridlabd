@@ -65,7 +65,7 @@ import os
 import json
 import re
 import traceback
-from gridlabd import framework as app
+import gridlabd.framework as app
 import pandas as pd
 
 def to_csv(data,end="\n",sep=",",quote='"',na="",index="name"):

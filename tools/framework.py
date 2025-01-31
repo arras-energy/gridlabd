@@ -60,7 +60,7 @@ import io
 import json
 import math
 import subprocess
-from gridlabd import unitcalc
+import gridlabd.unitcalc as unitcalc
 import geocoder
 from typing import TypeVar
 import inspect

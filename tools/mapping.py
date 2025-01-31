@@ -61,7 +61,7 @@ import json
 import math
 import pandas as pd
 import plotly.express as px
-from gridlabd import unitcalc
+import gridlabd.unitcalc as unitcalc
 from typing import TypeVar
 import traceback
 

@@ -10,15 +10,15 @@
 #endif
 
 #define REV_MAJOR 4
-#define REV_MINOR 4
-#define REV_PATCH 0
+#define REV_MINOR 3
+#define REV_PATCH 14
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #else
 #define _V(X,Y,Z) #X"."#Y"."#Z
 #define PACKAGE "gridlabd"
-#define PACKAGE_NAME "HiPAS GridLAB-D"
+#define PACKAGE_NAME "Arras Energy"
 #define PACKAGE_VERSION _V(REV_MAJOR,REV_MINOR,REV_PATCH)
 #define PACKAGE_STRING PACKAGE_NAME" "PACKAGE_VERSION
 #endif
