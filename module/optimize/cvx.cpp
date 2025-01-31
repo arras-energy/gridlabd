@@ -336,10 +336,10 @@ int cvx::init(OBJECT *parent)
             Py_INCREF(defs);
         }
 
-        PyObject *module = PyImport_ImportModule("network");
+        PyObject *module = PyImport_ImportModule("gridlabd.network");
         if ( module == NULL )
         {
-            exception("'import network as %s' failed (PYTHONPATH=%s)",(const char*)utils,getenv("PYTHONPATH"));
+            exception("'import gridlabd.network as %s' failed (PYTHONPATH=%s)",(const char*)utils,getenv("PYTHONPATH"));
         }
         PyModule_AddObject(gld,"glm",module);
         PyModule_AddObject(module,"gld",gld);

@@ -154,7 +154,7 @@ else:
 modname = f'{MODPATH}/{INPUTTYPE}2{OUTPUTTYPE}.py'
 if os.path.exists(modname):
 	verbose(f"loading '{modname}'")
-	mod = importlib.import_module(f'{INPUTTYPE}2{OUTPUTTYPE}')
+	mod = importlib.import_module(f'gridlabd.{INPUTTYPE}2{OUTPUTTYPE}')
 	verbose(f"calling {modname}.convert({INPUTFILE.__repr__()},{OUTPUTFILE.__repr__()},{OPTIONS.__repr__()})")
 	try:
 		mod.convert(INPUTFILE,OUTPUTFILE,OPTIONS)

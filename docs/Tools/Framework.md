@@ -20,7 +20,7 @@ The following options are processed by `read_stdargs()`:
 Example:
 
 ~~~
-import framework as app
+import gridlabd.framework as app
 
 def main(argv:list[str]) -> int:
 

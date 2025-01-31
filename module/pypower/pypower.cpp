@@ -336,7 +336,7 @@ EXPORT bool on_init(void)
     }
 
     // import pypower solver
-    PyObject *module = PyImport_ImportModule("pypower_solver");
+    PyObject *module = PyImport_ImportModule("gridlabd.pypower_solver");
     if ( module == NULL )
     {
         if ( PyErr_Occurred() )

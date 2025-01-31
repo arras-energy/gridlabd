@@ -5,15 +5,15 @@ work and that there are no memory leaks.
 """
 import sys
 assert(sys.version_info.major>2)
-import gridlabd
+import gldcore
 
-# construct the command line (gridlabd hasn't started yet)
-gridlabd.command('test_memory.glm')
+# construct the command line (gldcore hasn't started yet)
+gldcore.command('test_memory.glm')
 
-# start gridlabd and wait for it to complete
-gridlabd.start('wait')
+# start gldcore and wait for it to complete
+gldcore.start('wait')
 
 # send the final model state to a file
-gridlabd.save('done.json')
+gldcore.save('done.json')
 
 

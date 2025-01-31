@@ -1,6 +1,6 @@
 #!/anaconda/bin/python
 import os
-import gridlabd
+import gldcore
 import random
 import json
 
@@ -15,18 +15,18 @@ t = os.getenv("clock")
 #
 # Process the list of houses
 #
-houses = gridlabd.get('houselist')
+houses = gldcore.get('houselist')
 for name in houses['houselist'].split(';') :
 
 	# Get the house data
-	house = gridlabd.get(name,'*')
+	house = gldcore.get(name,'*')
 	
 	# thermostat control
-	Ta = gridlabd.get_double(house,'air_temperature')
-	Th = gridlabd.get_double(house,'heating_setpoint')
-	Tc = gridlabd.get_double(house,'cooling_setpoint')
-	Td = gridlabd.get_double(house,'thermostat_deadband')
-	Tx = gridlabd.get_double(house,'aux_heat_deadband')
+	Ta = gldcore.get_double(house,'air_temperature')
+	Th = gldcore.get_double(house,'heating_setpoint')
+	Tc = gldcore.get_double(house,'cooling_setpoint')
+	Td = gldcore.get_double(house,'thermostat_deadband')
+	Tx = gldcore.get_double(house,'aux_heat_deadband')
 	M = house['system_mode']
 	
 	# show values
@@ -57,5 +57,5 @@ for name in houses['houselist'].split(';') :
 		N = 'OFF'
 	if N != M :
 		print '{:25} {:10} {}'.format(t,name,N)
-		gridlabd.set(name,'system_mode',N)
+		gldcore.set(name,'system_mode',N)
 

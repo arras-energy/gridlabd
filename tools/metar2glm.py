@@ -4,7 +4,7 @@ exec "$GLD_BIN/python3" "$0" "$@"
 # Syntax: metar2glm [--index|STATION ...]
 import sys
 sys.path.append(sys.argv[0].split()[0:-1])
-import ucar_weather
+from gridlabd import ucar_weather
 import datetime
 
 station_list = []

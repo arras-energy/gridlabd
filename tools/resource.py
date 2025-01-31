@@ -55,7 +55,7 @@ import io
 import json
 import re
 import pandas as pd
-import framework as app
+import gridlabd.framework as app
 import subprocess
 import requests
 from typing import TypeVar, Union

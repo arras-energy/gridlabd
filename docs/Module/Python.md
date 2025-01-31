@@ -12,61 +12,61 @@ python3 -m pip install $GLD_ETC/*.whl
 
 Python 3:
 ~~~
-  >>> import gridlabd
-  >>> gridlabd.title()
-  >>> gridlabd.version()
-  >>> gridlabd.copyright()
-  >>> gridlabd.credits()
-  >>> gridlabd.license()
+  >>> import gldcore
+  >>> gldcore.title()
+  >>> gldcore.version()
+  >>> gldcore.copyright()
+  >>> gldcore.credits()
+  >>> gldcore.license()
 ~~~
 Output streams:
 ~~~
-  >>> gridlabd.output(message)
-  >>> gridlabd.debug(message)
-  >>> gridlabd.warning(message)
-  >>> gridlabd.error(message)
+  >>> gldcore.output(message)
+  >>> gldcore.debug(message)
+  >>> gldcore.warning(message)
+  >>> gldcore.error(message)
 ~~~
 Simulation control:
 ~~~
-  >>> gridlabd.command(argument)
-  >>> gridlabd.start(mode)
-  >>> gridlabd.wait()
-  >>> gridlabd.cancel()
-  >>> gridlabd.pause()
-  >>> gridlabd.pauseat(datetime)
-  >>> gridlabd.resume()
+  >>> gldcore.command(argument)
+  >>> gldcore.start(mode)
+  >>> gldcore.wait()
+  >>> gldcore.cancel()
+  >>> gldcore.pause()
+  >>> gldcore.pauseat(datetime)
+  >>> gldcore.resume()
 ~~~
 Model control:
 ~~~
-  >>> gridlabd.module(name)
-  >>> gridlabd.add(block,data)
-  >>> gridlabd.load(filename)
-  >>> gridlabd.save(filename)
+  >>> gldcore.module(name)
+  >>> gldcore.add(block,data)
+  >>> gldcore.load(filename)
+  >>> gldcore.save(filename)
 ~~~
 Gets:
 ~~~
-  >>> gridlabd.get(item)
-  >>> gridlabd.get_class(name)
-  >>> gridlabd.get_object(name)
-  >>> gridlabd.get_global(name)
-  >>> gridlabd.get_value(name,property)
-  >>> gridlabd.get_schedule(name)
+  >>> gldcore.get(item)
+  >>> gldcore.get_class(name)
+  >>> gldcore.get_object(name)
+  >>> gldcore.get_global(name)
+  >>> gldcore.get_value(name,property)
+  >>> gldcore.get_schedule(name)
 ~~~
 Sets:
 ~~~
-  >>> gridlabd.set_global(name,value)
-  >>> gridlabd.set_value(name,property,value)
+  >>> gldcore.set_global(name,value)
+  >>> gldcore.set_value(name,property,value)
 ~~~
 Units:
 ~~~
-  >>> gridlabd.convert_unit(string,to)
-  >>> gridlabd.convert_unit(real,from,to)
+  >>> gldcore.convert_unit(string,to)
+  >>> gldcore.convert_unit(real,from,to)
 
 ~~~
 
 # Description
 
-The [[/python]] module `gridlabd` loads an instance of GridLAB-D into the current instance of python.  Only one instance of GridLAB-D may be loaded per instance of python.
+The [[/python]] module `gldcore` loads an instance of GridLAB-D into the current instance of python.  Only one instance of GridLAB-D may be loaded per instance of python.
 
 A `.glm` file may load a Python module to implement event handlers.  The syntax for loading a Python module is the same as that for loading a GridLAB-D module:
 ~~~
@@ -84,7 +84,7 @@ If you want to set module variables that will be accessible through the module o
 
 In this case you can read or write the string using the python syntax
 ~~~
-  >>> gridlabd.variable_name
+  >>> gldcore.variable_name
 ~~~
 
 ## Module Event Handlers
@@ -101,7 +101,7 @@ The following module event handlers may be defined in the module.
 
   def on_commit(t):
       # add your code here
-      return gridlabd.NEVER # return an integer value of t or later to cause iteration
+      return gldcore.NEVER # return an integer value of t or later to cause iteration
                             # return an integer value less than t to stop simulation
 
   def on_term(t):
@@ -115,7 +115,7 @@ In addition, objects may call individual event handlers by defining the handler 
 ~~~
   def event_handler(obj,t):
       # add your code here
-      return gridlabd.NEVER # return an integer value of t or later to cause iteration
+      return gldcore.NEVER # return an integer value of t or later to cause iteration
                             # return an integer value less than t to stop simulation
 
 ~~~
@@ -282,16 +282,16 @@ The following model is `test.glm`:
 The following is the file `test.py`:
 ~~~
   def on_init(t) :
-  	gridlabd.output("timestamp,x")
+  	gldcore.output("timestamp,x")
   	return True
   
   def on_sync(t) :
-  	gridlabd.output("%s,%s"%(gridlabd.get_global("clock"),gridlabd.get_object("my_test")["x"]))
-  	return gridlabd.NEVER
+  	gldcore.output("%s,%s"%(gldcore.get_global("clock"),gldcore.get_object("my_test")["x"]))
+  	return gldcore.NEVER
   
   def commit(obj,t) :
-  	gridlabd.debug("%s.commit(obj='%s',t=%d) ok" % (gridlabd.__name__,obj,t))
-  	return gridlabd.NEVER
+  	gldcore.debug("%s.commit(obj='%s',t=%d) ok" % (gldcore.__name__,obj,t))
+  	return gldcore.NEVER
 ~~~
 The following example runs the model in Python:
 ~~~
@@ -299,10 +299,10 @@ bash$ python3
   Python 3.7.0 (default, Aug 22 2018, 15:22:29) 
   [Clang 8.0.0 (clang-800.0.42.1)] on darwin
   Type "help", "copyright", "credits" or "license" for more information.
-  >>> import gridlabd
-  >>> gridlabd.command('test')
+  >>> import gldcore
+  >>> gldcore.command('test')
   1
-  >>> gridlabd.start('wait')
+  >>> gldcore.start('wait')
   timestamp,x
   2018-01-01 00:00:00 UTC,0.825548
   2018-01-01 00:05:00 UTC,1.472663
@@ -350,10 +350,10 @@ The module is `my_test.py`:
   	finder = criteria.split("=")
   	if len(finder) < 2 :
   		raise Exception("find(criteria='key=value'): criteria syntax error")
-  	objects = gridlabd.get("objects")
+  	objects = gldcore.get("objects")
   	result = []
   	for name in objects :
- 		item = gridlabd.get_object(name)
+ 		item = gldcore.get_object(name)
   		if finder[0] in item and item[finder[0]] == finder[1] :
   			if "name" in item.keys() :
   				result.append(item["name"])
@@ -371,7 +371,7 @@ The module is `my_test.py`:
   def record_house(name,t) :
   	global recorder
   	if recorder :
-  		house = gridlabd.get_object(name)
+  		house = gldcore.get_object(name)
   		recorder.write("%s,%s,%s\n" % (house["name"],house["clock"],house["air_temperature"]))
   	return True
   
@@ -380,9 +380,9 @@ The module is `my_test.py`:
 ~~~
 The run script is `test_house.py`:
 ~~~
-  import gridlabd
-  gridlabd.command("test_house.glm")
-  gridlabd.start("wait")
+  import gldcore
+  gldcore.command("test_house.glm")
+  gldcore.start("wait")
 ~~~
 The first few lines of output are in `house.csv`:
 ~~~

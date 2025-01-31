@@ -4,7 +4,7 @@
 
 Shell:
 ~~~
-$ gridlabd fire_danger [OPTIONS ...]
+$ gridlabd gridlabd.fire_danger [OPTIONS ...]
 	-f|--forecast=DAY1[,DAY2[,...] 
 	-d|--date=DATE1[,DATE2[,...]] 
 	-t|--type=TYPE1[,TYPE2[,...]]  
@@ -12,7 +12,7 @@ $ gridlabd fire_danger [OPTIONS ...]
 
 GLM:
 ~~~
-#python -m fire_danger [OPTIONS ...]
+#python -m gridlabd.fire_danger [OPTIONS ...]
 	-f|--forecast=DAY1[,DAY2[,...] 
 	-d|--date=DATE1[,DATE2[,...]] 
 	-t|--type=TYPE1[,TYPE2[,...]]
@@ -22,7 +22,7 @@ Python:
 ~~~
 >>> import sys
 >>> sys.path.append("/usr/local/share/gridlabd/")
->>> import fire_danger
+>>> import gridlabd.fire_danger
 >>> 
 ~~~
 
@@ -52,13 +52,13 @@ YYYY-MM-DD. Valid TYPE values are:
 The following example displays the 5-day fire potential index forecast map for August 20, 2021.
 
 ~~~
-sh$ gridlabd fire_danger -f=5 -d=2021-08-20 -t=fpi --show
+sh$ gridlabd gridlabd.fire_danger -f=5 -d=2021-08-20 -t=fpi --show
 ~~~
 
 The following example obtains the image name the same data
 
 ~~~
-sh$ gridlabd fire_danger -f=5 -d=2021-08-20 -t=fpi
+sh$ gridlabd gridlabd.fire_danger -f=5 -d=2021-08-20 -t=fpi
 /usr/local/opt/gridlabd/gridlabd/current/share/gridlabd/usgs/firedanger/fpi_20210820_5.tif
 ~~~
 
@@ -67,7 +67,7 @@ The following example obtains the image name in Python:
 ~~~
 >>> import sys
 >>> sys.path.append("/usr/local/share/gridlabd")
->>> import fire_danger
+>>> import gridlabd.fire_danger
 >>> fire_danger.get_data(5,'20210820','fpi')
 '/usr/local/opt/gridlabd/gridlabd/current/share/gridlabd/usgs/firedanger/fpi_20210820_5.tif'
 ~~~

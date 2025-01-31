@@ -90,7 +90,7 @@ import datetime as dt
 from typing import TypeVar
 import inspect
 import re
-from unitcalc import floatUnit,Unit
+from gridlabd.unitcalc import floatUnit,Unit
 
 DEBUG = True
 

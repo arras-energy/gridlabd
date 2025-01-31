@@ -4,14 +4,14 @@
 
 Shell:
 
-    sh$ gridlabd python market_model [-f|--file=DATACSV] [-i|--input=INPUTCOL(S)] [-o|--output=OUTPUTCOL] [
+    sh$ gridlabd gridlabd.python market_model [-f|--file=DATACSV] [-i|--input=INPUTCOL(S)] [-o|--output=OUTPUTCOL] [
     -l|--lookahead=LOOKAHEAD] [-k|--order] [-g|--glm=GLMNAME] [-I|--init=ISODATETIME] [-M|--module=MODULENAME] [
     -C|--class=CLASSNAME] [-N|--name=OBJNAME] [-P|--player[=PLAYERCSV]] [-R|--recorder=RECORDERCSV] [--{by,with}_{hour,
     day,month,year}] [-v|--verbose] [-w|--warning] [-q|--quiet] [-d|--debug] [-h|--help|help]
 
 GLM:
 
-    #python -m market_model [-f|--file=DATACSV] [-i|--input=INPUTCOL(S)] [-o|--output=OUTPUTCOL] [
+    #python -m gridlabd.market_model [-f|--file=DATACSV] [-i|--input=INPUTCOL(S)] [-o|--output=OUTPUTCOL] [
     -l|--lookahead=LOOKAHEAD] [-k|--order] [-g|--glm=GLMNAME] [-I|--init=ISODATETIME] [-M|--module=MODULENAME] [
     -C|--class=CLASSNAME] [-N|--name=OBJNAME] [-P|--player[=PLAYERCSV]] [-R|--recorder=RECORDERCSV] [--{by,with}_{hour,
     day,month,year}] [-v|--verbose] [-w|--warning] [-q|--quiet] [-d|--debug]
@@ -92,7 +92,7 @@ omits the LMP data in the input file.
 
 # Example
 
-    $ python market_model -f=caiso_20220101-20220201.csv -i=LMP -o=MW -k=24 -l=3
+    $ python gridlabd.market_model -f=caiso_20220101-20220201.csv -i=LMP -o=MW -k=24 -l=3
 
 # See also
 

@@ -5,19 +5,19 @@
 Shell:
 
 ~~~
-bash$ gridlabd create_poles INPUTFILE OPTIONS ...
+bash$ gridlabd gridlabd.create_poles INPUTFILE OPTIONS ...
 ~~~
 
 GLM:
 
 ~~~
-#python -m create_poles INPUTFILE OPTIONS ...
+#python -m gridlabd.create_poles INPUTFILE OPTIONS ...
 ~~~
 
 Python
 
 ~~~
->>> import create_poles
+>>> import gridlabd.create_poles
 >>> create_poles.main(INPUTFILE,OPTIONS)
 ~~~
 
@@ -65,14 +65,14 @@ The `--include_network` adds a `#include "FILENAME"` directive in the output to 
 resulting GLM file contains all the objects required to run the simulation, e.g.,
 
 ~~~
-$ gridlabd create_poles example.glm --output=model.glm --spacing=100 --pole_type=WOOD-EC-45/4
+$ gridlabd gridlabd.create_poles example.glm --output=model.glm --spacing=100 --pole_type=WOOD-EC-45/4
 $ gridlabd example.glm model.glm
 ~~~
 
 Alternative, when the input is a GLM, the two GLM files can be used together in a single command, e.g.,
 
 ~~~
-$ gridlabd create_poles example.glm --output=model.glm  --spacing=100 --pole_type=WOOD-EC-45/4 --include_network
+$ gridlabd gridlabd.create_poles example.glm --output=model.glm  --spacing=100 --pole_type=WOOD-EC-45/4 --include_network
 $ gridlabd model.glm
 ~~~
 

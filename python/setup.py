@@ -49,7 +49,7 @@ if not compile_options :
 compile_options.extend(['-I%s/source'%srcdir,'-I%s/python'%srcdir,'-I%s/runtime'%srcdir,'-I%s/source'%blddir,"-fPIC","-DHAVE_CONFIG_H","-DHAVE_PYTHON"])
 
 from setuptools import setup, Extension
-gridlabd = Extension('gridlabd', 
+gldcore = Extension('gldcore', 
 	include_dirs = list(map(lambda x: srcdir+'/'+x,['python','source'])),
 	extra_compile_args = compile_options,
 	libraries = ['ncurses', 'curl'],
@@ -161,10 +161,10 @@ if len(sys.argv) > 1:
 		print("Compile options:",compile_options)
 		exit(0)
 setup (	
-	name = 'gridlabd',
+	name = 'gldcore',
 	version = get_version(),
 	description = 'Arras Energy',
 	author = 'SLAC Gismo',
 	author_email = 'gridlabd@gmail.com',
-	ext_modules = [gridlabd],
+	ext_modules = [gldcore],
 	url = "https://arras.energy/")

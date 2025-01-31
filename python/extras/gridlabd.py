@@ -214,9 +214,9 @@ def get_double(data,key) :
 		A float value
 		
 	Example:
-		import gridlabd
-		data = gridlabd.get('house','*')
-		T = gridlabd.get_double(data,'air_temperature')
+		import gldcore
+		data = gldcore.get('house','*')
+		T = gldcore.get_double(data,'air_temperature')
 	"""
 	try :
 		value = data[key].split(' ')
@@ -238,9 +238,9 @@ def get_complex(data,key) :
 		A complex value
 		
 	Example:
-		import gridlabd
-		data = gridlabd.get('house','*')
-		P = gridlabd.get_complex(data,'panel.power')
+		import gldcore
+		data = gldcore.get('house','*')
+		P = gldcore.get_complex(data,'panel.power')
 	
 	Note: 
 		By default GridLAB-D using the 'i' notation for complex value but
@@ -269,9 +269,9 @@ def get_unit(data,key) :
 		A unit string if one is present, otherwise an empty string
 		
 	Example:
-		import gridlabd
-		data = gridlabd.get('house','*')
-		unit = gridlabd.get_unit(data,'air_temperature')
+		import gldcore
+		data = gldcore.get('house','*')
+		unit = gldcore.get_unit(data,'air_temperature')
 	"""
 	try :
 		value = data[key].split(' ')

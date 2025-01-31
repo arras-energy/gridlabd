@@ -1,12 +1,11 @@
 #! /bin/sh
-# Generated from gridlabd.m4sh by GNU Autoconf 2.71.
+# Generated from gridlabd.m4sh by GNU Autoconf 2.72.
 ## -------------------- ##
 ## M4sh Initialization. ##
 ## -------------------- ##
 
 # Be more Bourne compatible
 DUALCASE=1; export DUALCASE # for MKS sh
-as_nop=:
 if test ${ZSH_VERSION+y} && (emulate sh) >/dev/null 2>&1
 then :
   emulate sh
@@ -15,12 +14,13 @@ then :
   # is contrary to our usage.  Disable this feature.
   alias -g '${1+"$@"}'='"$@"'
   setopt NO_GLOB_SUBST
-else $as_nop
-  case `(set -o) 2>/dev/null` in #(
+else case e in #(
+  e) case `(set -o) 2>/dev/null` in #(
   *posix*) :
     set -o posix ;; #(
   *) :
      ;;
+esac ;;
 esac
 fi
 
@@ -92,7 +92,7 @@ IFS=$as_save_IFS
 
      ;;
 esac
-# We did not find ourselves, most probably we were run as `sh COMMAND'
+# We did not find ourselves, most probably we were run as 'sh COMMAND'
 # in which case we are not to be found in the path.
 if test "x$as_myself" = x; then
   as_myself=$0
@@ -104,8 +104,7 @@ fi
 
 
 if test "x$CONFIG_SHELL" = x; then
-  as_bourne_compatible="as_nop=:
-if test \${ZSH_VERSION+y} && (emulate sh) >/dev/null 2>&1
+  as_bourne_compatible="if test \${ZSH_VERSION+y} && (emulate sh) >/dev/null 2>&1
 then :
   emulate sh
   NULLCMD=:
@@ -113,12 +112,13 @@ then :
   # is contrary to our usage.  Disable this feature.
   alias -g '\${1+\"\$@\"}'='\"\$@\"'
   setopt NO_GLOB_SUBST
-else \$as_nop
-  case \`(set -o) 2>/dev/null\` in #(
+else case e in #(
+  e) case \`(set -o) 2>/dev/null\` in #(
   *posix*) :
     set -o posix ;; #(
   *) :
      ;;
+esac ;;
 esac
 fi
 "
@@ -136,8 +136,9 @@ as_fn_ret_failure && { exitcode=1; echo as_fn_ret_failure succeeded.; }
 if ( set x; as_fn_ret_success y && test x = \"\$1\" )
 then :
 
-else \$as_nop
-  exitcode=1; echo positional parameters were not saved.
+else case e in #(
+  e) exitcode=1; echo positional parameters were not saved. ;;
+esac
 fi
 test x\$exitcode = x0 || exit 1
 blah=\$(echo \$(echo blah))
@@ -147,14 +148,15 @@ test -x / || exit 1"
   if (eval "$as_required") 2>/dev/null
 then :
   as_have_required=yes
-else $as_nop
-  as_have_required=no
+else case e in #(
+  e) as_have_required=no ;;
+esac
 fi
   if test x$as_have_required = xyes && (eval "$as_suggested") 2>/dev/null
 then :
 
-else $as_nop
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+else case e in #(
+  e) as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
 as_found=false
 for as_dir in /bin$PATH_SEPARATOR/usr/bin$PATH_SEPARATOR$PATH
 do
@@ -184,12 +186,13 @@ IFS=$as_save_IFS
 if $as_found
 then :
 
-else $as_nop
-  if { test -f "$SHELL" || test -f "$SHELL.exe"; } &&
+else case e in #(
+  e) if { test -f "$SHELL" || test -f "$SHELL.exe"; } &&
 	      as_run=a "$SHELL" -c "$as_bourne_compatible""$as_required" 2>/dev/null
 then :
   CONFIG_SHELL=$SHELL as_have_required=yes
-fi
+fi ;;
+esac
 fi
 
 
@@ -211,7 +214,7 @@ case $- in # ((((
 esac
 exec $CONFIG_SHELL $as_opts "$as_myself" ${1+"$@"}
 # Admittedly, this is quite paranoid, since all the known shells bail
-# out after a failed `exec'.
+# out after a failed 'exec'.
 printf "%s\n" "$0: could not re-execute with $CONFIG_SHELL" >&2
 exit 255
 fi
@@ -230,7 +233,8 @@ $0: message. Then install a modern shell, or manually run
 $0: the script under such a shell if you do have one."
   fi
   exit 1
-fi
+fi ;;
+esac
 fi
 fi
 SHELL=${CONFIG_SHELL-/bin/sh}
@@ -250,15 +254,6 @@ as_fn_unset ()
   { eval $1=; unset $1;}
 }
 as_unset=as_fn_unset
-
-# as_fn_nop
-# ---------
-# Do nothing but, unlike ":", preserve the value of $?.
-as_fn_nop ()
-{
-  return $?
-}
-as_nop=as_fn_nop
 
 ## -------------------- ##
 ## Main body of script. ##
@@ -357,13 +352,14 @@ export CXXFLAGS="${INCLUDE} ${PYCCFLAGS} ${CXXFLAGS}"
 export PYLDFLAGS="$($PYTHON_CONFIG --ldflags)"
 export LIB="-L$GLD_LIB -L/usr/local/lib -L$GLD_VER/lib -L/usr/lib"
 export LDFLAGS="${LIB} ${PYLDFLAGS} ${LDFLAGS}"
-export PYTHONPATH=.:${GLD_ETC}:${GLD_LIB}/python${PYTHON_VER}/site-packages${PYTHONPATH:+:}${PYTHONPATH}
+export PYTHONPATH=.:${GLD_ETC%/*}:${GLD_LIB}/python${PYTHON_VER}/site-packages${PYTHONPATH:+:}${PYTHONPATH}
 
 if test "x$GLPATH" = x
 then :
   export GLPATH="$GLD_LIB:$GLD_ETC"
-else $as_nop
-  export GLPATH="$GLD_LIB:$GLD_ETC:$GLPATH"
+else case e in #(
+  e) export GLPATH="$GLD_LIB:$GLD_ETC:$GLPATH" ;;
+esac
 fi
 
 if test "x$1" = "xgdb" ; then :
@@ -407,12 +403,13 @@ fi
 
 if test -f "${GLD_ETC}/$1.py"
 then :
-  export PYTHONPATH="$GLD_ETC"; python3 -m "$@" ; exit $?
+  export PYTHONPATH="${GLD_ETC%/*}"; python3 -m "gridlabd.$@" ; exit $?
 fi
 
 if test -x "${GLD_BIN}/gridlabd-$1"
 then :
   "${GLD_BIN}/gridlabd"-"$@"
-else $as_nop
-  "${GLD_BIN}/gridlabd.bin" "$@" && "${GLD_BIN}/gridlabd-version" check -w
+else case e in #(
+  e) "${GLD_BIN}/gridlabd.bin" "$@" && "${GLD_BIN}/gridlabd-version" check -w ;;
+esac
 fi

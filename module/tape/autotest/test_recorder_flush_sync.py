@@ -9,7 +9,7 @@ def test_commit(obj,t):
 			srcdir = "."
 		data = pandas.read_csv(f"{srcdir}/test_recorder_flush_0.csv",index_col='timestamp')
 		global n
-		f = int(gridlabd.get_value("recorder","flush"))
+		f = int(gldcore.get_value("recorder","flush"))
 		if not f:
 			f = 1
 		n += 1
