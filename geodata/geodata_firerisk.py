@@ -42,7 +42,7 @@ if not share:
     share = f"{GLD_ETC}/gridlabd"
 if share not in sys.path:
     sys.path.append(f"{GLD_ETC}/gridlabd")
-import fire_danger
+import gridlabd.fire_danger as fire_danger
 
 #
 # Defaults

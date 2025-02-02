@@ -8,7 +8,7 @@
 #resolve now
 #write test_group.json
 
-#python -m group -i=test_group.json --modify --force -o=test_group_modify_opt.glm
+#python -m gridlabd.group -i=test_group.json --modify --force -o=test_group_modify_opt.glm
 #include "test_group_modify_opt.glm"
 
 #ifexist ../test_group_modify_opt.glm

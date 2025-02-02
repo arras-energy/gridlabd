@@ -370,7 +370,7 @@ public:
 ///////////////////////////
 // Module initiatlization
 ///////////////////////////
-PyMODINIT_FUNC PyInit_gridlabd(void)
+PyMODINIT_FUNC PyInit_gldcore(void)
 {
     if ( this_module != NULL )
     {
@@ -2376,7 +2376,7 @@ MODULE *python_module_load(const char *file, int argc, const char *argv[])
     python_module.on_term = GET_CALLBACK(term);
 
     PyList_Append(modlist,mod);
-    PyModule_AddObject(mod,PACKAGE,this_module);
+    PyModule_AddObject(mod,"gldcore",this_module);
 
     return &python_module;
 }

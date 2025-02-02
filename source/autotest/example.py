@@ -1,4 +1,4 @@
-import gridlabd
+import gldcore
 
 prop = None
 

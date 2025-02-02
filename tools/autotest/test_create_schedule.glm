@@ -4,7 +4,7 @@
 #define DIR=..
 #endif
 
-#python -m create_schedule ${DIR:-.}/test_create_schedule.csv -o=test_create_schedule_opt.glm -N=test_schedule
+#python -m gridlabd.create_schedule ${DIR:-.}/test_create_schedule.csv -o=test_create_schedule_opt.glm -N=test_schedule
 #include "${modelname/.glm/_opt.glm}"
 
 clock

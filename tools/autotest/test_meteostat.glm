@@ -1,6 +1,6 @@
 // test_meteostat.glm
 
-#python -m meteostat_weather -r -p=37.5,-122.3 -n=test -g=test_meteostat_opt.glm -s=2020-01-01 -e=2020-02-01 -c=test_meteostat_opt.csv
+#python -m gridlabd.meteostat_weather -r -p=37.5,-122.3 -n=test -g=test_meteostat_opt.glm -s=2020-01-01 -e=2020-02-01 -c=test_meteostat_opt.csv
 
 #include "test_meteostat_opt.glm"
 

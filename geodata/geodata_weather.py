@@ -58,7 +58,7 @@ if not GLD_ETC:
     GLD_ETC = "/usr/local/share/gridlabd"
 if GLD_ETC not in sys.path:
     sys.path.append(GLD_ETC)
-import nsrdb_weather
+import gridlabd.nsrdb_weather as nsrdb_weather
 
 #
 # Defaults

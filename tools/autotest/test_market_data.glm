@@ -4,7 +4,7 @@
 #define DIR=..
 #endif
 
-#python -m market_data -m=CAISO -d=0096WD_7_N001 -s=20220222 -e=20220223 -c=test_market_data.csv -g=test_market_data_opt.glm
+#python -m gridlabd.market_data -m=CAISO -d=0096WD_7_N001 -s=20220222 -e=20220223 -c=test_market_data.csv -g=test_market_data_opt.glm
 
 clock 
 {

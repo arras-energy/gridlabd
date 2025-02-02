@@ -6,7 +6,7 @@
 # HiPAS GridLAB-D 4.2
 #   Copyright (C) 2020-2022 Regents of the Leland Stanford Junior University
 #
-# Arras Energy 4.3
+# Arras Energy 4.3-
 #   Copyright (C) 2023- LF Energy
 #
 # Authors:

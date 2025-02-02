@@ -3967,6 +3967,7 @@ third_party/tnt_126/tnt_vec.h
 third_party/tnt_126/tnt_version.h
 tools/Makefile.mk
 tools/README.md
+tools/__init__.py
 tools/autotest/IEEE-123.tmy3
 tools/autotest/case14.json
 tools/autotest/case14.py

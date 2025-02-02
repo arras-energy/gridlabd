@@ -5,8 +5,8 @@
 Python:
 
 ~~~
-import gridlabd
-gridlabd.get_global("rusage_data")
+import gldcore
+gldcore.get_global("rusage_data")
 ~~~
 
 # Description

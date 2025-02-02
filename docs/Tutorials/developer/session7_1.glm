@@ -1,12 +1,12 @@
 // GridLAB-D Module
 #begin python
 import sys
-import gridlabd
-print(gridlabd.title(),file=sys.stderr)
-print(gridlabd.version(),file=sys.stderr)
-print(gridlabd.copyright(),file=sys.stderr)
-gridlabd.warning('a warning message')
-gridlabd.error('an error message')
+import gldcore
+print(gldcore.title(),file=sys.stderr)
+print(gldcore.version(),file=sys.stderr)
+print(gldcore.copyright(),file=sys.stderr)
+gldcore.warning('a warning message')
+gldcore.error('an error message')
 #end
 
 // Global access

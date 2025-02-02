@@ -22,7 +22,7 @@
 
 #endif
 
-PyMODINIT_FUNC PyInit_gridlabd(void);
+PyMODINIT_FUNC PyInit_gldcore(void);
 
 void python_embed_init(int argc, const char *argv[]);
 void *python_loader_init(int argc, const char **argv);

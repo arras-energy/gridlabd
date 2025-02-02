@@ -173,7 +173,6 @@ def convert(input_file, output_file, options={}):
 
 	if default_options["read"]["converters"]:
 		with open(default_options["read"]["converters"],"r") as fh:
-			import gridlabd
 			default_options["read"]["converters"] = {}
 			for key,value in json.load(fh).items():
 				default_options["read"]["converters"][key] = eval(value)

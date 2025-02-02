@@ -10,7 +10,8 @@
 
 // load the RECS data and calculate the floor area statistics
 #begin python
-import eia_recs, numpy
+import gridlabd.eia_recs as eia_recs
+import numpy
 fips = eia_recs.Microdata.get_division("CA")
 codes = eia_recs.Microdata.get_codes(**fips)
 recs = eia_recs.Microdata()

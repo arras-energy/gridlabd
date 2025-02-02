@@ -5,11 +5,11 @@ SYNOPSIS
 
 Shell:
 
-    $ gridlabd mdb_info MDBFILE COMMAND [ARGS ...]
+    $ gridlabd gridlabd.mdb_info MDBFILE COMMAND [ARGS ...]
 
 GLM:
 
-    #python -m mdb_info MDBFILE COMMAND [ARGS ...]
+    #python -m gridlabd.mdb_info MDBFILE COMMAND [ARGS ...]
 
 COMMAND
 

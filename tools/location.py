@@ -81,9 +81,9 @@ import os
 import sys
 import json
 import datetime as dt
-import framework as app
+import gridlabd.framework as app
 import geocoder
-import edit
+from gridlabd import edit
 
 LOCATIONKEYS = ["latitude","longitude","city","zipcode","county","state","region","country"]
 PROVIDER = "arcgis"

@@ -5,27 +5,27 @@
 Python:
 
 ~~~
-import gridlabd
-gridlabd.property.__init__(object=<int>, property=<str>)
-gridlabd.property.__init__(object=<str>, property=<str>)
-gridlabd.property.__eq__(<gridlabd.property>)
-gridlabd.property.__ne__(<gridlabd.property>)
-gridlabd.property.convert_unit(<str>)
-gridlabd.property.get_initial()
-gridlabd.property.get_name()
-gridlabd.property.get_unit()
-gridlabd.property.get_value()
-gridlabd.property.rlock()
-gridlabd.property.set_name(<str>)
-gridlabd.property.set_object(<int>)
-gridlabd.property.set_object(<str>)
-gridlabd.property.set_value(<str>)
-gridlabd.property.set_value(<long>)
-gridlabd.property.set_value(<float>)
-gridlabd.property.set_value(<complex>)
-gridlabd.property.set_value(<object>)
-gridlabd.property.unlock()
-gridlabd.property.wlock()
+import gldcore
+gldcore.property.__init__(object=<int>, property=<str>)
+gldcore.property.__init__(object=<str>, property=<str>)
+gldcore.property.__eq__(<gldcore.property>)
+gldcore.property.__ne__(<gldcore.property>)
+gldcore.property.convert_unit(<str>)
+gldcore.property.get_initial()
+gldcore.property.get_name()
+gldcore.property.get_unit()
+gldcore.property.get_value()
+gldcore.property.rlock()
+gldcore.property.set_name(<str>)
+gldcore.property.set_object(<int>)
+gldcore.property.set_object(<str>)
+gldcore.property.set_value(<str>)
+gldcore.property.set_value(<long>)
+gldcore.property.set_value(<float>)
+gldcore.property.set_value(<complex>)
+gldcore.property.set_value(<object>)
+gldcore.property.unlock()
+gldcore.property.wlock()
 ~~~
 
 # Description
@@ -46,7 +46,7 @@ The following example illustrates access to various object property types.
 
 ~~~
 module example;
-#set savefile=gridlabd.json
+#set savefile=gldcore.json
 clock
 {
 	starttime "2000-01-01 00:00:00";
@@ -72,10 +72,10 @@ object example_class
 `example.py`:
 
 ~~~
-import gridlabd
+import gldcore
 def on_init(t):
 	for name in ['my_list','my_value','my_string','my_real']:
-		prop = gridlabd.property('my_example',name)
+		prop = gldcore.property('my_example',name)
 		print(f"{repr(prop)}={str(prop)}")
 	return True
 ~~~
@@ -83,8 +83,8 @@ def on_init(t):
 `output`:
 
 ~~~
-<gridlabd.property:my_example.my_list>=['test', 12.34, {'a': 123, 'b': 456}]
-<gridlabd.property:my_example.my_value>=+1.234+5.6789j
-<gridlabd.property:my_example.my_string>="this is a short string"
-<gridlabd.property:my_example.my_real>=+30.48 m/s
+<gldcore.property:my_example.my_list>=['test', 12.34, {'a': 123, 'b': 456}]
+<gldcore.property:my_example.my_value>=+1.234+5.6789j
+<gldcore.property:my_example.my_string>="this is a short string"
+<gldcore.property:my_example.my_real>=+30.48 m/s
 ~~~

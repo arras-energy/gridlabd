@@ -1,6 +1,6 @@
 // get resource indexes
 #begin python
-from resource import Resource
+from gridlabd.resource import Resource
 import json
 with open('test_resource.txt','w') as fh:
     for resource in Resource().list("buildings"):

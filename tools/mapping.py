@@ -61,11 +61,11 @@ import json
 import math
 import pandas as pd
 import plotly.express as px
-import unitcalc
+import gridlabd.unitcalc as unitcalc
 from typing import TypeVar
 import traceback
 
-from framework import *
+from gridlabd.framework import *
 
 DEFAULT_MAPPER = "map" # "map" or "mapbox"
 

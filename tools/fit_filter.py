@@ -346,7 +346,7 @@ if __name__ == '__main__':
     try:
         import importlib
         sys.path.insert(0,os.path.dirname(config))
-        config_items = importlib.import_module(os.path.basename(config).replace('.py',''))
+        config_items = importlib.import_module(os.path.basename(config).replace('.py',''),"gridlabd")
         for item in dir(config_items):
             if not item.startswith("__"):
                 value = getattr(config_items,item)

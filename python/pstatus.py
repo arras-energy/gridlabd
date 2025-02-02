@@ -1,3 +1,3 @@
-import gridlabd
-print(gridlabd.pstatus())
-print(gridlabd.pstatus(0))
+import gldcore
+print(gldcore.pstatus())
+print(gldcore.pstatus(0))
