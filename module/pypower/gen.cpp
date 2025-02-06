@@ -10,6 +10,8 @@ EXPORT_PRECOMMIT(gen);
 CLASS *gen::oclass = NULL;
 gen *gen::defaults = NULL;
 
+double gen::default_reactive_power_fraction = 0.2;
+
 gen::gen(MODULE *module)
 {
 	if (oclass==NULL)
@@ -106,6 +108,12 @@ gen::gen(MODULE *module)
 		{
 				throw "unable to publish gen properties";
 		}
+
+	    gl_global_create("pypower::default_reactive_power_fraction[pu]",
+	        PT_double, &default_reactive_power_fraction, 
+	        PT_DESCRIPTION, "Default fraction of real power generation available for reactive power",
+	        NULL);
+
 	}
 }
 
@@ -188,7 +196,7 @@ void gen::add_Qg(double reactive)
 void gen::add_Pmax(double capacity)
 {
 	Pmax += capacity;
-	Qmax = Pmax/10; 
+	Qmax = Pmax/default_reactive_power_fraction; 
 	Qmin = -Qmax;
 }
 

@@ -10,6 +10,12 @@ class gen : public gld_object
 {
 
 public:
+
+	// module globals
+	static double default_reactive_power_fraction;
+
+public:
+
 	// published properties
 	GL_ATOMIC(int32,bus);
 	GL_ATOMIC(double,Pg);
@@ -36,6 +42,8 @@ public:
 	GL_ATOMIC(double,mu_Pmin);
 	GL_ATOMIC(double,mu_Qmax);
 	GL_ATOMIC(double,mu_Qmin);
+
+
 
 private:
 

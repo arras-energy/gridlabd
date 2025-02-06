@@ -424,6 +424,7 @@ EXPORT bool on_init(void)
         *strrchr(buffer,'.')='\0';
         PyDict_SetItemString(data,"modelname",PyUnicode_FromString(buffer));
     }
+    PyDict_SetItemString(data,"stop_on_failure",PyBool_FromLong(stop_on_failure));
 
     return true;
 }
@@ -775,7 +776,7 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
                 solver_status = SS_FAILED;
                 if ( stop_on_failure )
                 {
-                    gl_error("pypower solver failed (enable verbose for diagnostics)");
+                    gl_error("pypower solver failed (see *_failed.txt for diagnostics)");
                     return TS_INVALID;
                 }
                 else

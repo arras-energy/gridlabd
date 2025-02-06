@@ -37,6 +37,10 @@ geodata::geodata(MODULE *module)
 			PT_char1024, "target", get_target_offset(),
 				PT_DESCRIPTION, "geodata target class and property, e.g., CLASS::PROPERTY or OBJECT.PROPERTY",
 
+			PT_double, "scale[pu]", get_scale_offset(),
+				PT_DEFAULT, "1 pu",
+				PT_DESCRIPTION, "scale to apply to geodata values in file before writing to target",
+
 			NULL)<1)
 		{
 				throw "unable to publish geodata properties";
@@ -265,7 +269,7 @@ bool geodata::set_time(TIMESTAMP t0)
 		for ( size_t n = 0 ; n < geocode.n_values ; n++ )
 		{
 			debug("getodata::set_time(TIMESTAMP t0=%lld): updating value %.4g@%p to %.4g for time %lld from location '%s' to target %ld\n",t0,*(geocode.values[n]),geocode.values[n],value,get_time(),locations[location].hash,n);
-			*(geocode.values[n]) = value;
+			*(geocode.values[n]) = value*scale;
 		}
 	}
 
