@@ -177,6 +177,9 @@ def solver(pf_case):
             
             write_case(results,f"{modelname}_failed.{save_format}")
         
+        sys.stdout.flush()
+        sys.stderr.flush()
+        
         return False
 
     except Exception:

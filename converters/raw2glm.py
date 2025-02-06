@@ -228,7 +228,7 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
                     genndx[genid] = genndx[genid]+1 if genid in genndx else 0
                     if not row[0] in busndx:
                         warning(f"gen '{row[0]}' not a valid bus index",ifile,lineno)
-                    # PSSE: I,'ID',      PG,        QG,        QT,        QB,     VS,    IREG,     MBASE,     ZR,         ZX,         RT,         XT,     GTAP,STAT, RMPCT,      PT,        PB,    O1,    F1,  O2,    F2,  O3,    F3,  O4,    F4,WMOD, WPF,NREG
+                    # PSSE: I,'ID', PG, QG, QT, QB, VS, IREG, MBASE, ZR, ZX, RT, XT, GTAP, STAT, RMPCT, PT, PB, O1, F1, O2, F2, O3, F3, O4, F4, WMOD, WPF, NREG
                     print(f"""object pypower.gen
 {{
     name "{oname}_G_{row[0]}_{genndx[genid]}";
@@ -236,8 +236,11 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
     Pg {row[2]} MW;
     Qg {row[3]} MVAr;
     Vg {row[6]} pu*V;
-    mBase {row[8]} MVA;
-    status IN_SERVICE;
+    Pmax {row[16]} MW;
+    Pmin {row[17]} MW;
+    Qmax {row[4]} MVAr;
+    Qmin {row[5]} MVAr;
+    status {"IN_SERVICE" if row[14] == "1" else "OUT_OF_SERVICE"};
     {items(row)}
 }}""",file=glm)
 

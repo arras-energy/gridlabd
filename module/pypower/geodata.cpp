@@ -245,15 +245,15 @@ bool geodata::set_time(TIMESTAMP t0)
 	}
 
 	// look for data
-	// fprintf(stderr,"getodata::set_time(TIMESTAMP t0=%lld): current data row %zu at time %lld\n",t0,cur_data,get_time());
+	debug("getodata::set_time(TIMESTAMP t0=%lld): current data row %zu at time %lld\n",t0,cur_data,get_time());
 	while ( get_time() < t0 && cur_data < n_data )
 	{
 		cur_data++;
-		// fprintf(stderr,"getodata::set_time(TIMESTAMP t0=%lld): advancing to data row %zu at time %lld\n",t0,cur_data,get_time());
+		debug("getodata::set_time(TIMESTAMP t0=%lld): advancing to data row %zu at time %lld\n",t0,cur_data,get_time());
 	}
 	if ( get_time() == TS_NEVER )
 	{
-		// fprintf(stderr,"getodata::set_time(TIMESTAMP t0=%lld): end of data\n",t0);
+		debug("getodata::set_time(TIMESTAMP t0=%lld): end of data\n",t0);
 		return true;
 	}
 
@@ -264,7 +264,7 @@ bool geodata::set_time(TIMESTAMP t0)
 		double value = get_value(location);
 		for ( size_t n = 0 ; n < geocode.n_values ; n++ )
 		{
-			// fprintf(stderr,"getodata::set_time(TIMESTAMP t0=%lld): updating value %.4g@%p to %.4g for time %lld from location '%s' to target %ld\n",t0,*(geocode.values[n]),geocode.values[n],value,get_time(),locations[location].hash,n);
+			debug("getodata::set_time(TIMESTAMP t0=%lld): updating value %.4g@%p to %.4g for time %lld from location '%s' to target %ld\n",t0,*(geocode.values[n]),geocode.values[n],value,get_time(),locations[location].hash,n);
 			*(geocode.values[n]) = value;
 		}
 	}

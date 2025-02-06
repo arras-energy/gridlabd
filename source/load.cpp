@@ -8230,8 +8230,12 @@ int GldLoader::process_macro(char *line, int size, char *_filename, int linenum)
 	{
 		if ( ! version_check(line+9) )
 		{
-			syntax_error(filename,linenum,"version '%d.%d.%d-%d-%s' does not satisfy the version requirement",
-				global_version_major, global_version_minor, global_version_patch, global_version_build, global_version_branch);
+			while ( isspace(line[strlen(line)-1]) )
+			{
+				line[strlen(line)-1] = '\0';
+			}
+			syntax_error(filename,linenum,"version '%d.%d.%d-%d-%s' does not satisfy the version requirement '%s'",
+				global_version_major, global_version_minor, global_version_patch, global_version_build, global_version_branch,line+9);
 			strcpy(line,"\n");
 			return FALSE;
 		}

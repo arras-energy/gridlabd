@@ -772,16 +772,15 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
         {
             if ( result == Py_False )
             {
+                solver_status = SS_FAILED;
                 if ( stop_on_failure )
                 {
-                    gl_error("pypower solver failed");
-                    solver_status = SS_FAILED;
+                    gl_error("pypower solver failed (enable verbose for diagnostics)");
                     return TS_INVALID;
                 }
                 else
                 {
-                    gl_warning("pypower solver failed");
-                    solver_status = SS_FAILED;
+                    gl_warning("pypower solver failed (pypower::stop_on_failure is FALSE)");
                     return TS_NEVER;
                 }
             }
@@ -791,6 +790,10 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
                 fprintf(stderr," result = %s\n", PyBytes_AS_STRING(PyUnicode_AsEncodedString(PyObject_Repr(result),"utf-8","~E~")));
                 solver_status = SS_FAILED;
                 return TS_INVALID;
+            }
+            else
+            {
+                solver_status = SS_SUCCESS;
             }
 
             // copy values back from solver
@@ -874,9 +877,10 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
     }
 
     PyErr_Clear();
+
     if ( result == NULL && stop_on_failure )
     {
-        gl_warning("pypower solver failed");
+        gl_warning("pypower solver failed with no result (enable verbose for diagnostics)");
         solver_status = SS_FAILED;
         return TS_INVALID;
     }
@@ -884,7 +888,7 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
     { 
         if ( ! result )
         {
-            gl_warning("pypower solver failed");
+            gl_warning("pypower solver failed (no result with pypower::stop_on_failure FALSE)");
             solver_status = SS_FAILED;
         }
         else
