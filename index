@@ -2559,6 +2559,8 @@ module/pypower/relay.cpp
 module/pypower/relay.h
 module/pypower/scada.cpp
 module/pypower/scada.h
+module/pypower/shunt.cpp
+module/pypower/shunt.h
 module/pypower/transformer.cpp
 module/pypower/transformer.h
 module/pypower/weather.cpp
