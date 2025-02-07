@@ -72,6 +72,7 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
     new powerline(module);
     new relay(module);
     new scada(module);
+    new shunt(module);
     new transformer(module);
     new weather(module);
 
@@ -776,7 +777,17 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
                 solver_status = SS_FAILED;
                 if ( stop_on_failure )
                 {
-                    gl_error("pypower solver failed (see *_failed.txt for diagnostics)");
+                    char buffer[1025];
+                    gl_global_getvar("modelname",buffer,sizeof(buffer)-1);
+                    char *dot = strrchr(buffer,'.');
+                    if ( dot )
+                        *dot = '\0';
+                    char *slash = strrchr(buffer,'/');
+                    if ( slash )
+                        slash++;
+                    else
+                        slash = buffer;
+                    gl_error("pypower solver failed (see '%s_failed.txt' for solver failure diagnostics)",slash);
                     return TS_INVALID;
                 }
                 else

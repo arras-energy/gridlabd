@@ -6,6 +6,7 @@ import importlib, copy
 from importlib import util
 import csv
 from math import cos, sin
+from collections import namedtuple
 
 if os.path.exists("autotest/wecc240.raw") and len(sys.argv) == 1:
     sys.argv.extend(["-i","autotest/wecc240.raw","-o","autotest/wecc240.glm"])
@@ -310,6 +311,73 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
 {rd}
 }}""",file=glm)
                         rowd = []
+
+                elif block == "SWITCHED_SHUNT_DATA":
+
+                    mapping = {
+                        "MODSW": "control_mode",
+                        "ADJM": None,
+                        "ST": "status",
+                        "VSWHI": "voltage_high",
+                        "VSWLO": "voltage_low",
+                        "SWREG": "remote_bus",
+                        "RMPCT": None,
+                        "RMIDNT": None,
+                        "BINIT": "admittance",
+                        "N1": "steps_1",
+                        "B1": "admittance_1",
+                        "N2": "steps_2",
+                        "B2": "admittance_2",
+                        "N3": "steps_3",
+                        "B3": "admittance_3",
+                        "N4": "steps_4",
+                        "B4": "admittance_4",
+                        "N5": "steps_5",
+                        "B5": "admittance_5",
+                        "N6": "steps_6",
+                        "B6": "admittance_6",
+                        "N7": "steps_7",
+                        "B7": "admittance_7",
+                        "N8": "steps_8",
+                        "B8": "admittance_8",
+                        "NREG": None,
+                    }
+                    converters = {
+                        "remote_bus": lambda x: f'"{oname}_N_{x}"',
+                        "control_mode": lambda x: ["FIXED","DISCRETE_V","CONTINUOUS_V","DISCRETE_VAR","DISCRETE_VSC","DISCRETE_Y"][int(x)],
+                        "voltage_high": lambda x: f"{float(x)} pu",
+                        "voltage_low": lambda x: f"{float(x)} pu",
+                        "status": lambda x: ["OFFLINE","ONLINE"][int(x)],
+                        "admittance": lambda x: f"{float(x)} MVAr",
+                        "steps_1" : int,
+                        "admittance_1": lambda x: f"{float(x)} MVAr",
+                        "steps_2" : int,
+                        "admittance_2": lambda x: f"{float(x)} MVAr",
+                        "steps_3" : int,
+                        "admittance_3": lambda x: f"{float(x)} MVAr",
+                        "steps_4" : int,
+                        "admittance_4": lambda x: f"{float(x)} MVAr",
+                        "steps_5" : int,
+                        "admittance_5": lambda x: f"{float(x)} MVAr",
+                        "steps_6" : int,
+                        "admittance_6": lambda x: f"{float(x)} MVAr",
+                        "steps_7" : int,
+                        "admittance_7": lambda x: f"{float(x)} MVAr",
+                        "steps_8" : int,
+                        "admittance_8": lambda x: f"{float(x)} MVAr",
+                    }
+
+                    print(f"""object shunt {{ 
+    name "{oname}_S_{row[0]}";
+    parent "{oname}_N_{row[0]}";""",file=glm)
+                    for name,value in zip(fields[block][1:],row[1:]):
+                        tag = mapping[name.strip("'")]
+                        if tag in converters:
+                            value = converters[tag](value)
+                        else:
+                            value = f'"{value}"'
+                        print(f"""    {tag if tag else "// " + name.strip("'")} {value};""",file=glm)
+                    print(f"""}}""",file=glm)
 
                 elif row[0] == "Q":
 
