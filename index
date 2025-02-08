@@ -377,6 +377,7 @@ docs/GLM/Global/Findfile.md
 docs/GLM/Global/Geocode.md
 docs/GLM/Global/Now.md
 docs/GLM/Global/Python.md
+docs/GLM/Global/Random.md
 docs/GLM/Global/Range.md
 docs/GLM/Global/Shell.md
 docs/GLM/Global/Tmpfile.md
@@ -3371,6 +3372,7 @@ source/autotest/test_quoted_if_test.glm
 source/autotest/test_quoted_value.glm
 source/autotest/test_random.glm
 source/autotest/test_random_correlation.glm
+source/autotest/test_random_global.glm
 source/autotest/test_range.glm
 source/autotest/test_require.glm
 source/autotest/test_require_err.glm
