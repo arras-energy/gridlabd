@@ -1,0 +1,9 @@
+#set suppress_repeat_messages=FALSE
+#print Random uniform.......... ${RANDOM}
+#print Random 8-bit integer... ${RANDOM 8}
+#print Random 16-bit integer... ${RANDOM 16}
+#print Random 32-bit integer... ${RANDOM 32}
+#print Random 48-bit integer... ${RANDOM 48}
+#print Random 64-bit integer... ${RANDOM 64}
+#print Random normal........... ${RANDOM normal(0,1)}
+#print Last number generated... ${RANDOM last}
