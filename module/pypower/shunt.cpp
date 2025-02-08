@@ -135,8 +135,6 @@ shunt::shunt(MODULE *module)
             PT_DESCRIPTION, "Minimum deadband on voltage control",
 
         NULL);
-
-
     }
 }
 
@@ -193,7 +191,7 @@ TIMESTAMP shunt::sync(TIMESTAMP t0)
 TIMESTAMP shunt::postsync(TIMESTAMP t0)
 {
     double Vm = input->get_Vm();
-    fprintf(stderr,"input voltage is %.3lf pu",Vm);
+    verbose("input voltage is %.3lf pu",Vm);
     if ( status == S_ONLINE && control_mode == CM_DISCRETE_V )
     {
         bool Vhigh = Vm > voltage_high;
@@ -203,19 +201,19 @@ TIMESTAMP shunt::postsync(TIMESTAMP t0)
         if ( ( Vlow && ! Amax ) || ( Vhigh && ! Amin ) )
         {
             admittance += admittance_1;
-            output->set_Qd(output->get_Qd() + admittance_1);
-            fprintf(stderr,"stepping up admittance to %.1lf MVAr",admittance);
+            output->set_Bs(output->get_Bs() + admittance_1);
+            verbose("stepping up admittance to %.1lf MVAr",admittance);
             return t0;
         }
         if ( ( Vhigh && ! Amin ) || ( Vlow && ! Amax ) )
         {
             admittance -= admittance_1;
-            output->set_Qd(output->get_Qd() - admittance_1);
-            fprintf(stderr,"stepping down admittance to %.1lf MVAr",admittance);
+            output->set_Bs(output->get_Bs() - admittance_1);
+            verbose("stepping down admittance to %.1lf MVAr",admittance);
             return t0;
         }
     }
-    fprintf(stderr,"shunt admittance is %.1lf MVAr",admittance);    
+    verbose("shunt admittance is %.1lf MVAr",admittance);    
     return TS_NEVER;
 }
 
