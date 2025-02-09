@@ -751,6 +751,7 @@ docs/Module/Pypower/Powerline.md
 docs/Module/Pypower/Powerplant.md
 docs/Module/Pypower/Relay.md
 docs/Module/Pypower/Scada.md
+docs/Module/Pypower/Shunt.md
 docs/Module/Pypower/Transformer.md
 docs/Module/Pypower/Weather.md
 docs/Module/Python.md
