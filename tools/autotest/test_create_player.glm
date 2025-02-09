@@ -7,7 +7,7 @@
 #define DIR=..
 #endif
 
-#python -m create_player -i=${DIR:-.}/test_create_player.csv --stack -o=test_create_player_power_opt_ignore.csv -p=test_create_player_power_opt_ignore.glm -t=test
+#python -m gridlabd.create_player -i=${DIR:-.}/test_create_player.csv --stack -o=test_create_player_power_opt_ignore.csv -p=test_create_player_power_opt_ignore.glm -t=test
 
 class test
 {

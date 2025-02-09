@@ -5,14 +5,14 @@
 Shell:
 
 ~~~
-    bash$ gridlabd noaa_forecast -p|-position=LAT,LON [-i|--interpolate=TIME|METHOD]
+    bash$ gridlabd gridlabd.noaa_forecast -p|-position=LAT,LON [-i|--interpolate=TIME|METHOD]
         [-g|--glm=GLMNAME] [-n|--name=OBJECTNAME] [-c|--csv=CSVNAME] [--test] [-h|--help|help]
 ~~~
 
 GLM:
 
 ~~~
-    #python -m noaa_forecast -p|-position=LAT,LON [-i|--interpolate=TIME|METHOD]
+    #python -m gridlabd.noaa_forecast -p|-position=LAT,LON [-i|--interpolate=TIME|METHOD]
         [-g|--glm=GLMNAME] [-n|--name=OBJECTNAME] [-c|--csv=CSVNAME] [--test] [-h|--help|help]
     #include "GLMNAME"
 ~~~
@@ -21,7 +21,7 @@ Python:
 
 ~~~
     bash$ gridlabd python
-    >>> import noaa_forecast as nf
+    >>> import gridlabd.noaa_forecast as nf
     >>> ns.getforecast(37.5,-122.3)
                                    temperature[degF]  wind_speed[m/s]  wind_dir[deg]
     2021-10-21 14:00:00-07:00          68.000000         4.470400     202.500000
@@ -91,7 +91,7 @@ The module uses several parameters to control its behavior.
 The parameters can be changed before obtained the forecast.
 
 ~~~
-    >>> import noaa_forecast as nf
+    >>> import gridlabd.noaa_forecast as nf
     >>> nf.interpolate = 5
     >>> nf.getforecast(37.5,-122.3)
 ~~~
@@ -101,13 +101,13 @@ The parameters can be changed before obtained the forecast.
 The following command downloads only the CSV data for a location:
 
 ~~~
-    bash$ gridlabd noaa_forecast -p=45.62,-122.70 -c=test.csv
+    bash$ gridlabd gridlabd.noaa_forecast -p=45.62,-122.70 -c=test.csv
 ~~~
 
 The following command downloads the CSV data and creates a GLM file with the data linked and weather object named:
 
 ~~~
-    bash$ gridlabd noaa_forecast -p=45.62,-122.70 -c=test.csv -n=test -g=test.glm
+    bash$ gridlabd gridlabd.noaa_forecast -p=45.62,-122.70 -c=test.csv -n=test -g=test.glm
 ~~~
 
 # See also

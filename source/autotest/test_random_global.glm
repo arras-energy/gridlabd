@@ -1,0 +1,53 @@
+#set suppress_repeat_messages=FALSE
+#print Last number generated... ${RANDOM last}
+#print Random uniform.......... ${RANDOM}
+#print Last number generated... ${RANDOM last}
+#print Random 1-bit integer... ${RANDOM 1}
+#print Random 1-bit integer... ${RANDOM 1}
+#print Random 1-bit integer... ${RANDOM 1}
+#print Random 1-bit integer... ${RANDOM 1}
+#print Random 1-bit integer... ${RANDOM 1}
+#print Random 1-bit integer... ${RANDOM 1}
+#print Random 1-bit integer... ${RANDOM 1}
+#print Random 1-bit integer... ${RANDOM 1}
+#print Random 2-bit integer... ${RANDOM 2}
+#print Random 2-bit integer... ${RANDOM 2}
+#print Random 2-bit integer... ${RANDOM 2}
+#print Random 2-bit integer... ${RANDOM 2}
+#print Random 8-bit integer... ${RANDOM 8}
+#print Random 8-bit integer... ${RANDOM 8}
+#print Random 8-bit integer... ${RANDOM 8}
+#print Random 8-bit integer... ${RANDOM 8}
+#print Random 12-bit integer... ${RANDOM 12}
+#print Random 16-bit integer... ${RANDOM 16}
+#print Random 24-bit integer... ${RANDOM 24}
+#print Random 32-bit integer... ${RANDOM 32}
+#print Random 40-bit integer... ${RANDOM 40}
+#print Random 48-bit integer... ${RANDOM 48}
+#print Random 50-bit integer... ${RANDOM 50}
+#print Random 51-bit integer... ${RANDOM 51}
+#print Random 52-bit integer... ${RANDOM 52}
+#print Random 53-bit integer... ${RANDOM 53}
+#print Random 54-bit integer... ${RANDOM 54}
+#print Random 55-bit integer... ${RANDOM 55}
+#print Random 56-bit integer... ${RANDOM 56}
+#print Random 57-bit integer... ${RANDOM 57}
+#print Random 58-bit integer... ${RANDOM 58}
+#print Random 59-bit integer... ${RANDOM 59}
+#print Random 60-bit integer... ${RANDOM 60}
+#print Random 61-bit integer... ${RANDOM 61}
+#print Random 62-bit integer... ${RANDOM 62}
+#print Random 63-bit integer... ${RANDOM 63}
+#print Random 64-bit integer... ${RANDOM 64}
+#print Last number generated... ${RANDOM last}
+#print Random normal........... ${RANDOM normal(0,1)}
+#print Random normal........... ${RANDOM normal(0,1)}
+#print Random normal........... ${RANDOM normal(0,1)}
+#print Random normal........... ${RANDOM normal(0,1)}
+#print Random normal........... ${RANDOM normal(0,1)}
+#print Random triangle......... ${RANDOM triangle(10,20)}
+#print Random triangle......... ${RANDOM triangle(10,20)}
+#print Random triangle......... ${RANDOM triangle(10,20)}
+#print Random triangle......... ${RANDOM triangle(10,20)}
+#print Random triangle......... ${RANDOM triangle(10,20)}
+#print Last number generated... ${RANDOM last}

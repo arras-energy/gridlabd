@@ -1,4 +1,4 @@
-Software developers and engineers are welcome to contribute to Arras Energy. The source code to HiPAS is available to the public through the [GitHub SLAC Gismo GridLAB-D project](https://source.gridlabd.us/). 
+Software developers and engineers are welcome to contribute to Arras Energy. The source code to HiPAS GridLAB-D is available to the public through the [GitHub HiPAS GridLAB-D project](https://source.gridlabd.us/). 
 
 ## Developer Resources
 

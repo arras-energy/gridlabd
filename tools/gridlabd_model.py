@@ -6,7 +6,7 @@ import os, sys
 import json
 import re
 import io
-from gridlabd_runner import gridlabd
+from gridlabd.gridlabd_runner import gridlabd
 import pandas as pd
 
 VERSION = "4.3.1" # oldest version supported by this module

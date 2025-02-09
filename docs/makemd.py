@@ -37,7 +37,7 @@ try:
     NAME = sys.argv[1]
     PATH = sys.argv[2]
 
-    module = importlib.import_module(NAME)
+    module = importlib.import_module("gridlabd." + NAME)
 
     with open(os.path.join(PATH,NAME.title()+".md"),"w") as md:
 

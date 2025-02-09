@@ -21,6 +21,7 @@
 #include "powerline.h"
 #include "relay.h"
 #include "scada.h"
+#include "shunt.h"
 #include "transformer.h"
 #include "weather.h"
 

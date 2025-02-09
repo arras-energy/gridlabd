@@ -1788,6 +1788,70 @@ DEPRECATED const char *global_pid(char *buffer, int size)
 	return buffer;
 }
 
+DEPRECATED const char * global_random(char *buffer, int size, const char *spec=NULL)
+{
+	static double last=0;
+	static enum {LK_NONE, LK_INTEGER, LK_DOUBLE} last_kind = LK_NONE;
+
+	// uniform unit random
+	if ( spec == NULL )
+	{
+		last = randunit(&global_randomstate);
+		last_kind = LK_DOUBLE;
+		snprintf(buffer,size,"%lg",last);
+		return buffer;
+	}
+
+	// last random
+	if ( strcmp(spec,"last") == 0 )
+	{
+		switch ( last_kind )
+		{
+		case LK_NONE:
+			snprintf(buffer,size,"%u",global_randomseed);
+			break;
+		case LK_INTEGER:
+			snprintf(buffer,size,"%llu",*(unsigned int64*)&last);
+			break;
+		case LK_DOUBLE:
+			snprintf(buffer,size,"%lg",last);
+			break;
+		default:
+			output_error("global_random(spec='%s'): internal state error (last_kind=%ld)",spec,(int)last_kind);
+			break;
+		}
+		return buffer;
+	}
+
+	// integer random
+	char *end=(char*)(void*)spec;
+	int bits = strtol(spec,&end,10); 
+	if ( end > spec && bits > 0 && bits <= 64 )
+	{
+		unsigned int64 mask = (bits<64) ? (((unsigned int64)1)<<bits) - 1 : (unsigned int64)(-1);
+		unsigned int64 rn = ((unsigned int64)randwarn(&global_randomstate))
+			+ (((unsigned int64)randwarn(&global_randomstate))<<16)
+			+ (((unsigned int64)randwarn(&global_randomstate))<<32)
+			+ (((unsigned int64)randwarn(&global_randomstate))<<48);
+		rn &= mask;
+		*(unsigned int64*)&last = rn;
+		last_kind = LK_INTEGER;
+		snprintf(buffer,size,"%llu",rn);
+		return buffer;
+	}
+
+	// random distribution
+	if ( random_from_string(spec,&last) )
+	{
+		snprintf(buffer,size,"%lg",last);
+		last_kind = LK_DOUBLE;
+		return buffer;
+	}
+
+	output_error("global_random(spec='%s'): spec is invalid",spec);
+	return NULL;
+}
+
 /** Get the value of a global variable in a safer fashion
 	@return a \e char * pointer to the buffer holding the buffer where we wrote the data,
 		\p NULL if insufficient buffer space or if the \p name was not found.
@@ -1905,13 +1969,24 @@ const char *GldGlobals::getvar(const char *name, char *buffer, size_t size)
 	}
 	if ( strncmp(name,"NOW",3) == 0 )
 	{
-		if ( strcmp(name,"NOW") == 0 )
+		if ( name[3] == '\0' )
 		{
 			return global_now(buffer,size);
 		}
-		else if ( strncmp(name,"NOW ",4) == 0 )
+		else if ( isspace(name[3]) )
 		{
 			return global_now(buffer,size,name+4);
+		}
+	}
+	if ( strncmp(name,"RANDOM",6) == 0 )
+	{
+		if ( name[6] == '\0' )
+		{
+			return global_random(buffer,size);
+		}
+		else if ( isspace(name[6]) )
+		{
+			return global_random(buffer,size,name+7);
 		}
 	}
 

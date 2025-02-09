@@ -272,9 +272,11 @@ TIMESTAMP bus::precommit(TIMESTAMP t0)
 
 TIMESTAMP bus::presync(TIMESTAMP t0)
 {
-	// reset to base load
+	// reset to base load/shunt
 	Pd = S.Re();
 	Qd = S.Im();
+	Gs = 0.0;
+	Bs = 0.0;
 
 	return TS_NEVER;
 }

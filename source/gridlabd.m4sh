@@ -93,7 +93,7 @@ export CXXFLAGS="${INCLUDE} ${PYCCFLAGS} ${CXXFLAGS}"
 export PYLDFLAGS="$($PYTHON_CONFIG --ldflags)"
 export LIB="-L$GLD_LIB -L/usr/local/lib -L$GLD_VER/lib -L/usr/lib"
 export LDFLAGS="${LIB} ${PYLDFLAGS} ${LDFLAGS}"
-export PYTHONPATH=.:${GLD_ETC}:${GLD_LIB}/python${PYTHON_VER}/site-packages${PYTHONPATH:+:}${PYTHONPATH}
+export PYTHONPATH=.:${GLD_ETC%/*}:${GLD_LIB}/python${PYTHON_VER}/site-packages${PYTHONPATH:+:}${PYTHONPATH}
 
 AS_IF([test "x$GLPATH" = x],
   [export GLPATH="$GLD_LIB:$GLD_ETC"],
@@ -135,7 +135,7 @@ AS_IF([test "x$1" = "xshell"],
   [])
 
 AS_IF([test -f "${GLD_ETC}/$1.py"],
-  [export PYTHONPATH="$GLD_ETC"; python3 -m "$@" ; exit $?],
+  [export PYTHONPATH="${GLD_ETC%/*}"; python3 -m "gridlabd.$@" ; exit $?],
   [])
 
 AS_IF([test -x "${GLD_BIN}/gridlabd-$1"],

@@ -15,7 +15,7 @@ object weather
 {
     name "example";
 }
-#python -m create_poles ${DIR:-.}/ieee13.glm --spacing=100 --pole_type=WOOD-EC-45/4 --weather=example --mount_data=${DIR:-.}/test_create_poles_mounts.csv --pole_data=${DIR:-.}/test_create_poles.csv --ignore_location --output=test_create_poles_opt.glm
+#python -m gridlabd.create_poles ${DIR:-.}/ieee13.glm --spacing=100 --pole_type=WOOD-EC-45/4 --weather=example --mount_data=${DIR:-.}/test_create_poles_mounts.csv --pole_data=${DIR:-.}/test_create_poles.csv --ignore_location --output=test_create_poles_opt.glm
 
 #include "${DIR:-.}/ieee13.glm"
 #include "test_create_poles_opt.glm"

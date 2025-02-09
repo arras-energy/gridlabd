@@ -169,7 +169,7 @@ SEE ALSO
 import sys, os, json, datetime, subprocess
 import math, pandas
 from haversine import haversine, Unit
-import nsrdb_weather
+import gridlabd.nsrdb_weather as nsrdb_weather
 
 def error(msg,code=None):
     """Display error message and exit with code"""

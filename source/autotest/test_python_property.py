@@ -1,4 +1,4 @@
-import gridlabd
+import gldcore
 
 test = {
 	"shortint" : 21,
@@ -24,13 +24,13 @@ units = {
 
 def on_term(t):
 	last = None
-	for obj in gridlabd.get("objects"):
-		oclass = gridlabd.get_value(obj,"class")
-		prop = gridlabd.property(obj,"py_object")
+	for obj in gldcore.get("objects"):
+		oclass = gldcore.get_value(obj,"class")
+		prop = gldcore.property(obj,"py_object")
 		if oclass == "test":
-			prop = gridlabd.property(obj,"py_object")
+			prop = gldcore.property(obj,"py_object")
 		elif oclass == "check":
-			prop = gridlabd.property(obj,obj)
+			prop = gldcore.property(obj,obj)
 		else:
 			continue
 		prop.rlock()

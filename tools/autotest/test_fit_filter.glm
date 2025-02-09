@@ -4,7 +4,7 @@
 #define DIR=..
 #endif
 
-#python -m fit_filter -o=${DIR:-.}/test_fit_filter_power.csv -i=${DIR:-.}/test_fit_filter_weather.csv -g=test_fit_filter_opt.glm
+#python -m gridlabd.fit_filter -o=${DIR:-.}/test_fit_filter_power.csv -i=${DIR:-.}/test_fit_filter_weather.csv -g=test_fit_filter_opt.glm
 
 #include "test_fit_filter_opt.glm"
 

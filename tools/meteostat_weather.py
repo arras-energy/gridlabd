@@ -53,7 +53,7 @@ if not share:
     share = "/usr/local/share/gridlabd"
 if share not in sys.path:
     sys.path.append("/usr/local/share/gridlabd")
-import nsrdb_weather
+import gridlabd.nsrdb_weather as nsrdb_weather
 
 VERBOSE = False
 DEBUG = False

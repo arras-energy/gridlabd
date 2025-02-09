@@ -161,7 +161,7 @@ if __name__ == '__main__':
 
         def test_ok(self):
             output = gridlabd("--version")
-            self.assertTrue(output.startswith("HiPAS GridLAB-D"))
+            self.assertTrue(output.startswith("Arras Energy"))
 
         def test_err(self):
             try:

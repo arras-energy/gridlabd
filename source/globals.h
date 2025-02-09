@@ -650,13 +650,13 @@ GLOBAL bool global_run_powerworld INIT(false);
 GLOBAL bool global_bigranks INIT(true); /**< enable non-recursive set_rank function (good for very deep models) */
 
 /* Variable: global_svnroot */
-GLOBAL char1024 global_svnroot INIT("http://gridlab-d.svn.sourceforge.net/svnroot/gridlab-d");
+GLOBAL char1024 global_svnroot INIT("https://github.com/arras-energy/gridlabd");
 
 /* Variable: global_github */
-GLOBAL char1024 global_github INIT("https://github.com/gridlab-d");
+GLOBAL char1024 global_github INIT("https://github.com/arras-energy/gridlabd");
 
 /* Variable: global_gitraw */
-GLOBAL char1024 global_gitraw INIT("https://raw.githubusercontent.com/gridlab-d");
+GLOBAL char1024 global_gitraw INIT("https://raw.githubusercontent.com/arras-energy/gridlabd");
 
 /* Variable: global_wget_options */
 GLOBAL char1024 global_wget_options INIT("maxsize:100MB;update:newer"); /**< maximum size of wget request */

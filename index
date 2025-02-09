@@ -377,6 +377,7 @@ docs/GLM/Global/Findfile.md
 docs/GLM/Global/Geocode.md
 docs/GLM/Global/Now.md
 docs/GLM/Global/Python.md
+docs/GLM/Global/Random.md
 docs/GLM/Global/Range.md
 docs/GLM/Global/Shell.md
 docs/GLM/Global/Tmpfile.md
@@ -750,6 +751,7 @@ docs/Module/Pypower/Powerline.md
 docs/Module/Pypower/Powerplant.md
 docs/Module/Pypower/Relay.md
 docs/Module/Pypower/Scada.md
+docs/Module/Pypower/Shunt.md
 docs/Module/Pypower/Transformer.md
 docs/Module/Pypower/Weather.md
 docs/Module/Python.md
@@ -1194,6 +1196,7 @@ install.sh
 install/README.md
 install/ubuntu_20.sh
 install/ubuntu_22.sh
+install/ubuntu_24.sh
 m4/README.md
 m4/ax_lib_superlu.m4
 m4/ax_lib_xerces.m4
@@ -2558,6 +2561,8 @@ module/pypower/relay.cpp
 module/pypower/relay.h
 module/pypower/scada.cpp
 module/pypower/scada.h
+module/pypower/shunt.cpp
+module/pypower/shunt.h
 module/pypower/transformer.cpp
 module/pypower/transformer.h
 module/pypower/weather.cpp
@@ -3220,9 +3225,10 @@ setup/darwin_20.sh
 setup/darwin_21.sh
 setup/darwin_22.sh
 setup/darwin_23.sh
+setup/darwin_24.sh
 setup/ubuntu_20.sh
 setup/ubuntu_22.sh
-setup/ubuntu_24-x86_64.sh
+setup/ubuntu_24.sh
 source/Comments.txt
 source/GUI.MACOSX
 source/Languages.txt
@@ -3367,6 +3373,7 @@ source/autotest/test_quoted_if_test.glm
 source/autotest/test_quoted_value.glm
 source/autotest/test_random.glm
 source/autotest/test_random_correlation.glm
+source/autotest/test_random_global.glm
 source/autotest/test_range.glm
 source/autotest/test_require.glm
 source/autotest/test_require_err.glm
@@ -3965,6 +3972,7 @@ third_party/tnt_126/tnt_vec.h
 third_party/tnt_126/tnt_version.h
 tools/Makefile.mk
 tools/README.md
+tools/__init__.py
 tools/autotest/IEEE-123.tmy3
 tools/autotest/case14.json
 tools/autotest/case14.py
