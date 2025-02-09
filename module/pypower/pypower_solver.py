@@ -235,7 +235,7 @@ def solver(pf_case):
 
         # save casedata to file
         if save_case:
-            write_case(casedata,f"{modelname}_casedata.{save_format}",diagnostics=False)
+            write_case(casedata,f"{modelname}_casedata.{save_format}",False)
 
         # run OPF solver if gencost data is found
         if 'gencost' in casedata:
@@ -249,7 +249,7 @@ def solver(pf_case):
 
         # save results to file
         if save_case:
-            write_case(results,f"{modelname}_results.{save_format}",diagnotics=False)
+            write_case(results,f"{modelname}_results.{save_format}",False)
             with open(f"{modelname}_results_solver.json","w") as fh:
                 
                 json.dump(jsonify(results),fh,indent=2) 
@@ -268,13 +268,13 @@ def solver(pf_case):
 
         if not save_case:
             
-            write_case(results,f"{modelname}_failed.{save_format}",diagnostics=True)
+            write_case(results,f"{modelname}_failed.{save_format}")
 
         return False if stop_on_failure else pf_case
 
     except Exception:
 
-        write_case(casedata,f"{modelname}_exception.{save_format}",diagnostics=False)
+        write_case(casedata,f"{modelname}_exception.{save_format}",False)
 
         e_type,e_value,e_trace = sys.exc_info()
         print(f"EXCEPTION [{os.path.basename(e_trace.tb_frame.f_code.co_filename)}@{e_trace.tb_lineno}]: {e_type.__name__} - {e_value}",file=sys.stderr,flush=True)
