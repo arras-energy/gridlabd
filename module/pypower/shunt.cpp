@@ -70,7 +70,7 @@ shunt::shunt(MODULE *module)
 
             // GL_ATOMIC(int32,steps_2);
             PT_int32, "steps_2", get_steps_2_offset(),
-                PT_DESCRIPTION, "numbers of steps in control block 2",
+                PT_DESCRIPTION, "number of steps in control block 2",
 
             // GL_ATOMIC(double,admittance_2);
             PT_double, "admittance_2[MVAr]", get_admittance_2_offset(),
@@ -78,7 +78,7 @@ shunt::shunt(MODULE *module)
 
             // GL_ATOMIC(int32,steps_3);
             PT_int32, "steps_3", get_steps_3_offset(),
-                PT_DESCRIPTION, "numbers of steps in control block 3",
+                PT_DESCRIPTION, "number of steps in control block 3",
 
             // GL_ATOMIC(double,admittance_3);
             PT_double, "admittance_3[MVAr]", get_admittance_3_offset(),
@@ -86,7 +86,7 @@ shunt::shunt(MODULE *module)
 
             // GL_ATOMIC(int32,steps_4);
             PT_int32, "steps_4", get_steps_4_offset(),
-                PT_DESCRIPTION, "numbers of steps in control block 4",
+                PT_DESCRIPTION, "number of steps in control block 4",
 
             // GL_ATOMIC(double,admittance_4);
             PT_double, "admittance_4[MVAr]", get_admittance_4_offset(),
@@ -94,7 +94,7 @@ shunt::shunt(MODULE *module)
 
             // GL_ATOMIC(int32,steps_5);
             PT_int32, "steps_5", get_steps_5_offset(),
-                PT_DESCRIPTION, "numbers of steps in control block 5",
+                PT_DESCRIPTION, "number of steps in control block 5",
 
             // GL_ATOMIC(double,admittance_5);
             PT_double, "admittance_5[MVAr]", get_admittance_5_offset(),
@@ -102,7 +102,7 @@ shunt::shunt(MODULE *module)
 
             // GL_ATOMIC(int32,steps_6);
             PT_int32, "steps_6", get_steps_6_offset(),
-                PT_DESCRIPTION, "numbers of steps in control block 6",
+                PT_DESCRIPTION, "number of steps in control block 6",
 
             // GL_ATOMIC(double,admittance_6);
             PT_double, "admittance_6[MVAr]", get_admittance_6_offset(),
@@ -110,7 +110,7 @@ shunt::shunt(MODULE *module)
 
             // GL_ATOMIC(int32,steps_7);
             PT_int32, "steps_7", get_steps_7_offset(),
-                PT_DESCRIPTION, "numbers of steps in control block 7",
+                PT_DESCRIPTION, "number of steps in control block 7",
 
             // GL_ATOMIC(double,admittance_7);
             PT_double, "admittance_7[MVAr]", get_admittance_7_offset(),
@@ -118,7 +118,7 @@ shunt::shunt(MODULE *module)
 
             // GL_ATOMIC(int32,steps_8);
             PT_int32, "steps_8", get_steps_8_offset(),
-                PT_DESCRIPTION, "numbers of steps in control block 8",
+                PT_DESCRIPTION, "number of steps in control block 8",
 
             // GL_ATOMIC(double,admittance_8);
             PT_double, "admittance_8[MVAr]", get_admittance_8_offset(),
@@ -148,32 +148,48 @@ int shunt::init(OBJECT *parent)
     if ( control_mode > CM_DISCRETE_V )
     {
         error("advanced control modes not supported yet (use FIXED or DISCRETE_V)");
+        return 0;
     }
     if ( voltage_low > voltage_high )
     {
         error("voltage_low is greater than voltage_high");
+        return 0;
     }
     if ( voltage_low > voltage_high - minimum_voltage_deadband )
     {
         error("voltage_low is within minimum_voltage_deadband of voltage_high");
+        return 0;
+    }
+    if ( parent == NULL )
+    {
+        error("parent bus must be specified");
+        return 0;
     }
     output = (bus*)get_object(parent);
     if ( ! output->isa("bus","pypower") )
     {
         error("parent is not a pypower bus");
+        return 0;
+    }
+    if ( remote_bus == NULL )
+    {
+        remote_bus = parent;
     }
     input = (bus*)get_object(remote_bus);
     if ( ! input->isa("bus","pypower") )
     {
         error("remote_bus is not a pypower bus");
+        return 0;
     }
     if ( steps_1 > 0 && admittance_1 == 0 )
     {
         error("zero admittance step values are not valid for active control blocks");
+        return 0;
     }
     if ( steps_2 > 0 || steps_3 > 0 || steps_4 > 0 || steps_5 > 0 || steps_6 > 0 || steps_7 > 0 || steps_8 > 0 )
     {
         error("multiple control blocks not supported yet (steps_[2-8] > 0)");
+        return 0;
     }
     return 1;
 }
