@@ -72,6 +72,7 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
     new powerline(module);
     new relay(module);
     new scada(module);
+    new shunt(module);
     new transformer(module);
     new weather(module);
 
@@ -424,6 +425,7 @@ EXPORT bool on_init(void)
         *strrchr(buffer,'.')='\0';
         PyDict_SetItemString(data,"modelname",PyUnicode_FromString(buffer));
     }
+    PyDict_SetItemString(data,"stop_on_failure",PyBool_FromLong(stop_on_failure));
 
     return true;
 }
@@ -772,16 +774,25 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
         {
             if ( result == Py_False )
             {
+                solver_status = SS_FAILED;
                 if ( stop_on_failure )
                 {
-                    gl_error("pypower solver failed");
-                    solver_status = SS_FAILED;
+                    char buffer[1025];
+                    gl_global_getvar("modelname",buffer,sizeof(buffer)-1);
+                    char *dot = strrchr(buffer,'.');
+                    if ( dot )
+                        *dot = '\0';
+                    char *slash = strrchr(buffer,'/');
+                    if ( slash )
+                        slash++;
+                    else
+                        slash = buffer;
+                    gl_error("pypower solver failed (see '%s_failed.txt' for solver failure diagnostics)",slash);
                     return TS_INVALID;
                 }
                 else
                 {
-                    gl_warning("pypower solver failed");
-                    solver_status = SS_FAILED;
+                    gl_warning("pypower solver failed (pypower::stop_on_failure is FALSE)");
                     return TS_NEVER;
                 }
             }
@@ -791,6 +802,10 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
                 fprintf(stderr," result = %s\n", PyBytes_AS_STRING(PyUnicode_AsEncodedString(PyObject_Repr(result),"utf-8","~E~")));
                 solver_status = SS_FAILED;
                 return TS_INVALID;
+            }
+            else
+            {
+                solver_status = SS_SUCCESS;
             }
 
             // copy values back from solver
@@ -874,9 +889,10 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
     }
 
     PyErr_Clear();
+
     if ( result == NULL && stop_on_failure )
     {
-        gl_warning("pypower solver failed");
+        gl_warning("pypower solver failed with no result (enable verbose for diagnostics)");
         solver_status = SS_FAILED;
         return TS_INVALID;
     }
@@ -884,7 +900,7 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
     { 
         if ( ! result )
         {
-            gl_warning("pypower solver failed");
+            gl_warning("pypower solver failed (no result with pypower::stop_on_failure FALSE)");
             solver_status = SS_FAILED;
         }
         else
