@@ -4,6 +4,7 @@
 import os, sys
 from pypower.api import ppoption, runpf, runopf
 from numpy import array, set_printoptions, inf
+from math import sqrt
 import json, csv
 
 set_printoptions(threshold=inf,linewidth=inf,formatter={'float':lambda x:f"{x:.6g}"})
@@ -21,6 +22,7 @@ enforce_q_limits = False
 use_dc_powerflow = False
 save_format = "csv"
 modelname = "pypower"
+stop_on_failure = True
 
 csv_headers = {
     "bus" : "bus_i,type,Pd,Qd,Gs,Bs,area,Vm,Va,baseKV,zone,Vmax,Vmin,lam_P,lam_Q,mu_Vmax,mu_Vmin",
@@ -32,7 +34,7 @@ csv_headers = {
 class PypowerError(Exception):
     pass
 
-def write_case(data,filename):
+def write_case(data,filename,diagnostics=True):
     name,ext = os.path.splitext(filename)
     if ext == ".py":
         with open(filename,"w") as fh:
@@ -61,6 +63,53 @@ def write_case(data,filename):
                     writer.writerow(csv_headers[key].split(','))
                     for row in value.tolist():
                         writer.writerow(row)
+
+    if diagnostics:
+        with open(f"{name}.txt","w") as fh:
+            print("*** SOLVER FAILURE DIAGNOSTICS ***\n",file=fh)
+            if "gen" in data and len(data["gen"]) > 0 and len(data["gen"][0]) > 9:
+                generation_violations = [x for x in sorted(data["gen"],key=lambda x:x[0])
+                    if ( x[8] > x[9] and not ( x[9] <= x[1] <= x[8]) ) 
+                        or ( x[4] > x[3] and not ( x[4] <= x[2] <= x[3]) )]
+                if generation_violations:
+                    print("Generation output violations:\n\n",
+                        "Bus     Pmin     Pg       Pmax       Qmin     Qg       Qmax\n",
+                        "-----   -------- -------- --------   -------- -------- -------- \n",
+                        *[f"{int(x[0]):5d}   {x[9]:8.1f} {x[1]:8.1f} {x[8]:8.1f}   {x[4]:8.1f} {x[2]:8.1f} {x[3]:8.1f}\n" 
+                            for x in generation_violations],file=fh)
+                else:
+                    print("- No generation violations detected",file=fh)
+            else:
+                print("! No generation data returned (enable verbose to see solver output)",file=fh)
+
+            if "branch" in data and len(data["branch"]) > 0 and len(data["branch"][0]) > 13:
+                flow_violations = [x for x in sorted(data["branch"],key=lambda x:(x[0],x[1]))
+                    if max(x[5:8]) > 0 and max(sqrt(x[13]**2+x[14]**2),sqrt(x[15]**2+x[16]**2)) > max(x[5:8])]
+                if flow_violations:
+                    print("Branch flow violations:\n\n",
+                        "From  To      Pin      Qin        Pout     Qout       Smax\n",
+                        "----- -----   -------- --------   -------- --------   --------\n",
+                        *[f"{int(x[0]):5d} {int(x[1]):5d}   {x[13]:8.1f} {x[14]:8.1f}   {x[15]:8.1f} {x[16]:8.1f}   {max(x[5:8])}\n" 
+                            for x in flow_violations],file=fh)
+                else:
+                    print("- No flow violations detected",file=fh)
+            else:
+                print("! No branch data returned (enable verbose to see solver output)",file=fh)
+
+            if "bus" in data and len(data["bus"]) > 0 and len(data["bus"][0]) > 12:
+                voltage_violations = [x for x in sorted(data["bus"],key=lambda x:x[0])
+                    if x[11] > x[12] and not (x[12] <= x[7] <= x[11])]
+                if voltage_violations:
+                    print("Bus voltage violations:\n\n",
+                        "Bus   Vmin  Vmag  Vmax\n",
+                        "----- ----- ----- -----\n",
+                        *[f"{int(x[0]):5d} {x[12]:5.3f} {x[7]:5.3f} {x[11]:5.3f}\n" 
+                            for x in voltage_violations],file=fh)
+                else:
+                    print("- No voltage violations detected",file=fh)
+            else:
+                print("! No bus data returned (enable verbose to see solver output)",file=fh)
+
 
 def jsonify(data):
     if type(data) is dict:
@@ -136,6 +185,40 @@ def solver(pf_case):
         for name in ['bus','gen','branch']:
             if name in pf_case:
                 casedata[name] = array(pf_case[name])
+
+        # output detailed solver debugging information 
+        if debug and verbose:
+
+            print(f"\n*** BUS DATA ***\n",file=sys.stderr)
+            print("BUS_I BUS_TYPE   PD      PQ      GS      BS    BUS_AREA  VM    VA   BASE_KV ZONE VMAX  VMIN",file=sys.stderr)
+            print("----- -------- ------- ------- ------- ------- -------- ----- ----- ------- ---- ----- -----",file=sys.stderr)
+            for row in sorted(casedata["bus"],key=lambda x:x[0]):
+                print(f"{row[0]:5.0f} {['?','PQ','PV','REF','ISOLATED'][int(row[1])]:8.8s}"
+                    + f" {row[2]:7.1f} {row[3]:7.1f} {row[4]:7.1f} {row[5]:7.1f}"
+                    + f" {row[6]:8.0f} {row[7]:5.3f} {row[8]:5.1f} {row[9]:7.1f}"
+                    + f" {row[10]:4.0f} {row[11]:5.1f} {row[12]:5.1f}"
+                    ,file=sys.stderr)
+
+            print(f"\n*** BRANCH DATA ***\n",file=sys.stderr)
+            print("F_BUS T_BUS   BR_R     BR_X   RATE_A RATE_B RATE_C  TAP  SHIFT BR_STATUS ANGMIN ANGMAX",file=sys.stderr)
+            print("----- ----- -------- -------- ------ ------ ------ ----- ----- --------- ------ ------",file=sys.stderr)
+            for row in sorted(casedata["branch"],key=lambda x:(x[0],x[1])):
+                print(f"{row[0]:5.0f} {row[1]:5.0f} {row[2]:8.5f} {row[3]:8.5f} {row[4]:6.0f}"
+                    + f" {row[5]:6.0f} {row[6]:6.0f} {row[7]:6.0f} {row[8]:5.2f} {row[9]:5.1f}"
+                    + f" {['OUT','IN'][int(row[10])]:9.9s} {row[11]:6.1f} {row[12]:6.1f}"
+                    ,file=sys.stderr)
+
+            print(f"\n*** GEN DATA ***\n",file=sys.stderr)
+            print("GEN_BUS   PG     QG    QMAX   QMIN  VG    MBASE GEN_STATUS PMAX  PMIN   PC1   PC2  QC1MIN QC1MAX QC2MIN QC2MAX RAMP_AGC RAMP_10 RAMP_30 RAMP_Q  APF ",file=sys.stderr)
+            print("------- ------ ------ ------ ------ ----- ----- ---------- ----- ----- ----- ----- ------ ------ ------ ------ -------- ------- ------- ------ -----",file=sys.stderr)
+            for row in sorted(casedata["gen"],key=lambda x:x[0]):
+                print(f"{row[0]:7.0f} {row[1]:6.1f} {row[2]:6.1f} {row[3]:6.0f} {row[4]:6.0f}"
+                    + f" {row[5]:5.3f} {row[6]:5.0f} {['OUT','IN'][int(row[7])]:10.10s} {row[8]:5.0f} {row[9]:5.0f}"
+                    + f" {row[10]:5.0f} {row[11]:5.0f} {row[12]:6.1f} {row[13]:6.1f} {row[14]:6.1f} {row[15]:6.1f}"
+                    + f" {row[16]:8.1f} {row[17]:7.1f} {row[18]:7.1f} {row[19]:6.1f} {row[20]:5.2f}"
+                    ,file=sys.stderr)
+
+        # copy gencosts only for OPF problems
         if 'gencost' in pf_case:
             costdata = []
             for cost in pf_case['gencost']:
@@ -143,10 +226,16 @@ def solver(pf_case):
                 costdata.append([int(cost[0]),cost[1],cost[2],len(costs)])
                 costdata[-1].extend(costs)
             casedata['gencost'] = array(costdata)
+            
+            # output detailed solver debugging information 
+            if debug and verbose:
+                print("")
+                print(f"\n*** GENCOST DATA ***\n\n{casedata['gencost']}",file=sys.stderr)
+                # for row in sorted(casedata['gencost'],key=lambda x:x[0])
 
         # save casedata to file
         if save_case:
-            write_case(casedata,f"{modelname}_casedata.{save_format}")
+            write_case(casedata,f"{modelname}_casedata.{save_format}",False)
 
         # run OPF solver if gencost data is found
         if 'gencost' in casedata:
@@ -160,31 +249,35 @@ def solver(pf_case):
 
         # save results to file
         if save_case:
-            write_case(results,f"{modelname}_results.{save_format}")
+            write_case(results,f"{modelname}_results.{save_format}",False)
             with open(f"{modelname}_results_solver.json","w") as fh:
                 
                 json.dump(jsonify(results),fh,indent=2) 
 
+        sys.stdout.flush()
+        sys.stderr.flush()
+
         # copy back to model
-        if success:
+        if success or not stop_on_failure:
 
             for name in ['bus','gen','branch']:
                 pf_case[name] = results[name].tolist()
 
-            return pf_case
+            if success:
+                return pf_case
 
         if not save_case:
             
             write_case(results,f"{modelname}_failed.{save_format}")
-        
-        return False
+
+        return False if stop_on_failure else pf_case
 
     except Exception:
 
-        write_case(casedata,f"{modelname}_exception.{save_format}")
+        write_case(casedata,f"{modelname}_exception.{save_format}",False)
 
         e_type,e_value,e_trace = sys.exc_info()
-        print(f"EXCEPTION [pypower_solver.py]: {e_type.__name__} - {e_value}",file=sys.stderr,flush=True)
+        print(f"EXCEPTION [{os.path.basename(e_trace.tb_frame.f_code.co_filename)}@{e_trace.tb_lineno}]: {e_type.__name__} - {e_value}",file=sys.stderr,flush=True)
         if debug:
             import traceback
             traceback.print_exception(e_type,e_value,e_trace,file=sys.stderr)

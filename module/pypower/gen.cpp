@@ -5,9 +5,12 @@
 
 EXPORT_CREATE(gen);
 EXPORT_INIT(gen);
+EXPORT_PRECOMMIT(gen);
 
 CLASS *gen::oclass = NULL;
 gen *gen::defaults = NULL;
+
+double gen::default_reactive_power_fraction = 0.2;
 
 gen::gen(MODULE *module)
 {
@@ -42,6 +45,7 @@ gen::gen(MODULE *module)
 				PT_DESCRIPTION, "voltage magnitude setpoint (p.u.)",
 
 			PT_double, "mBase[MVA]", get_mBase_offset(),
+				PT_DEFAULT, "100 MVA",
 				PT_DESCRIPTION, "total MVA base of machine, defaults to baseMVA",
 
 			PT_enumeration, "status", get_status_offset(),
@@ -104,6 +108,12 @@ gen::gen(MODULE *module)
 		{
 				throw "unable to publish gen properties";
 		}
+
+	    gl_global_create("pypower::default_reactive_power_fraction[pu]",
+	        PT_double, &default_reactive_power_fraction, 
+	        PT_DESCRIPTION, "Default fraction of real power generation available for reactive power",
+	        NULL);
+
 	}
 }
 
@@ -121,26 +131,11 @@ int gen::create(void)
 	}
 
 	extern double base_MVA;
-	mBase = base_MVA;
 	cost = NULL;
+	plant_count = 0;
 
 	return 1; /* return 1 on success, 0 on failure */
 }
-
-void gen::add_cost(class gencost *add)
-{
-	if ( cost == NULL )
-	{
-		cost = add;
-	}
-
-	// only identical cost models can be "added" together
-	else if ( ! cost->is_equal(add) )
-	{
-		error("unable to add to different gencost models");
-	}
-}
-
 
 int gen::init(OBJECT *parent)
 {
@@ -166,6 +161,55 @@ int gen::init(OBJECT *parent)
 			return 0;
 		}
 	}
-			
+
 	return 1;
+}
+
+TIMESTAMP gen::precommit(TIMESTAMP t0)
+{
+	// reset capacity accumulators if powerplant are providing this data
+	if ( plant_count > 0 )
+	{
+		Pmax = 0.0;
+		Pg = 0.0;
+		Qg = 0.0;
+	}
+	return TS_NEVER;
+}
+
+void gen::add_powerplant(class powerplant *plant)
+{
+	gl_debug("powerplant '%s' connected",plant->get_name());
+	plant_count++;
+}
+
+void gen::add_Pg(double real)
+{
+	Pg += real;
+}
+
+void gen::add_Qg(double reactive)
+{
+	Qg += reactive;
+}
+
+void gen::add_Pmax(double capacity)
+{
+	Pmax += capacity;
+	Qmax = Pmax/default_reactive_power_fraction; 
+	Qmin = -Qmax;
+}
+
+void gen::add_cost(class gencost *add)
+{
+	if ( cost == NULL )
+	{
+		cost = add;
+	}
+
+	// only identical cost models can be "added" together
+	else if ( ! cost->is_equal(add) )
+	{
+		error("unable to add to different gencost models");
+	}
 }

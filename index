@@ -377,6 +377,7 @@ docs/GLM/Global/Findfile.md
 docs/GLM/Global/Geocode.md
 docs/GLM/Global/Now.md
 docs/GLM/Global/Python.md
+docs/GLM/Global/Random.md
 docs/GLM/Global/Range.md
 docs/GLM/Global/Shell.md
 docs/GLM/Global/Tmpfile.md
@@ -750,6 +751,7 @@ docs/Module/Pypower/Powerline.md
 docs/Module/Pypower/Powerplant.md
 docs/Module/Pypower/Relay.md
 docs/Module/Pypower/Scada.md
+docs/Module/Pypower/Shunt.md
 docs/Module/Pypower/Transformer.md
 docs/Module/Pypower/Weather.md
 docs/Module/Python.md
@@ -2559,6 +2561,8 @@ module/pypower/relay.cpp
 module/pypower/relay.h
 module/pypower/scada.cpp
 module/pypower/scada.h
+module/pypower/shunt.cpp
+module/pypower/shunt.h
 module/pypower/transformer.cpp
 module/pypower/transformer.h
 module/pypower/weather.cpp
@@ -3369,6 +3373,7 @@ source/autotest/test_quoted_if_test.glm
 source/autotest/test_quoted_value.glm
 source/autotest/test_random.glm
 source/autotest/test_random_correlation.glm
+source/autotest/test_random_global.glm
 source/autotest/test_range.glm
 source/autotest/test_require.glm
 source/autotest/test_require_err.glm

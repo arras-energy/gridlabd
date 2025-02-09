@@ -88,11 +88,11 @@ void random_init(const char *name,const char *value)
 
 /** Converts a distribution name to a #RANDOMTYPE
  **/
-static struct {
+static struct s_distributions {
 	const char *name;
 	RANDOMTYPE type;
 	int nargs;
-} *p, map[] = {
+} map[] = {
 	/* tested */
 	{"degenerate", RT_DEGENERATE,1},
 	{"uniform",RT_UNIFORM,2},
@@ -114,7 +114,7 @@ static struct {
  **/
 RANDOMTYPE random_type(const char *name) /**< the name of the distribution */
 {
-	for (p=map; p<map+sizeof(map)/sizeof(map[0]); p++)
+	for (struct s_distributions *p=map; p<map+sizeof(map)/sizeof(map[0]); p++)
 	{
 		if (strcmp(p->name,name)==0)
 			return p->type;
@@ -125,12 +125,67 @@ RANDOMTYPE random_type(const char *name) /**< the name of the distribution */
  **/
 int random_nargs(const char *name)
 {
-	for (p=map; p<map+sizeof(map)/sizeof(map[0]); p++)
+	for (struct s_distributions *p=map; p<map+sizeof(map)/sizeof(map[0]); p++)
 	{
 		if (strcmp(p->name,name)==0)
 			return p->nargs;
 	}
 	return 0;
+}
+
+bool random_from_string(const char *str, double *value)
+{
+	// parse input string
+	char name[64];
+	char args[1024];
+	if ( sscanf(str,"%63[a-z](%1023[^)])",name,args) != 2 )
+	{
+		output_error("random_from_string(str='%s'): distribution syntax is invalid",str,name);
+		return false;
+	}
+
+	// get distribution type
+	RANDOMTYPE type = random_type(name);
+	if ( type == RT_INVALID )
+	{
+		output_error("random_from_string(str='%s'): distribution type '%s' is not valid",str,name);
+		return false;
+	}
+
+	// get arguments
+	double argv[1024];
+	unsigned int n = 0;
+	char *last = NULL;
+	char *next = NULL;
+	while ( ( next = strtok_r(next?NULL:args,",",&last) ) != NULL && n < sizeof(argv)/sizeof(argv[0]) )
+	{
+		if ( sscanf(next,"%lf",&argv[n]) == 0 )
+		{
+			output_error("random_from_string(str='%s'): argument %d is not a valid double",str,n);
+			return false;
+		}
+		n++;
+	}
+	int nargs = random_nargs(name);
+	if ( nargs>0 && (int)n != nargs )
+	{
+		output_error("random_from_string(str='%s'): incorrect number of arguments for distribution type '%s', expected '%d' but found '%d'",str,name,nargs,n);
+		return false;
+	}
+
+	// get random value using distribution arguments
+	switch ( n )
+	{
+	case 1:
+		*value = random_value(type,NULL,argv[0]);
+		return true;
+	case 2:
+		*value = random_value(type,NULL,argv[0],argv[1]);
+		return true;
+	default:
+		output_error("random_from_string(str='%s'): distributions with more than 2 arguments not supported yet (nargs=%u)",str,n);
+		return false;
+	}
 }
 
 /** randwarn checks to see if non-determinism warning is necessary **/

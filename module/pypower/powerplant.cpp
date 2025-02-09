@@ -175,6 +175,7 @@ int powerplant::init(OBJECT *parent_hdr)
 		if ( parent->isa("gen","pypower") )
 		{
 			is_dynamic = TRUE;
+			parent->add_powerplant(this);
 			if ( get_storage_capacity() > 0 )
 			{
 				warning("energy storage devices cannot be dynamically dispatchable (parent is a generator)");
@@ -342,21 +343,16 @@ TIMESTAMP powerplant::presync(TIMESTAMP t0)
 	// copy data to parent
 	if ( is_dynamic ) // gen parent
 	{
-		if ( S.Re() != 0 || S.Im() != 0 )
-		{
-			gen *parent = (gen*)get_parent();
-			parent->set_Pg(parent->get_Pg()+S.Re());
-			parent->set_Qg(parent->get_Qg()+S.Im());
-		}
+		gen *parent = (gen*)get_parent();
+		parent->add_Pg(S.Re());
+		parent->add_Qg(S.Im());
+		parent->add_Pmax(operating_capacity);
 	}
 	else // bus parent
 	{
-		if ( S.Re() != 0 || S.Im() != 0 )
-		{
-			bus *parent = (bus*)get_parent();
-			parent->set_Pd(parent->get_Pd()-S.Re());
-			parent->set_Qd(parent->get_Qd()-S.Im());
-		}
+		bus *parent = (bus*)get_parent();
+		parent->set_Pd(parent->get_Pd()-S.Re());
+		parent->set_Qd(parent->get_Qd()-S.Im());
 	}
 	return TS_NEVER;
 }
