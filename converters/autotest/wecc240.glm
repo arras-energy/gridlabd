@@ -23,6 +23,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_1001";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_1001";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_1002"; 
@@ -36,6 +49,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_1002";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_1002";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -51,6 +77,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_1003";
+    admittance 10.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_1003";
+    admittance 10.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_1004"; 
@@ -64,6 +103,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_1004";
+    admittance 10.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_1004";
+    admittance 10.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -79,6 +131,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_1032";
+    admittance 10.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_1032";
+    admittance 10.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_1034"; 
@@ -92,6 +157,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_1034";
+    admittance 10.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_1034";
+    admittance 10.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -107,6 +185,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_1101";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_1101";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_1102"; 
@@ -120,6 +211,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_1102";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_1102";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -135,6 +239,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_1131";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_1131";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_1201"; 
@@ -148,6 +265,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_1201";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_1201";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -163,6 +293,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_1202";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_1202";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_1232"; 
@@ -176,6 +319,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_1232";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_1232";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -191,6 +347,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_1301";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_1301";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_1302"; 
@@ -204,6 +373,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_1302";
+    admittance 9.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_1302";
+    admittance 9.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -219,6 +401,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_1303";
+    admittance 9.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_1303";
+    admittance 9.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_1331"; 
@@ -232,6 +427,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_1331";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_1331";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -247,6 +455,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_1333";
+    admittance 9.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_1333";
+    admittance 9.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_1401"; 
@@ -260,6 +481,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_1401";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_1401";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -275,6 +509,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_1402";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_1402";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_1403"; 
@@ -288,6 +535,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_1403";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_1403";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -303,6 +563,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_1431";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_1431";
+    admittance 3.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2000"; 
@@ -316,6 +589,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2000";
+    admittance 7.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2000";
+    admittance 7.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -331,6 +617,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2030";
+    admittance 7.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2030";
+    admittance 7.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2100"; 
@@ -344,6 +643,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2100";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2100";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -359,6 +671,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2130";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2130";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2201"; 
@@ -372,6 +697,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2201";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2201";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -387,6 +725,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2202";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2202";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2203"; 
@@ -400,6 +751,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2203";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2203";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -415,6 +779,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2233";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2233";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2301"; 
@@ -428,6 +805,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2301";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2301";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -443,6 +833,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2302";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2302";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2332"; 
@@ -456,6 +859,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2332";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2332";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -471,6 +887,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2400";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2400";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2401"; 
@@ -484,6 +913,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2401";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2401";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -499,6 +941,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2402";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2402";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2403"; 
@@ -512,6 +967,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2403";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2403";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -527,6 +995,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2404";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2404";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2405"; 
@@ -540,6 +1021,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2405";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2405";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -555,6 +1049,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2406";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2406";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2407"; 
@@ -568,6 +1075,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2407";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2407";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -583,6 +1103,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2408";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2408";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2409"; 
@@ -596,6 +1129,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2409";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2409";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -611,6 +1157,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2410";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2410";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2411"; 
@@ -624,6 +1183,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2411";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2411";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -639,6 +1211,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2431";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2431";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2434"; 
@@ -652,6 +1237,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2434";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2434";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -667,6 +1265,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2438";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2438";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2439"; 
@@ -680,6 +1291,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2439";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2439";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -695,6 +1319,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2501";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2501";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2502"; 
@@ -708,6 +1345,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2502";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2502";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -723,6 +1373,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2503";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2503";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2533"; 
@@ -736,6 +1399,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2533";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2533";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -751,6 +1427,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2600";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2600";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2601"; 
@@ -764,6 +1453,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2601";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2601";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -779,6 +1481,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2602";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2602";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2603"; 
@@ -792,6 +1507,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2603";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2603";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -807,6 +1535,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2604";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2604";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2605"; 
@@ -820,6 +1561,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2605";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2605";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -835,6 +1589,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2606";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2606";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2607"; 
@@ -848,6 +1615,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2607";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2607";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -863,6 +1643,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2608";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2608";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2609"; 
@@ -876,6 +1669,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2609";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2609";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -891,6 +1697,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2610";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2610";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2611"; 
@@ -904,6 +1723,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2611";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2611";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -919,6 +1751,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2612";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2612";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2613"; 
@@ -932,6 +1777,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2613";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2613";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -947,6 +1805,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2614";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2614";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2615"; 
@@ -960,6 +1831,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2615";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2615";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -975,6 +1859,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2616";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2616";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2617"; 
@@ -988,6 +1885,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2617";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2617";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1003,6 +1913,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2618";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2618";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2619"; 
@@ -1016,6 +1939,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2619";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2619";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1031,6 +1967,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2620";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2620";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2621"; 
@@ -1044,6 +1993,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2621";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2621";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1059,6 +2021,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2630";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2630";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2631"; 
@@ -1072,6 +2047,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2631";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2631";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1087,6 +2075,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2634";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2634";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2637"; 
@@ -1100,6 +2101,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2637";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2637";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1115,6 +2129,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2638";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2638";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_2901"; 
@@ -1128,6 +2155,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_2901";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2901";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1143,6 +2183,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_2902";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_2902";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3101"; 
@@ -1156,6 +2209,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3101";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3101";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1171,6 +2237,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3102";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3102";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3103"; 
@@ -1184,6 +2263,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3103";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3103";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1199,6 +2291,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3104";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3104";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3105"; 
@@ -1212,6 +2317,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3105";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3105";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1227,6 +2345,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3133";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3133";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3135"; 
@@ -1240,6 +2371,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3135";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3135";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1255,6 +2399,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3201";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3201";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3202"; 
@@ -1268,6 +2425,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3202";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3202";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1283,6 +2453,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3203";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3203";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3204"; 
@@ -1296,6 +2479,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3204";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3204";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1311,6 +2507,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3205";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3205";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3234"; 
@@ -1324,6 +2533,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3234";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3234";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1339,6 +2561,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3301";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3301";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3302"; 
@@ -1352,6 +2587,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3302";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3302";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1367,6 +2615,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3303";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3303";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3304"; 
@@ -1380,6 +2641,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3304";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3304";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1395,6 +2669,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3305";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3305";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3333"; 
@@ -1408,6 +2695,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3333";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3333";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1423,6 +2723,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3401";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3401";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3402"; 
@@ -1436,6 +2749,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3402";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3402";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1451,6 +2777,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3403";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3403";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3404"; 
@@ -1464,6 +2803,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3404";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3404";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1479,6 +2831,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3405";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3405";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3432"; 
@@ -1492,6 +2857,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3432";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3432";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1507,6 +2885,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3433";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3433";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3501"; 
@@ -1520,6 +2911,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3501";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3501";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1535,6 +2939,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3531";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3531";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3601"; 
@@ -1548,6 +2965,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3601";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3601";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1563,6 +2993,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3631";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3631";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3701"; 
@@ -1576,6 +3019,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3701";
+    admittance 9.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3701";
+    admittance 9.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1591,6 +3047,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3731";
+    admittance 9.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3731";
+    admittance 9.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3801"; 
@@ -1604,6 +3073,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3801";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3801";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1619,6 +3101,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3802";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3802";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3803"; 
@@ -1632,6 +3127,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3803";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3803";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1647,6 +3155,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3804";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3804";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3805"; 
@@ -1660,6 +3181,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3805";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3805";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1675,6 +3209,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3806";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3806";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3831"; 
@@ -1688,6 +3235,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3831";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3831";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1703,6 +3263,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3835";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3835";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3836"; 
@@ -1716,6 +3289,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3836";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3836";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1731,6 +3317,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3891";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3891";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3892"; 
@@ -1744,6 +3343,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3892";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3892";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1759,6 +3371,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3893";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3893";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3894"; 
@@ -1772,6 +3397,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3894";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3894";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1787,6 +3425,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3895";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3895";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3896"; 
@@ -1800,6 +3451,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3896";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3896";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1815,6 +3479,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3897";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3897";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3901"; 
@@ -1828,6 +3505,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3901";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3901";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1843,6 +3533,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3902";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3902";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3903"; 
@@ -1856,6 +3559,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3903";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3903";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1871,6 +3587,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3904";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3904";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3905"; 
@@ -1884,6 +3613,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3905";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3905";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1899,6 +3641,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3906";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3906";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3907"; 
@@ -1912,6 +3667,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3907";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3907";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1927,6 +3695,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3908";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3908";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3909"; 
@@ -1940,6 +3721,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3909";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3909";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1955,6 +3749,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3910";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3910";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3911"; 
@@ -1968,6 +3775,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3911";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3911";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -1983,6 +3803,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3912";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3912";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3913"; 
@@ -1996,6 +3829,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3913";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3913";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2011,6 +3857,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3914";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3914";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3915"; 
@@ -2024,6 +3883,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3915";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3915";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2039,6 +3911,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3916";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3916";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3917"; 
@@ -2052,6 +3937,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3917";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3917";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2067,6 +3965,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3918";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3918";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3919"; 
@@ -2080,6 +3991,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3919";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3919";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2095,6 +4019,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3920";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3920";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3921"; 
@@ -2108,6 +4045,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3921";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3921";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2123,6 +4073,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3922";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3922";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3923"; 
@@ -2136,6 +4099,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3923";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3923";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2151,6 +4127,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3924";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3924";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3925"; 
@@ -2164,6 +4153,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3925";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3925";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2179,6 +4181,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3926";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3926";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3931"; 
@@ -2192,6 +4207,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3931";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3931";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2207,6 +4235,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_3932";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3932";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_3933"; 
@@ -2220,6 +4261,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_3933";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_3933";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2235,6 +4289,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_4001";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4001";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_4002"; 
@@ -2248,6 +4315,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_4002";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4002";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2263,6 +4343,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_4003";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4003";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_4004"; 
@@ -2276,6 +4369,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_4004";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4004";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2291,6 +4397,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_4005";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4005";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_4006"; 
@@ -2304,6 +4423,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_4006";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4006";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2319,6 +4451,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_4007";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4007";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_4008"; 
@@ -2332,6 +4477,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_4008";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4008";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2347,6 +4505,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_4009";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4009";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_4010"; 
@@ -2360,6 +4531,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_4010";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4010";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2375,6 +4559,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_4031";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4031";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_4035"; 
@@ -2388,6 +4585,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_4035";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4035";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2403,6 +4613,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_4039";
+    admittance 13.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4039";
+    admittance 13.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_4090"; 
@@ -2416,6 +4639,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_4090";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4090";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2431,6 +4667,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_4091";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4091";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_4092"; 
@@ -2444,6 +4693,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_4092";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4092";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2459,6 +4721,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_4093";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4093";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_4094"; 
@@ -2472,6 +4747,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_4094";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4094";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2487,6 +4775,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_4095";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4095";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_4096"; 
@@ -2500,6 +4801,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_4096";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4096";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2515,6 +4829,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_4097";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4097";
+    admittance 11.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_4101"; 
@@ -2528,6 +4855,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_4101";
+    admittance 13.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4101";
+    admittance 13.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2543,6 +4883,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_4102";
+    admittance 13.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4102";
+    admittance 13.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_4103"; 
@@ -2556,6 +4909,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_4103";
+    admittance 13.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4103";
+    admittance 13.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2571,6 +4937,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_4104";
+    admittance 13.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4104";
+    admittance 13.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_4131"; 
@@ -2584,6 +4963,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_4131";
+    admittance 13.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4131";
+    admittance 13.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2599,6 +4991,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_4132";
+    admittance 13.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4132";
+    admittance 13.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_4201"; 
@@ -2612,6 +5017,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_4201";
+    admittance 13.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4201";
+    admittance 13.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2627,6 +5045,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_4202";
+    admittance 13.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4202";
+    admittance 13.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_4203"; 
@@ -2640,6 +5071,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_4203";
+    admittance 13.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4203";
+    admittance 13.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2655,6 +5099,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_4204";
+    admittance 13.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4204";
+    admittance 13.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_4231"; 
@@ -2668,6 +5125,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_4231";
+    admittance 13.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4231";
+    admittance 13.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2683,6 +5153,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_4232";
+    admittance 13.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_4232";
+    admittance 13.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_5001"; 
@@ -2696,6 +5179,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_5001";
+    admittance 4.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_5001";
+    admittance 4.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2711,6 +5207,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_5002";
+    admittance 1.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_5002";
+    admittance 1.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_5003"; 
@@ -2724,6 +5233,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_5003";
+    admittance 1.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_5003";
+    admittance 1.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2739,6 +5261,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_5004";
+    admittance 4.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_5004";
+    admittance 4.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_5031"; 
@@ -2752,6 +5287,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_5031";
+    admittance 4.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_5031";
+    admittance 4.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2767,6 +5315,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_5032";
+    admittance 1.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_5032";
+    admittance 1.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_6101"; 
@@ -2780,6 +5341,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_6101";
+    admittance 6.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6101";
+    admittance 6.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2795,6 +5369,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_6102";
+    admittance 6.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6102";
+    admittance 6.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_6103"; 
@@ -2808,6 +5395,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_6103";
+    admittance 6.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6103";
+    admittance 6.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2823,6 +5423,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_6104";
+    admittance 6.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6104";
+    admittance 6.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_6132"; 
@@ -2836,6 +5449,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_6132";
+    admittance 6.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6132";
+    admittance 6.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2851,6 +5477,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_6201";
+    admittance 8.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6201";
+    admittance 8.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_6202"; 
@@ -2864,6 +5503,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_6202";
+    admittance 8.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6202";
+    admittance 8.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2879,6 +5531,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_6203";
+    admittance 8.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6203";
+    admittance 8.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_6204"; 
@@ -2892,6 +5557,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_6204";
+    admittance 8.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6204";
+    admittance 8.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2907,6 +5585,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_6205";
+    admittance 8.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6205";
+    admittance 8.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_6231"; 
@@ -2920,6 +5611,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_6231";
+    admittance 8.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6231";
+    admittance 8.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2935,6 +5639,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_6235";
+    admittance 8.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6235";
+    admittance 8.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_6301"; 
@@ -2948,6 +5665,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_6301";
+    admittance 14.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6301";
+    admittance 14.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2963,6 +5693,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_6302";
+    admittance 14.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6302";
+    admittance 14.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_6303"; 
@@ -2976,6 +5719,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_6303";
+    admittance 14.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6303";
+    admittance 14.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -2991,6 +5747,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_6304";
+    admittance 14.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6304";
+    admittance 14.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_6305"; 
@@ -3004,6 +5773,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_6305";
+    admittance 14.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6305";
+    admittance 14.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -3019,6 +5801,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_6333";
+    admittance 14.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6333";
+    admittance 14.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_6335"; 
@@ -3032,6 +5827,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_6335";
+    admittance 14.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6335";
+    admittance 14.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -3047,6 +5855,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_6401";
+    admittance 9.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6401";
+    admittance 9.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_6402"; 
@@ -3060,6 +5881,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_6402";
+    admittance 9.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6402";
+    admittance 9.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -3075,6 +5909,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_6403";
+    admittance 9.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6403";
+    admittance 9.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_6404"; 
@@ -3088,6 +5935,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_6404";
+    admittance 9.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6404";
+    admittance 9.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -3103,6 +5963,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_6433";
+    admittance 9.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6433";
+    admittance 9.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_6501"; 
@@ -3116,6 +5989,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_6501";
+    admittance 12.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6501";
+    admittance 12.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -3131,6 +6017,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_6502";
+    admittance 12.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6502";
+    admittance 12.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_6503"; 
@@ -3144,6 +6043,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_6503";
+    admittance 12.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6503";
+    admittance 12.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -3159,6 +6071,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_6504";
+    admittance 12.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6504";
+    admittance 12.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_6505"; 
@@ -3172,6 +6097,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_6505";
+    admittance 12.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6505";
+    admittance 12.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -3187,6 +6125,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_6506";
+    admittance 12.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6506";
+    admittance 12.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_6507"; 
@@ -3200,6 +6151,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_6507";
+    admittance 12.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6507";
+    admittance 12.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -3215,6 +6179,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_6508";
+    admittance 12.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6508";
+    admittance 12.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_6509"; 
@@ -3228,6 +6205,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_6509";
+    admittance 12.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6509";
+    admittance 12.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -3243,6 +6233,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_6510";
+    admittance 12.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6510";
+    admittance 12.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_6533"; 
@@ -3256,6 +6259,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_6533";
+    admittance 12.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_6533";
+    admittance 12.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -3271,6 +6287,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_7001";
+    admittance 5.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_7001";
+    admittance 5.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_7002"; 
@@ -3284,6 +6313,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_7002";
+    admittance 5.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_7002";
+    admittance 5.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -3299,6 +6341,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_7031";
+    admittance 5.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_7031";
+    admittance 5.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_7032"; 
@@ -3312,6 +6367,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_7032";
+    admittance 5.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_7032";
+    admittance 5.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -3327,6 +6395,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_8001";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_8001";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_8002"; 
@@ -3340,6 +6421,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_8002";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_8002";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -3355,6 +6449,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_8003";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_8003";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_8004"; 
@@ -3368,6 +6475,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_8004";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_8004";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.bus 
 {
@@ -3383,6 +6503,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_8005";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_8005";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_8033"; 
@@ -3397,6 +6530,19 @@ object pypower.bus
     Qd 0.0 MVAr;
     // No fields provided;
 }
+object pypower.shunt {
+    parent "wecc240_N_8033";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_8033";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+}
 object pypower.bus 
 {
     name "wecc240_N_8034"; 
@@ -3410,6 +6556,19 @@ object pypower.bus
     Pd 0.0 MW;
     Qd 0.0 MVAr;
     // No fields provided;
+}
+object pypower.shunt {
+    parent "wecc240_N_8034";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
+    real TRUE;
+}
+object pypower.shunt {
+    parent "wecc240_N_8034";
+    admittance 2.0 MVAr;
+    control_mode FIXED; 
+    status ONLINE;
 }
 object pypower.load
 {

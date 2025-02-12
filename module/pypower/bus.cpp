@@ -139,6 +139,9 @@ bus::bus(MODULE *module)
 			PT_char1024, "weather_sensitivity", get_weather_sensitivity_offset(),
 				PT_DESCRIPTION, "Weather sensitivities {PROP: VAR[ REL VAL],SLOPE[; ...]}",
 
+			PT_complex, "shunt", get_shunt_offset(),
+				PT_DESCRIPTION, "Initial shunt value before external shunt inputs",
+
 			NULL)<1)
 		{
 				throw "unable to publish bus properties";
@@ -241,8 +244,23 @@ int bus::init(OBJECT *parent)
 			return 0;
 		}
 	}
+	if ( shunt.Re() == 0 && shunt.Im() == 0 )
+	{
+		shunt = complex(Gs,Bs);
+	}
 
 	return 1; // return 1 on success, 0 on failure, 2 on retry later
+}
+
+void bus::add_load(double P, double Q)
+{
+	Pd += P;
+	Qd += Q;
+}
+void bus::add_shunt(double G, double B)
+{
+	Gs += G;
+	Bs += B;
 }
 
 TIMESTAMP bus::precommit(TIMESTAMP t0)
@@ -275,8 +293,8 @@ TIMESTAMP bus::presync(TIMESTAMP t0)
 	// reset to base load/shunt
 	Pd = S.Re();
 	Qd = S.Im();
-	Gs = 0.0;
-	Bs = 0.0;
+	Gs = shunt.Re();
+	Bs = shunt.Im();
 
 	return TS_NEVER;
 }

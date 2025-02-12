@@ -182,7 +182,7 @@ def solver(pf_case):
         casedata = dict(version=str(pf_case['version']),baseMVA=pf_case['baseMVA'])
 
         # copy from model
-        for name in ['bus','gen','branch']:
+        for name in ['bus','branch']:
             if name in pf_case:
                 casedata[name] = array(pf_case[name])
 
@@ -208,20 +208,27 @@ def solver(pf_case):
                     + f" {['OUT','IN'][int(row[10])]:9.9s} {row[11]:6.1f} {row[12]:6.1f}"
                     ,file=sys.stderr)
 
+        if 'gen' in pf_case:
+            genmap = [n for n,x in enumerate(pf_case['gen']) if x[7] == 1]
+            casedata['gen'] = array([pf_case['gen'][n] for n in genmap])
+
+        # output detailed solver debugging information 
+        if debug and verbose:
+
             print(f"\n*** GEN DATA ***\n",file=sys.stderr)
-            print("GEN_BUS   PG     QG    QMAX   QMIN  VG    MBASE GEN_STATUS PMAX  PMIN   PC1   PC2  QC1MIN QC1MAX QC2MIN QC2MAX RAMP_AGC RAMP_10 RAMP_30 RAMP_Q  APF ",file=sys.stderr)
-            print("------- ------ ------ ------ ------ ----- ----- ---------- ----- ----- ----- ----- ------ ------ ------ ------ -------- ------- ------- ------ -----",file=sys.stderr)
-            for row in sorted(casedata["gen"],key=lambda x:x[0]):
-                print(f"{row[0]:7.0f} {row[1]:6.1f} {row[2]:6.1f} {row[3]:6.0f} {row[4]:6.0f}"
+            print("GEN   GEN_BUS    PG       QG      QMAX     QMIN   VG    MBASE GEN_STATUS PMAX  PMIN   PC1   PC2  QC1MIN QC1MAX QC2MIN QC2MAX RAMP_AGC RAMP_10 RAMP_30 RAMP_Q  APF ",file=sys.stderr)
+            print("----- ------- -------- -------- -------- -------- ----- ----- ---------- ----- ----- ----- ----- ------ ------ ------ ------ -------- ------- ------- ------ -----",file=sys.stderr)
+            for n,row in enumerate(casedata["gen"]):
+                print(f"{float(genmap[n]):5.0f} {row[0]:7.0f} {row[1]:8.1f} {row[2]:8.1f} {row[3]:8.0f} {row[4]:8.0f}"
                     + f" {row[5]:5.3f} {row[6]:5.0f} {['OUT','IN'][int(row[7])]:10.10s} {row[8]:5.0f} {row[9]:5.0f}"
                     + f" {row[10]:5.0f} {row[11]:5.0f} {row[12]:6.1f} {row[13]:6.1f} {row[14]:6.1f} {row[15]:6.1f}"
                     + f" {row[16]:8.1f} {row[17]:7.1f} {row[18]:7.1f} {row[19]:6.1f} {row[20]:5.2f}"
                     ,file=sys.stderr)
 
         # copy gencosts only for OPF problems
-        if 'gencost' in pf_case:
+        if 'gencost' in pf_case and 'gen' in pf_case:
             costdata = []
-            for cost in pf_case['gencost']:
+            for cost in [x for n,x in enumerate(pf_case['gencost']) if pf_case['gen'][n][7] == 1]:
                 costs = [float(x) for x in cost[3].split(',')]
                 costdata.append([int(cost[0]),cost[1],cost[2],len(costs)])
                 costdata[-1].extend(costs)
@@ -230,8 +237,13 @@ def solver(pf_case):
             # output detailed solver debugging information 
             if debug and verbose:
                 print("")
-                print(f"\n*** GENCOST DATA ***\n\n{casedata['gencost']}",file=sys.stderr)
+                # print(f"\n*** GENCOST DATA ***\n\n{casedata['gencost']}",file=sys.stderr)
                 # for row in sorted(casedata['gencost'],key=lambda x:x[0])
+                print("\n*** GENCOST DATA ***\n",file=sys.stderr)
+                print("GEN   MODEL STARTUP SHUTDOWN NCOST COST",file=sys.stderr)
+                print("----- ----- ------- -------- ----- -----------------------",file=sys.stderr)
+                for n,row in enumerate(casedata["gencost"]):
+                    print(f"{float(genmap[n]):5.0f} {['-','PWLF','POLY'][int(row[0])]:5.5s} {row[1]:7.2f} {row[2]:8.2f} {row[3]:5.0f} {','.join([str(x) for x in row[4:]])}",file=sys.stderr)
 
         # save casedata to file
         if save_case:
@@ -260,8 +272,10 @@ def solver(pf_case):
         # copy back to model
         if success or not stop_on_failure:
 
-            for name in ['bus','gen','branch']:
+            for name in ['bus','branch']:
                 pf_case[name] = results[name].tolist()
+            for n,m in enumerate(genmap):
+                pf_case['gen'][m] = results['gen'][n].tolist()
 
             if success:
                 return pf_case

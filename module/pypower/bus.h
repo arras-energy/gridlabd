@@ -62,6 +62,7 @@ public:
 #define N_WEATHERDATA 10 // adjust if adding more weather data items
 
 	GL_ATOMIC(char1024,weather_sensitivity);
+	GL_ATOMIC(complex,shunt);
 
 private:
 
@@ -82,6 +83,11 @@ private:
 public:
 	
 	complex V;
+
+public:
+
+	void add_load(double P, double Q);
+	void add_shunt(double G, double B);
 
 public:
 

@@ -40,6 +40,7 @@ public:
     GL_ATOMIC(double,voltage_low);
     GL_ATOMIC(object,remote_bus);
     GL_ATOMIC(double,admittance);
+    GL_ATOMIC(bool,real);
     GL_ATOMIC(int32,steps_1);
     GL_ATOMIC(double,admittance_1);
     GL_ATOMIC(int32,steps_2);
@@ -62,6 +63,10 @@ private:
     // internal variables
     bus *input;
     bus *output;
+
+private:
+    TIMESTAMP update(TIMESTAMP t0,bool control=false);
+    void push_admittance(void);
 
 public:
 

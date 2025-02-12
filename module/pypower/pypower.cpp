@@ -465,14 +465,9 @@ EXPORT bool on_init(void)
         obj->set_##NAME(Py##FROM##_As##TO(py)); \
     }}
 
-EXPORT TIMESTAMP on_precommit(TIMESTAMP t0)
+static TIMESTAMP update_controller(TIMESTAMP t0,PyObject *command,const char *name)
 {
-    // not a pypower model
-    if ( nbus == 0 || nbranch == 0 )
-    {
-        return TS_NEVER;
-    }
-
+    TIMESTAMP t1 = TS_NEVER;
     // send values out to solver
     for ( size_t n = 0 ; n < nbus ; n++ )
     {
@@ -557,7 +552,7 @@ EXPORT TIMESTAMP on_precommit(TIMESTAMP t0)
         {
             if ( genlist[i]->cost == NULL )
             {
-                gl_warning("pypower.on_precommit(t=%lld) missing cost data for generator '%s'",t0,genlist[i]->get_name());
+                gl_warning("pypower.%s(t=%lld) missing cost data for generator '%s'",name,t0,genlist[i]->get_name());
                 continue;
             }
             gencost *obj = genlist[i]->cost;
@@ -575,54 +570,41 @@ EXPORT TIMESTAMP on_precommit(TIMESTAMP t0)
         }
     }
 
-    // run controller on_precommit, if any
-    TIMESTAMP t1 = TS_NEVER;
-    if ( py_precommit )
+    PyDict_SetItemString(data,"t",PyLong_FromLong(t0));        
+    PyErr_Clear();
+    PyObject *ts = PyObject_CallOneArg(command,data);
+    if ( PyErr_Occurred() )
     {
-        PyDict_SetItemString(data,"t",PyLong_FromLong(t0));        
-        PyErr_Clear();
-        PyObject *ts = PyObject_CallOneArg(py_precommit,data);
-        if ( PyErr_Occurred() )
-        {
-            PyErr_Print();
-            return TS_INVALID;
-        }
-        if ( ts == NULL || ! PyLong_Check(ts) )
-        {
-            gl_error("%s.on_precommit(data) returned value that is not a valid timestamp",(const char*)controllers);
-            Py_XDECREF(ts);
-            return TS_INVALID;
-        }
-        t1 = PyLong_AsLong(ts);
-        Py_DECREF(ts);
-        if ( t1 < 0 )
-        {
-            t1 = TS_NEVER;
-        }
-        else if ( t1 == 0 && stop_on_failure )
-        {
-            gl_error("%s.on_precommit(data) halted the simulation",(const char*)controllers);
-            return TS_INVALID;
-        }
-        else if ( t1 < t0 )
-        {
-            gl_error("%s.on_precommit(data) returned a timestamp earlier than precommit time t0=%lld",(const char*)controllers,t0);
-            return TS_INVALID;
-        }
+        PyErr_Print();
+        return TS_INVALID;
     }
-
-    TIMESTAMP t2 = maximum_timestep > 0 ? TIMESTAMP(t0+maximum_timestep) : TS_NEVER;
-    return (TIMESTAMP)min((unsigned long long)t1,(unsigned long long)t2);
+    if ( ts == NULL || ! PyLong_Check(ts) )
+    {
+        gl_error("%s.%s(data) returned value that is not a valid timestamp",(const char*)controllers,name);
+        Py_XDECREF(ts);
+        return TS_INVALID;
+    }
+    t1 = PyLong_AsLong(ts);
+    Py_DECREF(ts);
+    if ( t1 < 0 )
+    {
+        t1 = TS_NEVER;
+    }
+    else if ( t1 == 0 && stop_on_failure )
+    {
+        gl_error("%s.%s(data) halted the simulation",(const char*)controllers,name);
+        return TS_INVALID;
+    }
+    else if ( t1 < t0 )
+    {
+        gl_error("%s.%s(data) returned a timestamp earlier than %s time t0=%lld",(const char*)controllers,name,name,t0);
+        return TS_INVALID;
+    }
+    return t1;
 }
 
-EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
+static TIMESTAMP update_solution(TIMESTAMP t0)
 {
-    // not a pypower model
-    if ( nbus == 0 || nbranch == 0 )
-    {
-        return TS_NEVER;
-    }
-
     int n_changes = 0;
 
     // send values out to solver
@@ -913,8 +895,33 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
         }
         TIMESTAMP t2 = maximum_timestep > 0 ? TIMESTAMP(t0+maximum_timestep) : TS_NEVER;
         return (TIMESTAMP)min((unsigned long long)t1,(unsigned long long)t2);
-
     }
+}
+
+EXPORT TIMESTAMP on_precommit(TIMESTAMP t0)
+{
+    // not a pypower model
+    if ( nbus == 0 || nbranch == 0 )
+    {
+        return TS_NEVER;
+    }
+
+    // run controller on_precommit, if any
+    TIMESTAMP t1 = py_precommit ? update_controller(t0,py_precommit,"precommit") : TS_NEVER;
+
+    TIMESTAMP t2 = maximum_timestep > 0 ? TIMESTAMP(t0+maximum_timestep) : TS_NEVER;
+    return (TIMESTAMP)min((unsigned long long)t1,(unsigned long long)t2);
+}
+
+EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
+{
+    // not a pypower model
+    if ( nbus == 0 || nbranch == 0 )
+    {
+        return TS_NEVER;
+    }
+
+    return update_solution(t0);
 }
 
 EXPORT int on_commit(TIMESTAMP t0)
@@ -925,114 +932,10 @@ EXPORT int on_commit(TIMESTAMP t0)
         return 1;
     }
 
-    // send values out to solver
-    for ( size_t n = 0 ; n < nbus ; n++ )
-    {
-        bus *obj = buslist[n];
-        PyObject *pyobj = PyList_GetItem(busdata,n);
-        SENDX(0,bus_i,Double,Float)
-        SENDX(1,type,Long,Long)
-        SENDX(2,Pd,Double,Float)
-        SENDX(3,Qd,Double,Float)
-        SENDX(4,Gs,Double,Float)
-        SENDX(5,Bs,Double,Float)
-        SENDX(6,area,Long,Long)
-        SENDX(7,Vm,Double,Float)
-        SENDX(8,Va,Double,Float)
-        SENDX(9,baseKV,Double,Float)
-        SENDX(10,zone,Long,Long)
-        SENDX(11,Vmax,Double,Float)
-        SENDX(12,Vmin,Double,Float)
-        if ( enable_opf )
-        {
-            SENDX(13,lam_P,Double,Float)
-            SENDX(14,lam_Q,Double,Float)
-            SENDX(15,mu_Vmax,Double,Float)
-            SENDX(16,mu_Vmin,Double,Float)
-        }
-    }
-    for ( size_t n = 0 ; n < nbranch ; n++ )
-    {
-        branch *obj = branchlist[n];
-        PyObject *pyobj = PyList_GetItem(branchdata,n);
-        SENDX(0,fbus,Long,Long)
-        SENDX(1,tbus,Long,Long)
-        SENDX(2,r,Double,Float)
-        SENDX(3,x,Double,Float)
-        SENDX(4,b,Double,Float)
-        SENDX(5,rateA,Double,Float)
-        SENDX(6,rateB,Double,Float)
-        SENDX(7,rateC,Double,Float)
-        SENDX(8,ratio,Double,Float)
-        SENDX(9,angle,Double,Float)
-        SENDX(10,status,Long,Long)
-        SENDX(11,angmin,Double,Float)
-        SENDX(12,angmax,Double,Float)
-
-    }
-    for ( size_t n = 0 ; n < ngen ; n++ )
-    {
-        gen *obj = genlist[n];
-        PyObject *pyobj = PyList_GetItem(gendata,n);
-        SENDX(0,bus,Long,Long)
-        SENDX(1,Pg,Double,Float)
-        SENDX(2,Qg,Double,Float)
-        SENDX(3,Qmax,Double,Float)
-        SENDX(4,Qmin,Double,Float)
-        SENDX(5,Vg,Double,Float)
-        SENDX(6,mBase,Double,Float)
-        SENDX(7,status,Long,Long)
-        SENDX(8,Pmax,Double,Float)
-        SENDX(9,Pmin,Double,Float)
-        SENDX(10,Pc1,Double,Float)
-        SENDX(11,Pc2,Double,Float)
-        SENDX(12,Qc1min,Double,Float)
-        SENDX(13,Qc1max,Double,Float)
-        SENDX(14,Qc2min,Double,Float)
-        SENDX(15,Qc2max,Double,Float)
-        SENDX(16,ramp_agc,Double,Float)
-        SENDX(17,ramp_10,Double,Float)
-        SENDX(18,ramp_30,Double,Float)
-        SENDX(19,ramp_q,Double,Float)
-        SENDX(20,apf,Double,Float)
-        if ( enable_opf )
-        {
-            SENDX(21,mu_Pmax,Double,Float)
-            SENDX(22,mu_Pmin,Double,Float)
-            SENDX(23,mu_Qmax,Double,Float)
-            SENDX(24,mu_Qmin,Double,Float)
-        }
-    }
-    if ( gencostdata )
-    {
-        for ( size_t n = 0 ; n < ngencost ; n++ )
-        {
-            gencost *obj = gencostlist[n];
-            PyObject *pyobj = PyList_GetItem(gencostdata,n);
-            SENDX(0,model,Long,Long)
-            SENDX(1,startup,Double,Float)
-            SENDX(2,shutdown,Double,Float)
-            PyObject *py = PyList_GetItem(pyobj,3);
-            if ( py == NULL || strcmp((const char*)PyUnicode_DATA(py),obj->get_costs())!=0 )
-            {
-                Py_XDECREF(py);
-                PyList_SET_ITEM(pyobj,3,PyUnicode_FromString(obj->get_costs()));
-            }
-        }
-    }
-
     // run controller on_commit, if any
-    if ( py_commit )
+    if ( py_commit && update_controller(t0,py_commit,"commit") <= t0 )
     {
-        PyDict_SetItemString(data,"t",PyLong_FromLong(t0));        
-        PyErr_Clear();
-        PyObject *ts = PyObject_CallOneArg(py_commit,data);
-        if ( PyErr_Occurred() )
-        {
-            PyErr_Print();
-            return 0;
-        }
-        Py_DECREF(ts);
+        return 0;
     }
 
     return 1;

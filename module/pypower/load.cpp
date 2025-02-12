@@ -150,7 +150,11 @@ TIMESTAMP load::presync(TIMESTAMP t0)
 	enumeration status = get_status();
 	if ( status != LS_OFFLINE )
 	{
-		S = P + Vpu * ~I;
+		S = P;
+		if ( I.Re() != 0 || I.Im() != 0 )
+		{
+			S += Vpu * ~I;
+		}
 		if ( Z.Re() != 0 || Z.Im() != 0 )
 		{
 			S += (~Vpu*Vpu) / ~Z;
@@ -167,8 +171,7 @@ TIMESTAMP load::presync(TIMESTAMP t0)
 		bus *parent = (bus*)get_parent();
 		if ( parent )
 		{
-			parent->set_Pd(parent->get_Pd()+S.Re());
-			parent->set_Qd(parent->get_Qd()+S.Im());
+			parent->add_load(S.Re(),S.Im());
 		}
 	}
 	return TS_NEVER;
