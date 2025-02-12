@@ -271,38 +271,6 @@ jobs:
         push: true
         tags: lfenergy/arras:develop
 
-  updateS3websites:
-    runs-on: ubuntu-24.04
-    environment: Integration
-
-    steps:
-    - uses: actions/checkout@v4
-
-      # this is to fix GIT not liking owner of the checkout dir
-    - name: Set ownership
-      run: |
-        chown -R $(id -u):$(id -g) $PWD
-
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_REGION }}
-
-    - name: Website s3 sync
-      run: |
-        aws s3 sync ./cloud/websites/code.gridlabd.us/ s3://code-dev.gridlabd.us --acl public-read
-        aws s3 sync ./cloud/websites/docs.gridlabd.us/ s3://docs-dev.gridlabd.us --acl public-read
-        aws s3 sync ./cloud/websites/geodata.gridlabd.us/ s3://geodata-dev.gridlabd.us --acl public-read
-        aws s3 sync ./cloud/websites/install.gridlabd.us/ s3://install-dev.gridlabd.us --acl public-read
-        aws s3 sync ./cloud/websites/status.gridlabd.us/ s3://status-dev.gridlabd.us --acl public-read
-        aws s3 sync ./cloud/websites/tutorials.gridlabd.us/ s3://tutorials-dev.gridlabd.us --acl public-read
-        aws s3 sync ./cloud/websites/www.gridlabd.us/ s3://www-dev.gridlabd.us --acl public-read
-
-    - name: Run CF invalidation
-      run: aws cloudfront create-invalidation --distribution-id ${{ secrets.DEV_CF_ID }} --paths '/*'
-
   versionUpdate:
 
     runs-on: ubuntu-24.04
@@ -312,7 +280,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-  
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
