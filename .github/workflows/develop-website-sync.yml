@@ -1,3 +1,5 @@
+name: develop-website-sync
+
 on:
   push:
     branches: [ develop ]
