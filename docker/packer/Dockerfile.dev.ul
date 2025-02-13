@@ -22,7 +22,7 @@ EXPOSE 6266-6299/tcp
 
 RUN sh ./setup.sh --local
 
-RUN sh ./build.sh --system
+RUN sh ./build.sh --system --nomakemd
 
 RUN gridlabd --version=all
 
