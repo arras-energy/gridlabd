@@ -17,7 +17,7 @@ shunt::shunt(MODULE *module)
     if (oclass==NULL)
     {
         // register to receive notice for first top down. bottom up, and second top down synchronizations
-        oclass = gld_class::create(module,"shunt",sizeof(shunt),PC_PRETOPDOWN|PC_BOTTOMUP|PC_POSTTOPDOWN|PC_AUTOLOCK|PC_OBSERVER);
+        oclass = gld_class::create(module,"shunt",sizeof(shunt),PC_PRETOPDOWN|PC_BOTTOMUP|PC_AUTOLOCK|PC_OBSERVER);
         if (oclass==NULL)
             throw "unable to register class shunt";
         else
@@ -177,12 +177,13 @@ int shunt::init(OBJECT *parent)
 
 TIMESTAMP shunt::presync(TIMESTAMP t0)
 {
-    return update(t0,true); // control update
+    update(t0,false); // bus data update
+    return TS_NEVER;
 }
 
 TIMESTAMP shunt::sync(TIMESTAMP t0)
 {
-    return update(t0,false); // bus update
+    return update(t0,true); // control update
 }
 
 TIMESTAMP shunt::postsync(TIMESTAMP t0)
@@ -211,39 +212,55 @@ TIMESTAMP shunt::update(TIMESTAMP t0,bool control)
             if ( control_mode == CM_DISCRETE_V )
             {
                 double Vm = input->get_Vm();
-                verbose("input voltage is %.3lf pu",Vm);
+                //debug("input voltage is %.3lf pu (Vmin=%.3lf, Vmax=%.3lf)",Vm,voltage_low,voltage_high);
                 bool Vhigh = Vm > voltage_high;
                 bool Vlow = Vm < voltage_low;
                 bool Alo = admittance <= 0;
                 bool Ahi = admittance >= admittance_1 * steps_1;
                 bool Amax = admittance_1 > 0 ? Ahi : Alo ;
                 bool Amin = admittance_1 > 0 ? Alo : Ahi;
-                verbose("admittance_1=%lf, steps_1=%d, admittance=%lf; %s %s %s %s",
-                    admittance_1, steps_1, admittance,
-                    Vhigh?"Vhigh":"!Vhigh",Vlow?"Vlow":"!Vlow",Amax?"Amax":"!Amax",Amin?"Amin":"!Amin");
+                // debug("admittance_1=%lf, steps_1=%d, admittance=%lf; %s %s %s %s",
+                //     admittance_1, steps_1, admittance,
+                //     Vhigh?"Vhigh":"!Vhigh",Vlow?"Vlow":"!Vlow",Amax?"Amax":"!Amax",Amin?"Amin":"!Amin");
                 if ( ( Vlow && ! Amax ) || ( Vhigh && ! Amin ) )
                 {
                     if ( control )
                     {
                         admittance += admittance_1;
-                        verbose("stepping up admittance to %.1lf MVAr",admittance);
+                        output->add_shunt(real?admittance_1:0,real?0:admittance_1);
+                        debug("stepping up admittance to %.1lf MVAr",admittance);
                     }
                     return t0;
+                }
+                else if ( ( Vlow && Amax ) || ( Vhigh && Amin ) )
+                {
+                    if ( control )
+                    {
+                        warning("shunt voltage control limit reached at %lf MVAr",admittance);
+                    }
                 }
                 if ( ( Vhigh && ! Amin ) || ( Vlow && ! Amax ) )
                 {
                     if ( control )
                     {
                         admittance -= admittance_1;
-                        verbose("stepping down admittance to %.1lf MVAr",admittance);
+                        output->add_shunt(real?-admittance_1:0,real?0:-admittance_1);
+                        debug("stepping down admittance to %.1lf MVAr",admittance);
                     }
                     return t0;
+                }
+                else if ( ( Vhigh && Amin ) || ( Vlow && Amax ) )
+                {
+                    if ( control )
+                    {
+                        warning("shunt voltage control limit reached at %lf MVAr",admittance);
+                    }
                 }
             }
         }
         else
         {
-            verbose("adding bus admittance %.1lf MVAr",admittance);
+            debug("adding bus admittance %.1lf MVAr",admittance);
             push_admittance();            
         }
     }

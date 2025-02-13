@@ -8,12 +8,15 @@ EXPORT_CREATE(bus);
 EXPORT_INIT(bus);
 EXPORT_SYNC(bus);
 EXPORT_PRECOMMIT(bus);
+EXPORT_COMMIT(bus);
 
 CLASS *bus::oclass = NULL;
 bus *bus::defaults = NULL;
 
 static int last_i = 0;
 char256 bus::timestamp_format = ""; // "%Y-%m-%d %H:%M:%S%z"; // RFC-822/ISO8601 standard timestamp
+double bus::low_voltage_warning = 0.0;
+double bus::high_voltage_warning = 0.0;
 
 bus::bus(MODULE *module)
 {
@@ -146,6 +149,18 @@ bus::bus(MODULE *module)
 		{
 				throw "unable to publish bus properties";
 		}
+
+	    gl_global_create("pypower::low_voltage_warning",
+	        PT_double, &low_voltage_warning, 
+	        PT_UNITS, "pu*V",
+	        PT_DESCRIPTION, "Voltage level for low voltage warning",
+	        NULL);
+
+	    gl_global_create("pypower::high_voltage_warning",
+	        PT_double, &high_voltage_warning, 
+	        PT_UNITS, "pu*V",
+	        PT_DESCRIPTION, "Voltage level for high voltage warning",
+	        NULL);
 	}
 }
 
@@ -308,6 +323,19 @@ TIMESTAMP bus::sync(TIMESTAMP t0)
 TIMESTAMP bus::postsync(TIMESTAMP t0)
 {
 	exception("invalid postsync call");
+	return TS_NEVER;
+}
+
+TIMESTAMP bus::commit(TIMESTAMP t0, TIMESTAMP t1)
+{
+	if ( high_voltage_warning > 0 && Vm > high_voltage_warning )
+	{
+		warning("bus voltage is high");
+	}
+	else if ( Vm < low_voltage_warning )
+	{
+		warning("bus voltage is low");
+	}
 	return TS_NEVER;
 }
 

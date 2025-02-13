@@ -182,27 +182,11 @@ def convert(ifile,ofile,options={}):
     type {typemap[int(row[3])]}; 
     area {row[4]};
     zone {row[5]};
-    Vm {row[7]} pu*V;
-    Va {row[8]} deg;
+    Vm {Vm} pu*V;
+    Va {Va} deg;
     Pd {float(row[9])-float(row[11])} MW;
     Qd {float(row[10])-float(row[12])} MVAr;
     {items(row)};
-}}""",file=glm)
-                    Gs,Bs = float(row[4]),float(row[5])
-                    if Gs != 0:
-                        print(f"""object pypower.shunt {{
-    parent "{oname}_N_{row[0]}";
-    admittance {float(row[5])} MVAr;
-    control_mode FIXED; 
-    status ONLINE;
-    real TRUE;
-}}""",file=glm)
-                    if Bs != 0:
-                        print(f"""object pypower.shunt {{
-    parent "{oname}_N_{row[0]}";
-    admittance {float(row[5])} MVAr;
-    control_mode FIXED; 
-    status ONLINE;
 }}""",file=glm)
 
                 elif block == 'LOAD_DATA':

@@ -11,6 +11,8 @@ class bus : public gld_object
 public:
 
 	static char256 timestamp_format;
+	static double low_voltage_warning;
+	static double high_voltage_warning;
 
 public:
 	typedef struct s_sensitivity
@@ -99,6 +101,7 @@ public:
 	TIMESTAMP sync(TIMESTAMP t0);
 	TIMESTAMP postsync(TIMESTAMP t0);
 	TIMESTAMP precommit(TIMESTAMP t0);
+	TIMESTAMP commit(TIMESTAMP t0,TIMESTAMP t1);
 
 public:
 	// internal properties
