@@ -16,7 +16,11 @@ COPY . /app/gridlabd
 
 EXPOSE 6266-6299/tcp
 # Run the install.sh script with the desired arguments
-RUN curl -sL http://install.gridlabd.us/install.sh | sh
+#RUN curl -sL http://install.gridlabd.us/install.sh | sh
+
+RUN sh ./setup.sh --local
+
+RUN sh ./build.sh --system
 
 RUN gridlabd --version=all
 
