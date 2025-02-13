@@ -1,7 +1,7 @@
 
 docs: docs/Tools
 
-DOCS_UTILITIES = 
+DOCS_UTILITIES = $(DESTDIR)$(bindir)/gridlabd docs/makemd.py
 
 include $(top_srcdir)/docs/Tools/Makefile.mk
 
