@@ -5,14 +5,14 @@
 GLM:
 
 ~~~
-#set kmlhost=https://code.gridlabd.us/master/runtime
+#set kmlhost=https://code.arras.energy/master/runtime
 ~~~
 
 Shell:
 
 ~~~
-bash$ gridlabd -D kmlhost=https://code.gridlabd.us/master/source/rt
-bash$ gridlabd --define kmlhost=https://code.gridlabd.us/master/source/rt
+bash$ gridlabd -D kmlhost=https://code.arras.energy/master/source/rt
+bash$ gridlabd --define kmlhost=https://code.arras.energy/master/source/rt
 ~~~
 
 # Description
@@ -22,5 +22,5 @@ KML server URL
 # Example
 
 ~~~
-#set kmlhost=https://code.gridlabd.us/master/runtime
+#set kmlhost=https://code.arras.energy/master/runtime
 ~~~
