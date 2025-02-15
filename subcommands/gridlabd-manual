@@ -29,5 +29,5 @@ elif [ "$1" == "-b" -o "$1" == "--branch" ]; then
     BRANCH="$2"
   fi
 fi
-open "http://docs.gridlabd.us/index.html?branch=${BRANCH=master}" &
+open "http://docs.arras.energy/index.html?branch=${BRANCH=master}" &
 
