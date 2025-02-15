@@ -23,7 +23,7 @@ def convert(input,output=None,options={}):
 			}
 
 	# load and reformat the weather data
-	if not os.path.exists(csvname) or ( 
+	if not os.path.exists(csvname) or (
 			'refresh' in options.keys() and options['refresh'] in [True,'TRUE','always','true'] ):
 		with open(csvname,"w") as csv:
 			with urllib.urlopen(input) as fh:
@@ -53,7 +53,7 @@ class weather {
 	double humidity[%];
 	double wind_speed[mph];
 	double opq_sky_cov[%];
-}	
+}
 """)
 		glm.write(f'object weather\n')
 		glm.write('{\n')
@@ -61,13 +61,13 @@ class weather {
 		glm.write(f'\tlocation "{options["location"]}";\n')
 		glm.write(f'\tobject player\n')
 		glm.write('\t{\n')
-		glm.write(f'\t\tfile "{csvname}";\n')		
-		glm.write(f'\t\tproperty "{",".join(list(options["columns"].values())[1:])}";\n')		
+		glm.write(f'\t\tfile "{csvname}";\n')
+		glm.write(f'\t\tproperty "{",".join(list(options["columns"].values())[1:])}";\n')
 		glm.write('\t};\n')
 		glm.write('}\n')
 
 
 
 if __name__ == '__main__':
-	convert('https://s3-us-west-1.amazonaws.com/weather.gridlabd.us/visual_crossing/test_data.csv',
+	convert('https://s3-us-west-1.amazonaws.com/weather.arras.energy/visual_crossing/test_data.csv',
 		options={'refresh':True,'location':'Menlo Park, CA'})
