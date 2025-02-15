@@ -95,7 +95,7 @@ class Resource:
 
         Arguments:
 
-        * `file`: resource file (default is $GLD_ETC/resource.csv)
+        * `file`: resource file (default is `$GLD_ETC/resource.csv`)
         """
 
         # default file is from GLD_ETC
@@ -166,13 +166,36 @@ class Resource:
     def list(self,pattern:str='.*') -> list[str]:
         """Get a list of available resources
 
-        Argument
+        Arguments:
+
+        * `pattern`: regular expression for resource names to be returned
         """
         return sorted([x for x in self.data if re.match(pattern,x)])
 
     def properties(self,passthru:str='*',**kwargs:dict) -> dict:
         """Get resource properties
 
+        Arguments:
+
+        * `passthru`: resource keys that are passed through if not resolved
+
+        * `kwargs`: keys to include in resolving properties
+
+        Returns:
+
+        `dict`: resolved properties 
+
+        Description:
+
+        The following keys are commonly found in resource properties:
+
+        * `index`: the resource index
+
+        * `origin`: the resource origin on github, e.g. `{organization}/{repo}`
+
+        * `organization`: the github organization
+
+        * `gitbranch`: the resource branch on github
         """
         name = kwargs['name']
         if not name in self.list():
@@ -192,6 +215,17 @@ class Resource:
     def index(self,**kwargs:dict) -> Union[str,list,dict]:
         """Get resource index (if any)
 
+        Arguments:
+
+        * `kwargs`: property keys to collect
+
+        Returns:
+
+        * `str`: a single index value
+
+        * `list`: a list of index values
+
+        * `dict`: a dict of index values
         """
         if not 'passthru' in kwargs:
             kwargs['passthru'] = '*'
@@ -221,9 +255,22 @@ class Resource:
             output_to=output_as,
             **spec)
 
-    def headers(self,**kwargs:dict) -> Union[str,list,dict]:
+    def headers(self,**kwargs) -> Union[str,list,dict]:
         """Get resource header
 
+        * `name`: resource name
+
+        * `index`: resource index
+        
+        * `**kwargs`: options (see `properties()`)
+
+        Returns:
+
+        * `str`: header content if a simple string
+
+        * `list`: header content if a list
+
+        * `dict`: header contents if a dict
         """
         if not 'passthru' in kwargs:
             kwargs['passthru'] = '*'
@@ -241,16 +288,20 @@ class Resource:
                 },
             **spec)
 
-    def content(self,**kwargs:dict) -> str:
+    def content(self,**kwargs) -> str:
         """Get resource content
 
         Arguments:
+
+        * `name`: resource name
+
+        * `index`: resource index
 
         * `**kwargs`: options (see `properties()`)
 
         Returns:
 
-        * Resource contents
+        * `str`: Resource contents
         """
         if not 'passthru' in kwargs:
             kwargs['passthru'] = '*'
@@ -483,6 +534,10 @@ if __name__ == "__main__":
     # TODO: comment this block entire when done developing
     if not sys.argv[0]:
 
+        res = Resource()
+        data = res.content(name="buildings",index="US/NH_Sullivan.csv.gz")
+        print(data)
+
         #
         # Test library functions (comprehensive scan of all contents)
         #
@@ -503,7 +558,7 @@ if __name__ == "__main__":
         # Test command line options (e.g., one at a time)
         #
 
-        options = []
+        # options = []
         # options.extend(["--debug"])
         # options.extend(["--verbose"])
         # options.extend(["--format=csv"])

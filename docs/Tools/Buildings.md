@@ -1,56 +1,55 @@
-[[/Tools/Resource]] -- Online resource accessor
+[[/Tools/Buildings]] -- Buildings
 
-Syntax: `gridlabd resource [OPTIONS ...]`
+Syntax: gridlabd buildings [OPTIONS ...]
 
 Options:
 
-* `--content=RESOURCE,INDEX`: download RESOURCE located at INDEX
+* `-C|--county=COUNTRY/STATE/COUNTY`: download county-level data
 
-* `--debug`: enable traceback on exceptions
+* `-L|--locate`: include latitude and longitude
 
-* `-h|--help|help`: get this help
+* `-A|--address: include address (warning: this can take a long time to process)
 
-* `--format=[raw|csv|json]`: output format
+* `-o|--output=FILENAME`: output to a file
 
-* `--index=RESOURCE`: get index for RESOURCE
+* `--nocache`: do not use cache data
 
-* `--list[=FORMAT[,OPTIONS[,...]]`: list the available resources
-
-* `--quiet`: suppress error output
-
-* `--properties=RESOURCE`: get a list of resource properties
-
-* `--silent`: suppress all output exception results
-
-* `--test[=PATTERN]`: test resources matching pattern (default is '.*')
-
-* `--verbose`: enable verbose output
-
-* `--warning`: disable warning output
-
-Description:
-
-The online resource accessor delivers online resources to GridLAB-D applications.
-
-Valid formats include `json` and `csv` (the default is 'raw').
-
-Examples:
-
-The following command lists the released versions
-
-    gridlabd resource --index=version
-
-The following command lists the properties on the online weather resources
-
-    gridlabd resource --properties=weather
-
-The following command retrieves the online weather data for the specified location
-
-    gridlabd resource --content=weather,WA-Seattle_Seattletacoma_Intl_A.tmy3
+* `--cleancache`: clean cache data
 
 
 
 # Classes
+
+## Buildings
+
+Buildings data
+
+### `Buildings(country:str, state:str, county:str, locate:bool, address:bool, cache:[bool | str])`
+
+Construct buildings object
+
+Arguments:
+
+* `country`: specifies the country
+
+* `state`: specify the state, province, or region)
+
+* `county`: specify the county
+
+* `locate`: enable addition of latitude and longitude data
+
+* `address`: enable addition of address data (can be very slow)
+
+* `cache`: control cache (use 'clean' to refresh cache data)
+
+
+---
+
+## BuildingsError
+
+Buildings exception
+
+---
 
 ## Resource
 
@@ -154,38 +153,11 @@ The following keys are commonly found in resource properties:
 * `gitbranch`: the resource branch on github
 
 
----
-
-## ResourceError
-
-Resource exception
-
 # Functions
 
-## `main() -> int`
-
-Resource tool main routine
-
-Arguments:
-
-* `argv`: command line arguments
-
-Returns:
-
-* Exit code
+## `geocode() -> None`
 
 
----
-
-## `test() -> None`
-
-Run tests on resources that match the specified pattern
-
-Arguments:
-
-* `pattern`: the resource name as a regular expression
-
-Returns:
-
-* Exit code: E_OK on success, E_FAILED on failure
+Decode geohash, returning two float with latitude and longitude
+containing only relevant digits and with trailing zeroes removed.
 

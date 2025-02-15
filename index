@@ -4065,6 +4065,7 @@ tools/autotest/test_rest_server_opt.glm
 tools/autotest/test_server.glm
 tools/autotest/test_unitcalc.glm
 tools/autotest/test_unitcalc.txt
+tools/buildings.py
 tools/create_childs.py
 tools/create_ductbank.py
 tools/create_filter.py
