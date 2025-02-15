@@ -1,6 +1,6 @@
 [[/Tools/Buildings]] -- Buildings
 
-Syntax: gridlabd buildings [OPTIONS ...]
+Syntax: `gridlabd buildings [OPTIONS ...]`
 
 Options:
 
@@ -87,6 +87,28 @@ Arguments:
 * `address`: enable addition of address data (can be very slow)
 
 * `cache`: control cache (use 'clean' to refresh cache data)
+
+
+### `Buildings.dict() -> None`
+
+Get data as dict
+
+Arguments:
+
+* `orient`: see `pandas.DataFrame.to_dict()` for details
+
+Returns:
+
+* `dict|list`: data organized according to `orient`
+
+
+### `Buildings.list() -> None`
+
+Get data as list
+
+Returns:
+
+* `list`: see `pandas.DataFrame.to_dict('list')` for details
 
 
 ---
