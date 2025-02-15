@@ -38,7 +38,7 @@ jobs:
     - name: Deploy to S3
       run: |
         sh ./setup.sh --local
-        sh ./build.sh --system --parallel --upload --release
+        sh ./build.sh --system --parallel --validate --upload --release
 
   buildMacos14FastS3:
 
@@ -75,7 +75,7 @@ jobs:
         sudo chmod 2777 /usr/local/opt/gridlabd
         sh ./setup.sh --local
         brew install gdal
-        sh ./build.sh --system --parallel --upload --release
+        sh ./build.sh --system --parallel --validate --upload --release
 
   buildMacos15FastS3:
 
@@ -112,7 +112,7 @@ jobs:
         sudo chmod 2777 /usr/local/opt/gridlabd
         sh ./setup.sh --local
         brew install gdal
-        sh ./build.sh --system --parallel --upload --release
+        sh ./build.sh --system --parallel --validate --upload --release
 
   buildUbuntu22FastS3:
 
@@ -149,7 +149,7 @@ jobs:
         sudo sh ./setup.sh --local
         sudo sh ./build.sh --system --parallel
         gridlabd python -m pip install awscli
-        sudo sh ./build.sh --upload --release
+        sudo sh ./build.sh --validate --upload --release
 
   buildUbuntu24FastS3:
 
@@ -186,7 +186,7 @@ jobs:
         sudo sh ./setup.sh --local
         sudo sh ./build.sh --system --parallel
         gridlabd python -m pip install awscli
-        sudo sh ./build.sh --upload --release
+        sudo sh ./build.sh --validate --upload --release
 
   buildAWSUbuntuAMI:
     runs-on: ubuntu-24.04

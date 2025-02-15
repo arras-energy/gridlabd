@@ -16,7 +16,7 @@ object weather
     name "example";
 }
 
-#system curl -sL https://library.arras.energy/US/CA/SLAC/pole_configuration.glm > pole_configuration.glm
+#system curl -sL http://library.arras.energy/US/CA/SLAC/pole_configuration.glm > pole_configuration.glm
 #include "pole_configuration.glm"
 
 object pole
