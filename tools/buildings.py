@@ -15,6 +15,12 @@ Options:
 * `--nocache`: do not use cache data
 
 * `--cleancache`: clean cache data
+
+Examples:
+
+~~~
+gridlabd buildings -C=US/NH/Sullivan
+~~~
 """
 
 import os
