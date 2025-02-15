@@ -150,7 +150,7 @@ class Buildings:
             os.makedirs(filedir,exist_ok=True)
             self.data.to_csv(pathname,index=False,header=True)
 
-    def list(self):
+    def list(self) -> list:
         """Get data as list
 
         Returns:
@@ -159,7 +159,7 @@ class Buildings:
         """
         return self.data.to_dict('records')
 
-    def dict(self,orient='dict'):
+    def dict(self,orient='dict') -> dict:
         """Get data as dict
 
         Arguments:
@@ -238,8 +238,10 @@ def main(argv:list[str]) -> int:
     # handle stardard app arguments --debug, --warning, --verbose, --quiet, --silent
     args = app.read_stdargs(argv)
 
+    # no location by default
     country,state,county = [None]*3
 
+    # process remaining arguments
     for key,value in args:
 
         if key in ["-h","--help","help"]:
@@ -275,41 +277,41 @@ def main(argv:list[str]) -> int:
             app.error(f"'{key}={value}' is invalid")
             return app.E_INVALID
 
-    if country is None or state is None or county is None:
+    # country, state, and county are all specified -- proceed
+    if not country is None and not state is None and not county is None:
 
-        raise BuildingsError("country, state, county not specified")
+        # read data
+        result = Buildings(country,state,county,LOCATE,ADDRESS,CACHE)
+        
+        # output to CSV
+        if OUTPUT is None or ( isinstance(OUTPUT,str) and OUTPUT.endswith(".csv") ):
 
-    result = Buildings(country,state,county,LOCATE,ADDRESS,CACHE)
-    
-    if OUTPUT is None or ( isinstance(OUTPUT,str) and OUTPUT.endswith(".csv") ):
-
-        try:
-            result.data.to_csv(open(OUTPUT,"w") if OUTPUT else sys.stdout,index=False,header=True)
-        except BrokenPipeError:
-            try: # needed to avoid spurious "ignores exception" output on exit
-                sys.stdout.close()
+            try:
+                result.data.to_csv(open(OUTPUT,"w") if OUTPUT else sys.stdout,index=False,header=True)
             except BrokenPipeError:
-                pass
+                try: # needed to avoid spurious "ignores exception" output on exit
+                    sys.stdout.close()
+                except BrokenPipeError:
+                    pass
 
-    elif isinstance(OUTPUT,str) and OUTPUT.endswith(".json"):
+        # output to JSON
+        elif isinstance(OUTPUT,str) and OUTPUT.endswith(".json"):
 
-        result.data.set_index('id').to_json(open(OUTPUT,"w"),indent=4,orient='index')
+            result.data.set_index('id').to_json(open(OUTPUT,"w"),indent=4,orient='index')
 
-    elif isinstance(OUTPUT,str) and OUTPUT.endswith(".glm"):
+        # output to GLM
+        elif isinstance(OUTPUT,str) and OUTPUT.endswith(".glm"):
 
-        result._to_glm(OUTPUT)
+            result._to_glm(OUTPUT)
 
-    else:
+        # unsupported output format
+        else:
 
-        raise BuildingsError(f"output format {os.path.splitext(OUTPUT)[1]} is not supported ")
+            raise BuildingsError(f"output format {os.path.splitext(OUTPUT)[1]} is not supported ")
 
     # normal termination condition
     return app.E_OK
 
 if __name__ == "__main__":
-
-    # sys.argv = [__file__,"-C=US/NH/Sullivan","--locate","-o=/tmp/test.glm"]
-    # sys.argv = [__file__,"-C=US/NH/Sullivan","--locate","-o=/tmp/test.csv"]
-    # sys.argv = [__file__,"-C=US/NH/Sullivan","--locate","-o=/tmp/test.json"]
 
     app.run(main)

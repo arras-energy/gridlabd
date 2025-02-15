@@ -96,7 +96,7 @@ Arguments:
 * `cache`: control cache (use 'clean' to refresh cache data)
 
 
-### `Buildings.dict() -> None`
+### `Buildings.dict() -> dict`
 
 Get data as dict
 
@@ -109,7 +109,7 @@ Returns:
 * `dict|list`: data organized according to `orient`
 
 
-### `Buildings.list() -> None`
+### `Buildings.list() -> list`
 
 Get data as list
 
