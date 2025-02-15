@@ -1,6 +1,6 @@
 """Buildings
 
-Syntax: gridlabd buildings [OPTIONS ...]
+Syntax: `gridlabd buildings [OPTIONS ...]`
 
 Options:
 
