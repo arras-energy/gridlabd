@@ -56,7 +56,7 @@ def stations():
 
 		dict   Station data by ICAO station id
 	"""
-	query = "https://www.aviationweather.gov/docs/metar/stations.txt"
+	query = "http://www.moratech.com/aviation/metar-stations.txt"
 	r = requests.get(query)
 	if r.status_code != 200:
 		raise Exception(f"request error (code={r.status_code})")
@@ -70,7 +70,7 @@ def stations():
 		elif line[0] != '!':
 			if not section:
 				section = line
-			elif line[3] != ' ':
+			elif len(line)>=82 and line[3] != ' ':
 				try:
 					region = line[0:2].strip()
 					if not region:
