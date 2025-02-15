@@ -39,12 +39,12 @@ bus::bus(MODULE *module)
 
 			PT_enumeration, "type", get_type_offset(),
 				PT_DESCRIPTION, "bus type (1 = PQ, 2 = PV, 3 = ref, 4 = isolated)",
-				PT_KEYWORD, "UNKNOWN", (enumeration)0,
-				PT_KEYWORD, "PQ", (enumeration)1,
-				PT_KEYWORD, "PV", (enumeration)2,
-				PT_KEYWORD, "REF", (enumeration)3,
-				PT_KEYWORD, "NONE", (enumeration)4,
-				PT_KEYWORD, "PQREF", (enumeration)1,
+				PT_KEYWORD, "UNKNOWN", (enumeration)BT_UNKNOWN,
+				PT_KEYWORD, "PQ", (enumeration)BT_PQ,
+				PT_KEYWORD, "PV", (enumeration)BT_PV,
+				PT_KEYWORD, "REF", (enumeration)BT_REF,
+				PT_KEYWORD, "ISOLATED", (enumeration)BT_ISOLATED,
+				PT_KEYWORD, "PQREF", (enumeration)BT_PQ,
 
 			PT_double, "Pd[MW]", get_Pd_offset(),
 				PT_OUTPUT,
@@ -66,7 +66,7 @@ bus::bus(MODULE *module)
 			PT_double, "baseKV[kV]", get_baseKV_offset(),
 				PT_DESCRIPTION, "voltage magnitude (p.u.)",
 
-			PT_double, "Vm[pu*V]", get_Vm_offset(),
+			PT_double, "Vm[pu]", get_Vm_offset(),
 				PT_DESCRIPTION, "voltage angle (degrees)",
 
 			PT_double, "Va[deg]", get_Va_offset(),
@@ -75,12 +75,12 @@ bus::bus(MODULE *module)
 			PT_int32, "zone", get_zone_offset(),
 				PT_DESCRIPTION, "loss zone (1-999)",
 
-			PT_double, "Vmax[pu*V]", get_Vmax_offset(),
-				PT_DEFAULT,"1.2 pu*V",
+			PT_double, "Vmax[pu]", get_Vmax_offset(),
+				PT_DEFAULT,"1.2 pu",
 				PT_DESCRIPTION, "maximum voltage magnitude (p.u.)",
 
-			PT_double, "Vmin[pu*V]", get_Vmin_offset(),
-				PT_DEFAULT,"0.8 pu*V",
+			PT_double, "Vmin[pu]", get_Vmin_offset(),
+				PT_DEFAULT,"0.8 pu",
 				PT_DESCRIPTION, "minimum voltage magnitude (p.u.)",
 
 			PT_double, "lam_P", get_lam_P_offset(),
@@ -152,13 +152,13 @@ bus::bus(MODULE *module)
 
 	    gl_global_create("pypower::low_voltage_warning",
 	        PT_double, &low_voltage_warning, 
-	        PT_UNITS, "pu*V",
+	        PT_UNITS, "pu",
 	        PT_DESCRIPTION, "Voltage level for low voltage warning",
 	        NULL);
 
 	    gl_global_create("pypower::high_voltage_warning",
 	        PT_double, &high_voltage_warning, 
-	        PT_UNITS, "pu*V",
+	        PT_UNITS, "pu",
 	        PT_DESCRIPTION, "Voltage level for high voltage warning",
 	        NULL);
 	}
@@ -176,6 +176,22 @@ int bus::create(void)
 	{
 		throw "maximum bus entities exceeded";
 	}
+
+	// defaults
+	set_bus_i(0);
+	set_type(nbus == 1 ? 3 : 1); // first bus is REF by default all other PQ by default
+	set_Pd(0.0);
+	set_Qd(0.0);
+	set_Gs(0.0);
+	set_Bs(0.0);
+	set_area(1);
+	set_baseKV(500.0);
+	set_Vm(1.0);
+	set_Va(0.0);
+	set_zone(1);
+	set_Vmax(1.2);
+	set_Vmin(0.8);
+	set_S(0.0);
 
 	// initialize weather data
 	current = first = last = NULL;

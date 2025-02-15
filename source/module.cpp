@@ -2965,23 +2965,23 @@ void module_load_templates(MODULE *mod)
 	struct stat statbuf;
 	if ( (dp=opendir(loadpath)) != NULL )
 	{
-		output_debug("module_load_templates(MODULE *mod=<%s>): reading shared module templates folder '%s'",mod->name,loadpath);
+		IN_MYCONTEXT output_debug("module_load_templates(MODULE *mod=<%s>): reading shared module templates folder '%s'",mod->name,loadpath);
 		while ( (entry=readdir(dp)) )
 		{
 			char file[strlen(loadpath)+strlen(entry->d_name)+2];
 			snprintf(file,sizeof(file)-1,"%s/%s",loadpath,entry->d_name);
-			output_debug("module_load_templates(MODULE *mod=<%s>): loading '%s'",mod->name,file);
+			IN_MYCONTEXT output_debug("module_load_templates(MODULE *mod=<%s>): loading '%s'",mod->name,file);
 			if ( lstat(file,&statbuf) != 0 )
 			{
 				output_warning("module_load_templates(MODULE *mod=<%s>): unable to get status of '%s'",mod->name,file);
 			}
 			else if ( S_ISDIR(statbuf.st_mode) )
 			{
-				output_debug("module_load_templates(MODULE *mod=<%s>): '%s' is a directory -- ignoring",mod->name,file);
+				IN_MYCONTEXT output_debug("module_load_templates(MODULE *mod=<%s>): '%s' is a directory -- ignoring",mod->name,file);
 			}
 			else if ( isglm(file) )
 			{
-				output_debug("module_load_templates(MODULE *mod=<%s>): loading '%s'",mod->name,file);
+				IN_MYCONTEXT output_debug("module_load_templates(MODULE *mod=<%s>): loading '%s'",mod->name,file);
 				if ( my_instance->get_loader()->loadall_glm(file) != SUCCESS )
 				{
 					output_error("module template '%s' load failed",file);
@@ -2993,7 +2993,7 @@ void module_load_templates(MODULE *mod)
 	}
 	else
 	{
-		output_debug("module_load_templates(MODULE *mod=<%s>): shared module templates folder '%s' not found",mod->name,loadpath);
+		IN_MYCONTEXT output_debug("module_load_templates(MODULE *mod=<%s>): shared module templates folder '%s' not found",mod->name,loadpath);
 	}
 	return;
 }

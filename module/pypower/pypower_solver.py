@@ -249,6 +249,10 @@ def solver(pf_case):
         if save_case:
             write_case(casedata,f"{modelname}_casedata.{save_format}",False)
 
+        # check for at least one REF or PV bus
+        if len([x[0] for x in casedata['bus'] if x[1] in [2,3]]) == 0:
+            raise PypowerError("no REF or PV bus found")
+
         # run OPF solver if gencost data is found
         if 'gencost' in casedata:
             if len(casedata['gencost']) > 0:
@@ -270,21 +274,19 @@ def solver(pf_case):
         sys.stderr.flush()
 
         # copy back to model
-        if success or not stop_on_failure:
+        if not success:
 
-            for name in ['bus','branch']:
-                pf_case[name] = results[name].tolist()
-            for n,m in enumerate(genmap):
-                pf_case['gen'][m] = results['gen'][n].tolist()
-
-            if success:
-                return pf_case
-
-        if not save_case:
-            
             write_case(results,f"{modelname}_failed.{save_format}")
 
-        return False if stop_on_failure else pf_case
+            return False if stop_on_failure else pf_case
+            
+        for name in ['bus','branch']:
+            pf_case[name] = results[name].tolist()
+        for n,m in enumerate(genmap):
+            pf_case['gen'][m] = results['gen'][n].tolist()
+
+        return pf_case
+        
 
     except Exception:
 

@@ -1038,7 +1038,7 @@ STATUS GldLoader::resolve_list(UNRESOLVED *item, bool deferred)
 {
 	while ( item != NULL )
 	{
-		output_debug("GldLoader::resolve_list(UNRESOLVED *item=<0x%x> '%s', bool deferred=%s) starting",item,item->id,deferred?"true":"false");
+		IN_MYCONTEXT output_debug("GldLoader::resolve_list(UNRESOLVED *item=<0x%x> '%s', bool deferred=%s) starting",item,item->id,deferred?"true":"false");
 		bool resolved = false;
 
 		// handle different reference types
@@ -1059,19 +1059,19 @@ STATUS GldLoader::resolve_list(UNRESOLVED *item, bool deferred)
 		if ( resolved )
 		{
 			item = del_unresolved(item);
-			output_debug("resolved ok, next is item <0x%x>", item);
+			IN_MYCONTEXT output_debug("resolved ok, next is item <0x%x>", item);
 		}
 		else if ( ! deferred )
 		{
 			// unresolved with no deferred resolution
-			output_debug("unresolved");
+			IN_MYCONTEXT output_debug("unresolved");
 			return FAILED;
 		}
 		else
 		{
 			// unresolved with deferred resolution
 			item = item->next;
-			output_debug("resolution deferred, next is item <0x%x>",item);
+			IN_MYCONTEXT output_debug("resolution deferred, next is item <0x%x>",item);
 		}
 	}
 	return SUCCESS;
@@ -7150,7 +7150,7 @@ static int is_autodef(char *value)
 
 void GldLoader::wait_processes(void)
 {
-	output_debug("waiting for started tasks to terminate");
+	IN_MYCONTEXT output_debug("waiting for started tasks to terminate");
 	while ( threadlist != NULL )
 	{
 		struct s_threadlist *next = threadlist->next;
@@ -7166,7 +7166,7 @@ void GldLoader::wait_processes(void)
 		}
 		else
 		{
-			output_debug("thread %p completed ok", threadlist->data);
+			IN_MYCONTEXT output_debug("thread %p completed ok", threadlist->data);
 		}
 		threadlist = next;
 	}

@@ -27,6 +27,15 @@ public:
 		struct s_sensitivity *next;
 	} SENSITIVITY;
 
+	typedef enum e_bustype
+	{
+		BT_UNKNOWN = 0,
+		BT_PQ = 1,
+		BT_PV = 2,
+		BT_REF = 3,
+		BT_ISOLATED = 4,
+	} BUSTYPE;
+
 public:
 	// published properties
 	GL_ATOMIC(int32,bus_i);

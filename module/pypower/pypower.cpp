@@ -803,8 +803,14 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
             {
                 bus *obj = buslist[n];
                 PyObject *pyobj = PyList_GetItem(busdata,n);
-                RECV(Vm,7,Float,Double)
-                RECV(Va,8,Float,Double)
+                if ( ! isnan(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,7))) )
+                {
+                    RECV(Vm,7,Float,Double)
+                }
+                if ( ! isnan(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,8))) )
+                {
+                    RECV(Va,8,Float,Double)
+                }
 
                 if ( enable_opf )
                 {
