@@ -21,11 +21,18 @@ Description:
 The `buildings` module accessing the building model database used to generate building
 objects in GridLAB-D.
 
+Supported output file formats include `.csv`, `.json`, and `.glm`.  
+
 Examples:
 
 To download buildings data from the command line
 ~~~
-gridlabd buildings -C=US/NH/Sullivan
+gridlabd buildings -C=US/NH/Sullivan | head -n 5 
+id,climate,year,centroid,footprint,height,ground_area,code,class,mixed,type,windows,floors,floor_area,latitude,longitude
+87M95X2C+XC65-13-14-14-13,6A,0,drsv2zwhg,"drsv2zwhe18,bcz,j756,jjb2,ucx,uk3",5.4,119.8,90.1-2016,IECC,False,,0.14,1,119.8,43.1524,-72.029
+87M95X3C+7H47-15-14-15-14,6A,0,drsv2zy3j,"drsv2zy2vbx,34x1,3skb,3pwq",6.6,145.8,90.1-2004,MidriseApartment,False,,0.3,2,291.7,43.1531,-72.0285
+87M95XQQ+C4QJ-11-9-11-9,6A,0,drsv9q4rg,"drsv9q4r7qb,ct2,6255f,sv7",3.8,69.0,DOE-Ref-Pre-1980,IECC,False,,0.14,1,69.0,43.1886,-72.0121
+87M95XQQ+95GJ-15-18-16-17,6A,0,drsv9q4qv,"drsv9q4wb8j,qmyh,que2,qer5,r433,rm5k,qyw1,rp9u",5.3,170.4,DOE-Ref-1980-2004,MidriseApartment,False,,0.3,1,170.4,43.1884,-72.0121
 ~~~
 
 To access building data in Python
@@ -75,6 +82,7 @@ import gridlabd.resource as res
 import gridlabd.geodata_address as address
 import gridlabd.nsrdb_weather as nw
 from typing import TypeVar
+import contextlib
 
 class BuildingsError(app.ApplicationError):
     """Buildings exception"""
@@ -275,7 +283,13 @@ def main(argv:list[str]) -> int:
     
     if OUTPUT is None or ( isinstance(OUTPUT,str) and OUTPUT.endswith(".csv") ):
 
-        result.data.to_csv(open(OUTPUT,"w") if OUTPUT else sys.stdout,index=False,header=True)
+        try:
+            result.data.to_csv(open(OUTPUT,"w") if OUTPUT else sys.stdout,index=False,header=True)
+        except BrokenPipeError:
+            try: # needed to avoid spurious "ignores exception" output on exit
+                sys.stdout.close()
+            except BrokenPipeError:
+                pass
 
     elif isinstance(OUTPUT,str) and OUTPUT.endswith(".json"):
 
