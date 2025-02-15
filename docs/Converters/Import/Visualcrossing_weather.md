@@ -11,7 +11,7 @@ GLM:
 Shell:
 
 ~~~
-bash$ gridlabd -D csv_load_options="-o <filename>.glm -f noaa-weather -t weather  -p location=<location>" "<noaa-lcd-download.csv>" <modelname>.glm 
+bash$ gridlabd -D csv_load_options="-o <filename>.glm -f noaa-weather -t weather  -p location=<location>" "<noaa-lcd-download.csv>" <modelname>.glm
 ~~~
 
 # Description
@@ -23,14 +23,14 @@ The converter creates two files using the weather data, a CSV file containing th
 The CSV file is formatted to meet the requirements of a standard `tape.player` object.  The GLM file contains a class declaration for the weather object, defined as follows:
 
 ~~~
-class weather 
+class weather
 {
 	char32 location;
 	double temperature[degF];
 	double humidity[%];
 	double wind_speed[mph];
 	double opq_sky_cov[%];
-}	
+}
 ~~~
 
 In addition, the GLM file contains an object declaration for the weather data, with an embedded player to load the CSV data into the weather object. This is defined as follows:
@@ -53,13 +53,13 @@ object weather
 The following example demonstrates loading the Visual Crossing test dataset stored on AWS.
 
 ~~~
-clock 
+clock
 {
 	starttime "2020-01-01 00:00:00";
 	stoptime "2020-01-05 00:00:00";
 }
 
-#input "https://s3-us-west-1.amazonaws.com/weather.gridlabd.us/test_data/visualcrossing.csv" -o test_data.glm -f visualcrossing-weather -t weather -p location="Menlo Park, CA"
+#input "https://s3-us-west-1.amazonaws.com/weather.arras.energy/test_data/visualcrossing.csv" -o test_data.glm -f visualcrossing-weather -t weather -p location="Menlo Park, CA"
 
 module tape;
 object recorder

@@ -32,7 +32,7 @@ The `dump <job>` command saves a core memory dump file and prints its contents t
 If you build GridLAB-D and disable optimization, you can use the debugger's GUI to easily inspect all the internal variables while the simulation is running.
 
 ~~~
-host$ git clone http://source.gridlabd.us/ gridlabd
+host$ git clone http://source.arras.energy/ gridlabd
 ...
 host% autoreconf -isf && ./configure CXXFLAGS='-O0' && make system
 ...

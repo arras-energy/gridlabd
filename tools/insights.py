@@ -67,7 +67,7 @@ except:
 	token = None
 
 today = datetime.datetime.now().date()
-URL = "http://version.gridlabd.us/access.csv"
+URL = "http://version.arras.energy/access.csv"
 debug = False
 groupby = None
 with_github = False

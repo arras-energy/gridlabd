@@ -2,9 +2,9 @@
 
 ## Preparation
 
-You should update your installer, e.g., with `brew update` or `apt update`.  
+You should update your installer, e.g., with `brew update` or `apt update`.
 
-It's also a good idea to upgrade any old or outdated packages, e.g., with `brew upgrade` or `apt upgrade`.  
+It's also a good idea to upgrade any old or outdated packages, e.g., with `brew upgrade` or `apt upgrade`.
 
 You will need to install curl, e.g., with `brew install curl` or `apt install curl`. See [the `curl` website for details](https://everything.curl.dev/get).
 
@@ -13,7 +13,7 @@ You will need to install curl, e.g., with `brew install curl` or `apt install cu
 To setup your system to build the latest release, run the command:
 
 ~~~
-curl -sL https://code.gridlabd.us/master/setup.sh | sh
+curl -sL https://code.arras.energy/master/setup.sh | sh
 ~~~
 
 To setup for a development build, run the command:
