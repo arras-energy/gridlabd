@@ -4,17 +4,19 @@ Syntax: `gridlabd buildings [OPTIONS ...]`
 
 Options:
 
+* `-A|--address: include address (warning: this can take a long time to process)
+
 * `-C|--county=COUNTRY/STATE/COUNTY`: download county-level data
+
+* `--cleancache`: clean cache data
+
+* `-I|--index[=PATTERN]`: download index of datasets
 
 * `-L|--locate`: include latitude and longitude
 
-* `-A|--address: include address (warning: this can take a long time to process)
-
-* `-o|--output=FILENAME`: output to a file
-
 * `--nocache`: do not use cache data
 
-* `--cleancache`: clean cache data
+* `-o|--output=FILENAME`: output to a file
 
 Description:
 
@@ -107,6 +109,19 @@ Arguments:
 Returns:
 
 * `dict|list`: data organized according to `orient`
+
+
+### `Buildings.index(pattern:str) -> list`
+
+Get index of building datasets
+
+Arguments:
+
+* `pattern`: pattern of building dataset name, e.g., "US/CA"
+
+Returns:
+
+* `list`: list of matching datasets available in buildings resource
 
 
 ### `Buildings.list() -> list`
