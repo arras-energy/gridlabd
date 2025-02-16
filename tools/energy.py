@@ -146,7 +146,13 @@ class EnergyError(Exception):
 
 class Energy:
 
-    def __init__(self,country,state,county,building_types=None,timestep=None,electrification=None):
+    def __init__(self,
+            country:str,
+            state:str,
+            county:str|None,
+            building_types:list[str]|None=None,
+            timestep:str|None=None,
+            electrification:dict|None=None):
         """Access building energy use data
 
         Arguments:
@@ -205,10 +211,12 @@ class Energy:
                     aggregates.append("heatgain")
                     nonelectric_loads = {x:y[0] for x,y in CONVERTERS[sector].items() if x in data.columns and isinstance(y,list) and y[2] == False}
                     for source,field in nonelectric_loads.items():
-                        if electrification is None or field not in electrification:
-                            data["heatgain"] += data[source]
-                        else:
-                            data[field] += data[source]
+                        try:
+                            factor = float(electrification[field])
+                        except KeyError:
+                            factor = 0.0
+                        data["heatgain"] += data[source] * (1-factor)
+                        data[field] += data[source] * factor
                         data.drop(source,axis=1,inplace=True)
                     for field in aggregates:
                         data[field] /= data["units"]
@@ -217,9 +225,8 @@ class Energy:
 
 if __name__ == "__main__":
 
-    ls = Energy("US","WA","Snohomish",["MOBILE"])
-    # json.dump(dict(zip(list(ls.data["MOBILE"].columns),[None]*len(ls.data["MOBILE"].columns))),fp=sys.stdout,indent=4)
+    ls = Energy("US","WA","Snohomish",["MOBILE"],electrification={"heating":1.0})
     pd.options.display.max_columns = None
     pd.options.display.max_rows = None
     pd.options.display.width = None
-    print(ls.data["MOBILE"])
+    print(ls.data["MOBILE"][["heating","heatgain"]])
