@@ -83,7 +83,7 @@ import gridlabd.geodata_address as address
 import gridlabd.nsrdb_weather as nw
 from typing import TypeVar
 import contextlib
-import autobem4_to_glm
+import gridlabd.autobem4_to_glm
 
 class BuildingsError(app.ApplicationError):
     """Buildings exception"""
@@ -273,7 +273,7 @@ def main(argv:list[str]) -> int:
         # output to GLM
         elif isinstance(OUTPUT,str) and OUTPUT.endswith(".glm"):
 
-            autobem4_to_glm.write(result,OUTPUT)
+            gridlabd.autobem4_to_glm.write(result,OUTPUT)
 
         # unsupported output format
         else:
