@@ -100,7 +100,7 @@ static PyMethodDef module_methods[] = {
     {"resume",gridlabd_resume, METH_VARARGS, "Resume the GridLAB-D instance"},
     // model editing
     {"module", gridlabd_module, METH_VARARGS, "Load a python GridLAB-D module"},
-    {"add", gridlabd_add, METH_VARARGS, "Add an element to the current model"},
+    {"add", gridlabd_add, METH_VARARGS, "Add an element to the current model"}, 
     {"load", gridlabd_load, METH_VARARGS, "Load model from a file"},
     {"save", gridlabd_save, METH_VARARGS, "Save model to a file"},
     // gets
@@ -159,9 +159,9 @@ static PyObject *gridlabd_title(PyObject *self, PyObject *args)
 
 static PyObject *gridlabd_version(PyObject *self, PyObject *args)
 {
-    return Py_BuildValue("{s:i,s:i,s:i,s:i,s:s}",
-        "major", global_version_major,
-        "minor", global_version_minor,
+    return Py_BuildValue("{s:i,s:i,s:i,s:i,s:s}", 
+        "major", global_version_major, 
+        "minor", global_version_minor, 
         "patch", global_version_patch,
         "build", global_version_build,
         "branch", global_version_branch);
@@ -175,7 +175,7 @@ static PyObject *gridlabd_copyright(PyObject *self, PyObject *args)
         "Copyright (C) 2008-2017, Battelle Memorial Institute.\n"
         "Copyright (C) 2016-2022, The Board of Trustees of the Leland Stanford Junior University.\n"
         "All Rights Reserved.\n"
-         "For additional information, see http://www.arras.energy/.\n");
+         "For additional information, see http://www.gridlabd.us/.\n");
 }
 
 static PyObject *gridlabd_credits(PyObject *self, PyObject *args)
@@ -184,7 +184,7 @@ static PyObject *gridlabd_credits(PyObject *self, PyObject *args)
         PACKAGE_NAME " " PACKAGE_VERSION "\n"
         "\n"
         "GridLAB-D was developed with funding from the US Department of Energy and the California Energy Commission.\n"
-        "For additional information, see http://www.arras.energy/.\n");
+        "For additional information, see http://www.gridlabd.us/.\n");
 }
 
 static PyObject *gridlabd_license(PyObject *self, PyObject *args)
@@ -196,10 +196,10 @@ static PyObject *gridlabd_license(PyObject *self, PyObject *args)
         "All Rights Reserved.\n"
         "\n"
         "License Version 2.0, January 2019\n"
-        "http://www.arras.energy/\n"
+        "http://www.gridlabd.us/\n"
         "\n"
         "1. The Copyright Holders hereby grant permission to any person or entity\n"
-        "   lawfully obtaining a copy of this software and associated documentation\n"
+        "   lawfully obtaining a copy of this software and associated documentation\n" 
         "   files (hereinafter \"the Software\") to redistribute and use the Software\n"
         "   in source andbinary forms, with or without modification.  Such person or\n"
         "   entity may use, copy, modify, merge, publish, distribute, sublicense,\n"
@@ -298,7 +298,7 @@ static PyObject *gridlabd_error(PyObject *self, PyObject *args)
 static PyObject *gridlabd_traceback(const char *context=NULL)
 {
     if ( context ) output_error("traceback context is '%s'",context);
-    if ( PyErr_Occurred() )
+    if ( PyErr_Occurred() ) 
     {
         PyErr_Print();
     }
@@ -308,61 +308,61 @@ static PyObject *gridlabd_traceback(const char *context=NULL)
 static PyObject *gridlabdException;
 PyObject *this_module = NULL;
 
-class Callback
+class Callback 
 {
     static const char *name;
 public:
-    inline Callback(const char *str)
-    {
-        IN_MYCONTEXT output_debug("entering python:%s...",str);
-        name = str;
+    inline Callback(const char *str) 
+    { 
+        IN_MYCONTEXT output_debug("entering python:%s...",str); 
+        name = str; 
     };
-    inline ~Callback(void)
-    {
-        IN_MYCONTEXT output_debug("exiting python:%s...",name);
-        name = NULL;
+    inline ~Callback(void) 
+    { 
+        IN_MYCONTEXT output_debug("exiting python:%s...",name); 
+        name = NULL; 
     };
-    static inline bool is_active(void)
-    {
-        return name==NULL;
+    static inline bool is_active(void) 
+    { 
+        return name==NULL; 
     };
 };
 const char * Callback::name = NULL;
 
-class ReadLock
+class ReadLock 
 {
 public:
-    inline ReadLock()
-    {
-        if ( ! Callback::is_active() )
+    inline ReadLock() 
+    { 
+        if ( ! Callback::is_active() ) 
         {
-            exec_rlock_sync();
+            exec_rlock_sync(); 
         }
     };
-    inline ~ReadLock()
-    {
-        if ( ! Callback::is_active() )
+    inline ~ReadLock() 
+    { 
+        if ( ! Callback::is_active() ) 
         {
-            exec_runlock_sync();
+            exec_runlock_sync(); 
         }
     };
 };
 
-class WriteLock
+class WriteLock 
 {
 public:
-    inline WriteLock()
-    {
-        if ( ! Callback::is_active() )
+    inline WriteLock() 
+    { 
+        if ( ! Callback::is_active() ) 
         {
-            exec_wlock_sync();
+            exec_wlock_sync(); 
         }
     };
-    inline ~WriteLock()
-    {
-        if ( ! Callback::is_active() )
+    inline ~WriteLock() 
+    { 
+        if ( ! Callback::is_active() ) 
         {
-            exec_wunlock_sync();
+            exec_wunlock_sync(); 
         }
     };
 };
@@ -468,7 +468,7 @@ static void restore_environ(void)
 static int argc = 1;
 static const char *argv[1024] = {PACKAGE};
 static enum {
-    GMS_NEW = 0, // module has been newly loaded
+    GMS_NEW = 0, // module has been newly loaded 
     GMS_COMMAND, // module has received at least one command
     GMS_STARTED, // module has started simulation
     GMS_RUNNING, // module simulation is running
@@ -548,7 +548,7 @@ static void cleanup_glm(void)
     if ( strcmp(glmname,"") != 0 )
     {
         unlink(glmname);
-    }
+    }    
 }
 static PyObject *gridlabd_add(PyObject *self, PyObject *args)
 {
@@ -597,7 +597,7 @@ static PyObject *gridlabd_add(PyObject *self, PyObject *args)
         PyObject_Print(type,glmfh,Py_PRINT_RAW);
         fprintf(glmfh," ");
         PyObject_Print(name,glmfh,Py_PRINT_RAW);
-        if ( unit )
+        if ( unit ) 
         {
             fprintf(glmfh,"[");
             PyObject_Print(unit,glmfh,Py_PRINT_RAW);
@@ -856,7 +856,7 @@ static PyObject *gridlabd_pause(PyObject *self, PyObject *args)
     {
         return NULL;
     }
-    else
+    else 
     {
         return PyLong_FromLong(global_clock);
     }
@@ -890,7 +890,7 @@ static PyObject *gridlabd_pauseat(PyObject *self, PyObject *args)
     {
         return NULL;
     }
-    else
+    else 
     {
         return PyLong_FromLong(global_clock);
     }
@@ -898,7 +898,7 @@ static PyObject *gridlabd_pauseat(PyObject *self, PyObject *args)
 
 //
 // >>> gridlabd.resume()
-//
+// 
 // Returns: (long) 0
 //
 static PyObject *gridlabd_resume(PyObject *self, PyObject *args)
@@ -912,7 +912,7 @@ static PyObject *gridlabd_resume(PyObject *self, PyObject *args)
     {
         return NULL;
     }
-    else
+    else 
     {
         return PyLong_FromLong(0);
     }
@@ -942,7 +942,7 @@ static PyObject *gridlabd_save(PyObject *self, PyObject *args)
     {
         return NULL;
     }
-    else
+    else 
     {
         return PyLong_FromLong(len);
     }
@@ -1024,7 +1024,7 @@ static PyObject *gridlabd_get(PyObject *self, PyObject *args)
             PyObject *item = Py_BuildValue("s",var->prop->name);
             PyList_Append(data,item);
             Py_DECREF(item);
-        }
+        } 
         return data;
     }
     else if ( strcmp(type,"transforms") == 0 )
@@ -1039,7 +1039,7 @@ static PyObject *gridlabd_get(PyObject *self, PyObject *args)
                 PyList_Append(data,item);
                 Py_DECREF(item);
             }
-        }
+        } 
         return data;
     }
     else if ( strcmp(type,"schedules") == 0 )
@@ -1108,7 +1108,7 @@ static PyObject *gridlabd_set_global(PyObject *self, PyObject *args)
     }
     if ( global_setvar(name,value) == FAILED )
     {
-        if ( ret )
+        if ( ret ) 
         {
             Py_DECREF(ret);
         }
@@ -1266,44 +1266,44 @@ static PyObject *gridlabd_get_class(PyObject *self, PyObject *args)
         {
             PyDict_SetItemString(property,"type",spec->name);
             char access[1024] = "";
-            switch ( prop->access )
+            switch ( prop->access ) 
             {
-            case PA_PUBLIC:
-                strcpy(access,"PUBLIC");
+            case PA_PUBLIC: 
+                strcpy(access,"PUBLIC"); 
                 break;
-            case PA_REFERENCE:
-                strcpy(access,"REFERENCE");
+            case PA_REFERENCE: 
+                strcpy(access,"REFERENCE"); 
                 break;
-            case PA_PROTECTED:
-                strcpy(access,"PROTECTED");
+            case PA_PROTECTED: 
+                strcpy(access,"PROTECTED"); 
                 break;
-            case PA_PRIVATE:
-                strcpy(access,"PRIVATE");
+            case PA_PRIVATE: 
+                strcpy(access,"PRIVATE"); 
                 break;
-            case PA_HIDDEN:
-                strcpy(access,"HIDDEN");
+            case PA_HIDDEN: 
+                strcpy(access,"HIDDEN"); 
                 break;
-            case PA_N:
-                strcpy(access,"NONE");
+            case PA_N: 
+                strcpy(access,"NONE"); 
                 break;
             default:
-                if ( prop->access & PA_R )
+                if ( prop->access & PA_R ) 
                 {
                     strcat(access,"R");
                 }
-                if ( prop->access & PA_W )
+                if ( prop->access & PA_W ) 
                 {
                     strcat(access,"W");
                 }
-                if ( prop->access & PA_S )
+                if ( prop->access & PA_S ) 
                 {
                     strcat(access,"S");
                 }
-                if ( prop->access & PA_L )
+                if ( prop->access & PA_L ) 
                 {
                     strcat(access,"L");
                 }
-                if ( prop->access & PA_H )
+                if ( prop->access & PA_H ) 
                 {
                     strcat(access,"H");
                 }
@@ -1386,15 +1386,15 @@ static PyObject *gridlabd_get_object(PyObject *self, PyObject *args)
             PyDict_SetItemString(data,"parent",obj->parent->name);
         }
     }
-    if ( ! isnan(obj->latitude) )
+    if ( ! isnan(obj->latitude) ) 
     {
         PyDict_SetItemString(data,"latitude",obj->latitude);
     }
-    if ( ! isnan(obj->longitude) )
+    if ( ! isnan(obj->longitude) ) 
     {
         PyDict_SetItemString(data,"longitude",obj->longitude);
     }
-    if ( obj->groupid[0] != '\0' )
+    if ( obj->groupid[0] != '\0' ) 
     {
         PyDict_SetItemString(data,"groupid",(const char*)obj->groupid);
     }
@@ -1404,16 +1404,16 @@ static PyObject *gridlabd_get_object(PyObject *self, PyObject *args)
     {
         PyDict_SetItemString(data,"clock",buffer);
     }
-    if ( obj->valid_to > TS_ZERO && obj->valid_to < TS_NEVER )
+    if ( obj->valid_to > TS_ZERO && obj->valid_to < TS_NEVER ) 
     {
         PyDict_SetItemString(data,"valid_to",(unsigned long long)(obj->valid_to));
     }
     PyDict_SetItemString(data,"schedule_skew",(int)obj->schedule_skew);
-    if ( obj->in_svc > TS_ZERO && obj->in_svc < TS_NEVER )
+    if ( obj->in_svc > TS_ZERO && obj->in_svc < TS_NEVER ) 
     {
         PyDict_SetItemString(data,"in",(unsigned long long)(obj->in_svc));
     }
-    if ( obj->out_svc > TS_ZERO && obj->out_svc < TS_NEVER )
+    if ( obj->out_svc > TS_ZERO && obj->out_svc < TS_NEVER ) 
     {
         PyDict_SetItemString(data,"out",(unsigned long long)(obj->out_svc));
     }
@@ -1503,7 +1503,7 @@ static PyObject *gridlabd_get_schedule(PyObject *self, PyObject *args)
 
 //
 // >>> gridlabd.get_property(obj,name)
-//
+// 
 // Returns: property address
 static PyObject *gridlabd_get_property(PyObject *self, PyObject *args)
 {
@@ -1736,7 +1736,7 @@ static PyObject *gridlabd_convert_unit(PyObject *self, PyObject *args)
     }
     else if ( PyArg_ParseTuple(args,"Dss", &cmplx, &from, &to) )
     {
-        return gridlabd_exception("complex unit conversion not implemented");
+        return gridlabd_exception("complex unit conversion not implemented");       
     }
     else if ( PyArg_ParseTuple(args,"ss",&value,&to) )
     {
@@ -1884,7 +1884,7 @@ extern "C" bool on_init(void)
                 gridlabd_traceback("on_init");
                 return false;
             }
-            bool retval = false;
+            bool retval = false; 
             retval = PyObject_IsTrue(result);
             Py_DECREF(result);
             if ( ! retval )
@@ -1921,7 +1921,7 @@ extern "C" TIMESTAMP on_precommit(TIMESTAMP t0)
                 gridlabd_traceback("on_precommit");
                 return TS_INVALID;
             }
-            TIMESTAMP t2 = TS_INVALID;
+            TIMESTAMP t2 = TS_INVALID; 
             if ( PyLong_Check(result) )
             {
                 t2 = PyLong_AsLong(result);
@@ -1968,7 +1968,7 @@ extern "C" TIMESTAMP on_presync(TIMESTAMP t0)
                 gridlabd_traceback("on_presync");
                 return TS_INVALID;
             }
-            TIMESTAMP t2 = TS_INVALID;
+            TIMESTAMP t2 = TS_INVALID; 
             if ( PyLong_Check(result) )
             {
                 t2 = PyLong_AsLong(result);
@@ -2014,7 +2014,7 @@ extern "C" TIMESTAMP on_sync(TIMESTAMP t0)
                 gridlabd_traceback("on_sync");
                 return TS_INVALID;
             }
-            TIMESTAMP t2 = TS_INVALID;
+            TIMESTAMP t2 = TS_INVALID; 
             if ( PyLong_Check(result) )
             {
                 t2 = PyLong_AsLong(result);
@@ -2060,7 +2060,7 @@ extern "C" TIMESTAMP on_postsync(TIMESTAMP t0)
                 gridlabd_traceback("on_postsync");
                 return TS_INVALID;
             }
-            TIMESTAMP t2 = TS_INVALID;
+            TIMESTAMP t2 = TS_INVALID; 
             if ( PyLong_Check(result) )
             {
                 t2 = PyLong_AsLong(result);
@@ -2139,7 +2139,7 @@ extern "C" void on_term(void)
                 gridlabd_traceback("on_term");
                 return;
             }
-            if ( result != Py_None )
+            if ( result != Py_None ) 
             {
                 IN_MYCONTEXT output_warning("python on_term() return an unexpected type (expected None)");
             }
@@ -2190,7 +2190,7 @@ int python_event(OBJECT *obj, const char *function, long long *p_retval)
     PyObject *dict = PyModule_GetDict(mod);
     if ( dict == NULL || ! PyDict_Check(dict) )
     {
-        output_error("module does not have a namespace dict");
+        output_error("module does not have a namespace dict");       
         return 0;
     }
     PyObject *call = PyDict_GetItemString(dict,method);
@@ -2214,7 +2214,7 @@ int python_event(OBJECT *obj, const char *function, long long *p_retval)
                     {
                         *p_retval = PyLong_AsLong(result);
                     }
-                    else
+                    else 
                     {
                         output_error("python %s(%s) did not return an integer value as expected",function,objname);
                         Py_DECREF(result);
@@ -2239,8 +2239,8 @@ int python_event(OBJECT *obj, const char *function, long long *p_retval)
             }
             IN_MYCONTEXT output_debug("python_event(obj='%s',function='%s') -> *p_retval = %lld",objname,function,*p_retval);
             return 1;
-        }
-        else
+        }    
+        else 
         {
             output_error("%s is not callable",function);
             return 0;
@@ -2260,14 +2260,14 @@ static int python_import_file(const char *file)
 static bool get_callback(
     PyObject *mod,
     const char *file,
-    const char *name,
-    const char *def,
+    const char *name, 
+    const char *def, 
     PyObject **list)
 {
     PyObject *dict = PyModule_GetDict(mod);
     if ( dict == NULL || ! PyDict_Check(dict) )
     {
-        output_error("module does not have a namespace dict");
+        output_error("module does not have a namespace dict");       
         return false;
     }
 
@@ -2283,7 +2283,7 @@ static bool get_callback(
             PyList_Append(*list,call);
             return true;
         }
-        else
+        else 
         {
             output_error("%s.py: %s is not callable",file,def);
             return false;
@@ -2383,7 +2383,7 @@ MODULE *python_module_load(const char *file, int argc, const char *argv[])
 
 //
 // >>> gridlabd.module(module)
-//
+// 
 // Links the specified module to the gridlabd core
 //
 static PyObject *gridlabd_module(PyObject *self, PyObject *args)
@@ -2415,7 +2415,7 @@ static PyObject *gridlabd_module(PyObject *self, PyObject *args)
 // >>> gridlabd.int16(str)
 // >>> gridlabd.timestamp(str)
 //
-// Return the gridlabd typed value
+// Return the gridlabd typed value 
 //
 static PyObject *gridlabd_double(PyObject *self, PyObject *args)
 {
@@ -2500,7 +2500,7 @@ static PyObject *gridlabd_int16(PyObject *self, PyObject *args)
 static PyObject *gridlabd_timestamp(PyObject *self, PyObject *args)
 {
     char *str;
-    try
+    try 
     {
         if ( ! PyArg_ParseTuple(args,"s", &str) )
         {

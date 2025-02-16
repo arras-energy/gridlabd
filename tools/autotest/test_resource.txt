@@ -42,7 +42,7 @@ Properties:
   resource: 'buildings'
   protocol: 'http'
   port: '80'
-  hostname: 'buildings.arras.energy.s3-website-us-west-1.amazonaws.com'
+  hostname: 'buildings.gridlabd.us.s3-website-us-west-1.amazonaws.com'
   index: '/index'
   content: '/{index}'
   mimetype: ''

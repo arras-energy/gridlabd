@@ -1,9 +1,9 @@
-# export INSTALL_SOURCE=https://install-dev.arras.energy
+# export INSTALL_SOURCE=https://install-dev.gridlabd.us
 # export INSTALL_TARGET=FOLDERNAME
 # export INSTALL_STDOUT=FILENAME
 # export INSTALL_STDERR=FILENAME
 # export GRIDLABD_IMAGE=OS_VERSION-MACHINE
-DEFAULT_SOURCE="https://install.arras.energy"
+DEFAULT_SOURCE="https://install.gridlabd.us"
 DEFAULT_TARGET="/usr/local/opt"
 DEFAULT_STDOUT="/dev/stdout"
 DEFAULT_STDERR="/dev/stderr"

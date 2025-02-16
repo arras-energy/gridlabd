@@ -3,7 +3,7 @@
 To install GridLAB-D without building, run the following command:
 
 ~~~
-curl -sL http://install.arras.energy/install.sh | sh
+curl -sL http://install.gridlabd.us/install.sh | sh
 ~~~
 
 To change the default installation:
@@ -22,7 +22,7 @@ curl -sL $INSTALL_SOURCE/install.sh | sh
 The typical setup/install for a gridlabd on the system is as follows.
 
 ~~~
-git clone https://core.arras.energy/ [-b BRANCH] [--depth 1] gridlabd
+git clone https://core.gridlabd.us/ [-b BRANCH] [--depth 1] gridlabd
 cd gridlabd
 sudo ./setup.sh --local
 ./build.sh --system --validate --parallel
@@ -34,5 +34,5 @@ Arras Energy requires access to two python virtual environments to build and run
 
 1. Create a `gridlabd` user and group, e.g., `adduser gridlabd`.
 2. Add each `gridlabd` user to the `gridlabd` group, e.g., `adduser $USER gridlabd`.
-3. Download or build, and install `gridlabd` as the `gridlabd` user, e.g., `curl -sL https://install.arras.energy/install.sh | sudo sh`.
+3. Download or build, and install `gridlabd` as the `gridlabd` user, e.g., `curl -sL https://install.gridlabd.us/install.sh | sudo sh`.
 4. Change the permissions to the build `venv` and `/usr/local/opt/gridlabd` to allow group full access, e.g., `chmod -R g+rwx ~gridlabd /usr/local/opt/gridlabd`.

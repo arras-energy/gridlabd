@@ -10,7 +10,7 @@ Object properties that affect map generation:
 If defined in the object will be created (if hidden not TRUE) using these properties.
 """
 import os, sys, getopt
-import json
+import json 
 import folium
 from folium.plugins import MarkerCluster
 import numpy
@@ -47,11 +47,11 @@ def main(argv):
         print("  -t|--tiles NAME            : [OPTIONAL] use alternate map tiles (default is '%s')" % tiles)
         print("  -z|--zoom LEVEL            : [OPTIONAL] map initial zoom level (default is '%s')" % zoomlevel)
 
-    try :
+    try : 
         opts, args = getopt.getopt(sys.argv[1:],"cg:hi:o:st:z:",['cluster',"glyphs=",'help',"ifile=","ofile=",'show',"tiles=","zoomlevel="])
     except getopt.GetoptError:
         sys.exit(2)
-    if not opts :
+    if not opts : 
         help()
         sys.exit(1)
     for opt, arg in opts:
@@ -69,7 +69,7 @@ def main(argv):
             if filename_html == '':
                 if filename_json[-5:] == ".json":
                     basename = filename_json[:-5]
-                else:
+                else: 
                     basename = filename_json
                 filename_html = basename + ".html"
         elif opt in ("-o", "--ofile"):
@@ -277,7 +277,7 @@ def get_popup(name,tag):
         label = item.title().replace("_","&nbsp;")
         try:
             module = data['classes'][value]['module']
-            value = f'<A TARGET="_blank" HREF="https://docs.arras.energy/index.html?owner=arras-energy&project=gridlabd&branch=master&folder=/Module/Powerflow&doc=/Module/{module.title()}/{value.title()}.md">{value}</A>'
+            value = f'<A TARGET="_blank" HREF="https://docs.gridlabd.us/index.html?owner=arras-energy&project=gridlabd&branch=master&folder=/Module/Powerflow&doc=/Module/{module.title()}/{value.title()}.md">{value}</A>'
         except:
             pass
         popup += f'<TR><TH>{label}</TH><TD>&nbsp;</TD><TD>{value}</TD></TR>\n'

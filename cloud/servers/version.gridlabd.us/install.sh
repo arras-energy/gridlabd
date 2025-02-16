@@ -1,18 +1,18 @@
 # EC2 server build script
 #
-# See github:/arras-energy/gridlabd/cloud/servers/version.arras.energy/README.md for details
+# See github:/arras-energy/gridlabd/cloud/servers/version.gridlabd.us/README.md for details
 
 #
 # Clone gridlabd
 #
 yum install httpd git
 yum clean metadata
-git clone https://source.arras.energy/ /var/www/html/gridlabd
+git clone https://source.gridlabd.us/ /var/www/html/gridlabd
 
 #
 # Copy WWW files
 #
-SOURCE=remotes/origin/${BRANCH:-master}:cloud/servers/version.arras.energy
+SOURCE=remotes/origin/${BRANCH:-master}:cloud/servers/version.gridlabd.us
 git show $SOURCE/access_log.conf > /etc/httpd/conf.d/access_log.conf
 git show $SOURCE/index.html > /var/www/html/index.html
 git show $SOURCE/robots.txt > /var/www/html/robots.txt

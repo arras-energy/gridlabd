@@ -27,7 +27,7 @@ def convert(input,output=None,options={}):
 
 	# load and reformat weather data
 	try:
-		if not os.path.exists(csvname) or (
+		if not os.path.exists(csvname) or ( 
 				'refresh' in options.keys() and options['refresh'] in [True,'TRUE','always','true'] ):
 			with open(csvname,"w") as csv:
 				with urllib.urlopen(input) as fh:
@@ -62,7 +62,7 @@ class weather {
 	double solar_total[W/m^2];
 	double wind_speed[mph];
 	double wind_direction[degF];
-}
+}	
 """)
 			glm.write(f'object weather\n')
 			glm.write('{\n')
@@ -71,8 +71,8 @@ class weather {
 			glm.write(f'\tpostal_code "{options["postal_code"]}";\n')
 			glm.write(f'\tobject player\n')
 			glm.write('\t{\n')
-			glm.write(f'\t\tfile "{csvname}";\n')
-			glm.write(f'\t\tproperty "{",".join(list(options["columns"].values())[1:])}";\n')
+			glm.write(f'\t\tfile "{csvname}";\n')		
+			glm.write(f'\t\tproperty "{",".join(list(options["columns"].values())[1:])}";\n')		
 			glm.write('\t};\n')
 			glm.write('}\n')
 	except:
@@ -80,5 +80,5 @@ class weather {
 		raise
 
 if __name__ == '__main__':
-	convert('https://s3-us-west-1.amazonaws.com/weather.arras.energy/onpoint_data/onpoint_history_postal-code_hour_201801010000-201812312359.csv',
+	convert('https://s3-us-west-1.amazonaws.com/weather.gridlabd.us/onpoint_data/onpoint_history_postal-code_hour_201801010000-201812312359.csv',
 		options={'refresh':True,'country':'US','postal_code':'36101'})

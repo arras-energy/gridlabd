@@ -20,13 +20,13 @@ The following is the output for a clean build of a branch
 
 ~~~
 bash$ gridlabd --origin
-# https://source.arras.energy/commits/d2fca77b4985e28452e72e259ce6bf77d2d454b1
+# https://source.gridlabd.us/commits/d2fca77b4985e28452e72e259ce6bf77d2d454b1
 ~~~
 
 The following example includes diff output resulting from local changes to the code
 
 ~~~
-# https://source.arras.energy/commits/ff655ab92b650b2373d02b44bf884334d40faf06
+# https://source.gridlabd.us/commits/ff655ab92b650b2373d02b44bf884334d40faf06
 #  M source/Makefile.mk
 #  M utilities/build_number
 # ?? utilities/update_origin.sh
@@ -35,7 +35,7 @@ index 45a36610..b2e627ed 100644
 --- a/source/Makefile.mk
 +++ b/source/Makefile.mk
 @@ -155,4 +155,4 @@ source/build.h: buildnum
-
+ 
  buildnum: utilities/build_number
  	/bin/bash -c "source $(top_srcdir)/utilities/build_number $(top_srcdir) source/build.h"
 -	(git remote -v ; git log -n 1 ; git status -s ; git diff ) > origin.txt

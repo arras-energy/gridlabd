@@ -11,7 +11,7 @@ GLM:
 Shell:
 
 ~~~
-bash$ gridlabd -D csv_load_options="-o <filename>.glm -f onpoint-weather -t weather  -p country=<country> -p postal_code=<zipcode>" "<aws-endpoint-csv>" <modelname>.glm
+bash$ gridlabd -D csv_load_options="-o <filename>.glm -f onpoint-weather -t weather  -p country=<country> -p postal_code=<zipcode>" "<aws-endpoint-csv>" <modelname>.glm 
 ~~~
 
 # Description
@@ -23,7 +23,7 @@ The converter creates two files using the weather data, a CSV file containing th
 The CSV file is formatted to meet the requirements of a standard `tape.player` object.  The GLM file contains a class declaration for the weather object, defined as follows:
 
 ~~~
-class weather
+class weather 
 {
 	char32 country;
 	char32 postal_code;
@@ -32,7 +32,7 @@ class weather
 	double solar_total[W/m^2];
 	double wind_speed[mph];
 	double wind_direction[degF];
-}
+}	
 ~~~
 
 In addition, the GLM file contains an object declaration for the weather data, with an embedded player to load the CSV data into the weather object. This is defined as follows:
@@ -56,13 +56,13 @@ object weather
 The following example downloads a sample weather data file provided by OnPoint Weather in the local simulation's working folder, and includes the result GLM file named `my-weather.glm` to load the weather data through a player into a weather object.  Then a recorder samples the weather object to collect the weather values.
 
 ~~~
-clock
+clock 
 {
 	starttime "2018-01-01 00:00:00";
 	stoptime "2019-01-01 00:00:00";
 }
 
-#input "https://s3-us-west-1.amazonaws.com/weather.arras.energy/test_data/onpoint.csv" -o my-weather.glm -f onpoint-weather -t weather -p country=US -p postal_code=36101
+#input "https://s3-us-west-1.amazonaws.com/weather.gridlabd.us/test_data/onpoint.csv" -o my-weather.glm -f onpoint-weather -t weather -p country=US -p postal_code=36101
 
 module tape;
 object recorder

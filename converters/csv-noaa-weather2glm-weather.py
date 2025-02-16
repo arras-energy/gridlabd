@@ -1,8 +1,8 @@
 """NOAA LCD to GridLAB-D weather converter
 
-This converter reads a NOAA LCD file (with extension CSV) and writes a GridLAB-D weather
-object (with extension GLM).  The converter includes a solar irradiance estimate based
-on the Zhang-Huang model (see Zhang Q, J Huang, and L Siwei, "Development of typical year
+This converter reads a NOAA LCD file (with extension CSV) and writes a GridLAB-D weather 
+object (with extension GLM).  The converter includes a solar irradiance estimate based 
+on the Zhang-Huang model (see Zhang Q, J Huang, and L Siwei, "Development of typical year 
 weather data for Chinese locations", ASHRAE Transactions 108:2, 2002).  The model is used
 as follows
 
@@ -33,7 +33,7 @@ The total global solar radiation is separated into direct (DH) and diffuse (SH) 
 
 	KT = I/(I0*sin(h[t]))
 	KTc = 0.4268 + 0.1934*sin(h[t])
-	K = KT < KTc ? (2.996-3.862*sin(h[t])+1.540*sin(h[t])**2)*KT**3 : (KT-(1.107+0.03569*sin(h[t])+1.681*sin(h[t])**2)*(1-KT)**2)
+	K = KT < KTc ? (2.996-3.862*sin(h[t])+1.540*sin(h[t])**2)*KT**3 : (KT-(1.107+0.03569*sin(h[t])+1.681*sin(h[t])**2)*(1-KT)**2) 
 	DH = I0*sin(h[t])*K*(1-KT)/(1-K)
 	SH = I0*sin(h[t])*(KT-K)/(1-K)
 
@@ -65,7 +65,7 @@ def to_datetime(x):
 last_temperature = 59.0
 def to_temperature(x):
 	global last_temperature
-	try:
+	try: 
 		last_temperature = float(x.rstrip('s'))
 	except:
 		pass
@@ -80,7 +80,7 @@ def to_humidity(x):
 		pass
 	return last_humidity
 
-last_windspeed = 0.0
+last_windspeed = 0.0	
 def to_windspeed(x):
 	global last_windspeed
 	try:
@@ -88,7 +88,7 @@ def to_windspeed(x):
 	except:
 		pass
 	return last_windspeed
-
+	
 last_winddirection = 0.0
 def to_winddirection(x):
 	global last_winddirection
@@ -107,7 +107,7 @@ def to_rainfall(x):
 		pass
 	return last_rainfall
 
-last_pressure = 29.92
+last_pressure = 29.92	
 def to_pressure(x):
 	global last_pressure
 	try:
@@ -181,7 +181,7 @@ def convert(input,output=None,options={}):
 
 	# load and reformat weather data
 	try:
-		if not os.path.exists(csvname) or (
+		if not os.path.exists(csvname) or ( 
 				'refresh' in options.keys() and options['refresh'] in [True,'TRUE','always','true'] ):
 			with open(csvname,"w") as csv:
 				with urllib.urlopen(input) as fh:
@@ -227,9 +227,9 @@ def convert(input,output=None,options={}):
 						KT = I/(I0*sin(h))
 						KTc = 0.4268 + 0.1934*sin(h)
 						if KT < KTc:
-							K = (2.996-3.862*sin(h)+1.540*sin(h)**2)*KT**3
-						else:
-							K = (KT-(1.107+0.03569*sin(h)+1.681*sin(h)**2)*(1-KT)**2)
+							K = (2.996-3.862*sin(h)+1.540*sin(h)**2)*KT**3 
+						else: 
+							K = (KT-(1.107+0.03569*sin(h)+1.681*sin(h)**2)*(1-KT)**2) 
 						DH = round(I0*sin(h)*K*(1-KT)/(1-K),1)
 						SH = round(I0*sin(h)*(KT-K)/(1-K),1)
 						I = round(I,1)
@@ -241,7 +241,7 @@ def convert(input,output=None,options={}):
 				solar_dir.append(DH)
 				solar_diff.append(SH)
 			data['solar_global[W/sf]'] = solar_total
-			data['solar_direct[W/sf]'] = solar_dir
+			data['solar_direct[W/sf]'] = solar_dir 
 			data['solar_diffuse[W/sf]'] = solar_diff
 			options['columns']['HourlySolarGlobal'] = 'solar_global[W/sf]'
 			options['columns']['HourlySolarDirect'] = 'solar_direct[W/sf]'
@@ -281,8 +281,8 @@ def convert(input,output=None,options={}):
 					glm.write(f'\tground_reflectivity {albedo} pu;\n')
 				glm.write(f'\tobject player\n')
 				glm.write('\t{\n')
-				glm.write(f'\t\tfile "{csvname}";\n')
-				glm.write(f'\t\tproperty "{",".join(list(options["columns"].values())[1:])}";\n')
+				glm.write(f'\t\tfile "{csvname}";\n')		
+				glm.write(f'\t\tproperty "{",".join(list(options["columns"].values())[1:])}";\n')		
 				glm.write('\t};\n')
 				glm.write('}\n')
 			else:
@@ -292,5 +292,5 @@ def convert(input,output=None,options={}):
 		raise
 
 	if __name__ == '__main__':
-		convert('https://s3-us-west-1.amazonaws.com/weather.arras.energy/test_data/noaa.csv',
+		convert('https://s3-us-west-1.amazonaws.com/weather.gridlabd.us/test_data/noaa.csv',
 			options={'refresh':True,'station_id':'72594524283'})

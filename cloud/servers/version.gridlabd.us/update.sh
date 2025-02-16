@@ -3,7 +3,7 @@
 cd /var/www/html
 mkdir -p version
 if [ ! -d gridlabd ]; then
-    git clone https://source.arras.energy/ gridlabd
+    git clone https://source.gridlabd.us/ gridlabd
     cd gridlabd
 else
     cd gridlabd

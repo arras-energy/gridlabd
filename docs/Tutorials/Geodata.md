@@ -31,10 +31,10 @@ bash% gridlabd requirements
 
 <div class="output stream stdout">
 
-
-    Usage:
+    
+    Usage:   
       /usr/local/opt/python@3.9/bin/python3.9 -m pip <command> [options]
-
+    
     no such option: -r
 
 </div>
@@ -464,7 +464,7 @@ bash% gridlabd geodata config show
 
 <div class="output stream stdout">
 
-    geodata_url='http://geodata.arras.energy/'
+    geodata_url='http://geodata.gridlabd.us/'
     output_format='CSV'
     path_join='outer'
     column_names='{'ID': 'id', 'UUID': 'uuid', 'LAT': 'latitude', 'LON': 'longitude', 'DIST': 'distance', 'HEAD': 'heading', 'LOC': 'location', 'POS': 'position'}'
@@ -492,7 +492,7 @@ bash% gridlabd geodata config show
 
 <div class="output stream stdout">
 
-    geodata_url='http://geodata.arras.energy/'
+    geodata_url='http://geodata.gridlabd.us/'
     output_format='CSV'
     path_join='outer'
     column_names='{'ID': 'id', 'UUID': 'uuid', 'LAT': 'latitude', 'LON': 'longitude', 'DIST': 'distance', 'HEAD': 'heading', 'LOC': 'location', 'POS': 'position'}'
@@ -521,7 +521,7 @@ bash% gridlabd geodata config show
 
 <div class="output stream stdout">
 
-    geodata_url='http://geodata.arras.energy/'
+    geodata_url='http://geodata.gridlabd.us/'
     output_format='CSV'
     path_join='outer'
     column_names='{'ID': 'id', 'UUID': 'uuid', 'LAT': 'latitude', 'LON': 'longitude', 'DIST': 'distance', 'HEAD': 'heading', 'LOC': 'location', 'POS': 'position'}'
@@ -551,7 +551,7 @@ bash% gridlabd geodata config show
 
 <div class="output stream stdout">
 
-    geodata_url='http://geodata.arras.energy/'
+    geodata_url='http://geodata.gridlabd.us/'
     output_format='CSV'
     path_join='outer'
     column_names='{'ID': 'id', 'UUID': 'uuid', 'LAT': 'latitude', 'LON': 'longitude', 'DIST': 'distance', 'HEAD': 'heading', 'LOC': 'location', 'POS': 'position'}'
@@ -696,7 +696,7 @@ bash% gridlabd geodata create 37.410,-122.20 37.420,-122.20 37.420,-122.21 -f TA
 <div class="output stream stdout">
 
         latitude  longitude
-    id
+    id                     
     0      37.41    -122.20
     1      37.42    -122.20
     2      37.42    -122.21
@@ -893,7 +893,7 @@ bash% gridlabd geodata create 37.410,-122.20 37.420,-122.20 37.420,-122.21 -r 25
 <div class="output stream stdout">
 
               latitude  longitude   id  distance  heading
-    position
+    position                                             
     0         37.41000 -122.20000  0.0       0.0      NaN
     250       37.41225 -122.20000  NaN     250.0      0.0
     500       37.41450 -122.20000  NaN     500.0      0.0
@@ -924,7 +924,7 @@ bash% gridlabd geodata create 37.410,-122.20 37.420,-122.20 37.420,-122.21 --res
 <div class="output stream stdout">
 
               latitude  longitude   id  distance  heading
-    position
+    position                                             
     0         37.41000 -122.20000  0.0       0.0      NaN
     250       37.41225 -122.20000  NaN     250.0      0.0
     500       37.41450 -122.20000  NaN     500.0      0.0
@@ -967,7 +967,7 @@ bash% gridlabd geodata create 37.410,-122.20 37.420,-122.20 37.420,-122.21 -f TA
 <div class="output stream stdout">
 
               latitude  longitude     id  distance  heading
-    position
+    position                                               
     0         37.41000 -122.20000  0.000       0.0      NaN
     250       37.41225 -122.20000  0.125     250.0      0.0
     500       37.41450 -122.20000  0.251     500.0      0.0
@@ -1005,7 +1005,7 @@ bash% gridlabd geodata create 37.410,-122.20 37.420,-122.20 37.420,-122.21 -f TA
 <div class="output stream stdout">
 
               latitude  longitude       id  distance  heading
-    position
+    position                                                 
     0         37.41000 -122.20000  0.00000       0.0      NaN
     250       37.41225 -122.20000  0.12531     250.0      0.0
     500       37.41450 -122.20000  0.25063     500.0      0.0
@@ -1039,7 +1039,7 @@ bash% gridlabd geodata create 37.410,-122.20 37.420,-122.20 37.420,-122.21 -r 25
 <div class="output stream stdout">
 
                   position  latitude  longitude   id  distance  heading
-    location
+    location                                                           
     9q9hg629j97y         0  37.41000 -122.20000  0.0       0.0      NaN
     9q9hg68wjsgu       250  37.41225 -122.20000  NaN     250.0      0.0
     9q9hg70em87c       500  37.41450 -122.20000  NaN     500.0      0.0
@@ -1153,7 +1153,7 @@ bash% gridlabd geodata merge -D distance 37.410,-122.20 37.420,-122.20 37.420,-1
 <div class="output stream stdout">
 
         latitude  longitude  distance
-    id
+    id                               
     0      37.41    -122.20       0.0
     1      37.42    -122.20    1112.0
     2      37.42    -122.21    1995.0
@@ -1178,7 +1178,7 @@ bash% gridlabd geodata merge -D distance 37.410,-122.20 37.420,-122.20 37.420,-1
 <div class="output stream stdout">
 
         latitude  longitude  distance
-    id
+    id                               
     0      37.41    -122.20       0.0
     1      37.42    -122.20       0.0
     2      37.42    -122.21       0.0
@@ -1204,7 +1204,7 @@ bash% gridlabd geodata merge -D distance 37.410,-122.20 37.420,-122.20 37.420,-1
 <div class="output stream stdout">
 
         latitude  longitude  distance
-    id
+    id                               
     0      37.41    -122.20       0.0
     1      37.42    -122.20    3648.0
     2      37.42    -122.21    6545.0
@@ -1229,7 +1229,7 @@ bash% gridlabd geodata merge -D distance 37.410,-122.20 37.420,-122.20 37.420,-1
 <div class="output stream stdout">
 
         latitude  longitude  distance
-    id
+    id                               
     0      37.41    -122.20       0.0
     1      37.42    -122.20       1.0
     2      37.42    -122.21       2.0
@@ -1253,7 +1253,7 @@ bash% gridlabd geodata merge -D distance 37.410,-122.20 37.420,-122.20 37.420,-1
 <div class="output stream stdout">
 
         latitude  longitude  distance
-    id
+    id                               
     0      37.41    -122.20      0.00
     1      37.42    -122.20      1.11
     2      37.42    -122.21      2.00
@@ -1278,7 +1278,7 @@ bash% gridlabd geodata -D distance merge 37.410,-122.20 37.420,-122.20 37.420,-1
 <div class="output stream stdout">
 
               latitude  longitude   id  distance  heading
-    position
+    position                                             
     0         37.41000 -122.20000  0.0       0.0      NaN
     250       37.41225 -122.20000  NaN     250.0      0.0
     500       37.41450 -122.20000  NaN     500.0      0.0
@@ -1403,7 +1403,7 @@ bash% gridlabd geodata merge -D elevation 37.410,-122.20 37.420,-122.20 37.420,-
 <div class="output stream stdout">
 
         latitude  longitude  elevation
-    id
+    id                                
     0      37.41    -122.20       58.0
     1      37.42    -122.20       76.0
     2      37.42    -122.21      105.0
@@ -1428,7 +1428,7 @@ bash% gridlabd geodata merge -D elevation 37.410,-122.20 37.420,-122.20 37.420,-
 <div class="output stream stdout">
 
         latitude  longitude  elevation
-    id
+    id                                
     0      37.41    -122.20      190.0
     1      37.42    -122.20      249.0
     2      37.42    -122.21      344.0
@@ -1454,7 +1454,7 @@ bash% gridlabd geodata merge -D elevation 37.410,-122.20 37.420,-122.20 37.420,-
 <div class="output stream stdout">
 
         latitude  longitude  elevation
-    id
+    id                                
     0      37.41    -122.20     190.29
     1      37.42    -122.20     249.34
     2      37.42    -122.21     344.49
@@ -1479,7 +1479,7 @@ bash% gridlabd geodata merge -D elevation 37.410,-122.20 37.420,-122.20 37.420,-
 <div class="output stream stdout">
 
               latitude  longitude   id  distance  heading  elevation
-    position
+    position                                                        
     0         37.41000 -122.20000  0.0       0.0      NaN       58.0
     250       37.41225 -122.20000  NaN     250.0      0.0       63.0
     500       37.41450 -122.20000  NaN     500.0      0.0       75.0
@@ -1533,7 +1533,7 @@ bash% gridlabd geodata merge -D vegetation 37.410,-122.20 37.420,-122.20 37.420,
 <div class="output stream stdout">
 
         latitude  longitude  base  cover  height
-    id
+    id                                          
     0      37.41    -122.20   2.0   0.17    11.0
     1      37.42    -122.20   1.0   0.18    15.0
     2      37.42    -122.21   2.0   0.01     0.0
@@ -1558,7 +1558,7 @@ bash% gridlabd geodata merge -D vegetation 37.410,-122.20 37.420,-122.20 37.420,
 <div class="output stream stdout">
 
         latitude  longitude  base  cover  height
-    id
+    id                                          
     0      37.41    -122.20   2.0   0.17    11.0
     1      37.42    -122.20   1.0   0.18    15.0
     2      37.42    -122.21   2.0   0.01     0.0
@@ -1589,7 +1589,7 @@ bash% gridlabd geodata merge -D utility 37.420,-122.20 -f TABLE
 <div class="output stream stdout">
 
         latitude  longitude             NAME
-    id
+    id                                      
     0      37.42     -122.2  PACIFIC GAS ...
 
 </div>
@@ -1617,7 +1617,7 @@ bash% gridlabd geodata merge -D utility 37.420,-122.20 --fields=WINTR_PEAK,SUMMR
 <div class="output stream stdout">
 
         latitude  longitude  WINTR_PEAK  SUMMR_PEAK  CUSTOMERS    YEAR
-    id
+    id                                                                
     0      37.42     -122.2     12624.0     17263.0  5471786.0  2018.0
 
 </div>
@@ -1709,7 +1709,7 @@ bash% gridlabd geodata merge -D powerline path_example.csv --cable_type="TACSR/A
 
     WARNING [geodata/powerline]: cannot run function CONTACT and 'height' is missing or invalid
               linesag
-    position
+    position         
     0            18.0
     50           12.2
     100           9.4
@@ -1721,7 +1721,7 @@ bash% gridlabd geodata merge -D powerline path_example.csv --cable_type="TACSR/A
     8490          0.6
     8540         12.0
     8583         23.0
-
+    
     [191 rows x 1 columns]
 
 </div>
@@ -1813,7 +1813,7 @@ bash% gridlabd geodata merge -D powerline path_example.csv -f TABLE:linesag # mi
     WARNING [geodata/powerline]: cable_type not specified
     WARNING [geodata/powerline]: cannot run function CONTACT and 'height' is missing or invalid
         linesag
-    id
+    id         
     0       NaN
     1       NaN
     2       NaN
@@ -1843,7 +1843,7 @@ bash% gridlabd geodata merge -D powerline path_example.csv -f TABLE:linesag --ca
     WARNING [geodata/powerline]: cable_type='My cabletype' not found
     WARNING [geodata/powerline]: cannot run function CONTACT and 'height' is missing or invalid
         linesag
-    id
+    id         
     0       NaN
     1       NaN
     2       NaN
@@ -1881,14 +1881,14 @@ bash% gridlabd geodata help | head -n 10
 <div class="output stream stdout">
 
     Help on module __main__:
-
+    
     NAME
         __main__ - Syntax: gridlabd geodata OPTIONS DIRECTIVE [ARGUMENTS]
-
+    
     DESCRIPTION
         The geodata command gathers and joins geographic data. The geodata subcommand
         uses directives that are documented in the DIRECTIVES section below.
-
+        
         In general geodata is used to acquire geographic information at a location or
 
 </div>
@@ -1904,14 +1904,14 @@ bash% gridlabd geodata help distance | head -n 10
 <div class="output stream stdout">
 
     Help on module geodata_distance:
-
+    
     NAME
         geodata_distance - GridLAB-D Geodata Distance Package
-
+    
     DESCRIPTION
         The distance package computes the shortest distance between consecutive
         positions.
-
+        
         OPTIONS
 
 </div>
@@ -1954,13 +1954,13 @@ bash% gridlabd geodata merge -D distance 37,-122 38,-122 -v --units=km --precisi
     VERBOSE [geodata/distance]: arg=--precision.distance=3 --> option ['precision.distance', '3'] accepted
     VERBOSE [geodata/distance]: 2 rows total received
     VERBOSE [geodata/distance]: creating row index
-    VERBOSE [geodata/distance]: data =
+    VERBOSE [geodata/distance]: data = 
     --------------------------
        latitude  longitude  id
     0      37.0     -122.0   0
     1      38.0     -122.0   1
     --------------------------
-
+    
     VERBOSE [geodata/distance]: options = {
         "verbose": true,
         "debug": false,
@@ -2028,7 +2028,7 @@ bash% gridlabd geodata merge -D distance 37,-122 38,-122 -v --units=km --precisi
         "relative": false
     }
     VERBOSE [geodata/distance]: config = {
-        "geodata_url": "http://geodata.arras.energy/",
+        "geodata_url": "http://geodata.gridlabd.us/",
         "output_format": "CSV",
         "path_join": "outer",
         "column_names": {
@@ -2102,7 +2102,7 @@ bash% gridlabd geodata merge -D distance 37,-122 38,-122 -r 100 -k location -w -
 <div class="output stream stdout">
 
                   latitude  longitude  id  distance
-    location
+    location                                       
     9q94rzdk9gyt      37.0     -122.0   0       0.0
     9qc0pvdq1cqt      38.0     -122.0   1  111195.0
 
@@ -2182,7 +2182,7 @@ bash% gridlabd geodata merge -D distance 37,-122 38,-122 --units=furlongs -d # i
       File "/usr/local/opt/gridlabd/4.2.26-210820-develop_add_cyme_converter/share/gridlabd/geodata_distance.py", line 119, in apply
         raise Exception(f"unit '{options['units']}' is not recognized")
     Exception: unit 'furlongs' is not recognized
-    DEBUG [geodata/distance]: merge(args=['37,-122', '38,-122', '--units=furlongs']) --> data =
+    DEBUG [geodata/distance]: merge(args=['37,-122', '38,-122', '--units=furlongs']) --> data = 
     ----
     None
     ----
@@ -2253,7 +2253,7 @@ bash% gridlabd geodata merge -D distance 37,-122 38,-122 --units=furlongs -d # i
         "relative": false
     }
     config = {
-        "geodata_url": "http://geodata.arras.energy/",
+        "geodata_url": "http://geodata.gridlabd.us/",
         "output_format": "CSV",
         "path_join": "outer",
         "column_names": {
@@ -2309,7 +2309,7 @@ bash% gridlabd geodata --show_config
 
 <div class="output stream stdout">
 
-    --geodata_url='http://geodata.arras.energy/'
+    --geodata_url='http://geodata.gridlabd.us/'
     --output_format='CSV'
     --path_join='outer'
     --column_names.ID='id'
@@ -2453,7 +2453,7 @@ The `class` declaration adds the `address` field to the definition of
 
 <div class="cell markdown">
 
-    object
+    object 
     {
         address "2575 Sand Hill Rd., Menlo Park, CA, 94025";
     }
@@ -2559,7 +2559,7 @@ bash% cat example.glm
     {
         char1024 address;
     }
-
+    
     object house
     {
         name "Building_53";
@@ -2612,7 +2612,7 @@ bash% gridlabd geodata merge -D elevation path_example.csv -r 250 \
 <div class="output stream stdout">
 
           position  latitude  longitude configuration  pole_height  distance  heading  elevation
-    id
+    id                                                                                          
     0.0          0  37.41505 -122.20565         flat3         18.0       0.0      NaN       88.0
     NaN        250  37.41471 -122.20845           NaN          NaN     250.0    263.0      100.0
     1.0        254  37.41470 -122.20849         sideT         20.0       0.0    263.0      100.0
@@ -2687,7 +2687,7 @@ bash% gridlabd geodata merge -D elevation path_example.csv -r 30 --resolution_id
 <div class="output stream stdout">
 
            latitude  longitude  pole_height  elevation  linesag  cover  height  contact
-    id
+    id                                                                                 
     0.000  37.41505 -122.20565         18.0       88.0     18.0   0.68    14.0     0.00
     0.003  37.41501 -122.20599          NaN       89.0     14.5   0.73    16.0     0.73
     0.007  37.41497 -122.20632          NaN       89.0     13.2   0.74    16.0     0.74
