@@ -4065,6 +4065,7 @@ tools/autotest/test_rest_server_opt.glm
 tools/autotest/test_server.glm
 tools/autotest/test_unitcalc.glm
 tools/autotest/test_unitcalc.txt
+tools/census.py
 tools/create_childs.py
 tools/create_ductbank.py
 tools/create_filter.py
@@ -4075,6 +4076,7 @@ tools/create_poles.py
 tools/create_schedule.py
 tools/edit.py
 tools/eia_recs.py
+tools/energy.py
 tools/example/isone_data.glm
 tools/example/load_model.glm
 tools/example/load_model_config.py
