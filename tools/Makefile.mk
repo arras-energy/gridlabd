@@ -1,4 +1,5 @@
 dist_pkgdata_DATA += tools/__init__.py
+dist_pkgdata_DATA += tools/census.py
 dist_pkgdata_DATA += tools/create_childs.py
 dist_pkgdata_DATA += tools/create_ductbank.py
 dist_pkgdata_DATA += tools/create_filter.py
