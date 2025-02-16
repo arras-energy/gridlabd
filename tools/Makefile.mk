@@ -9,6 +9,7 @@ dist_pkgdata_DATA += tools/create_poles.py
 dist_pkgdata_DATA += tools/create_schedule.py
 dist_pkgdata_DATA += tools/edit.py
 dist_pkgdata_DATA += tools/eia_recs.py
+dist_pkgdata_DATA += tools/energy.py
 dist_pkgdata_DATA += tools/find_location.py
 dist_pkgdata_DATA += tools/fire_danger.py
 dist_pkgdata_DATA += tools/fire_report.py
