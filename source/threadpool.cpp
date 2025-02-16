@@ -52,7 +52,7 @@ int processor_count(void)
 	int count;
 	size_t count_len = sizeof(count);
 	sysctlbyname("hw.logicalcpu", &count, &count_len, NULL, 0);
-	output_debug("machine has %d logical cores",count);
+	IN_MYCONTEXT output_debug("machine has %d logical cores",count);
 	return count;	
 #else
 	char *proc_count = getenv("NUMBER_OF_PROCESSORS");

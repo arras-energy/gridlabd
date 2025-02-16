@@ -4,6 +4,22 @@
 #endif
 #include "${DIR:-.}/case.glm"
 
+//#option verbose
+//#option debug
+
+#for BUS in ${FIND class=bus}
+modify ${BUS}.Vm 1.0;
+modify ${BUS}.Va 0.0;
+#done
+
+object shunt
+{
+    parent pp_bus_9;
+    admittance 19;
+    control_mode FIXED; 
+    status ONLINE;
+}
+
 module pypower
 {
     enable_opf TRUE;

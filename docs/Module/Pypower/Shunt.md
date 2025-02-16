@@ -3,6 +3,10 @@
 # Synopsis
 
 ~~~
+module pypower
+{
+    double minimum_voltage_deadband[pu]; 
+}
 class shunt {
     enumeration {DISCRETE_V=1, FIXED=0} control_mode; // shunt control mode
     enumeration {ONLINE=1, OFFLINE=0} status; // shunt status
@@ -19,7 +23,9 @@ class shunt {
 
 Shunt objects are used to control voltage of its `parent` bus. Shunt capacitors can raise voltage and shunt reactors can lower voltage. Shunt devices can be controlled by monitoring voltage on a remote bus and stepping the reactive power injections up or down according to the voltage control limits.
 
-Each control block has a number of steps for the admittance steps allowed. Note: at this time, only 1 control block is supported.
+Each control block has a number of steps for the admittance steps allowed. Note: at this time, only 1 control block is supported, despite the presence of properties for additional control blocks.
+
+The `minimum_voltage_deadband` specifies the minimum separation between the `voltage_low` and `voltage_high` that will result in an error.
 
 # Properties
 
@@ -68,7 +74,6 @@ The shunt admittance used when the shunt device is engaged, specified at unity v
 ## `int32 steps_1`
 
 The number of admittance steps in control block 1.
-
 
 ## `double admittance_1[MVAr]`
 

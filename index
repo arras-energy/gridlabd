@@ -2538,6 +2538,7 @@ module/pypower/autotest/test_case14_weather_pp_bus_1_record.csv
 module/pypower/autotest/test_case30.glm
 module/pypower/autotest/test_case39.glm
 module/pypower/autotest/test_case57.glm
+module/pypower/autotest/test_shunt.glm
 module/pypower/branch.cpp
 module/pypower/branch.h
 module/pypower/bus.cpp
