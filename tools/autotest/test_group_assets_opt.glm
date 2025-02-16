@@ -1,4 +1,4 @@
-// automatically generated model from command `/usr/local/opt/gridlabd/4.3.3-230727-develop_add_group_tool-darwin_22-x86_64/share/gridlabd/create_poles.py 123.glm --spacing=100 --pole_type=WOOD-EC-45/4 --weather=example --ignore_location --output=IEEE123_poles.glm` on 2023-07-27 15:54:55
+// automatically generated model from command `/usr/local/opt/gridlabd/4.3.3-230727-develop_add_group_tool-darwin_22-x86_64/share/gridlabd/create_poles.py 123.glm --spacing=100 --pole_type=WOOD-EC-45/4 --weather=example --ignore_location --output=IEEE123_poles.glm` on 2023-07-27 15:54:55 
 clock
 {
     starttime "2000-01-01 00:00:00";
@@ -16,7 +16,7 @@ object weather
     name "example";
 }
 
-#system curl -sL http://library.arras.energy/US/CA/SLAC/pole_configuration.glm > pole_configuration.glm
+#system curl -sL https://library.gridlabd.us/US/CA/SLAC/pole_configuration.glm > pole_configuration.glm
 #include "pole_configuration.glm"
 
 object pole

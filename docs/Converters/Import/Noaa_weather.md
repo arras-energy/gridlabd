@@ -5,17 +5,17 @@
 GLM:
 
 ~~~
-#input "<noaa-lcd-download.csv>" -o <filename>.glm -f noaa-weather -t weather
-       -p station_id=<station-id> -p latitude=<latitude> -p longitude=<longitude> -p timezone=<tzinfo>
+#input "<noaa-lcd-download.csv>" -o <filename>.glm -f noaa-weather -t weather 
+       -p station_id=<station-id> -p latitude=<latitude> -p longitude=<longitude> -p timezone=<tzinfo> 
        [-p ground_albedo=<real>] [-p refresh={TRUE,FALSE}]
 ~~~
 
 Shell:
 
 ~~~
-bash$ gridlabd -D csv_load_options="-o <filename>.glm -f noaa-weather -t weather
-      -p station_id=<station-id> -p latitude=<latitude> -p longitude=<longitude> -p timezone=<tzinfo>
-      [-p ground_albedo=<real>] [-p refresh={TRUE,FALSE}]" "<noaa-lcd-download.csv>" <modelname>.glm
+bash$ gridlabd -D csv_load_options="-o <filename>.glm -f noaa-weather -t weather 
+      -p station_id=<station-id> -p latitude=<latitude> -p longitude=<longitude> -p timezone=<tzinfo> 
+      [-p ground_albedo=<real>] [-p refresh={TRUE,FALSE}]" "<noaa-lcd-download.csv>" <modelname>.glm 
 ~~~
 
 # Description
@@ -41,7 +41,7 @@ class weather {
 	double solar_diffuse[W/sf];
 	double solar_global[W/sf];
 	double ground_reflectivity[pu];
-	}
+	}	
 ~~~
 
 In addition, the GLM file contains an object declaration for the weather data, with an embedded player to load the CSV data into the weather object. This is defined as follows:
@@ -70,13 +70,13 @@ The ground reflectivity may be specified using the `ground_albedo` option. Note 
 The following example illustrates loading weather data from a test dataset storage on AWS S3.
 
 ~~~
-clock
+clock 
 {
 	starttime "2018-01-01 00:00:00";
 	stoptime "2019-01-01 00:00:00";
 }
 
-#input "https://s3-us-west-1.amazonaws.com/weather.arras.energy/test_data/noaa.csv" -o test_data.glm -f noaa-weather -t weather -p station_id=72594524283 -p latitude=37.7749 -p longitude=-122.4194 -p timezone=-08:00
+#input "https://s3-us-west-1.amazonaws.com/weather.gridlabd.us/test_data/noaa.csv" -o test_data.glm -f noaa-weather -t weather -p station_id=72594524283 -p latitude=37.7749 -p longitude=-122.4194 -p timezone=-08:00
 
 module tape;
 object recorder

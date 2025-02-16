@@ -282,7 +282,7 @@ GLOBAL unsigned char global_no_balance INIT(FALSE);
 GLOBAL char global_kmlfile[1024] INIT(""); /**< Specifies KML file to dump */
 
 /* Variable: global_kmlhost */
-GLOBAL char global_kmlhost[1024] INIT("https://code.arras.energy/" BRANCH "/runtime"); /**< Specifies the KML image library server */
+GLOBAL char global_kmlhost[1024] INIT("https://code.gridlabd.us/" BRANCH "/runtime"); /**< Specifies the KML image library server */
 
 /* Variable: global_modelname */
 GLOBAL char global_modelname[1024] INIT(""); /**< Name of the current model */
@@ -505,7 +505,7 @@ GLOBAL int global_mainloopstate INIT(MLS_INIT); /**< main loop processing state 
 GLOBAL TIMESTAMP global_mainlooppauseat INIT(TS_NEVER); /**< time at which to pause main loop */
 
 /* Variable: global_infourl */
-GLOBAL char global_infourl[1024] INIT("http://docs.arras.energy/index.html?owner=" GITHUB_ORG "&project=gridlabd&search="); /**< URL for info calls */
+GLOBAL char global_infourl[1024] INIT("http://docs.gridlabd.us/index.html?owner=" GITHUB_ORG "&project=gridlabd&search="); /**< URL for info calls */
 
 /* Variable: global_hostname */
 GLOBAL char global_hostname[1024] INIT("localhost"); /**< machine hostname */
@@ -532,7 +532,7 @@ typedef enum {
 /* Variable: global_simulation_mode */
 GLOBAL SIMULATIONMODE global_simulation_mode INIT(SM_INIT); /**< simulation mode */
 
-/* Variable: global_deltamode_allowed
+/* Variable: global_deltamode_allowed 
 
 	Flag to allow simulation in delta-mode
 */

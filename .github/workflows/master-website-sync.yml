@@ -26,13 +26,13 @@ jobs:
 
     - name: Website s3 sync
       run: |
-        aws s3 sync ./cloud/websites/code.arras.energy/ s3://code.arras.energy --acl public-read
-        aws s3 sync ./cloud/websites/docs.arras.energy/ s3://docs.arras.energy --acl public-read
-        aws s3 sync ./cloud/websites/geodata.arras.energy/ s3://geodata.arras.energy --acl public-read
-        aws s3 sync ./cloud/websites/install.arras.energy/ s3://install.arras.energy --acl public-read
-        aws s3 sync ./cloud/websites/status.arras.energy/ s3://status.arras.energy --acl public-read
-        aws s3 sync ./cloud/websites/tutorials.arras.energy/ s3://tutorials.arras.energy --acl public-read
-        aws s3 sync ./cloud/websites/www.arras.energy/ s3://www.arras.energy --acl public-read
+        aws s3 sync ./cloud/websites/code.gridlabd.us/ s3://code.gridlabd.us --acl public-read
+        aws s3 sync ./cloud/websites/docs.gridlabd.us/ s3://docs.gridlabd.us --acl public-read
+        aws s3 sync ./cloud/websites/geodata.gridlabd.us/ s3://geodata.gridlabd.us --acl public-read
+        aws s3 sync ./cloud/websites/install.gridlabd.us/ s3://install.gridlabd.us --acl public-read
+        aws s3 sync ./cloud/websites/status.gridlabd.us/ s3://status.gridlabd.us --acl public-read
+        aws s3 sync ./cloud/websites/tutorials.gridlabd.us/ s3://tutorials.gridlabd.us --acl public-read
+        aws s3 sync ./cloud/websites/www.gridlabd.us/ s3://www.gridlabd.us --acl public-read
 
     - name: Run CF invalidation
       run: aws cloudfront create-invalidation --distribution-id ${{ secrets.PROD_CF_ID }} --paths '/*'

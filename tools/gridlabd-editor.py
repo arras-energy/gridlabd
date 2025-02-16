@@ -1,4 +1,4 @@
-"""See https://www.arras.energy/ for license, acknowledgments, credits, manuals, documentation, and tutorials.
+"""See https://www.gridlabd.us/ for license, acknowledgments, credits, manuals, documentation, and tutorials.
 """
 
 #
@@ -39,7 +39,7 @@ copyright = subprocess.run(f"{GLD_BIN}/gridlabd --copyright".split(),capture_out
 #
 if os.uname().sysname == "Linux":
     stderr("ERROR: no GUI support on linux systems")
-    quit(1)
+    quit(1)    
 
 #
 # Tkinter module

@@ -14,15 +14,15 @@ WORKDIR /app/gridlabd
 # Copy the contents of the local directory to the app directory in the container
 COPY . /app/gridlabd
 
-#ENV INSTALL_SOURCE=https://install-dev.arras.energy
+#ENV INSTALL_SOURCE=https://install-dev.gridlabd.us
 
 EXPOSE 6266-6299/tcp
 # Run the install.sh script with the desired arguments
-#RUN curl -sL http://install-dev.arras.energy/install.sh | sh
+#RUN curl -sL http://install-dev.gridlabd.us/install.sh | sh
 
 RUN sh ./setup.sh --local
 
-RUN sh ./build.sh --system --parallel
+RUN sh ./build.sh --system --nomakemd
 
 RUN gridlabd --version=all
 

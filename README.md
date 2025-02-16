@@ -5,8 +5,8 @@ The preferred method for running Arras Energy is to download the master image fr
 Once you have installed docker, you may issue the following commands to run GridLAB-D at the command line:
 
 ~~~
-docker run -it -v $PWD:/model lfenergy/arras:latest gridlabd -W /model [LOADOPTIONS] [FILENAME.EXT] [RUNOPTIONS]
-~~~
+docker run -it -v $PWD:/model lfenergy/arras:latest gridlabd -W /model [LOADOPTIONS] [FILENAME.EXT] [RUNOPTIONS] 
+~~~ 
 
 On many systems, an alias can be used to make this a simple command that resembles the command you would normally issue to run a host-based installation:
 
@@ -21,13 +21,13 @@ Note that this alias will interfere with any host-based installation. You may us
 Installation from downloads may require `sudo` priviledges and always requires `curl`. The `install` script will automatically download and install the latest production image for your system if you use the following command:
 
 ~~~
-curl -sL http://install.arras.energy/install.sh | [sudo] sh
+curl -sL http://install.gridlabd.us/install.sh | [sudo] sh
 ~~~
 
 You can download the latest development image using the command:
 
 ~~~
-curl -sL http://install-dev.arras.energy/install.sh | [sudo] sh
+curl -sL http://install-dev.gridlabd.us/install.sh | [sudo] sh
 ~~~
 
 If you must use `sudo`, then don't forget to grant user permission to access the build and runtime virtual environments created by the installer, e.g.,
@@ -43,7 +43,7 @@ The installer recognizes the following environment variables:
 
 | Variable | Default | Description
 | -------- | ------- | -----------
-| `INSTALL_SOURCE` | `http://install.arras.energy` | URL from which image is downloaded
+| `INSTALL_SOURCE` | `http://install.gridlabd.us` | URL from which image is downloaded
 | `INSTALL_TARGET` | `/usr/local/opt` | Folder in which image is installed
 | `INSTALL_STDERR` | `/dev/stderr` | File to which error messages are sent
 | `INSTALL_STDOUT` | `/dev/stdout` | File to which output messages are sent
@@ -54,19 +54,19 @@ This procedure may also be used in AWS EC2 instances and Docker containers.
 If you have installed the AWS CLI, you can use the following command to get a list of available images:
 
 ~~~
-aws s3 ls s3://install.arras.energy | grep tarz
+aws s3 ls s3://install.gridlabd.us | grep tarz
 ~~~
 
 Note that the installer only works with image name that conform to the name pattern `VERSION-BUILD-BRANCH-SYSTEM-MACHINE.tarz`.
 
 # Build from source
 
-The prerequesites for building Arras Energy from source include `git` and `curl`.  In general you can use the `setup.sh` script to verify and update your system so that the prerequesites are satisifed.
+The prerequesites for building Arras Energy from source include `git` and `curl`.  In general you can use the `setup.sh` script to verify and update your system so that the prerequesites are satisifed.  
 
 On most systems, the process is as follows:
 
 ~~~
-git clone https://code.arras.energy/ [-b BRANCH] gridlabd
+git clone https://code.gridlabd.us/ [-b BRANCH] gridlabd
 cd gridlabd
 ./setup.sh --local
 ./build.sh --system --validate
@@ -94,7 +94,7 @@ To make the image the latest release, use the command:
 ./build.sh --release
 ~~~
 
-When you are working in a master branch, these command will update `install.arras.energy`, otherwise the upload will go to `install-dev.arras.energy`.
+When you are working in a master branch, these command will update `install.gridlabd.us`, otherwise the upload will go to `install-dev.gridlabd.us`.
 
 ## Docker
 
@@ -128,7 +128,7 @@ Simply launch an ec2, browse the community AMIs and search for HiPAS Gridlabd
 If you want to build gridlabd yourself, use the AWS Ubuntu AMI on AWS EC2 using the commands
 
 ~~~
-git clone https://code.arras.energy/ [-b BRANCH] gridlabd
+git clone https://code.gridlabd.us/ [-b BRANCH] gridlabd
 cd gridlabd
 ./setup.sh --local
 ./build.sh --system --validate
@@ -235,7 +235,7 @@ You may use the `--cite` command option to obtain the correct citation for your 
 
 ~~~
 host% gridlabd --cite
-Chassin, D.P., et al. "GridLAB-D 4.2.0-191008 (fix_python_validate) DARWIN", (2019) [online]. Available at https://source.arras.energy/commit/dfc392dc0208419ce9be0706f699fdd9a11e3f5b, Accessed on: Oct. 8, 2019.
+Chassin, D.P., et al. "GridLAB-D 4.2.0-191008 (fix_python_validate) DARWIN", (2019) [online]. Available at https://source.gridlabd.us/commit/dfc392dc0208419ce9be0706f699fdd9a11e3f5b, Accessed on: Oct. 8, 2019.
 ~~~
 
 This will allow anyone to identify the exact version you are using to obtain it from GitHub.

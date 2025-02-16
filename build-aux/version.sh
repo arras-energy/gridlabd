@@ -90,9 +90,9 @@ case $1 in
         ;;
     --bucket )
         if [ "$BRA" = "master" ]; then
-            echo "install.arras.energy"
+            echo "install.gridlabd.us"
         else
-            echo "install-dev.arras.energy"
+            echo "install-dev.gridlabd.us"
         fi
         ;;
     --origin )

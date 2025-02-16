@@ -12,8 +12,8 @@ import plotly.graph_objects as go
 import plotly.io as pio
 import random
 
-def gridlabd(*args:list,
-    bin:bool=True,
+def gridlabd(*args:list, 
+    bin:bool=True, 
     **kwargs:dict,
     ) -> TypeVar('subprocess.CompletedProcess'):
     """Run gridlabd
@@ -70,11 +70,11 @@ def render_sidebar(upload:TypeVar('marimo.FileUploadResults')) -> TypeVar('marim
     helps = {
         f"{_icon('chevrons-left-right-ellipsis')} GridLAB-D Online": {
             "https://www.arras.energy/": f"{_icon('info')} Arras Energy",
-            "https://docs.arras.energy/": f"{_icon('circle-help')} Documentation",
+            "https://docs.gridlabd.us/": f"{_icon('circle-help')} Documentation",
             "https://arras.energy/": f"{_icon('github')} Resources",
             "https://github.com/orgs/arras-energy/discussions" : f"{_icon('users')} Community",
             "https://github.com/arras-energy/gridlabd/issues" : f"{_icon('bug-off')} Issues"
-        },
+        },    
     }
     return mo.vstack([
         mo.md(f"# GridLAB-D\n{version}"),
@@ -232,7 +232,7 @@ def float_unit(x:str) -> float:
 
 def complex_unit(x:str,form:str=None) -> complex:
     """Convert complex with units
-
+    
     Arguments:
 
     * `x`: complex number
@@ -264,7 +264,7 @@ def complex_unit(x:str,form:str=None) -> complex:
     * *other*: return attribute of `x`
 
         Returns:
-
+    
     Returns:
 
     * `complex`: complex value (`form` is `None`)
@@ -283,7 +283,7 @@ def complex_unit(x:str,form:str=None) -> complex:
         return z
     x,y = z.real,z.imag
     if form in ['i','j']:
-        return f"{x:.2f}{y:+.2f}{form}"
+        return f"{x:.2f}{y:+.2f}{form}"        
     if form == 'rect':
         return x,y
     if form == 'polar':
