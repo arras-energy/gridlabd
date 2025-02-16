@@ -12,6 +12,7 @@ class building
 {{
 char8 climate;
 int16 year;
+char32 class;
 char32 centroid;
 char256 footprint;
 double height[m];

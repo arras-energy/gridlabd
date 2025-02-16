@@ -285,6 +285,4 @@ def main(argv:list[str]) -> int:
 
 if __name__ == "__main__":
 
-    main("buildings -C=US/NH/Sullivan -o=/tmp/test.glm".split())
-
     app.run(main)
