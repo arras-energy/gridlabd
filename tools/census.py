@@ -13,9 +13,14 @@ FIPS_STATES = pd.read_csv(f"{CENSUS_DATA}/state.txt",
     names=["fips","state","name"]
     ).to_dict('index')
 
+class CensusError(Exception):
+    pass
+
 class Census:
 
     def __init__(self,state,county=None):
+        if state not in FIPS_STATES:
+            raise CensusError(f"state {repr(state)} not found")
         file = f"""st{int(FIPS_STATES[state]["fips"]):02.0f}_{state.lower()}_cou.txt"""
         result = pd.read_csv(f"{CENSUS_DATA}/codes/files/{file}",
             usecols=[1,2,3],
@@ -59,16 +64,16 @@ class Census:
         return self.data
 
     def __getitem__(self,name):
-        
+
         return self.data[name]
 
 if __name__ == "__main__":
 
     result = Census("CA","San Mateo")
-    print(result)
-    print(repr(result))
-    print(result.length())
-    print(result.list())
-    print(result.dict())
-    print(result["San Mateo County"])
+    print("str() =",result)
+    print("repr() =",repr(result))
+    print("length() =",result.length())
+    print("list() =",result.list())
+    print("dict() =",result.dict())
+    print("__getitem__('San Mateo County') =",result["San Mateo County"])
 
