@@ -1,4 +1,5 @@
 dist_pkgdata_DATA += tools/__init__.py
+dist_pkgdata_DATA += tools/autobem4_to_glm.py
 dist_pkgdata_DATA += tools/buildings.py
 dist_pkgdata_DATA += tools/create_childs.py
 dist_pkgdata_DATA += tools/create_ductbank.py
