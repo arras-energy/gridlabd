@@ -7,6 +7,7 @@ import gridlabd.eia_recs as eia
 import pandas as pd
 try:
     import census
+    print("WARNING: using local copy of census",file=sys.stderr)
 except:
     import gridlabd.census as census
 
@@ -86,13 +87,13 @@ CONVERTERS = {
         "out.fuel_oil.heating.energy_consumption": ["heating",float,False],
         "out.fuel_oil.total.energy_consumption": ["total",float,False],
         "out.fuel_oil.water_systems.energy_consumption": ["hotwater",float,False],
-        "out.natural_gas.clothes_dryer.energy_consumption": ["dryier",float,False],
+        "out.natural_gas.clothes_dryer.energy_consumption": ["dryer",float,False],
         "out.natural_gas.cooking_range.energy_consumption": ["cooking",float,False],
         "out.natural_gas.fireplace.energy_consumption": ["heating",float,False],
         "out.natural_gas.grill.energy_consumption": ["cooking",float,False],
         "out.natural_gas.heating.energy_consumption": ["heating",float,False],
         "out.natural_gas.hot_tub_heater.energy_consumption": ["heating",float,False],
-        "out.natural_gas.lighting.energy_consumption": ["lighting",float,False],
+        "out.natural_gas.lighting.energy_consumption": ["lights",float,False],
         "out.natural_gas.pool_heater.energy_consumption": ["heating",float,False],
         "out.natural_gas.total.energy_consumption": ["total",float,False],
         "out.natural_gas.water_systems.energy_consumption": ["hotwater",float,False],
@@ -120,7 +121,7 @@ CONVERTERS = {
         "out.electricity.heat_rejection.energy_consumption": ["heating",float,True],
         "out.electricity.heating.energy_consumption": ["heating",float,True],
         "out.electricity.interior_equipment.energy_consumption": ["process",float,True],
-        "out.electricity.interior_lighting.energy_consumption": ["lighting",float,True],
+        "out.electricity.interior_lighting.energy_consumption": ["lights",float,True],
         "out.electricity.pumps.energy_consumption": ["water",float,True],
         "out.electricity.refrigeration.energy_consumption": ["refrigerator",float,True],
         "out.electricity.water_systems.energy_consumption": ["hotwater",float,True],
@@ -216,9 +217,9 @@ class Energy:
 
 if __name__ == "__main__":
 
-    ls = Energy("US","CA","San Mateo",["MOBILE"])
+    ls = Energy("US","WA","Snohomish",["MOBILE"])
     # json.dump(dict(zip(list(ls.data["MOBILE"].columns),[None]*len(ls.data["MOBILE"].columns))),fp=sys.stdout,indent=4)
     pd.options.display.max_columns = None
-    pd.options.display.max_rows = 48
+    pd.options.display.max_rows = None
     pd.options.display.width = None
     print(ls.data["MOBILE"])
