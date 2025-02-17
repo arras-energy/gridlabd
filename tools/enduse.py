@@ -412,17 +412,23 @@ def main(argv:list[str]) -> int:
     # normal termination condition
     return app.E_OK
 
+def test():
+
+    pass
+
 if __name__ == "__main__":
 
     if not sys.argv[0]:
     
+        test()
+        exit(app.E_OK)
         #     ls = Enduse("US","WA","Snohomish",["MOBILE"],electrification={"heating":1.0},weather="amy2018")
         #     pd.options.display.max_columns = None
         #     pd.options.display.max_rows = None
         #     pd.options.display.width = None
         #     print(ls.data["MOBILE"])
         # sys.argv = [__file__,"--debug","US","CA","San Mateo","--type=MOBILE"]
-        sys.argv = [__file__,"--debug","US","CA","San Mateo","--type=MOBILE","--start=2020-01-01T00:00:00-08:00","--stop=2021-01-01T00:00:00-08:00"]
+        # sys.argv = [__file__,"--debug","US","CA","San Mateo","--type=MOBILE","--start=2020-01-01T00:00:00-08:00","--stop=2021-01-01T00:00:00-08:00"]
         # sys.argv = [__file__,"--list=sector"]
         # sys.argv = [__file__,"--list=type"]
         # sys.argv = [__file__,"--list=country"]
