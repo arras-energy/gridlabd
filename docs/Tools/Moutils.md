@@ -95,7 +95,7 @@ Arguments:
 
 # Functions
 
-## `complex_unit() -> complex`
+## `complex_unit(x:str, form:str) -> complex`
 
 Convert complex with units
 
@@ -144,13 +144,13 @@ Returns:
 
 ---
 
-## `float_unit() -> float`
+## `float_unit(x:str) -> float`
 
 Convert float with units
 
 ---
 
-## `gridlabd() -> subprocess.CompletedProcess`
+## `gridlabd(args:list, bin:bool, kwargs:dict) -> subprocess.CompletedProcess`
 
 Run gridlabd
 
@@ -171,7 +171,7 @@ Returns:
 
 ---
 
-## `model() -> None`
+## `model(source:marimo.FileUploadResults, folder:str) -> None`
 
 Extract model data
 
@@ -188,7 +188,7 @@ Returns:
 
 ---
 
-## `render_globals() -> marimo.Html`
+## `render_globals(model:namedtuple, module:dict) -> marimo.Html`
 
 Render globals
 
@@ -203,7 +203,7 @@ Returns:
 
 ---
 
-## `render_map() -> marimo.Html`
+## `render_map(model:namedtuple) -> marimo.Html`
 
 Render geodata as map
 
@@ -218,7 +218,7 @@ Returns:
 
 ---
 
-## `render_objects() -> marimo.Html`
+## `render_objects(model:namedtuple) -> marimo.Html`
 
 Render objects
 
@@ -233,7 +233,7 @@ Returns:
 
 ---
 
-## `render_sidebar() -> marimo.Html`
+## `render_sidebar(upload:marimo.FileUploadResults) -> marimo.Html`
 
 Render app sidebar
 
@@ -248,7 +248,7 @@ Returns:
 
 ---
 
-## `render_status() -> marimo.Html`
+## `render_status(model:namedtuple) -> marimo.Html`
 
 Render status
 

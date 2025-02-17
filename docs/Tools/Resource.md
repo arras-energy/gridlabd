@@ -111,7 +111,7 @@ Resource exception
 
 # Functions
 
-## `main() -> int`
+## `main(argv:list) -> int`
 
 Resource tool main routine
 

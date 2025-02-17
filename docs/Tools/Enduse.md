@@ -61,7 +61,7 @@ Enduse exception
 
 # Functions
 
-## `main() -> int`
+## `main(argv:list) -> int`
 
 Enduse main routine
 
