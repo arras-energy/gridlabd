@@ -1,7 +1,13 @@
-"""Census data access"""
+"""Census data access
 
+Syntax: gridlabd census STATE [PATTERN]
+"""
+
+import os
+import sys
 import re
 import pandas as pd
+import gridlabd.framework as app
 
 CENSUS_DATA = "https://www2.census.gov/geo/docs/reference"
 
@@ -74,12 +80,20 @@ TIMEZONES = {
 }
 
 class CensusError(Exception):
-    pass
+    """Census exception"""
 
 class Census:
-
+    """Census object class"""
     cache = {}
-    def __init__(self,state,county=None):
+    def __init__(self,state:str,county:str=None):
+        """Get census data
+
+        Arguments:
+
+        * `state`: State for which census data is downloaded
+
+        * `county`: County regex for which census data is downloaded
+        """
         if state not in FIPS_STATES:
             raise CensusError(f"state {repr(state)} not found")
         file = f"""st{int(FIPS_STATES[state]["fips"]):02.0f}_{state.lower()}_cou.txt"""
@@ -116,29 +130,44 @@ class Census:
         args = [f"{x}={repr(y)}" for x,y in self.args.items()]
         return f"Census({','.join(args)})"
 
-    def length(self):
-
+    def length(self) -> int:
+        """Get the number counties matching the county name given"""
         return len(self.data)
 
-    def list(self):
-
+    def list(self) -> list:
+        """Get a list of counties matching the county name given"""
         return list(self.data)
 
-    def dict(self):
-
+    def dict(self) -> dict:
+        """Get a dict of the census data obtained"""
         return self.data
 
-    def __getitem__(self,name):
+    def __getitem__(self,county:str) -> dict:
+        """Get the census data for a county that matches"""
+        return self.data[county]
 
-        return self.data[name]
+def test(state=None,county=None):
+    if isinstance(state,str):
+        state = [state]
+    elif state is None:
+        state = list(FIPS_STATES)
+    n_tested = 0
+    n_failed = 0
+    for st in state:
+        result = Census(st,county)
+        for ct in result.list():
+            if result[ct]["tzspec"] != TIMEZONES[result[ct]["state"]]:
+                print(f"TEST FAILED: state={st} county={ct}",file=sys.stderr)
+                n_failed += 1
+            n_tested += 1
+
+    print(f"{os.path.basename(__file__)}: {n_tested} tests, {n_failed} failed",file=sys.stderr)
+    return n_tested,n_failed
+
 
 if __name__ == "__main__":
 
-    result = Census("CA","San Mateo")
-    print("str() =",result)
-    print("repr() =",repr(result))
-    print("length() =",result.length())
-    print("list() =",result.list())
-    print("dict() =",result.dict())
-    print("__getitem__('San Mateo County') =",result["San Mateo County"])
+    if not sys.argv[0]:
+
+        test()
 
