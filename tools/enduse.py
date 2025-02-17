@@ -1,5 +1,6 @@
-"""Access energy use load shape data from NREL"""
+"""Access enduse load data from NREL"""
 
+import os
 import sys
 import re
 import json
@@ -7,7 +8,7 @@ import gridlabd.eia_recs as eia
 import pandas as pd
 try:
     import census
-    print("WARNING: using local copy of census",file=sys.stderr)
+    print("WARNING: using local copy of census module",file=sys.stderr)
 except:
     import gridlabd.census as census
 
@@ -40,8 +41,8 @@ BUILDING_TYPE = {
     }
 SECTORS = list(BUILDING_TYPE.keys())
 URL = {
-    "residential": "https://oedi-data-lake.s3.amazonaws.com/nrel-pds-building-stock/end-use-load-profiles-for-us-building-stock/2021/resstock_tmy3_release_1/timeseries_aggregates/by_county/state%3D{state}/{gcode}-{type}.csv",
-    "commercial": "https://oedi-data-lake.s3.amazonaws.com/nrel-pds-building-stock/end-use-load-profiles-for-us-building-stock/2021/comstock_tmy3_release_1/timeseries_aggregates/by_county/state%3D{state}/{gcode}-{type}.csv",
+    "residential": "https://oedi-data-lake.s3.amazonaws.com/nrel-pds-building-stock/end-use-load-profiles-for-us-building-stock/2021/resstock_{weather}_release_1/timeseries_aggregates/by_county/state%3D{state}/{gcode}-{type}.csv",
+    "commercial": "https://oedi-data-lake.s3.amazonaws.com/nrel-pds-building-stock/end-use-load-profiles-for-us-building-stock/2021/comstock_{weather}_release_1/timeseries_aggregates/by_county/state%3D{state}/{gcode}-{type}.csv",
     "industrial": None,
     "agricultural": None,
     "tranportation" : None,
@@ -141,19 +142,27 @@ CONVERTERS = {
     "agricultural" : {},
     "transportation" : {},
 }
-class EnergyError(Exception):
+ENDUSES = []
+for sector in CONVERTERS:
+    ENDUSES.extend([y[0] for x,y in CONVERTERS[sector].items() if isinstance(y,list) and y[2] != None])
+ENDUSES = list(set(ENDUSES)) + ["heatgain"]
+WEATHER = {"typical":"tmy3","actual":"amy2018"}
+
+class EnduseError(Exception):
     pass
 
-class Energy:
+class Enduse:
 
     def __init__(self,
             country:str,
             state:str,
             county:str|None,
             building_types:list[str]|None=None,
+            weather:str='tmy3',
             timestep:str|None=None,
-            electrification:dict|None=None):
-        """Access building energy use data
+            electrification:dict|None=None,
+            ):
+        """Access building enduse data
 
         Arguments:
 
@@ -165,20 +174,28 @@ class Energy:
 
         * `building_type`: Building type regex (i.e., pattern matches start by
           default). See `BUILDING_TYPE` for valid building types
+
+        * `timestep`: timeseries aggregate timestep (default '1h')
+
+        * `electrification`: electrification fractions for enduses (see ENDUSES)
         """
+
+        # prepare cache
         if country != "US":
-            raise EnergyError("only US energy data is available")
+            raise EnduseError("only US enduse data is available")
+        cachedir = os.path.join(os.environ["GLD_ETC"],".enduse",country,state,county,weather)
+        os.makedirs(cachedir,exist_ok=True)
 
         # get location spec from Census Bureau
         self.state = state
         fips = census.Census(state,county)
         if fips.length() == 0:
-            raise EnergyError(f"state='{state}' county='{county}' not found")
+            raise EnduseError(f"state='{state}' county='{county}' not found")
         if fips.length() > 1:
-            raise EnergyError(f"state='{state}' county='{county}' not unique")
+            raise EnduseError(f"state='{state}' county='{county}' not unique")
         gcode = fips[fips.list()[0]]["gcode"]
 
-        # get building energy data from NREL
+        # get building enduse data from NREL
         if not isinstance(building_types,list) and not building_types is None:
             raise TypeError("building_types is not a list or None")
         if timestep == None:
@@ -187,46 +204,65 @@ class Energy:
         for pattern in '.*' if building_types is None else building_types:
             for sector,types in [(x,y) for x,y in BUILDING_TYPE.items()]:
                 for btype,spec in [(x,y) for x,y in types.items() if re.match(pattern,x)]:
-                    url = URL[sector].format(state=state,gcode=gcode,type=spec)
-                    data = pd.read_csv(url,
-                        usecols = list(range(2,len(CONVERTERS[sector])+1)),
-                        index_col = [0],
-                        parse_dates = True,
-                        converters = {x:y[1] for x,y in CONVERTERS[sector].items() if isinstance(y,list)},
-                        ).resample(timestep).sum()
+
+                    # handle cache
+                    cachefile = os.path.join(cachedir,f"{btype.lower()}.csv.gz")
+                    if os.path.exists(cachefile):
+                        data = pd.read_csv(cachefile,index_col=[0],parse_dates=True)
+                    else:
+                        url = URL[sector].format(state=state,gcode=gcode,type=spec,weather=weather)
+                        data = pd.read_csv(url,
+                            usecols = list(range(2,len(CONVERTERS[sector])+1)),
+                            index_col = [0],
+                            parse_dates = True,
+                            converters = {x:y[1] for x,y in CONVERTERS[sector].items() if isinstance(y,list)},
+                            )
+                        data.to_csv(cachefile,index=True,header=True)
+
+                    # resample timeseries
+                    data = data.resample(timestep).sum()
+                    data.index = data.index.tz_localize("EST").tz_convert("UTC")
+
+                    # drop unused inputs
                     for field in [x for x in data.columns if x.startswith("in.")] \
                             + [x for x,y in CONVERTERS[sector].items() if y == None]:
                         data.drop(field,axis=1,inplace=True)
+
+                    # rename disaggregated fields
                     for field,convert in {x:y for x,y in CONVERTERS[sector].items() if x in data.columns and isinstance(y,list) and y[2] == None}.items():
                         data.rename({field:convert[0]},inplace=True,axis=1)
-                    aggregates = []
-                    for field in list(set([y[0] for x,y in CONVERTERS[sector].items() if x in data.columns and isinstance(y,list) and y[2] != None])):
+
+                    # initialize aggregate fields
+                    for field in ENDUSES:
                         data[field] = 0.0
-                        aggregates.append(field)
                     electric_loads = {x:y[0] for x,y in CONVERTERS[sector].items() if x in data.columns and isinstance(y,list) and y[2] == True}
                     for source,field in electric_loads.items():
                         data[field] += data[source]
                         data.drop(source,axis=1,inplace=True)
-                    data["heatgain"] = 0.0
-                    aggregates.append("heatgain")
+
+                    # check electrification
+                    for field in electrification:
+                        if field not in ENDUSES or field == "heatgain":
+                            raise EnduseError(f"electrification '{field}' is not a valid enduse")
+
+                    # compute heatgains and update fields
                     nonelectric_loads = {x:y[0] for x,y in CONVERTERS[sector].items() if x in data.columns and isinstance(y,list) and y[2] == False}
                     for source,field in nonelectric_loads.items():
                         try:
                             factor = float(electrification[field])
-                        except KeyError:
+                        except (KeyError, TypeError):
                             factor = 0.0
                         data["heatgain"] += data[source] * (1-factor)
                         data[field] += data[source] * factor
                         data.drop(source,axis=1,inplace=True)
-                    for field in aggregates:
+                    for field in ENDUSES:
                         data[field] /= data["units"]
                     self.data[btype] = data
 
-
 if __name__ == "__main__":
 
-    ls = Energy("US","WA","Snohomish",["MOBILE"],electrification={"heating":1.0})
+    ls = Enduse("US","WA","Snohomish",["MOBILE"],electrification={"heating":1.0},weather="amy2018")
     pd.options.display.max_columns = None
     pd.options.display.max_rows = None
     pd.options.display.width = None
-    print(ls.data["MOBILE"][["heating","heatgain"]])
+    print(ls.data["MOBILE"])
