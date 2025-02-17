@@ -46,7 +46,7 @@ def main(argv:list[str]) -> int:
 
     # implement your code here
 
-    # normal termination condigion
+    # normal termination condition
     return app.E_OK
 
 if __name__ == "__main__":
