@@ -18,20 +18,24 @@ class CensusError(Exception):
 
 class Census:
 
+    cache = {}
     def __init__(self,state,county=None):
         if state not in FIPS_STATES:
             raise CensusError(f"state {repr(state)} not found")
         file = f"""st{int(FIPS_STATES[state]["fips"]):02.0f}_{state.lower()}_cou.txt"""
-        result = pd.read_csv(f"{CENSUS_DATA}/codes/files/{file}",
-            usecols=[1,2,3],
-            names=["state","county","name"],
-            header=None,
-            converters={
-                "state" : lambda x: f"{int(x):02.0f}",
-                "county" : lambda x: f"{int(x):03.0f}",
-            },
-            index_col=[2]
-        )
+        if file in self.cache:
+            result = self.cache[file]
+        else:
+            self.cache[file] = result = pd.read_csv(f"{CENSUS_DATA}/codes/files/{file}",
+                usecols=[1,2,3],
+                names=["state","county","name"],
+                header=None,
+                converters={
+                    "state" : lambda x: f"{int(x):02.0f}",
+                    "county" : lambda x: f"{int(x):03.0f}",
+                },
+                index_col=[2]
+            )
 
         # compute the g-code used by NREL resstock and comstock
         result["gcode"] = [f"g{x}0{y}0" for x,y in zip(result["state"],result["county"])]
