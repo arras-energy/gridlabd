@@ -1,6 +1,29 @@
 """Census data access
 
-Syntax: gridlabd census STATE [PATTERN]
+Syntax: gridlabd census STATE [COUNTY]
+
+The census tool obtains Census Bureau data about counties
+
+Data obtained include the following:
+
+* `state`: state FIPS code
+
+* `county`: county FIPS code
+
+* `gcode`: NREL county $g$-code
+
+* `tzspec`: timezone specification for state and county
+
+Caveats:
+
+The value of `STATE` must be the two character abbreviation, e.g., `CA`.  The
+value `COUNTY` may be a county name or a `regex` pattern to match multiple
+counties.  The defaults value for `COUNTY` is `.*`, which will match all
+counties in the state.
+
+Some states have multiple timezones. The `tzspec` specification for states
+that have more than one timezone is given for the more populous portion of
+the state. 
 """
 
 import os
@@ -85,7 +108,7 @@ class CensusError(Exception):
 class Census:
     """Census object class"""
     cache = {}
-    def __init__(self,state:str,county:str=None):
+    def __init__(self,state:str,county:str=None,country="US"):
         """Get census data
 
         Arguments:
@@ -94,8 +117,12 @@ class Census:
 
         * `county`: County regex for which census data is downloaded
         """
+        if country != "US":
+            raise CensusError("only US census data is available")
+
         if state not in FIPS_STATES:
             raise CensusError(f"state {repr(state)} not found")
+
         file = f"""st{int(FIPS_STATES[state]["fips"]):02.0f}_{state.lower()}_cou.txt"""
         if file in self.cache:
             result = self.cache[file]
@@ -146,7 +173,21 @@ class Census:
         """Get the census data for a county that matches"""
         return self.data[county]
 
-def test(state=None,county=None):
+def test(state:str=None,county:str=None) -> (int,int):
+    """Test census data access
+
+    Arguments:
+
+    * `state`: state to test
+
+    * `county`: county name pattern to test
+
+    Returns:
+
+    * `int`: failed tests
+
+    * `int`: counties tested
+    """
     if isinstance(state,str):
         state = [state]
     elif state is None:
@@ -161,13 +202,57 @@ def test(state=None,county=None):
                 n_failed += 1
             n_tested += 1
 
-    print(f"{os.path.basename(__file__)}: {n_tested} tests, {n_failed} failed",file=sys.stderr)
-    return n_tested,n_failed
+    return n_failed,n_tested
 
+def main(argv:list[str]) -> int:
+
+    # handle no options case -- typically a cry for help
+    if len(argv) == 1:
+
+        app.syntax(__doc__)
+
+    # handle stardard app arguments --debug, --warning, --verbose, --quiet, --silent
+    args = app.read_stdargs(argv)
+
+    location = []
+
+    for key,value in args:
+
+        if key in ["-h","--help","help"]:
+            print(__doc__,file=sys.stdout)
+
+        # state/county info
+        if not key.startswith("-"):
+
+            location.append(key)
+
+            if len(location) > 2:
+                raise CensusError("only state and county may be specified")
+
+        else:
+
+            app.error(f"'{key}={value}' is invalid")
+            return app.E_INVALID
+
+    # implement census code
+    if len(location) == 0:
+        raise CensusError("missing state/county specification")
+
+    result = Census(*location)
+    print(f"county,state,state_fips,county_fips,nrel_gcode,timezone")
+    for county,spec in result.dict().items():
+        print(f"{county},{location[0]},{spec['state']},{spec['county']},{spec['gcode']},{spec['tzspec']}")
+
+    # normal termination condition
+    return app.E_OK
 
 if __name__ == "__main__":
 
     if not sys.argv[0]:
 
-        test()
+        n,m = test()
+        print(f"{os.path.basename(__file__)}: {m} tests, {n} failed")
+
+    else:
+        app.run(main)
 
