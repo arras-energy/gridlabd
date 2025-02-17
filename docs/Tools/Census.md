@@ -83,11 +83,11 @@ Returns:
 
 # Constants
 
+* `FIPS_STATES`
 * `TIMEZONES`
 
 # Modules
 
-* `gridlabd.cache`
 * `gridlabd.framework`
 * `os`
 * `pandas`
