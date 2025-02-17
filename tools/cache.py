@@ -109,6 +109,8 @@ def main(argv:list[str]) -> int:
     # handle stardard app arguments --debug, --warning, --verbose, --quiet, --silent
     args = app.read_stdargs(argv)
 
+    tool = None
+
     for key,value in args:
 
         if key in ["-h","--help","help"]:
@@ -116,22 +118,26 @@ def main(argv:list[str]) -> int:
 
         elif key == "list":
 
-            Cache().list()
+            Cache(tool).list()
 
         elif key == "clear":
 
-            Cache().clear()
+            Cache(tool).clear()
 
         elif key == "peek":
 
-            Cache().get(value)
+            Cache(tool).get(value)
+
+        elif key in ["--tool"]:
+
+            tool = ",".join(value)
 
         else:
 
             app.error(f"'{key}={value}' is invalid")
             return app.E_INVALID
 
-    # implement your code here
+    # not special to do at this point
 
     # normal termination condition
     return app.E_OK
@@ -148,7 +154,7 @@ def test() -> (int,int):
     try:
 
         assert cache.list() == [], f"new random test cache '{name}' is not empty"
-        assert cache.get("test",lambda x: name) == name, f"cache value does not match"
+        assert cache.get("test",lambda:name) == name, f"cache value does not match"
         cache.clear()
         assert cache.list() == [], f"new random test cache '{name}' clear failed"
 
