@@ -4076,7 +4076,7 @@ tools/create_poles.py
 tools/create_schedule.py
 tools/edit.py
 tools/eia_recs.py
-tools/energy.py
+tools/enduse.py
 tools/example/isone_data.glm
 tools/example/load_model.glm
 tools/example/load_model_config.py
@@ -4118,6 +4118,7 @@ tools/rest_server_config.py
 tools/test_api.py
 tools/ucar_weather.py
 tools/unitcalc.py
+tools/weather.py
 tutorials/Geodata/example.glm
 tutorials/Geodata/example_1.glm
 tutorials/Geodata/example_2.glm

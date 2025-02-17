@@ -1,4 +1,30 @@
-"""Access enduse load data from NREL"""
+"""Access enduse load data from NREL
+
+Syntax: gridlabd enduse COUNTRY STATE COUNTY [OPTIONS ...]
+
+Options:
+
+* `--local`: use local timezone
+
+* `--electrification=ENDUSE:FRACTION[,...]`: specify enduse electrification
+
+* `--list=FEATURE`: list of available features
+
+* `--start`: set the start date (default is `2018-01-01 00:00:00 EST`)
+
+* `--end`: set the end date (default is `2019-01-01 00:00:00 EST`)
+
+* `--type=PATTERN[,...]`: specify the building type(s)
+
+Description:
+
+The `enduse` tool generates enduse load data for buildings at the specified
+location.
+
+Valid values for `FEATURE` are `sector`, `type`, `country`, `state`, `county`, and
+`enduse`. If `state` is requests the COUNTRY must be specified. If `county` is 
+requested, the COUNTRY and STATE must be specified.
+"""
 
 import os
 import sys
@@ -6,11 +32,13 @@ import re
 import json
 import gridlabd.eia_recs as eia
 import pandas as pd
-try:
-    import census
-    print("WARNING: using local copy of census module",file=sys.stderr)
-except:
-    import gridlabd.census as census
+import gridlabd.census as census
+import gridlabd.framework as app
+# try:
+#     import census
+#     print("WARNING: using local copy of census module",file=sys.stderr)
+# except:
+#     import gridlabd.census as census
 
 BUILDING_TYPE = {
     "residential" : {
@@ -147,12 +175,13 @@ for sector in CONVERTERS:
     ENDUSES.extend([y[0] for x,y in CONVERTERS[sector].items() if isinstance(y,list) and y[2] != None])
 ENDUSES = list(set(ENDUSES)) + ["heatgain"]
 WEATHER = {"typical":"tmy3","actual":"amy2018"}
+TIMEZONE = "UTC"
 
 class EnduseError(Exception):
-    pass
+    """Enduse exception"""
 
 class Enduse:
-
+    """Enduse class"""
     def __init__(self,
             country:str,
             state:str,
@@ -160,7 +189,7 @@ class Enduse:
             building_types:list[str]|None=None,
             weather:str='tmy3',
             timestep:str|None=None,
-            electrification:dict|None=None,
+            electrification:dict={},
             ):
         """Access building enduse data
 
@@ -193,7 +222,9 @@ class Enduse:
             raise EnduseError(f"state='{state}' county='{county}' not found")
         if fips.length() > 1:
             raise EnduseError(f"state='{state}' county='{county}' not unique")
-        gcode = fips[fips.list()[0]]["gcode"]
+        fips = fips[fips.list()[0]]
+        gcode = fips["gcode"]
+        tzinfo = f"""{-int(re.match("[A-Z]+([+0-9]+)[A-Z]+",fips["tzspec"]).group(1)):+03.0f}:00"""
 
         # get building enduse data from NREL
         if not isinstance(building_types,list) and not building_types is None:
@@ -221,7 +252,7 @@ class Enduse:
 
                     # resample timeseries
                     data = data.resample(timestep).sum()
-                    data.index = data.index.tz_localize("EST").tz_convert("UTC")
+                    data.index = data.index.tz_localize("EST").tz_convert(TIMEZONE if TIMEZONE else tzinfo)
 
                     # drop unused inputs
                     for field in [x for x in data.columns if x.startswith("in.")] \
@@ -259,10 +290,146 @@ class Enduse:
                         data[field] /= data["units"]
                     self.data[btype] = data
 
+def main(argv:list[str]) -> int:
+    """Enduse main routine
+
+    Arguments:
+
+    * `argv`: argument list (see Syntax for details)
+
+    Returns:
+
+    * `int`: exit code
+    """
+    # handle no options case -- typically a cry for help
+    if len(argv) == 1:
+
+        app.syntax(__doc__)
+
+    # handle stardard app arguments --debug, --warning, --verbose, --quiet, --silent
+    args = app.read_stdargs(argv)
+
+    location = {}
+    electrification = {}
+    output = None
+    building_types = None
+    weather = "tmy3"
+    timestep = None
+    for key,value in args:
+
+        if key in ["-h","--help","help"]:
+            print(__doc__,file=sys.stdout)
+
+        elif key in ["--local"]:
+
+            TIMEZONE = ",".join(value)
+
+        elif key in ["--type"]:
+
+            if len(value) > 1:
+                raise EnduseError("only one building type is allowed")
+            if len(value) == 0 :
+                raise EnduseError("a building type must be specified")
+            building_type = value[0]
+
+        elif key in ["--list"]:
+
+            if len(value) > 1:
+                raise EnduseError("only one feature is allowed")
+            if len(value) == 0 :
+                raise EnduseError("a feature must be specified")
+            
+            if "sector" in value:
+            
+                print("\n".join(SECTORS))
+                return app.E_OK
+
+            if "type" in value:
+
+                for sector in SECTORS:
+                    print("\n".join(list(BUILDING_TYPE[sector])))
+                return app.E_OK
+
+            if "country" in value:
+            
+                print("US")
+                return app.E_OK
+
+            if "state" in value:
+
+                if not "country" in location or not location["country"] in ["US"]:
+                    raise EnduseError("country not specified")
+                print("\n".join(list(census.FIPS_STATES)))
+                return app.E_OK
+
+            if "county" in value:
+
+                if not "country" in location or not location["country"] in ["US"]:
+                    raise EnduseError("country not specified")
+                if not "state" in location or not location["state"] in list(census.FIPS_STATES):
+                    raise EnduseError("state not specified")
+                raise NotImplementedError("unable to generate list of counties")
+
+            if "enduse" in value:
+
+                print("\n".join(ENDUSES))
+                return E_OK
+
+        elif key in ["--start"]:
+
+            if len(value) > 1:
+                raise EnduseError("only one start date is allowed")
+            if len(value) == 0 :
+                raise EnduseError("a start date must be specified")
+            START = value
+
+        elif key in ["--stop"]:
+
+            if len(value) > 1:
+                raise EnduseError("only one stop date is allowed")
+            if len(value) == 0 :
+                raise EnduseError("a stop date must be specified")
+            STOP = value
+
+        elif not key.startswith("-"):
+
+            tag = ["country","state","county"][len(location)]
+            location[tag] = key
+
+        else:
+
+            app.error(f"'{key}={value}' is invalid")
+            return app.E_INVALID
+
+    enduse = Enduse(**location,
+        building_types=[building_type],
+        electrification=electrification,
+        weather=weather,
+        timestep=timestep,
+        )
+    enduse.data[building_type].to_csv(open(output,"w") if output else sys.stdout)
+
+    # normal termination condition
+    return app.E_OK
+
 if __name__ == "__main__":
 
-    ls = Enduse("US","WA","Snohomish",["MOBILE"],electrification={"heating":1.0},weather="amy2018")
-    pd.options.display.max_columns = None
-    pd.options.display.max_rows = None
-    pd.options.display.width = None
-    print(ls.data["MOBILE"])
+    if not sys.argv[0]:
+    
+        #     ls = Enduse("US","WA","Snohomish",["MOBILE"],electrification={"heating":1.0},weather="amy2018")
+        #     pd.options.display.max_columns = None
+        #     pd.options.display.max_rows = None
+        #     pd.options.display.width = None
+        #     print(ls.data["MOBILE"])
+        # sys.argv = [__file__,"--debug","US","CA","San Mateo","--type=MOBILE"]
+        sys.argv = [__file__,"--debug","US","CA","San Mateo","--type=MOBILE","--start=2020-01-01T00:00:00-08:00","--stop=2021-01-01T00:00:00-08:00"]
+        # sys.argv = [__file__,"--list=sector"]
+        # sys.argv = [__file__,"--list=type"]
+        # sys.argv = [__file__,"--list=country"]
+        # sys.argv = [__file__,"US","--list=state"]
+        # sys.argv = [__file__,"US","CA","--list=county"]
+        # sys.argv = [__file__,"--list=enduse"]
+
+
+    app.run(main)
+
