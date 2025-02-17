@@ -34,11 +34,6 @@ import gridlabd.eia_recs as eia
 import pandas as pd
 import gridlabd.census as census
 import gridlabd.framework as app
-# try:
-#     import census
-#     print("WARNING: using local copy of census module",file=sys.stderr)
-# except:
-#     import gridlabd.census as census
 
 BUILDING_TYPE = {
     "residential" : {

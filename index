@@ -1069,6 +1069,7 @@ docs/Subcommand/Validate.md
 docs/Subcommand/Version.md
 docs/Subcommand/Weather.md
 docs/Tips and tricks/Saving_randomseed.md
+docs/Tools/Census.md
 docs/Tools/Create_filter.md
 docs/Tools/Create_player.md
 docs/Tools/Create_poles.md
@@ -1094,7 +1095,6 @@ docs/Tools/Rest_client.md
 docs/Tools/Rest_server.md
 docs/Tools/Unitcalc.md
 docs/Tools/Weather.md
-docs/Tools/cache.py
 docs/Tutorials/Geodata.md
 docs/Tutorials/Python shadow class tutorial.ipynb
 docs/Tutorials/Python tutorial (events).ipynb
@@ -4068,6 +4068,7 @@ tools/autotest/test_rest_server_opt.glm
 tools/autotest/test_server.glm
 tools/autotest/test_unitcalc.glm
 tools/autotest/test_unitcalc.txt
+tools/cache.py
 tools/census.py
 tools/create_childs.py
 tools/create_ductbank.py

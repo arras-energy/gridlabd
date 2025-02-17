@@ -17,7 +17,6 @@ Commands:
 Description:
 
 The `cache` command manipulate the `gridlabd` cache data.
-
 """
 
 import os
@@ -67,10 +66,16 @@ class Cache:
             return open(pathname,"r").read()
         if not on_fail:
             raise CacheError(f"'{name}' not found")
-        result = on_fail(name)
-        with open(pathname,"w") as fh:
-            fh.write(result)
-            return result
+        result = on_fail(*args,**kwargs)
+        try:
+            with open(pathname,"w") as fh:
+                fh.write(str(result))
+                return result
+        except:
+
+            # remove anything that causes a failure so it has a chance of working next time
+            os.remove(pathname)
+            raise
 
     def list(self):
         """List the cache contents"""
