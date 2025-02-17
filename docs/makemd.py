@@ -90,8 +90,23 @@ try:
             docs = NL.join([x.strip() for x in item.__doc__.split(NL)])
             print(f"\n## `{item.__name__}({', '.join(args)}) -> {returns}`{NL*2}{docs}",file=md)
 
-
         # output constants
+        first = True
+        for name,value in [(x,getattr(module,x)) for x in dir(module) if type(getattr(module,x)) in [bool,int,float,complex,list,dict,set]]:
+            if first:
+                print("\n# Constants\n",file=md)
+                first = False
+            if not name.startswith("_"):
+                print(f"* `{name}`",file=md)
+
+        # output modules
+        first = True
+        for item in [getattr(module,x) for x in dir(module) if inspect.ismodule(getattr(module,x))]:
+            if first:
+                print("\n# Modules\n",file=md)
+                first = False
+            print(f"* `{item.__name__}`",file=md)
+
     
 except MakemdError as err:
 

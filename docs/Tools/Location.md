@@ -178,3 +178,18 @@ Returns:
 
 * previous location settings
 
+
+# Constants
+
+* `LOCATIONKEYS`
+* `PROVIDERCONFIG`
+
+# Modules
+
+* `gridlabd.framework`
+* `datetime`
+* `gridlabd.edit`
+* `geocoder`
+* `json`
+* `os`
+* `sys`

@@ -463,3 +463,35 @@ Arguments:
 
 Messages are suppress when the `--warning` option is used.
 
+
+# Constants
+
+* `DEBUG`
+* `E_BADVALUE`
+* `E_EXCEPTION`
+* `E_FAILED`
+* `E_INTERRUPT`
+* `E_INVALID`
+* `E_MISSING`
+* `E_NOTFOUND`
+* `E_OK`
+* `E_SYNTAX`
+* `QUIET`
+* `SILENT`
+* `VERBOSE`
+* `WARNING`
+
+# Modules
+
+* `geocoder`
+* `inspect`
+* `io`
+* `json`
+* `math`
+* `os`
+* `pandas`
+* `plotly.express`
+* `subprocess`
+* `sys`
+* `traceback`
+* `gridlabd.unitcalc`
