@@ -1,3 +1,5 @@
+DOCS_UTILITIES += docs/Tools/Cache.md
+DOCS_UTILITIES += docs/Tools/Census.md
 DOCS_UTILITIES += docs/Tools/Enduse.md
 DOCS_UTILITIES += docs/Tools/Framework.md
 DOCS_UTILITIES += docs/Tools/Network.md

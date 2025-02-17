@@ -1094,6 +1094,7 @@ docs/Tools/Rest_client.md
 docs/Tools/Rest_server.md
 docs/Tools/Unitcalc.md
 docs/Tools/Weather.md
+docs/Tools/cache.py
 docs/Tutorials/Geodata.md
 docs/Tutorials/Python shadow class tutorial.ipynb
 docs/Tutorials/Python tutorial (events).ipynb
