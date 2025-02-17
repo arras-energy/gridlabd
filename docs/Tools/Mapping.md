@@ -484,6 +484,7 @@ Messages are suppress when the `--warning` option is used.
 # Modules
 
 * `geocoder`
+* `gridlabd.unitcalc`
 * `inspect`
 * `io`
 * `json`
@@ -494,4 +495,3 @@ Messages are suppress when the `--warning` option is used.
 * `subprocess`
 * `sys`
 * `traceback`
-* `gridlabd.unitcalc`

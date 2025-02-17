@@ -266,14 +266,14 @@ Returns:
 
 # Modules
 
-* `plotly.graph_objects`
 * `io`
 * `json`
-* `math`
 * `marimo`
+* `math`
 * `os`
 * `pandas`
-* `plotly.io`
 * `plotly.express`
+* `plotly.graph_objects`
+* `plotly.io`
 * `random`
 * `subprocess`

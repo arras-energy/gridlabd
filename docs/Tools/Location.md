@@ -186,10 +186,10 @@ Returns:
 
 # Modules
 
-* `gridlabd.framework`
 * `datetime`
-* `gridlabd.edit`
 * `geocoder`
+* `gridlabd.edit`
+* `gridlabd.framework`
 * `json`
 * `os`
 * `sys`

@@ -85,9 +85,9 @@ Returns:
 
 # Modules
 
-* `gridlabd.framework`
 * `gridlabd.census`
 * `gridlabd.eia_recs`
+* `gridlabd.framework`
 * `json`
 * `os`
 * `pandas`
