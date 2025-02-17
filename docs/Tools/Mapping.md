@@ -425,6 +425,23 @@ This function does not return. When the function is done it calls exit(E_SYNTAX)
 
 ---
 
+## `test(test:callable) -> None`
+
+Run module test routine
+
+Arguments:
+
+* `test`: the test function to run
+
+* `exit`: the exit function to call (default is `exit`)
+
+* `print`: the print funtion to call on exceptions (default is `print`)
+
+This function does not return. When the test is done it calls exit.
+
+
+---
+
 ## `verbose(msg:list) -> None`
 
 Verbose message output

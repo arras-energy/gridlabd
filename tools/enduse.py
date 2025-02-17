@@ -165,10 +165,16 @@ CONVERTERS = {
     "agricultural" : {},
     "transportation" : {},
 }
+
 ENDUSES = []
 for sector in CONVERTERS:
-    ENDUSES.extend([y[0] for x,y in CONVERTERS[sector].items() if isinstance(y,list) and y[2] != None])
+    ENDUSES.extend([y[0] for x,y in CONVERTERS[sector].items() if isinstance(y,list) and y[2] != None])    
 ENDUSES = list(set(ENDUSES)) + ["heatgain"]
+
+TYPES = []
+for types in BUILDING_TYPE.values():
+    TYPES.extend(types.keys())
+
 WEATHER = {"typical":"tmy3","actual":"amy2018"}
 TIMEZONE = "UTC"
 
@@ -237,13 +243,18 @@ class Enduse:
                         data = pd.read_csv(cachefile,index_col=[0],parse_dates=True)
                     else:
                         url = URL[sector].format(state=state,gcode=gcode,type=spec,weather=weather)
-                        data = pd.read_csv(url,
-                            usecols = list(range(2,len(CONVERTERS[sector])+1)),
-                            index_col = [0],
-                            parse_dates = True,
-                            converters = {x:y[1] for x,y in CONVERTERS[sector].items() if isinstance(y,list)},
-                            )
-                        data.to_csv(cachefile,index=True,header=True)
+                        import urllib
+                        try:
+                            data = pd.read_csv(url,
+                                usecols = list(range(2,len(CONVERTERS[sector])+1)),
+                                index_col = [0],
+                                parse_dates = True,
+                                converters = {x:y[1] for x,y in CONVERTERS[sector].items() if isinstance(y,list)},
+                                )
+                            data.to_csv(cachefile,index=True,header=True)
+                        except urllib.error.HTTPError as err:
+                            app.error(f"{btype} not available ({err})")
+                            continue
 
                     # resample timeseries
                     data = data.resample(timestep).sum()
@@ -252,7 +263,8 @@ class Enduse:
                     # drop unused inputs
                     for field in [x for x in data.columns if x.startswith("in.")] \
                             + [x for x,y in CONVERTERS[sector].items() if y == None]:
-                        data.drop(field,axis=1,inplace=True)
+                        if field in data.columns:
+                            data.drop(field,axis=1,inplace=True)
 
                     # rename disaggregated fields
                     for field,convert in {x:y for x,y in CONVERTERS[sector].items() if x in data.columns and isinstance(y,list) and y[2] == None}.items():
@@ -284,6 +296,44 @@ class Enduse:
                     for field in ENDUSES:
                         data[field] /= data["units"]
                     self.data[btype] = data
+
+    def has_buildingtype(self,building_type:str) -> bool:
+        """Checks whether data include building type
+
+        Argument:
+
+        * `building_type`: building type to check
+
+        Returns:
+
+        * `bool`: building type found
+        """
+        return building_type in self.data
+
+    def sum(self,building_type,enduse) -> bool:
+        """Get total enduse energy for building_type
+
+        Argument:
+
+        * `building_type`: building type to check
+
+        Returns:
+
+        * `bool`: building type found
+        """
+        if not self.has_buildingtype(building_type):
+
+            raise EnduseError(f"no enduse data found for building_type '{building_type}'")
+
+        if not enduse in ENDUSES:
+
+            raise EnduseError(f"no such enduse '{enduse}'")
+
+        if not enduse in self.data[building_type].columns:
+
+            raise EnduseError(f"building type '{building_type}' does not include enduse '{enduse}'")
+
+        return self.data[building_type][enduse].sum()
 
 def main(argv:list[str]) -> int:
     """Enduse main routine
@@ -408,29 +458,36 @@ def main(argv:list[str]) -> int:
     return app.E_OK
 
 def test():
+    n_failed = n_tested = 0
+    for btype in TYPES:
+        n_tested += 1
+        try:
+            print("Testing",btype,end="...",flush=True)
+            ls = Enduse("US","WA","Snohomish",[btype],electrification={"heating":1.0},weather="amy2018")
+            if ls.has_buildingtype(btype):
+                assert len(ls.data[btype]) == 8761, f"incorrect number of rows downloaded for building type {btype} (expected 8761, got {len(ls.data[btype])})"
+                assert len(ls.data[btype].columns) == 20, f"incorrect number of columns downloaded for building type {btype} (expected 20, got {len(ls.data[btype].columns)})"
+                for enduse in ENDUSES:
+                    total = ls.sum(btype,enduse).round(1)
+                    if total > 0:
+                        print(enduse,"=",total,"kWh",end=", ",flush=True)
+                print("ok")
+        except:
+            raise
+            e_type,e_value,e_trace = sys.exc_info()
+            print(f"FAILED: {__file__}@{e_trace.tb_lineno} ({e_type.__name__}) {e_value}")
+            n_failed += 1
 
-    pass
+    return n_failed,n_tested
+
 
 if __name__ == "__main__":
 
     if not sys.argv[0]:
     
-        test()
-        exit(app.E_OK)
-        #     ls = Enduse("US","WA","Snohomish",["MOBILE"],electrification={"heating":1.0},weather="amy2018")
-        #     pd.options.display.max_columns = None
-        #     pd.options.display.max_rows = None
-        #     pd.options.display.width = None
-        #     print(ls.data["MOBILE"])
-        # sys.argv = [__file__,"--debug","US","CA","San Mateo","--type=MOBILE"]
-        # sys.argv = [__file__,"--debug","US","CA","San Mateo","--type=MOBILE","--start=2020-01-01T00:00:00-08:00","--stop=2021-01-01T00:00:00-08:00"]
-        # sys.argv = [__file__,"--list=sector"]
-        # sys.argv = [__file__,"--list=type"]
-        # sys.argv = [__file__,"--list=country"]
-        # sys.argv = [__file__,"US","--list=state"]
-        # sys.argv = [__file__,"US","CA","--list=county"]
-        # sys.argv = [__file__,"--list=enduse"]
+        app.test(test)
 
+    else:
 
-    app.run(main)
+        app.run(main)
 
