@@ -24,18 +24,22 @@ Options:
 
 Description:
 
-The `enduse` tool generates enduse load data for buildings at the specified
+The `enduse` tool generates enduse load data and models for buildings at the specified
 location.
-
-Valid values for list `FEATURE` are `sector`, `type`, `country`, `state`, `county`, and
-`enduse`. If `state` is requests the COUNTRY must be specified. If `county` is 
-requested, the COUNTRY and STATE must be specified.
 
 The `player` FILENAME must include `{building_type}` if more than one `type`
 is specified.
 
-When `actual` whether is used, the `timeseries` alignment `week` is used. See
-`timeseries.project_daterange()` for details.
+The default CSV filename is `{country}_{state}_{county}_
+{building_type}.csv`. The default GLM filename is `{country}_{state}_{county}.glm`.
+
+The default weather is `tmy3`. When `actual` whether is used, the `timeseries`
+alignment `week` is used to project actual weather to the current time. See
+`timeseries.project_daterange()` for details. 
+
+Valid values for list `FEATURE` are `sector`, `type`, `country`, `state`, `county`, and
+`enduse`. If `state` is requests the COUNTRY must be specified. If `county` is 
+requested, the COUNTRY and STATE must be specified.
 
 Example:
 
@@ -43,7 +47,7 @@ The following command generates a GLM and CSV file for mobile homes in
 Snohomish County, Washington:
 
 ~~~
-gridlabd enduse US WA Snohomish --player='test_enduse_{building_type}.csv' --model=test_enduse_opt.glm --type=MOBILE 
+gridlabd enduse US WA Snohomish --type=MOBILE 
 ~~~
 """
 
@@ -396,7 +400,8 @@ class Enduse:
             if not csvname.endswith(".csv"):
                 csvname += ".csv"
             if "{building_type}" not in csvname:
-                file = "".join(os.path.splitext()(csvname).insert(1,f"_{bt.lower()}"))
+                base,ext = os.path.splitext(csvname)
+                file = base + f"_{bt.lower()}" + ext
             else:
                 file = csvname.format(building_type=bt.lower())
             self.data[bt].to_csv(file,index=True,header=True,float_format=f"%{FLOATFORMAT}")
@@ -455,7 +460,7 @@ def main(argv:list[str]) -> int:
     weather = "tmy3"
     timestep = None
     output = None
-    player = []
+    player = None
     model = None
     for key,value in args:
 
@@ -469,6 +474,11 @@ def main(argv:list[str]) -> int:
         elif key in ["--type"] and 0 < len(value) < 2:
 
             building_type = value[0]
+
+            if not player:
+                player = "{country}_{state}_{county}.csv".format(**location)
+            if not model:
+                model = "{country}_{state}_{county}.glm".format(**location)
 
         elif key in ["--list"] and 0 < len(value) < 2:
 
@@ -518,7 +528,7 @@ def main(argv:list[str]) -> int:
 
         elif key in ["--player"]:
 
-            player = value
+            player = value[0]
 
         elif key in ["--model"] and 0 < len(value) > 2:
 
@@ -546,16 +556,27 @@ def main(argv:list[str]) -> int:
         )
 
     glm = {}
+
     if player:
 
-        for item in player:
-            glm.update(enduse.to_player(item))
+        if player.endswith(".csv"):
 
-        if model:
-            if model.endswith(".glm"):
-                enduse.to_glm(model,glm)
+            glm.update(enduse.to_player(player))
+
+        else:
+
+            raise EnduseError("unable to output player to non CSV format")
+
     else:
+
         enduse.data[building_type].to_csv(open(output,"w") if output else sys.stdout)
+
+    if model:
+
+        if model.endswith(".glm"):
+            enduse.to_glm(model,glm)
+        else:
+            raise EnduseError("unable to output model in non GLM format")
 
     # normal termination condition
     return app.E_OK
@@ -593,9 +614,9 @@ if __name__ == "__main__":
 
     if not sys.argv[0]:
     
-        # sys.argv = [__file__] + "US WA Snohomish --player=enduse_{building_type}.csv --model=test.glm --type=MOBILE".split()
-        # app.run(main)
-        app.test(test)
+        sys.argv = [__file__] + "US WA Snohomish --type=MOBILE".split()
+        app.run(main)
+        # app.test(test)
 
     else:
 

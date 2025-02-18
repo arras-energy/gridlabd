@@ -24,18 +24,21 @@ Options:
 
 Description:
 
-The `enduse` tool generates enduse load data for buildings at the specified
+The `enduse` tool generates enduse load data and models for buildings at the specified
 location.
-
-Valid values for list `FEATURE` are `sector`, `type`, `country`, `state`, `county`, and
-`enduse`. If `state` is requests the COUNTRY must be specified. If `county` is 
-requested, the COUNTRY and STATE must be specified.
 
 The `player` FILENAME must include `{building_type}` if more than one `type`
 is specified.
 
+The default CSV filename is `{country}_{state}_{county}_
+{building_type}.csv`. The default GLM filename is `{country}_{state}_{county}.glm`.
+
 When `actual` whether is used, the `timeseries` alignment `week` is used. See
 `timeseries.project_daterange()` for details.
+
+Valid values for list `FEATURE` are `sector`, `type`, `country`, `state`, `county`, and
+`enduse`. If `state` is requests the COUNTRY must be specified. If `county` is 
+requested, the COUNTRY and STATE must be specified.
 
 Example:
 
