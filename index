@@ -4121,6 +4121,7 @@ tools/rest_client.py
 tools/rest_server.py
 tools/rest_server_config.py
 tools/test_api.py
+tools/timeseries.py
 tools/ucar_weather.py
 tools/unitcalc.py
 tools/weather.py

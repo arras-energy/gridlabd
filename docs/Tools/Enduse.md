@@ -53,6 +53,32 @@ default). See `BUILDING_TYPE` for valid building types
 * `electrification`: electrification fractions for enduses (see ENDUSES)
 
 
+### `Enduse.has_buildingtype(building_type:str) -> bool`
+
+Checks whether data include building type
+
+Argument:
+
+* `building_type`: building type to check
+
+Returns:
+
+* `bool`: building type found
+
+
+### `Enduse.sum() -> bool`
+
+Get total enduse energy for building_type
+
+Argument:
+
+* `building_type`: building type to check
+
+Returns:
+
+* `bool`: building type found
+
+
 ---
 
 ## EnduseError
@@ -80,8 +106,10 @@ Returns:
 * `CONVERTERS`
 * `ENDUSES`
 * `SECTORS`
+* `TYPES`
 * `URL`
 * `WEATHER`
+* `types`
 
 # Modules
 

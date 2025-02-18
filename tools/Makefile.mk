@@ -44,6 +44,7 @@ dist_pkgdata_DATA += tools/resource.py
 dist_pkgdata_DATA += tools/rest_client.py
 dist_pkgdata_DATA += tools/rest_server.py
 dist_pkgdata_DATA += tools/rest_server_config.py
+dist_pkgdata_DATA += tools/timeseries.py
 dist_pkgdata_DATA += tools/ucar_weather.py
 dist_pkgdata_DATA += tools/unitcalc.py
 dist_pkgdata_DATA += tools/weather.py
