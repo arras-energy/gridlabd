@@ -69,8 +69,8 @@ try:
                 else:
                     name = f"{item.__name__}.{member.__name__}"
                     returns = member.__annotations__['return'] if 'return' in member.__annotations__ else 'None'
-                    returns = " -> " + (returns.__name__ if hasattr(returns,'__name__') else str(returns))
-                args = [f"{x}:{t.__name__ if hasattr(t,'__name__') else str(t)}" for x,t in member.__annotations__.items() if x != "return"]
+                    returns = " -> <I>" + (returns.__name__ if hasattr(returns,'__name__') else str(returns)) + "</I>"
+                args = [f"{x}:<I>{t.__name__ if hasattr(t,'__name__') else str(t)}</I>" for x,t in member.__annotations__.items() if x != "return"]
                 docs = NL.join([x.strip() for x in member.__doc__.split(NL)])
                 print(f"\n### `{name}({', '.join(args)}){returns}`{NL*2}{docs}",file=md)
 
@@ -85,10 +85,10 @@ try:
             else:
                 print("\n---",file=md)
             NL='\n'
-            args = [f"{x}:{t.__name__}" for x,t in item.__annotations__.items() if hasattr(t,'__name__') and x != "return"]
+            args = [f"{x}:<I>{t.__name__}</I>" for x,t in item.__annotations__.items() if hasattr(t,'__name__') and x != "return"]
             returns = item.__annotations__['return'].__name__ if 'return' in item.__annotations__ and hasattr(item.__annotations__['return'],'__name__') else 'None'
             docs = NL.join([x.strip() for x in item.__doc__.split(NL)])
-            print(f"\n## `{item.__name__}({', '.join(args)}) -> {returns}`{NL*2}{docs}",file=md)
+            print(f"\n## `{item.__name__}({', '.join(args)}) -> <I>{returns}</I>`{NL*2}{docs}",file=md)
 
         # output constants
         first = True

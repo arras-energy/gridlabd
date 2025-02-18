@@ -20,14 +20,31 @@ Options:
 
 * `--player=FILENAME`: specify the CSV file to generate
 
+* `--weather={actual,typical}`: select weather data to use
+
 Description:
 
 The `enduse` tool generates enduse load data for buildings at the specified
 location.
 
-Valid values for `FEATURE` are `sector`, `type`, `country`, `state`, `county`, and
+Valid values for list `FEATURE` are `sector`, `type`, `country`, `state`, `county`, and
 `enduse`. If `state` is requests the COUNTRY must be specified. If `county` is 
 requested, the COUNTRY and STATE must be specified.
+
+The `player` FILENAME must include `{building_type}` if more than one `type`
+is specified.
+
+When `actual` whether is used, the `timeseries` alignment `week` is used. See
+`timeseries.project_daterange()` for details.
+
+Example:
+
+The following command generates a GLM and CSV file for mobile homes in
+Snohomish County, Washington:
+
+~~~
+gridlabd enduse US WA Snohomish --player='test_enduse_{building_type}.csv' --model=test_enduse_opt.glm --type=MOBILE 
+~~~
 """
 
 import os
@@ -67,12 +84,16 @@ BUILDING_TYPE = {
     "transportation": {},
     }
 SECTORS = list(BUILDING_TYPE.keys())
-URL = {
+ENDUSE_URL = {
     "residential": "https://oedi-data-lake.s3.amazonaws.com/nrel-pds-building-stock/end-use-load-profiles-for-us-building-stock/2021/resstock_{weather}_release_1/timeseries_aggregates/by_county/state%3D{state}/{gcode}-{type}.csv",
     "commercial": "https://oedi-data-lake.s3.amazonaws.com/nrel-pds-building-stock/end-use-load-profiles-for-us-building-stock/2021/comstock_{weather}_release_1/timeseries_aggregates/by_county/state%3D{state}/{gcode}-{type}.csv",
     "industrial": None,
     "agricultural": None,
     "tranportation" : None,
+    }
+WEATHER_URL = {
+    "tmy3":         "https://oedi-data-lake.s3.amazonaws.com/nrel-pds-building-stock/end-use-load-profiles-for-us-building-stock/2021/resstock_tmy3_release_1/weather/tmy3/{gcode.upper()}_tmy3.csv",
+    "actual2018" :  "https://oedi-data-lake.s3.amazonaws.com/nrel-pds-building-stock/end-use-load-profiles-for-us-building-stock/2021/resstock_amy2018_release_1/weather/amy2018/{gcode.upper()}_2018.csv"
     }
 CONVERTERS = {
     # value fields: name, format, electric
@@ -249,7 +270,7 @@ class Enduse:
                     if os.path.exists(cachefile):
                         data = pd.read_csv(cachefile,index_col=[0],parse_dates=True)
                     else:
-                        url = URL[sector].format(state=state,gcode=gcode,type=spec,weather=weather)
+                        url = ENDUSE_URL[sector].format(state=state,gcode=gcode,type=spec,weather=weather)
                         import urllib
                         try:
                             data = pd.read_csv(url,
@@ -318,12 +339,14 @@ class Enduse:
         """
         return building_type in self.data
 
-    def sum(self,building_type,enduse) -> bool:
-        """Get total enduse energy for building_type
+    def sum(self,building_type:str,enduse:str) -> bool:
+        """Get total enduse energy for a building type
 
         Argument:
 
-        * `building_type`: building type to check
+        * `building_type`: building type to check (see `BUILDING_TYPES`)
+
+        * `enduse`: enduse load category (see `ENDUSES`)
 
         Returns:
 
@@ -436,28 +459,19 @@ def main(argv:list[str]) -> int:
     model = None
     for key,value in args:
 
-        if key in ["-h","--help","help"]:
+        if key in ["-h","--help","help"] and len(value) == 0:
             print(__doc__,file=sys.stdout)
 
-        elif key in ["--local"]:
+        elif key in ["--local"] and len(value) == 0:
 
             TIMEZONE = ",".join(value)
 
-        elif key in ["--type"]:
+        elif key in ["--type"] and 0 < len(value) < 2:
 
-            if len(value) > 1:
-                raise EnduseError("only one building type is allowed")
-            if len(value) == 0 :
-                raise EnduseError("a building type must be specified")
             building_type = value[0]
 
-        elif key in ["--list"]:
+        elif key in ["--list"] and 0 < len(value) < 2:
 
-            if len(value) > 1:
-                raise EnduseError("only one feature is allowed")
-            if len(value) == 0 :
-                raise EnduseError("a feature must be specified")
-            
             if "sector" in value:
             
                 print("\n".join(SECTORS))
@@ -494,38 +508,31 @@ def main(argv:list[str]) -> int:
                 print("\n".join(ENDUSES))
                 return E_OK
 
-        elif key in ["--start"]:
+        elif key in ["--start"] and 0 < len(value) < 2:
 
-            if len(value) > 1:
-                raise EnduseError("only one start date is allowed")
-            if len(value) == 0 :
-                raise EnduseError("a start date must be specified")
-            START = value
+            START = value[0]
 
-        elif key in ["--stop"]:
+        elif key in ["--stop"] and 0 < len(value) < 2:
 
-            if len(value) > 1:
-                raise EnduseError("only one stop date is allowed")
-            if len(value) == 0 :
-                raise EnduseError("a stop date must be specified")
-            STOP = value
+            STOP = value[0]
+
+        elif key in ["--player"]:
+
+            player = value
+
+        elif key in ["--model"] and 0 < len(value) > 2:
+
+            model = value[0]
+
+        elif key in ["--weather"] and 0 < len(value) < 2 and value[0] not in WEATHER:
+
+            weather = WEATHER[value[0]]
 
         elif not key.startswith("-"):
 
             tag = ["country","state","county"][len(location)]
             location[tag] = key
 
-        elif key in ["--player"]:
-
-            player = value
-
-        elif key in ["--model"] and len(value) > 0:
-
-            if len(value) > 1:
-
-                raise EnduseError("only one model glm file may be specified")
-
-            model = value[0]
         else:
 
             app.error(f"'{key}={value}' is invalid")
@@ -568,7 +575,7 @@ def test():
             ls = Enduse("US","WA","Snohomish",[btype],electrification={"heating":1.0},weather="amy2018")
             if ls.has_buildingtype(btype):
                 assert len(ls.data[btype]) == 8761, f"incorrect number of rows downloaded for building type {btype} (expected 8761, got {len(ls.data[btype])})"
-                assert len(ls.data[btype].columns) == 20, f"incorrect number of columns downloaded for building type {btype} (expected 20, got {len(ls.data[btype].columns)})"
+                assert len(ls.data[btype].columns) == 19, f"incorrect number of columns downloaded for building type {btype} (expected 20, got {len(ls.data[btype].columns)})"
                 for enduse in ENDUSES:
                     total = ls.sum(btype,enduse).round(1)
                     if total > 0:
@@ -586,9 +593,9 @@ if __name__ == "__main__":
 
     if not sys.argv[0]:
     
-        sys.argv = [__file__] + "US WA Snohomish --player=enduse_{building_type}.csv --model=test.glm --type=MOBILE".split()
-        app.run(main)
-        # app.test(test)
+        # sys.argv = [__file__] + "US WA Snohomish --player=enduse_{building_type}.csv --model=test.glm --type=MOBILE".split()
+        # app.run(main)
+        app.test(test)
 
     else:
 

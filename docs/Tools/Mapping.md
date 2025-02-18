@@ -68,7 +68,7 @@ Application exception
 
 Mapping class
 
-### `Map(model:[<class 'dict'>, <class 'str'>, ~io.TextIOWrapper], nodedata:dict, linkdata:dict)`
+### `Map(model:<I>[<class 'dict'>, <class 'str'>, ~io.TextIOWrapper]</I>, nodedata:<I>dict</I>, linkdata:<I>dict</I>)`
 
 Construct a map from a model
 
@@ -93,7 +93,7 @@ See also:
 * https://plotly.com/python/reference/scattermap/
 
 
-### `Map.extract_network(nodedata:dict, linkdata:dict) -> list`
+### `Map.extract_network(nodedata:<I>dict</I>, linkdata:<I>dict</I>) -> <I>list</I>`
 
 Extract network data
 
@@ -114,7 +114,7 @@ See also:
 * [[/Module/Pypower]]
 
 
-### `Map.read(data:dict, nodedata:dict, linkdata:dict) -> None`
+### `Map.read(data:<I>dict</I>, nodedata:<I>dict</I>, linkdata:<I>dict</I>) -> <I>None</I>`
 
 Read JSON data
 
@@ -133,7 +133,7 @@ See also:
 * [[/Module/Pypower]]
 
 
-### `Map.render() -> plotly.graph_objects.Figure`
+### `Map.render() -> <I>plotly.graph_objects.Figure</I>`
 
 Render the map
 
@@ -152,7 +152,7 @@ See also:
 * https://plotly.com/python/reference/scattermap/
 
 
-### `Map.save(name:str) -> None`
+### `Map.save(name:<I>str</I>) -> <I>None</I>`
 
 Save the map in a file
 
@@ -161,7 +161,7 @@ Arguments:
 * `options`: plotly render options
 
 
-### `Map.show() -> None`
+### `Map.show() -> <I>None</I>`
 
 Open the map in a browser window
 
@@ -184,7 +184,7 @@ Mapping exception
 
 # Functions
 
-## `complex_unit(x:str, form:str, prec:str, unit:str) -> None`
+## `complex_unit(x:<I>str</I>, form:<I>str</I>, prec:<I>str</I>, unit:<I>str</I>) -> <I>None</I>`
 
 Convert complex value with unit
 
@@ -210,7 +210,7 @@ Returns:
 
 ---
 
-## `debug(msg:list) -> None`
+## `debug(msg:<I>list</I>) -> <I>None</I>`
 
 Debugging message output
 
@@ -225,7 +225,7 @@ Messages are enabled when the `--debug` option is used.
 
 ---
 
-## `double_unit(x:str) -> float`
+## `double_unit(x:<I>str</I>) -> <I>float</I>`
 
 Convert a string with unit to a float
 
@@ -238,7 +238,7 @@ Returns:
 
 ---
 
-## `error(msg:list) -> None`
+## `error(msg:<I>list</I>) -> <I>None</I>`
 
 Error message output
 
@@ -257,7 +257,7 @@ If the exit `code` is specified, exit is called with the code.
 
 ---
 
-## `exception() -> None`
+## `exception() -> <I>None</I>`
 
 Exception message output
 
@@ -270,7 +270,7 @@ If `exc` is a string, an `ApplicationError` exception is raised.
 
 ---
 
-## `get_options(value:str, default:dict) -> dict`
+## `get_options(value:<I>str</I>, default:<I>dict</I>) -> <I>dict</I>`
 
 Extract save/show options from argument value
 
@@ -287,7 +287,7 @@ Returns:
 
 ---
 
-## `gridlabd(args:list) -> Optional`
+## `gridlabd(args:<I>list</I>) -> <I>Optional</I>`
 
 Simple gridlabd runner
 
@@ -312,7 +312,7 @@ See also:
 
 ---
 
-## `integer(x:str) -> int`
+## `integer(x:<I>str</I>) -> <I>int</I>`
 
 Convert a string to an integer
 
@@ -325,7 +325,7 @@ Returns:
 
 ---
 
-## `main(argv:list) -> int`
+## `main(argv:<I>list</I>) -> <I>int</I>`
 
 Command line processing
 
@@ -340,7 +340,7 @@ Returns:
 
 ---
 
-## `open_glm(file:str, tmp:str, init:bool) -> io.TextIOWrapper`
+## `open_glm(file:<I>str</I>, tmp:<I>str</I>, init:<I>bool</I>) -> <I>io.TextIOWrapper</I>`
 
 Open GLM file as JSON
 
@@ -363,7 +363,7 @@ Return:
 
 ---
 
-## `output(msg:list) -> None`
+## `output(msg:<I>list</I>) -> <I>None</I>`
 
 General message output
 
@@ -378,7 +378,7 @@ Messages are suppressed when the `--silent` option is used.
 
 ---
 
-## `read_stdargs(argv:list) -> list`
+## `read_stdargs(argv:<I>list</I>) -> <I>list</I>`
 
 Read framework options
 
@@ -393,7 +393,7 @@ Returns:
 
 ---
 
-## `run(main:callable) -> None`
+## `run(main:<I>callable</I>) -> <I>None</I>`
 
 Run a main function under this app framework
 
@@ -410,7 +410,7 @@ This function does not return. When the app is done it calls exit.
 
 ---
 
-## `syntax(docs:str) -> None`
+## `syntax(docs:<I>str</I>) -> <I>None</I>`
 
 Print syntax message
 
@@ -425,7 +425,7 @@ This function does not return. When the function is done it calls exit(E_SYNTAX)
 
 ---
 
-## `test(test:callable) -> None`
+## `test(test:<I>callable</I>) -> <I>None</I>`
 
 Run module test routine
 
@@ -442,7 +442,7 @@ This function does not return. When the test is done it calls exit.
 
 ---
 
-## `verbose(msg:list) -> None`
+## `verbose(msg:<I>list</I>) -> <I>None</I>`
 
 Verbose message output
 
@@ -457,7 +457,7 @@ Messages are enabled when the `--verbose` option is used.
 
 ---
 
-## `version(terms:str) -> str`
+## `version(terms:<I>str</I>) -> <I>str</I>`
 
 Get gridlabd version
 
@@ -468,7 +468,7 @@ Returns:
 
 ---
 
-## `warning(msg:list) -> None`
+## `warning(msg:<I>list</I>) -> <I>None</I>`
 
 Warning message output
 

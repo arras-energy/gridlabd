@@ -28,7 +28,7 @@ Cache exception
 
 # Functions
 
-## `main(argv:list) -> int`
+## `main(argv:<I>list</I>) -> <I>int</I>`
 
 Main routine
 

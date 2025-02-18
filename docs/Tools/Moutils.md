@@ -7,7 +7,7 @@
 
 Map rendering class
 
-### `Map(model:[typing.Union[str, ~io.TextIOWrapper, NoneType]], nodedata:dict, linkdata:dict, options:dict)`
+### `Map(model:<I>[typing.Union[str, ~io.TextIOWrapper, NoneType]]</I>, nodedata:<I>dict</I>, linkdata:<I>dict</I>, options:<I>dict</I>)`
 
 Construct map rendering object from model object
 
@@ -26,7 +26,7 @@ Returns:
 * `moutils.Map`: map rendering object
 
 
-### `Map.extract_network(nodedata:dict, linkdata:dict) -> list`
+### `Map.extract_network(nodedata:<I>dict</I>, linkdata:<I>dict</I>) -> <I>list</I>`
 
 Extract network data
 
@@ -45,7 +45,7 @@ Returns:
 * `list[str]`: list of swing busses (if any)
 
 
-### `Map.read(data:dict, nodedata:dict, linkdata:dict) -> None`
+### `Map.read(data:<I>dict</I>, nodedata:<I>dict</I>, linkdata:<I>dict</I>) -> <I>None</I>`
 
 Read JSON data from model dictionary into model object
 
@@ -60,7 +60,7 @@ and value is form converter function)
 and value is form converter function)
 
 
-### `Map.render() -> marimo.Html`
+### `Map.render() -> <I>marimo.Html</I>`
 
 Render map
 
@@ -73,7 +73,7 @@ Returns:
 * `marimo.Html`: marimo Html object
 
 
-### `Map.save() -> None`
+### `Map.save() -> <I>None</I>`
 
 Save a map to a file
 
@@ -84,7 +84,7 @@ Arguments:
 * `**options`: `plotly.express.scattermap` options
 
 
-### `Map.show(options:dict) -> None`
+### `Map.show(options:<I>dict</I>) -> <I>None</I>`
 
 Show a map in the default web browser
 
@@ -95,7 +95,7 @@ Arguments:
 
 # Functions
 
-## `complex_unit(x:str, form:str) -> complex`
+## `complex_unit(x:<I>str</I>, form:<I>str</I>) -> <I>complex</I>`
 
 Convert complex with units
 
@@ -144,13 +144,13 @@ Returns:
 
 ---
 
-## `float_unit(x:str) -> float`
+## `float_unit(x:<I>str</I>) -> <I>float</I>`
 
 Convert float with units
 
 ---
 
-## `gridlabd(args:list, bin:bool, kwargs:dict) -> subprocess.CompletedProcess`
+## `gridlabd(args:<I>list</I>, bin:<I>bool</I>, kwargs:<I>dict</I>) -> <I>subprocess.CompletedProcess</I>`
 
 Run gridlabd
 
@@ -171,7 +171,7 @@ Returns:
 
 ---
 
-## `model(source:marimo.FileUploadResults, folder:str) -> None`
+## `model(source:<I>marimo.FileUploadResults</I>, folder:<I>str</I>) -> <I>None</I>`
 
 Extract model data
 
@@ -188,7 +188,7 @@ Returns:
 
 ---
 
-## `render_globals(model:namedtuple, module:dict) -> marimo.Html`
+## `render_globals(model:<I>namedtuple</I>, module:<I>dict</I>) -> <I>marimo.Html</I>`
 
 Render globals
 
@@ -203,7 +203,7 @@ Returns:
 
 ---
 
-## `render_map(model:namedtuple) -> marimo.Html`
+## `render_map(model:<I>namedtuple</I>) -> <I>marimo.Html</I>`
 
 Render geodata as map
 
@@ -218,7 +218,7 @@ Returns:
 
 ---
 
-## `render_objects(model:namedtuple) -> marimo.Html`
+## `render_objects(model:<I>namedtuple</I>) -> <I>marimo.Html</I>`
 
 Render objects
 
@@ -233,7 +233,7 @@ Returns:
 
 ---
 
-## `render_sidebar(upload:marimo.FileUploadResults) -> marimo.Html`
+## `render_sidebar(upload:<I>marimo.FileUploadResults</I>) -> <I>marimo.Html</I>`
 
 Render app sidebar
 
@@ -248,7 +248,7 @@ Returns:
 
 ---
 
-## `render_status(model:namedtuple) -> marimo.Html`
+## `render_status(model:<I>namedtuple</I>) -> <I>marimo.Html</I>`
 
 Render status
 

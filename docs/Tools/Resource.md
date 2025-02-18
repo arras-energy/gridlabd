@@ -65,7 +65,7 @@ Arguments:
 * `file`: resource file (default is $GLD_ETC/resource.csv)
 
 
-### `Resource.content(kwargs:dict) -> str`
+### `Resource.content(kwargs:<I>dict</I>) -> <I>str</I>`
 
 Get resource content
 
@@ -78,26 +78,26 @@ Returns:
 * Resource contents
 
 
-### `Resource.headers(kwargs:dict) -> Union`
+### `Resource.headers(kwargs:<I>dict</I>) -> <I>Union</I>`
 
 Get resource header
 
 
 
-### `Resource.index(kwargs:dict) -> Union`
+### `Resource.index(kwargs:<I>dict</I>) -> <I>Union</I>`
 
 Get resource index (if any)
 
 
 
-### `Resource.list(pattern:str) -> list`
+### `Resource.list(pattern:<I>str</I>) -> <I>list</I>`
 
 Get a list of available resources
 
 Argument
 
 
-### `Resource.properties(passthru:str, kwargs:dict) -> dict`
+### `Resource.properties(passthru:<I>str</I>, kwargs:<I>dict</I>) -> <I>dict</I>`
 
 Get resource properties
 
@@ -111,7 +111,7 @@ Resource exception
 
 # Functions
 
-## `main(argv:list) -> int`
+## `main(argv:<I>list</I>) -> <I>int</I>`
 
 Resource tool main routine
 
@@ -126,7 +126,7 @@ Returns:
 
 ---
 
-## `test() -> None`
+## `test() -> <I>None</I>`
 
 Run tests on resources that match the specified pattern
 

@@ -20,14 +20,31 @@ Options:
 
 * `--player=FILENAME`: specify the CSV file to generate
 
+* `--weather={actual,typical}`: select weather data to use
+
 Description:
 
 The `enduse` tool generates enduse load data for buildings at the specified
 location.
 
-Valid values for `FEATURE` are `sector`, `type`, `country`, `state`, `county`, and
+Valid values for list `FEATURE` are `sector`, `type`, `country`, `state`, `county`, and
 `enduse`. If `state` is requests the COUNTRY must be specified. If `county` is 
 requested, the COUNTRY and STATE must be specified.
+
+The `player` FILENAME must include `{building_type}` if more than one `type`
+is specified.
+
+When `actual` whether is used, the `timeseries` alignment `week` is used. See
+`timeseries.project_daterange()` for details.
+
+Example:
+
+The following command generates a GLM and CSV file for mobile homes in
+Snohomish County, Washington:
+
+~~~
+gridlabd enduse US WA Snohomish --player='test_enduse_{building_type}.csv' --model=test_enduse_opt.glm --type=MOBILE 
+~~~
 
 
 
@@ -37,7 +54,7 @@ requested, the COUNTRY and STATE must be specified.
 
 Enduse class
 
-### `Enduse(country:str, state:str, county:str | None, building_types:list[str] | None, weather:str, timestep:str | None, electrification:dict)`
+### `Enduse(country:<I>str</I>, state:<I>str</I>, county:<I>str | None</I>, building_types:<I>list[str] | None</I>, weather:<I>str</I>, timestep:<I>str | None</I>, electrification:<I>dict</I>)`
 
 Access building enduse data
 
@@ -57,7 +74,7 @@ default). See `BUILDING_TYPE` for valid building types
 * `electrification`: electrification fractions for enduses (see ENDUSES)
 
 
-### `Enduse.has_buildingtype(building_type:str) -> bool`
+### `Enduse.has_buildingtype(building_type:<I>str</I>) -> <I>bool</I>`
 
 Checks whether data include building type
 
@@ -70,24 +87,26 @@ Returns:
 * `bool`: building type found
 
 
-### `Enduse.sum() -> bool`
+### `Enduse.sum(building_type:<I>str</I>, enduse:<I>str</I>) -> <I>bool</I>`
 
-Get total enduse energy for building_type
+Get total enduse energy for a building type
 
 Argument:
 
-* `building_type`: building type to check
+* `building_type`: building type to check (see `BUILDING_TYPES`)
+
+* `enduse`: enduse load category (see `ENDUSES`)
 
 Returns:
 
 * `bool`: building type found
 
 
-### `Enduse.to_glm(glmname:str, glmdata:dict) -> None`
+### `Enduse.to_glm(glmname:<I>str</I>, glmdata:<I>dict</I>) -> <I>None</I>`
 
 Write GLM objects created by players
 
-### `Enduse.to_player(csvname:str, building_type:str, enduse:str) -> dict`
+### `Enduse.to_player(csvname:<I>str</I>, building_type:<I>str</I>, enduse:<I>str</I>) -> <I>dict</I>`
 
 Write player data
 
@@ -116,7 +135,7 @@ Enduse exception
 
 # Functions
 
-## `main(argv:list) -> int`
+## `main(argv:<I>list</I>) -> <I>int</I>`
 
 Enduse main routine
 
@@ -131,7 +150,7 @@ Returns:
 
 ---
 
-## `test() -> None`
+## `test() -> <I>None</I>`
 
 Run self-test
 
@@ -145,10 +164,11 @@ Returns:
 * `BUILDING_TYPE`
 * `CONVERTERS`
 * `ENDUSES`
+* `ENDUSE_URL`
 * `SECTORS`
 * `TYPES`
-* `URL`
 * `WEATHER`
+* `WEATHER_URL`
 * `types`
 
 # Modules

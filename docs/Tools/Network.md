@@ -95,7 +95,7 @@ The dynamic model accessor allows Python code running in a simulation to access 
 
 Dynamic model accessor
 
-### `GldModel.classes() -> dict`
+### `GldModel.classes() -> <I>dict</I>`
 
 Get classes
 
@@ -104,7 +104,7 @@ Returns:
 * dict: the classes and property names available
 
 
-### `GldModel.globals() -> list`
+### `GldModel.globals() -> <I>list</I>`
 
 Get list of global names
 
@@ -113,7 +113,7 @@ Returns:
 * list: the global variables defined
 
 
-### `GldModel.objects() -> dict`
+### `GldModel.objects() -> <I>dict</I>`
 
 Get objects in model
 
@@ -122,7 +122,7 @@ Returns:
 * dict: the object names and header values
 
 
-### `GldModel.properties() -> list`
+### `GldModel.properties() -> <I>list</I>`
 
 Get list of properties in object
 
@@ -131,7 +131,7 @@ Returns:
 * list: the list of properties defined in an object
 
 
-### `GldModel.property() -> gld.property`
+### `GldModel.property() -> <I>gld.property</I>`
 
 Get property accessor
 
@@ -161,23 +161,23 @@ Arguments:
 * jsonfile (str): name of JSON file to access
 
 
-### `JsonModel.classes() -> dict`
+### `JsonModel.classes() -> <I>dict</I>`
 
 Get classes in model
 
-### `JsonModel.globals() -> list`
+### `JsonModel.globals() -> <I>list</I>`
 
 Get globals in model
 
-### `JsonModel.objects() -> dict`
+### `JsonModel.objects() -> <I>dict</I>`
 
 Get objects in model
 
-### `JsonModel.properties() -> list`
+### `JsonModel.properties() -> <I>list</I>`
 
 Get list of object properties
 
-### `JsonModel.property() -> Property`
+### `JsonModel.property() -> <I>Property</I>`
 
 Get property accessor
 
@@ -244,11 +244,11 @@ Properties generated for `matrix` list:
 * W (np.array): weighted Laplacian matrix
 
 
-### `Network(model:dict, matrix:list, nodemap:dict, linemap:dict)`
+### `Network(model:<I>dict</I>, matrix:<I>list</I>, nodemap:<I>dict</I>, linemap:<I>dict</I>)`
 
 Network model accessor constructor
 
-### `Network.islands(precision:int) -> int`
+### `Network.islands(precision:<I>int</I>) -> <I>int</I>`
 
 Calculate the number of islands in network
 
@@ -261,7 +261,7 @@ Returns:
 * int: the number of connected subnetworks in the network
 
 
-### `Network.todict() -> dict`
+### `Network.todict() -> <I>dict</I>`
 
 Get network data as a dict
 
@@ -276,7 +276,7 @@ Returns:
 * dict: network data
 
 
-### `Network.update() -> None`
+### `Network.update() -> <I>None</I>`
 
 Update dynamic model
 
@@ -295,7 +295,7 @@ This property accessor is the static model version of the dynamic accessor that 
 simulation.
 
 
-### `Property(model:Model, args:list)`
+### `Property(model:<I>Model</I>, args:<I>list</I>)`
 
 Property accessor constructor
 
@@ -306,11 +306,11 @@ Arguments:
 * args: global name or object name followed by property name
 
 
-### `Property.convert_unit(unit:str) -> float`
+### `Property.convert_unit(unit:<I>str</I>) -> <I>float</I>`
 
 Convert property units
 
-### `Property.get_initial() -> str | float | int | bool | complex`
+### `Property.get_initial() -> <I>str | float | int | bool | complex</I>`
 
 Get default value, if any
 
@@ -318,7 +318,7 @@ Returns:
 * str|float|int|bool|complex: the default value of the property
 
 
-### `Property.get_name() -> str`
+### `Property.get_name() -> <I>str</I>`
 
 Get the property name
 
@@ -327,7 +327,7 @@ Returns:
 * str: the name of the property
 
 
-### `Property.get_object() -> str`
+### `Property.get_object() -> <I>str</I>`
 
 Get the object name for this property
 
@@ -336,15 +336,15 @@ Returns:
 * str: the name of the object to which this property refers
 
 
-### `Property.get_value() -> str | float | int | complex | bool | datetime.datetime`
+### `Property.get_value() -> <I>str | float | int | complex | bool | datetime.datetime</I>`
 
 Get value, if any
 
-### `Property.set_object(value:str) -> None`
+### `Property.set_object(value:<I>str</I>) -> <I>None</I>`
 
 Set the object name for this property
 
-### `Property.set_value(value:str | float | int | complex | bool | datetime.datetime) -> None`
+### `Property.set_value(value:<I>str | float | int | complex | bool | datetime.datetime</I>) -> <I>None</I>`
 
 Set property value
 
@@ -366,7 +366,7 @@ Unit objects support arithmetic for units, e.g., addition, subtraction,
 multiplication, division, powers, module, and boolean (non-)equality.
 
 
-### `Unit.matches(x:Union) -> None`
+### `Unit.matches(x:<I>Union</I>) -> <I>None</I>`
 
 Verifies that two units are compatible for add/subtract operations
 
@@ -392,7 +392,7 @@ Float with unit class
 The `floatUnit` class supports all floating point arithmetic.
 
 
-### `floatUnit(value:float | int | str, unit:str | None)`
+### `floatUnit(value:<I>float | int | str</I>, unit:<I>str | None</I>)`
 
 Float with unit constructor
 
@@ -403,7 +403,7 @@ Arguments:
 * `unit`: unit (if not included in `value`)
 
 
-### `floatUnit.convert(unit:Union) -> floatUnit`
+### `floatUnit.convert(unit:<I>Union</I>) -> <I>floatUnit</I>`
 
 Convert value to a different unit
 
