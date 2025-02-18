@@ -413,7 +413,7 @@ class Enduse:
 
     def to_glm(self,glmname:str,glmdata:dict):
         """Write GLM objects created by players"""
-        properties = "\n    ".join([f"double {x}[kW];" for x in ENDUSES])
+        properties = "\n    ".join([f"double {x}[kW];" for x in sorted(ENDUSES)])
         with open(glmname,"w") as fh:
             print(f"""module tape;
 class building 

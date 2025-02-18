@@ -33,8 +33,9 @@ is specified.
 The default CSV filename is `{country}_{state}_{county}_
 {building_type}.csv`. The default GLM filename is `{country}_{state}_{county}.glm`.
 
-When `actual` whether is used, the `timeseries` alignment `week` is used. See
-`timeseries.project_daterange()` for details.
+The default weather is `tmy3`. When `actual` whether is used, the `timeseries`
+alignment `week` is used to project actual weather to the current time. See
+`timeseries.project_daterange()` for details. 
 
 Valid values for list `FEATURE` are `sector`, `type`, `country`, `state`, `county`, and
 `enduse`. If `state` is requests the COUNTRY must be specified. If `county` is 
@@ -46,7 +47,7 @@ The following command generates a GLM and CSV file for mobile homes in
 Snohomish County, Washington:
 
 ~~~
-gridlabd enduse US WA Snohomish --player='test_enduse_{building_type}.csv' --model=test_enduse_opt.glm --type=MOBILE 
+gridlabd enduse US WA Snohomish --type=MOBILE 
 ~~~
 
 
