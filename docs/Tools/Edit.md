@@ -68,7 +68,7 @@ Examples:
 GLM Model Editor
 
 
-### `Editor.add() -> <I>None</I>`
+### `Editor.add() -> None`
 
 Add objects
 
@@ -83,7 +83,7 @@ Returns:
 `dict`: object properties added
 
 
-### `Editor.delete() -> <I>None</I>`
+### `Editor.delete() -> None`
 
 Delete objects
 
@@ -98,7 +98,7 @@ Returns:
 `dict`: deleted object properties
 
 
-### `Editor.get() -> <I>None</I>`
+### `Editor.get() -> None`
 
 Get object properties
 
@@ -113,7 +113,7 @@ Returns:
 `dict`: object properties
 
 
-### `Editor.globals() -> <I>None</I>`
+### `Editor.globals() -> None`
 
 Read/write globals
 
@@ -128,7 +128,7 @@ Returns:
 `dict`: global properties added
 
 
-### `Editor.list() -> <I>None</I>`
+### `Editor.list() -> None`
 
 Generate a list of objects
 
@@ -143,7 +143,7 @@ Returns:
 `list`: object names matching criteria
 
 
-### `Editor.modify() -> <I>None</I>`
+### `Editor.modify() -> None`
 
 Modify object properties
 

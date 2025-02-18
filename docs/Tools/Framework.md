@@ -64,7 +64,7 @@ Application exception
 
 # Functions
 
-## `complex_unit(x:<I>str</I>, form:<I>str</I>, prec:<I>str</I>, unit:<I>str</I>) -> *None*`
+## `complex_unit(x:str, form:str, prec:str, unit:str) -> None`
 
 Convert complex value with unit
 
@@ -90,7 +90,7 @@ Returns:
 
 ---
 
-## `debug(msg:<I>list</I>) -> *None*`
+## `debug(msg:list) -> None`
 
 Debugging message output
 
@@ -105,7 +105,7 @@ Messages are enabled when the `--debug` option is used.
 
 ---
 
-## `double_unit(x:<I>str</I>) -> *float*`
+## `double_unit(x:str) -> float`
 
 Convert a string with unit to a float
 
@@ -118,7 +118,7 @@ Returns:
 
 ---
 
-## `error(msg:<I>list</I>) -> *None*`
+## `error(msg:list) -> None`
 
 Error message output
 
@@ -137,7 +137,7 @@ If the exit `code` is specified, exit is called with the code.
 
 ---
 
-## `exception() -> *None*`
+## `exception() -> None`
 
 Exception message output
 
@@ -150,7 +150,7 @@ If `exc` is a string, an `ApplicationError` exception is raised.
 
 ---
 
-## `gridlabd(args:<I>list</I>) -> *Optional*`
+## `gridlabd(args:list) -> Optional`
 
 Simple gridlabd runner
 
@@ -175,7 +175,7 @@ See also:
 
 ---
 
-## `integer(x:<I>str</I>) -> *int*`
+## `integer(x:str) -> int`
 
 Convert a string to an integer
 
@@ -188,7 +188,7 @@ Returns:
 
 ---
 
-## `open_glm(file:<I>str</I>, tmp:<I>str</I>, init:<I>bool</I>) -> *io.TextIOWrapper*`
+## `open_glm(file:str, tmp:str, init:bool) -> io.TextIOWrapper`
 
 Open GLM file as JSON
 
@@ -211,7 +211,7 @@ Return:
 
 ---
 
-## `output(msg:<I>list</I>) -> *None*`
+## `output(msg:list) -> None`
 
 General message output
 
@@ -226,7 +226,7 @@ Messages are suppressed when the `--silent` option is used.
 
 ---
 
-## `read_stdargs(argv:<I>list</I>) -> *list*`
+## `read_stdargs(argv:list) -> list`
 
 Read framework options
 
@@ -241,7 +241,7 @@ Returns:
 
 ---
 
-## `run(main:<I>callable</I>) -> *None*`
+## `run(main:callable) -> None`
 
 Run a main function under this app framework
 
@@ -258,7 +258,7 @@ This function does not return. When the app is done it calls exit.
 
 ---
 
-## `syntax(docs:<I>str</I>) -> *None*`
+## `syntax(docs:str) -> None`
 
 Print syntax message
 
@@ -273,7 +273,7 @@ This function does not return. When the function is done it calls exit(E_SYNTAX)
 
 ---
 
-## `test(test:<I>callable</I>) -> *None*`
+## `test(test:callable) -> None`
 
 Run module test routine
 
@@ -290,7 +290,7 @@ This function does not return. When the test is done it calls exit.
 
 ---
 
-## `verbose(msg:<I>list</I>) -> *None*`
+## `verbose(msg:list) -> None`
 
 Verbose message output
 
@@ -305,7 +305,7 @@ Messages are enabled when the `--verbose` option is used.
 
 ---
 
-## `version(terms:<I>str</I>) -> *str*`
+## `version(terms:str) -> str`
 
 Get gridlabd version
 
@@ -316,7 +316,7 @@ Returns:
 
 ---
 
-## `warning(msg:<I>list</I>) -> *None*`
+## `warning(msg:list) -> None`
 
 Warning message output
 

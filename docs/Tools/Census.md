@@ -33,7 +33,7 @@ the state.
 
 Census object class
 
-### `Census(state:*str*, county:*str*)`
+### `Census(state:str, county:str)`
 
 Get census data
 
@@ -44,15 +44,15 @@ Arguments:
 * `county`: County regex for which census data is downloaded
 
 
-### `Census.dict() -> <I>dict</I>`
+### `Census.dict() -> dict`
 
 Get a dict of the census data obtained
 
-### `Census.length() -> <I>int</I>`
+### `Census.length() -> int`
 
 Get the number counties matching the county name given
 
-### `Census.list() -> <I>list</I>`
+### `Census.list() -> list`
 
 Get a list of counties matching the county name given
 
@@ -64,7 +64,7 @@ Census exception
 
 # Functions
 
-## `test(state:<I>str</I>, county:<I>str</I>) -> *None*`
+## `test(state:str, county:str) -> None`
 
 Test census data access
 
