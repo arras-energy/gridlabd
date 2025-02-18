@@ -85,7 +85,7 @@ Unit objects support arithmetic for units, e.g., addition, subtraction,
 multiplication, division, powers, module, and boolean (non-)equality.
 
 
-### `Unit.matches(x:<I>Union</I>) -> <I>None</I>`
+### `Unit.matches(x:*Union*) -> <I>None</I>`
 
 Verifies that two units are compatible for add/subtract operations
 
@@ -111,7 +111,7 @@ Float with unit class
 The `floatUnit` class supports all floating point arithmetic.
 
 
-### `floatUnit(value:<I>float | int | str</I>, unit:<I>str | None</I>)`
+### `floatUnit(value:*float | int | str*, unit:*str | None*)`
 
 Float with unit constructor
 
@@ -122,7 +122,7 @@ Arguments:
 * `unit`: unit (if not included in `value`)
 
 
-### `floatUnit.convert(unit:<I>Union</I>) -> <I>floatUnit</I>`
+### `floatUnit.convert(unit:*Union*) -> <I>floatUnit</I>`
 
 Convert value to a different unit
 

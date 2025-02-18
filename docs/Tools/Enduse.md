@@ -54,7 +54,7 @@ gridlabd enduse US WA Snohomish --player='test_enduse_{building_type}.csv' --mod
 
 Enduse class
 
-### `Enduse(country:<I>str</I>, state:<I>str</I>, county:<I>str | None</I>, building_types:<I>list[str] | None</I>, weather:<I>str</I>, timestep:<I>str | None</I>, electrification:<I>dict</I>)`
+### `Enduse(country:*str*, state:*str*, county:*str | None*, building_types:*list[str] | None*, weather:*str*, timestep:*str | None*, electrification:*dict*)`
 
 Access building enduse data
 
@@ -74,7 +74,7 @@ default). See `BUILDING_TYPE` for valid building types
 * `electrification`: electrification fractions for enduses (see ENDUSES)
 
 
-### `Enduse.has_buildingtype(building_type:<I>str</I>) -> <I>bool</I>`
+### `Enduse.has_buildingtype(building_type:*str*) -> <I>bool</I>`
 
 Checks whether data include building type
 
@@ -87,7 +87,7 @@ Returns:
 * `bool`: building type found
 
 
-### `Enduse.sum(building_type:<I>str</I>, enduse:<I>str</I>) -> <I>bool</I>`
+### `Enduse.sum(building_type:*str*, enduse:*str*) -> <I>bool</I>`
 
 Get total enduse energy for a building type
 
@@ -102,11 +102,11 @@ Returns:
 * `bool`: building type found
 
 
-### `Enduse.to_glm(glmname:<I>str</I>, glmdata:<I>dict</I>) -> <I>None</I>`
+### `Enduse.to_glm(glmname:*str*, glmdata:*dict*) -> <I>None</I>`
 
 Write GLM objects created by players
 
-### `Enduse.to_player(csvname:<I>str</I>, building_type:<I>str</I>, enduse:<I>str</I>) -> <I>dict</I>`
+### `Enduse.to_player(csvname:*str*, building_type:*str*, enduse:*str*) -> <I>dict</I>`
 
 Write player data
 
@@ -135,7 +135,7 @@ Enduse exception
 
 # Functions
 
-## `main(argv:<I>list</I>) -> <I>int</I>`
+## `main(argv:<I>list</I>) -> *int*`
 
 Enduse main routine
 
@@ -150,7 +150,7 @@ Returns:
 
 ---
 
-## `test() -> <I>None</I>`
+## `test() -> *None*`
 
 Run self-test
 

@@ -3,7 +3,7 @@
 
 # Functions
 
-## `project_daterange(source:<I>list</I>, start:<I>Union</I>, end:<I>Union</I>, align:<I>bool</I>) -> <I>dict</I>`
+## `project_daterange(source:<I>list</I>, start:<I>Union</I>, end:<I>Union</I>, align:<I>bool</I>) -> *dict*`
 
 Map dates to a new date range
 

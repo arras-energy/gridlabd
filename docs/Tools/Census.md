@@ -33,7 +33,7 @@ the state.
 
 Census object class
 
-### `Census(state:<I>str</I>, county:<I>str</I>)`
+### `Census(state:*str*, county:*str*)`
 
 Get census data
 
@@ -64,7 +64,7 @@ Census exception
 
 # Functions
 
-## `test(state:<I>str</I>, county:<I>str</I>) -> <I>None</I>`
+## `test(state:<I>str</I>, county:<I>str</I>) -> *None*`
 
 Test census data access
 

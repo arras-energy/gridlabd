@@ -244,11 +244,11 @@ Properties generated for `matrix` list:
 * W (np.array): weighted Laplacian matrix
 
 
-### `Network(model:<I>dict</I>, matrix:<I>list</I>, nodemap:<I>dict</I>, linemap:<I>dict</I>)`
+### `Network(model:*dict*, matrix:*list*, nodemap:*dict*, linemap:*dict*)`
 
 Network model accessor constructor
 
-### `Network.islands(precision:<I>int</I>) -> <I>int</I>`
+### `Network.islands(precision:*int*) -> <I>int</I>`
 
 Calculate the number of islands in network
 
@@ -295,7 +295,7 @@ This property accessor is the static model version of the dynamic accessor that 
 simulation.
 
 
-### `Property(model:<I>Model</I>, args:<I>list</I>)`
+### `Property(model:*Model*, args:*list*)`
 
 Property accessor constructor
 
@@ -306,7 +306,7 @@ Arguments:
 * args: global name or object name followed by property name
 
 
-### `Property.convert_unit(unit:<I>str</I>) -> <I>float</I>`
+### `Property.convert_unit(unit:*str*) -> <I>float</I>`
 
 Convert property units
 
@@ -340,11 +340,11 @@ Returns:
 
 Get value, if any
 
-### `Property.set_object(value:<I>str</I>) -> <I>None</I>`
+### `Property.set_object(value:*str*) -> <I>None</I>`
 
 Set the object name for this property
 
-### `Property.set_value(value:<I>str | float | int | complex | bool | datetime.datetime</I>) -> <I>None</I>`
+### `Property.set_value(value:*str | float | int | complex | bool | datetime.datetime*) -> <I>None</I>`
 
 Set property value
 
@@ -366,7 +366,7 @@ Unit objects support arithmetic for units, e.g., addition, subtraction,
 multiplication, division, powers, module, and boolean (non-)equality.
 
 
-### `Unit.matches(x:<I>Union</I>) -> <I>None</I>`
+### `Unit.matches(x:*Union*) -> <I>None</I>`
 
 Verifies that two units are compatible for add/subtract operations
 
@@ -392,7 +392,7 @@ Float with unit class
 The `floatUnit` class supports all floating point arithmetic.
 
 
-### `floatUnit(value:<I>float | int | str</I>, unit:<I>str | None</I>)`
+### `floatUnit(value:*float | int | str*, unit:*str | None*)`
 
 Float with unit constructor
 
@@ -403,7 +403,7 @@ Arguments:
 * `unit`: unit (if not included in `value`)
 
 
-### `floatUnit.convert(unit:<I>Union</I>) -> <I>floatUnit</I>`
+### `floatUnit.convert(unit:*Union*) -> <I>floatUnit</I>`
 
 Convert value to a different unit
 

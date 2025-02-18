@@ -86,7 +86,7 @@ Location exception
 
 # Functions
 
-## `find(address:<I>list</I>) -> <I>dict</I>`
+## `find(address:<I>list</I>) -> *dict*`
 
 Find location data
 
@@ -101,7 +101,7 @@ Returns:
 
 ---
 
-## `get_location(file:<I>str</I>) -> <I>dict</I>`
+## `get_location(file:<I>str</I>) -> *dict*`
 
 Get location data in file
 
@@ -116,7 +116,7 @@ Returns:
 
 ---
 
-## `main(argv:<I>list</I>) -> <I>int</I>`
+## `main(argv:<I>list</I>) -> *int*`
 
 Main location routine
 
@@ -131,7 +131,7 @@ Returns:
 
 ---
 
-## `set_location(file:<I>str</I>) -> <I>dict</I>`
+## `set_location(file:<I>str</I>) -> *dict*`
 
 Set location in file
 
@@ -148,7 +148,7 @@ Returns:
 
 ---
 
-## `system(kwargs:<I>dict</I>) -> <I>dict</I>`
+## `system(kwargs:<I>dict</I>) -> *dict*`
 
 Get/set system location settings
 
