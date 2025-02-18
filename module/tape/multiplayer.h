@@ -41,6 +41,7 @@ private:
 
 	bool load(void);
 	bool read(void);
+	bool update(void);
 
 public:
 	// required implementations 
