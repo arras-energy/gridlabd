@@ -5,6 +5,11 @@ module tape
 
 }
 
+clock 
+{
+    timezone PST+8PDT;
+}
+
 #include "US_WA_Snohomish.glm"
 
 object recorder
