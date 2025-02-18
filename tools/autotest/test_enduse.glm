@@ -1,0 +1,26 @@
+#system gridlabd enduse US WA Snohomish --player='test_enduse_{building_type}.csv' --model=test_enduse_opt.glm --type=MOBILE 
+clock 
+{
+    timezone PST8PDT;
+    starttime "2018-08-01 00:00:00 PDT";
+    stoptime "2018-09-01 00:00:00 PDT";
+}
+
+module tape
+{
+    csv_header_type NAME;
+
+}
+
+#include "test_enduse_opt.glm"
+
+object recorder
+{
+    parent "US_WA_Snohomish_mobile";
+    file "test_enduse.csv";
+    property "total,heating,cooling,solar";
+}
+
+#ifexists "../test_enduse.csv"
+#on_exit 0 diff ../test_enduse.csv test_enduse.csv
+#endif

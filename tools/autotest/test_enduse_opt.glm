@@ -1,0 +1,33 @@
+module tape;
+class building 
+{
+    double ventilation[kW];
+    double dryer[kW];
+    double washer[kW];
+    double heating[kW];
+    double cooking[kW];
+    double process[kW];
+    double hotwater[kW];
+    double water[kW];
+    double other[kW];
+    double total[kW];
+    double cooling[kW];
+    double evcharger[kW];
+    double freezer[kW];
+    double lights[kW];
+    double solar[kW];
+    double dishwasher[kW];
+    double refrigerator[kW];
+    double plugs[kW];
+    double heatgain[kW];
+}
+
+object building
+{
+    name "US_WA_Snohomish_mobile";
+    object tape.multiplayer
+    {
+        file "test_enduse_mobile.csv";
+    };
+}
+
