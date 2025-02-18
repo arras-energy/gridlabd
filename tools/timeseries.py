@@ -5,7 +5,7 @@ import datetime as dt
 import pandas as pd
 from typing import TypeVar
 
-def mapdates(source,
+def project_daterange(source:list[TypeVar('datetime.datetime')],
     start:str|TypeVar('datetime.datetime'),
     end:str|TypeVar('datetime.datetime'),
     align:bool=None,
@@ -67,17 +67,17 @@ def mapdates(source,
 def test():
 
     source = pd.date_range(start="2018-01-01 00:00:00-08:00",end="2019-01-01 00:00:00-08:00",freq="1h")
-    mapping = mapdates(source,start="2020-08-01 00:00:00-08:00",end="2020-09-01 00:00:00-08:00",align=None)
+    mapping = project_daterange(source,start="2020-08-01 00:00:00-08:00",end="2020-09-01 00:00:00-08:00",align=None)
     t0 = dt.datetime.strptime("2020-08-01 00:00:00-08:00","%Y-%m-%d %H:%M:%S%z")
     assert mapping[t0] == dt.datetime.strptime("2018-01-01 00:00:00-08:00","%Y-%m-%d %H:%M:%S%z"), "incorrect mapping of date alignment None"
 
     source = pd.date_range(start="2018-01-01 00:00:00-08:00",end="2019-01-01 00:00:00-08:00",freq="1h")
-    mapping = mapdates(source,start="2020-08-01 00:00:00-08:00",end="2020-09-01 00:00:00-08:00",align='year')
+    mapping = project_daterange(source,start="2020-08-01 00:00:00-08:00",end="2020-09-01 00:00:00-08:00",align='year')
     t0 = dt.datetime.strptime("2020-08-01 00:00:00-08:00","%Y-%m-%d %H:%M:%S%z")
     assert mapping[t0] == dt.datetime.strptime("2018-08-02 00:00:00-08:00","%Y-%m-%d %H:%M:%S%z"), "incorrect mapping of date alignment year"
 
     source = pd.date_range(start="2018-01-01 00:00:00-08:00",end="2019-01-01 00:00:00-08:00",freq="1h")
-    mapping = mapdates(source,start="2020-08-01 00:00:00-08:00",end="2020-09-01 00:00:00-08:00",align='week')
+    mapping = project_daterange(source,start="2020-08-01 00:00:00-08:00",end="2020-09-01 00:00:00-08:00",align='week')
     t0 = dt.datetime.strptime("2020-08-01 00:00:00-08:00","%Y-%m-%d %H:%M:%S%z")
     assert mapping[t0] == dt.datetime.strptime("2018-08-04 00:00:00-08:00","%Y-%m-%d %H:%M:%S%z"), "incorrect mapping of date alignmend week"
 
