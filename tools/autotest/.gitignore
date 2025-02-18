@@ -1,6 +1,6 @@
 13.glm
 case14.glm
 case14.txt
-tools/autotest/test_enduse_mobile.csv
-tools/autotest/US_WA_Snohomish.glm
-tools/autotest/US_WA_Snohomish_mobile.csv
+tools/test_enduse_mobile.csv
+tools/US_WA_Snohomish.glm
+tools/US_WA_Snohomish_mobile.csv
