@@ -89,16 +89,7 @@ int multiplayer::init(OBJECT *parent)
 		error("no targets specified");
 	}
 
-	while ( read() )
-	{
-		if ( next_t >= gl_globalclock )
-		{
-			update();
-			return 1;
-		}
-	}
-
-	return 0;
+	return advance(gl_globalclock) ? 1 : 0;
 }
 
 TIMESTAMP multiplayer::precommit(TIMESTAMP t1)
@@ -107,18 +98,19 @@ TIMESTAMP multiplayer::precommit(TIMESTAMP t1)
 	{
 		return next_t;
 	}
-	if ( update() )
+	return advance(t1) ? TS_NEVER : TS_INVALID;
+}
+
+bool multiplayer::advance(TIMESTAMP t)
+{
+	while ( next_t <= t )
 	{
-		while ( read() )
+		if ( ! update() || ! read() )
 		{
-			if ( next_t > t1 )
-			{
-				return next_t;
-			}
+			break;
 		}
 	}
-	status = MS_ERROR;
-	return TS_INVALID;
+	return status != MS_ERROR;
 }
 
 bool multiplayer::update(void)

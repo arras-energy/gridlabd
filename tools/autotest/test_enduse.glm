@@ -22,5 +22,5 @@ object recorder
 }
 
 #ifexists "../test_enduse.csv"
-#on_exit 0 diff ../test_enduse.csv test_enduse.csv
+#on_exit 0 diff ../test_enduse.csv test_enduse.csv > gridlabd.diff
 #endif

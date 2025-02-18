@@ -42,6 +42,7 @@ private:
 	bool load(void);
 	bool read(void);
 	bool update(void);
+	bool advance(TIMESTAMP t);
 
 public:
 	// required implementations 
