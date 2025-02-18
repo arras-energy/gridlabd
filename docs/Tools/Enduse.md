@@ -16,6 +16,10 @@ Options:
 
 * `--type=PATTERN[,...]`: specify the building type(s)
 
+* `--model=FILENAME`: specify the GLM or JSON file to generate
+
+* `--player=FILENAME`: specify the CSV file to generate
+
 Description:
 
 The `enduse` tool generates enduse load data for buildings at the specified
@@ -79,6 +83,31 @@ Returns:
 * `bool`: building type found
 
 
+### `Enduse.to_glm(glmname:str, glmdata:dict) -> None`
+
+Write GLM objects created by players
+
+### `Enduse.to_player(csvname:str, building_type:str, enduse:str) -> dict`
+
+Write player data
+
+Argument:
+
+* `csvname`: name of CSV file
+
+* `building_type`: regex pattern of building types (see TYPES)
+
+* `enduse`: regex pattern for enduses to write to CSV
+
+Returns:
+
+* `dict`: GLM objects needed to access players
+
+The `csvname` should include the `building_type` field, e.g., `mycsv_
+{building_type}` if more than one building type matches the
+`building_type` pattern.
+
+
 ---
 
 ## EnduseError
@@ -98,6 +127,17 @@ Arguments:
 Returns:
 
 * `int`: exit code
+
+
+---
+
+## `test() -> None`
+
+Run self-test
+
+Returns:
+
+* `(int,int)`: number of failed test and number of tests performed
 
 
 # Constants

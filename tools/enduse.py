@@ -16,6 +16,10 @@ Options:
 
 * `--type=PATTERN[,...]`: specify the building type(s)
 
+* `--model=FILENAME`: specify the GLM or JSON file to generate
+
+* `--player=FILENAME`: specify the CSV file to generate
+
 Description:
 
 The `enduse` tool generates enduse load data for buildings at the specified
@@ -177,6 +181,7 @@ for types in BUILDING_TYPE.values():
 
 WEATHER = {"typical":"tmy3","actual":"amy2018"}
 TIMEZONE = "UTC"
+FLOATFORMAT = ".4g"
 
 class EnduseError(Exception):
     """Enduse exception"""
@@ -213,6 +218,7 @@ class Enduse:
         # prepare cache
         if country != "US":
             raise EnduseError("only US enduse data is available")
+        self.country = country
         cachedir = os.path.join(os.environ["GLD_ETC"],".enduse",country,state,county,weather)
         os.makedirs(cachedir,exist_ok=True)
 
@@ -226,6 +232,7 @@ class Enduse:
         fips = fips[fips.list()[0]]
         gcode = fips["gcode"]
         tzinfo = f"""{-int(re.match("[A-Z]+([+0-9]+)[A-Z]+",fips["tzspec"]).group(1)):+03.0f}:00"""
+        self.county = county
 
         # get building enduse data from NREL
         if not isinstance(building_types,list) and not building_types is None:
@@ -295,6 +302,7 @@ class Enduse:
                         data.drop(source,axis=1,inplace=True)
                     for field in ENDUSES:
                         data[field] /= data["units"]
+                    data.drop("units",axis=1,inplace=True)
                     self.data[btype] = data
 
     def has_buildingtype(self,building_type:str) -> bool:
@@ -335,6 +343,69 @@ class Enduse:
 
         return self.data[building_type][enduse].sum()
 
+    def to_player(self,
+        csvname:str,
+        building_type:str=".*",
+        enduse:str=".*") -> dict:
+        """Write player data
+
+        Argument:
+
+        * `csvname`: name of CSV file
+
+        * `building_type`: regex pattern of building types (see TYPES)
+
+        * `enduse`: regex pattern for enduses to write to CSV
+
+        Returns:
+
+        * `dict`: GLM objects needed to access players
+
+        The `csvname` should include the `building_type` field, e.g., `mycsv_
+        {building_type}` if more than one building type matches the
+        `building_type` pattern.
+        """
+        glm = {}
+        for bt,data in self.data.items():
+            if not re.match(building_type,bt):
+                continue
+            eu = [x for x in data.columns if re.match(enduse,x)]
+            if not csvname.endswith(".csv"):
+                csvname += ".csv"
+            if "{building_type}" not in csvname:
+                file = "".join(os.path.splitext()(csvname).insert(1,f"_{bt.lower()}"))
+            else:
+                file = csvname.format(building_type=bt.lower())
+            self.data[bt].to_csv(file,index=True,header=True,float_format=f"%{FLOATFORMAT}")
+            glm[f"{self.country}_{self.state}_{self.county}_{bt.lower()}"] = {
+                "class" : "tape.multiplayer",
+                "file" : file,
+            }
+        return glm
+
+    def to_glm(self,glmname:str,glmdata:dict):
+        """Write GLM objects created by players"""
+        properties = "\n    ".join([f"double {x}[kW];" for x in ENDUSES])
+        with open(glmname,"w") as fh:
+            print(f"""module tape;
+class building 
+{{
+    {properties}
+}}
+""",file=fh)
+            for name,data in glmdata.items():
+                print(f"""object building
+{{
+    name "{name}";
+    object {data['class']}
+    {{
+        file "{data['file']}";
+    }};
+}}
+""",file=fh)
+
+
+
 def main(argv:list[str]) -> int:
     """Enduse main routine
 
@@ -360,6 +431,9 @@ def main(argv:list[str]) -> int:
     building_types = None
     weather = "tmy3"
     timestep = None
+    output = None
+    player = []
+    model = None
     for key,value in args:
 
         if key in ["-h","--help","help"]:
@@ -441,6 +515,17 @@ def main(argv:list[str]) -> int:
             tag = ["country","state","county"][len(location)]
             location[tag] = key
 
+        elif key in ["--player"]:
+
+            player = value
+
+        elif key in ["--model"] and len(value) > 0:
+
+            if len(value) > 1:
+
+                raise EnduseError("only one model glm file may be specified")
+
+            model = value[0]
         else:
 
             app.error(f"'{key}={value}' is invalid")
@@ -452,12 +537,29 @@ def main(argv:list[str]) -> int:
         weather=weather,
         timestep=timestep,
         )
-    enduse.data[building_type].to_csv(open(output,"w") if output else sys.stdout)
+
+    glm = {}
+    if player:
+
+        for item in player:
+            glm.update(enduse.to_player(item))
+
+        if model:
+            if model.endswith(".glm"):
+                enduse.to_glm(model,glm)
+    else:
+        enduse.data[building_type].to_csv(open(output,"w") if output else sys.stdout)
 
     # normal termination condition
     return app.E_OK
 
 def test():
+    """Run self-test
+
+    Returns:
+
+    * `(int,int)`: number of failed test and number of tests performed
+    """
     n_failed = n_tested = 0
     for btype in TYPES:
         n_tested += 1
@@ -480,12 +582,13 @@ def test():
 
     return n_failed,n_tested
 
-
 if __name__ == "__main__":
 
     if not sys.argv[0]:
     
-        app.test(test)
+        sys.argv = [__file__] + "US WA Snohomish --player=enduse_{building_type}.csv --model=test.glm --type=MOBILE".split()
+        app.run(main)
+        # app.test(test)
 
     else:
 
