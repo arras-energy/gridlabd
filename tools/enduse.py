@@ -276,7 +276,7 @@ class Enduse:
         if not isinstance(building_types,list) and not building_types is None:
             raise TypeError("building_types is not a list or None")
         self.data = {}
-        for pattern in '.*' if building_types is None else building_types:
+        for pattern in ['.*'] if building_types is None else building_types:
             for sector,types in [(x,y) for x,y in BUILDING_TYPE.items()]:
                 for btype,spec in [(x,y) for x,y in types.items() if re.match(pattern,x)]:
 
