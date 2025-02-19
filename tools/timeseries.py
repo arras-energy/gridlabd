@@ -6,8 +6,9 @@ import pandas as pd
 from typing import TypeVar
 
 def project_daterange(source:list[TypeVar('datetime.datetime')],
-    start:str|TypeVar('datetime.datetime'),
-    end:str|TypeVar('datetime.datetime'),
+    target:list[TypeVar('datetime.datetime')]=None,
+    start:str|TypeVar('datetime.datetime')=None,
+    end:str|TypeVar('datetime.datetime')=None,
     align:bool=None,
     ) -> dict:
     """Map dates to a new date range
@@ -35,9 +36,10 @@ def project_daterange(source:list[TypeVar('datetime.datetime')],
 
     * `'week'`: the mapping is based on the day of week (day of week of year aligned)
     """
-    dt0 = source[0].timetuple()
-    target = pd.date_range(start=start,end=end,freq=source.freq)
-    dt1 = target[0].timetuple()
+    if not start is None and not end is None:
+        target = pd.date_range(start=start,end=end,freq=source.freq)
+    if target is None:
+        raise ValueError("either start and end or target range must be specified")
     fromlen = len(source)
     tolen = len(target)
 

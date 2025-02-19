@@ -14,6 +14,9 @@ Options:
 
 * `--end`: set the end date (default is `2019-01-01 00:00:00 EST`)
 
+* `--timestep=FREQ`: set the timestep of the date/time range (only 15min or longer
+  is available from NREL)
+
 * `--type=PATTERN[,...]`: specify the building type(s)
 
 * `--model=FILENAME`: specify the GLM or JSON file to generate
@@ -29,6 +32,9 @@ location.
 
 The `player` FILENAME must include `{building_type}` if more than one `type`
 is specified.
+
+If the `start` and `end` dates are not specified, then the date range of
+enduse load data will be used. The current default data range is the year 2018.
 
 The default CSV filename is `{country}_{state}_{county}_
 {building_type}.csv`. The default GLM filename is `{country}_{state}_{county}.glm`.
@@ -59,6 +65,7 @@ import gridlabd.eia_recs as eia
 import pandas as pd
 import gridlabd.census as census
 import gridlabd.framework as app
+import gridlabd.timeseries as ts
 
 BUILDING_TYPE = {
     "residential" : {
@@ -208,6 +215,10 @@ WEATHER = {"typical":"tmy3","actual":"amy2018"}
 TIMEZONE = "UTC"
 FLOATFORMAT = ".4g"
 
+START = None
+END = None
+TIMESTEP = "1h"
+
 class EnduseError(Exception):
     """Enduse exception"""
 
@@ -260,10 +271,10 @@ class Enduse:
         self.county = county
 
         # get building enduse data from NREL
+        if timestep is None:
+            timestep = TIMESTEP
         if not isinstance(building_types,list) and not building_types is None:
             raise TypeError("building_types is not a list or None")
-        if timestep == None:
-            timestep = "1h"
         self.data = {}
         for pattern in '.*' if building_types is None else building_types:
             for sector,types in [(x,y) for x,y in BUILDING_TYPE.items()]:
@@ -392,6 +403,10 @@ class Enduse:
         {building_type}` if more than one building type matches the
         `building_type` pattern.
         """
+        if START or END:
+            if not ( START and END ):
+                raise EnduseError("both start and end dates must be specified")
+
         glm = {}
         for bt,data in self.data.items():
             if not re.match(building_type,bt):
@@ -404,7 +419,16 @@ class Enduse:
                 file = base + f"_{bt.lower()}" + ext
             else:
                 file = csvname.format(building_type=bt.lower())
-            self.data[bt].to_csv(file,index=True,header=True,float_format=f"%{FLOATFORMAT}")
+            if START and END:
+                timestep = f"{(self.data[bt].index[1] - self.data[bt].index[0]).total_seconds()/60}min"
+                daterange = pd.DatetimeIndex(pd.date_range(start=START,end=END,freq=timestep))
+                ndx = ts.project_daterange(self.data[bt].index,target=daterange,align='week')
+                result = self.data[bt].loc[ndx.values()]
+                result.index = list(ndx)
+                result.index.name = "timestamp"
+            else:
+                result = self.data[bt]
+            result.to_csv(file,index=True,header=True,float_format=f"%{FLOATFORMAT}")
             glm[f"{self.country}_{self.state}_{self.county}_{bt.lower()}"] = {
                 "class" : "tape.multiplayer",
                 "file" : file,
@@ -431,8 +455,6 @@ class building
     }};
 }}
 """,file=fh)
-
-
 
 def main(argv:list[str]) -> int:
     """Enduse main routine
@@ -520,11 +542,13 @@ def main(argv:list[str]) -> int:
 
         elif key in ["--start"] and 0 < len(value) < 2:
 
+            global START
             START = value[0]
 
-        elif key in ["--stop"] and 0 < len(value) < 2:
+        elif key in ["--end"] and 0 < len(value) < 2:
 
-            STOP = value[0]
+            global END
+            END = value[0]
 
         elif key in ["--player"]:
 
@@ -614,9 +638,10 @@ if __name__ == "__main__":
 
     if not sys.argv[0]:
     
-        sys.argv = [__file__] + "US WA Snohomish --type=MOBILE".split()
-        app.run(main)
-        # app.test(test)
+        # sys.argv = [__file__,"US","WA","Snohomish","--type=MOBILE","--start=2020-12-01 00:00:00-08:00","--end=2021-02-01 00:00:00-08:00"] 
+        # app.run(main)
+        app.read_stdargs([__file__])
+        app.test(test)
 
     else:
 

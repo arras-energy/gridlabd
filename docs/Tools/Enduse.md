@@ -14,6 +14,9 @@ Options:
 
 * `--end`: set the end date (default is `2019-01-01 00:00:00 EST`)
 
+* `--timestep=FREQ`: set the timestep of the date/time range (only 15min or longer
+  is available from NREL)
+
 * `--type=PATTERN[,...]`: specify the building type(s)
 
 * `--model=FILENAME`: specify the GLM or JSON file to generate
@@ -29,6 +32,9 @@ location.
 
 The `player` FILENAME must include `{building_type}` if more than one `type`
 is specified.
+
+If the `start` and `end` dates are not specified, then the date range of
+enduse load data will be used. The current default data range is the year 2018.
 
 The default CSV filename is `{country}_{state}_{county}_
 {building_type}.csv`. The default GLM filename is `{country}_{state}_{county}.glm`.
@@ -180,6 +186,7 @@ Returns:
 * `gridlabd.census`
 * `gridlabd.eia_recs`
 * `gridlabd.framework`
+* `gridlabd.timeseries`
 * `json`
 * `os`
 * `pandas`

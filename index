@@ -4025,7 +4025,6 @@ tools/autotest/test_eia_recs.glm
 tools/autotest/test_eia_recs.py
 tools/autotest/test_enduse.csv
 tools/autotest/test_enduse.glm
-tools/autotest/test_enduse_opt.glm
 tools/autotest/test_fire_danger.glm
 tools/autotest/test_fire_danger.tif
 tools/autotest/test_fire_report.csv
