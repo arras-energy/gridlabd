@@ -10,10 +10,15 @@ The `weather` tool downloads weather data from the NREL building stock data
 respositories. This weather data is used for building energy modeling, but
 can also be used for other purposes in GridLAB-D.
 
-The only COUNTRY supported now is `US`.  The 
+The only COUNTRY supported now is `US`. Valid STATE and COUNTY values can be obtained
+from the `census` tool.
 
+There are two types of weather available, `tmy3` and `amy2018`.
 
 Example:
+
+~~~
+gridlabd weather US WA Snohomish 
 
 """
 
@@ -156,26 +161,22 @@ class Weather:
                 raise WeatherError("both start and end dates must be specified")
 
         glm = {}
-        for bt,data in self.data.items():
-            if not re.match(building_type,bt):
-                continue
-            eu = [x for x in data.columns if re.match(enduse,x)]
-            if not csvname.endswith(".csv"):
-                csvname += ".csv"
-            if START and END:
-                timestep = f"{(self.data[bt].index[1] - self.data[bt].index[0]).total_seconds()/60}min"
-                daterange = pd.DatetimeIndex(pd.date_range(start=START,end=END,freq=timestep))
-                ndx = ts.project_daterange(self.data[bt].index,target=daterange,align='week')
-                result = self.data[bt].loc[ndx.values()]
-                result.index = list(ndx)
-                result.index.name = "timestamp"
-            else:
-                result = self.data[bt]
-            result.to_csv(csvname,index=True,header=True,float_format=f"%{FLOATFORMAT}")
-            glm[f"{self.country}_{self.state}_{self.county}_weather"] = {
-                "class" : "tape.multiplayer",
-                "file" : csvname,
-            }
+        if not csvname.endswith(".csv"):
+            csvname += ".csv"
+        if START and END:
+            timestep = f"{(self.data.index[1] - self.data.index[0]).total_seconds()/60}min"
+            daterange = pd.DatetimeIndex(pd.date_range(start=START,end=END,freq=timestep))
+            ndx = ts.project_daterange(self.data.index,target=daterange,align='week')
+            result = self.data.loc[ndx.values()]
+            result.index = list(ndx)
+            result.index.name = "timestamp"
+        else:
+            result = self.data
+        result.to_csv(csvname,index=True,header=True,float_format=f"%{FLOATFORMAT}")
+        glm[f"{self.country}_{self.state}_{self.county}_weather"] = {
+            "class" : "tape.multiplayer",
+            "file" : csvname,
+        }
         return glm
 
     def to_glm(self,glmname:str,glmdata:dict):
@@ -190,7 +191,7 @@ class weather
 }}
 """,file=fh)
             for name,data in glmdata.items():
-                print(f"""object building
+                print(f"""object weather
 {{
     name "{name}";
     object {data['class']}
@@ -221,7 +222,7 @@ def main(argv:list[str]) -> int:
 
     location = {}
     output = None
-    weather = "tmy3"
+    weather_type = "tmy3"
     timestep = None
     player = None
     model = None
@@ -244,17 +245,17 @@ def main(argv:list[str]) -> int:
             global END
             END = value[0]
 
-        elif key in ["--player"]:
+        elif key in ["--player"] and len(value) < 2:
 
-            player = value[0]
+            player = value[0] if value else True
 
-        elif key in ["--model"] and 0 < len(value) > 2:
+        elif key in ["--model"] and len(value) < 2:
 
-            model = value[0]
+            model = value[0] if value else True
 
         elif key in ["--type"] and 0 < len(value) < 2 and value[0] not in WEATHER_URL:
 
-            weather = value[0]
+            weather_type = value[0]
 
         elif not key.startswith("-"):
 
@@ -267,7 +268,7 @@ def main(argv:list[str]) -> int:
             return app.E_INVALID
 
     weather = Weather(**location,
-        weather_type=weather,
+        weather_type=weather_type,
         timestep=timestep,
         )
 
@@ -275,9 +276,13 @@ def main(argv:list[str]) -> int:
 
     if player:
 
+        if player == True:
+
+            player = f"{location['country']}_{location['state']}_{location['county']}_{weather_type}.csv"
+
         if player.endswith(".csv"):
 
-            glm.update(enduse.to_player(player))
+            glm.update(weather.to_player(player))
 
         else:
 
@@ -289,9 +294,16 @@ def main(argv:list[str]) -> int:
 
     if model:
 
+        if model == True:
+
+            model = f"{location['country']}_{location['state']}_{location['county']}_{weather_type}.glm"
+
         if model.endswith(".glm"):
+
             weather.to_glm(model,glm)
+
         else:
+
             raise WeatherError("unable to output model in non GLM format")
 
     # normal termination condition
@@ -326,9 +338,9 @@ if __name__ == "__main__":
     if not sys.argv[0]:
     
         # dev test
-        # sys.argv = [__file__,"US","WA","Snohomish","--start=2020-12-01 00:00:00-08:00","--end=2021-02-01 00:00:00-08:00"] 
-        # app.run(main)
-        # quit()
+        sys.argv = [__file__,"US","WA","Snohomish","--start=2020-12-01 00:00:00-08:00","--end=2021-02-01 00:00:00-08:00","--player","--model"] 
+        app.run(main)
+        quit()
 
         app.read_stdargs([__file__])
         app.test(test)
