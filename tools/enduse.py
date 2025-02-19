@@ -17,13 +17,15 @@ Options:
 * `--timestep=FREQ`: set the timestep of the date/time range (only 15min or longer
   is available from NREL)
 
-* `--type=PATTERN[,...]`: specify the building type(s)
+* `--type=PATTERN[:SCALE][,...]`: specify the building type(s) and load scale
 
 * `--model=FILENAME`: specify the GLM or JSON file to generate
 
 * `--player=FILENAME`: specify the CSV file to generate
 
 * `--weather={actual,typical}`: select weather data to use
+
+* `--combine: combine buildings types into a single load
 
 Description:
 
@@ -46,6 +48,9 @@ alignment `week` is used to project actual weather to the current time. See
 Valid values for list `FEATURE` are `sector`, `type`, `country`, `state`, `county`, and
 `enduse`. If `state` is requests the COUNTRY must be specified. If `county` is 
 requested, the COUNTRY and STATE must be specified.
+
+When using `SCALE`, the enduse factors are per building for residential
+building types, and per thousand square foot for commercial building types.
 
 Example:
 
@@ -103,9 +108,18 @@ ENDUSE_URL = {
     "tranportation" : None,
     }
 WEATHER_URL = {
-    "tmy3":         "https://oedi-data-lake.s3.amazonaws.com/nrel-pds-building-stock/end-use-load-profiles-for-us-building-stock/2021/resstock_tmy3_release_1/weather/tmy3/{gcode.upper()}_tmy3.csv",
-    "actual2018" :  "https://oedi-data-lake.s3.amazonaws.com/nrel-pds-building-stock/end-use-load-profiles-for-us-building-stock/2021/resstock_amy2018_release_1/weather/amy2018/{gcode.upper()}_2018.csv"
+    "tmy3": "https://oedi-data-lake.s3.amazonaws.com/nrel-pds-building-stock/end-use-load-profiles-for-us-building-stock/2021/resstock_tmy3_release_1/weather/tmy3/{gcode}_tmy3.csv",
+    "amy2018" : "https://oedi-data-lake.s3.amazonaws.com/nrel-pds-building-stock/end-use-load-profiles-for-us-building-stock/2021/resstock_amy2018_release_1/weather/amy2018/{gcode}_2018.csv"
     }
+WEATHER_COLUMNS = {
+    "Dry Bulb Temperature [°C]": "drybulb[degC]",
+    "Relative Humidity [%]": "humidity[%]",
+    "Wind Speed [m/s]": "wind_speed[m/s]",
+    "Wind Direction [Deg]": "wind_dir[deg]",
+    "Global Horizontal Radiation [W/m2]" : "solar_horizontal[W/m^2]",
+    "Direct Normal Radiation [W/m2]": "solar_direct[W/m^2]",
+    "Diffuse Horizontal Radiation [W/m2]": "solar_diffuse[W/m^2]",
+}
 CONVERTERS = {
     # value fields: name, format, electric
     "residential" : {
@@ -232,6 +246,7 @@ class Enduse:
             weather:str='tmy3',
             timestep:str|None=None,
             electrification:dict={},
+            ignore:bool=False
             ):
         """Access building enduse data
 
@@ -249,6 +264,8 @@ class Enduse:
         * `timestep`: timeseries aggregate timestep (default '1h')
 
         * `electrification`: electrification fractions for enduses (see ENDUSES)
+
+        * `ignore`: ignore download errors
         """
 
         # prepare cache
@@ -276,11 +293,12 @@ class Enduse:
         if not isinstance(building_types,list) and not building_types is None:
             raise TypeError("building_types is not a list or None")
         self.data = {}
+        self.weather = {}
         for pattern in ['.*'] if building_types is None else building_types:
             for sector,types in [(x,y) for x,y in BUILDING_TYPE.items()]:
                 for btype,spec in [(x,y) for x,y in types.items() if re.match(pattern,x)]:
 
-                    # handle cache
+                    # handle load data cache
                     cachefile = os.path.join(cachedir,f"{btype.lower()}.csv.gz")
                     if os.path.exists(cachefile):
                         data = pd.read_csv(cachefile,index_col=[0],parse_dates=True)
@@ -296,12 +314,39 @@ class Enduse:
                                 )
                             data.to_csv(cachefile,index=True,header=True)
                         except urllib.error.HTTPError as err:
-                            app.error(f"{btype} not available ({err})")
-                            continue
+                            app.error(f"{btype} not available ({err} for {url})")
+                            if ignore:
+                                continue
+                            raise
 
-                    # resample timeseries
+                    # handle weather cache
+                    cachefile = os.path.join(cachedir,f"weather.csv.gz")
+                    if os.path.exists(cachefile):
+                        weather_data = pd.read_csv(cachefile,index_col=[0],parse_dates=True)
+                    else:
+                        url = WEATHER_URL[weather].format(gcode=gcode.upper())
+                        import urllib
+                        try:
+                            weather_data = pd.read_csv(url,
+                                index_col = [0],
+                                parse_dates = True,
+                                dtype = float,
+                                )
+                            weather_data.to_csv(cachefile,index=True,header=True)
+                        except urllib.error.HTTPError as err:
+                            app.error(f"weather not available ({err} for {url})")
+                            if ignore:
+                                continue
+                            raise
+                    weather_data.columns = [WEATHER_COLUMNS[x] for x in weather_data.columns]
+
+                    # resample load data
                     data = data.resample(timestep).sum()
                     data.index = data.index.tz_localize("EST").tz_convert(TIMEZONE if TIMEZONE else tzinfo)
+
+                    # resample weather data
+                    weather_data = weather_data.resample(timestep).sum()
+                    weather_data.index = weather_data.index.tz_localize("EST").tz_convert(TIMEZONE if TIMEZONE else tzinfo)
 
                     # drop unused inputs
                     for field in [x for x in data.columns if x.startswith("in.")] \
@@ -339,7 +384,10 @@ class Enduse:
                     for field in ENDUSES:
                         data[field] /= data["units"]
                     data.drop("units",axis=1,inplace=True)
+
+                    # save results
                     self.data[btype] = data
+                    self.weather = weather_data
 
     def has_buildingtype(self,building_type:str) -> bool:
         """Checks whether data include building type
@@ -440,6 +488,7 @@ class Enduse:
         properties = "\n    ".join([f"double {x}[kW];" for x in sorted(ENDUSES)])
         with open(glmname,"w") as fh:
             print(f"""module tape;
+module building;
 class building 
 {{
     {properties}
@@ -562,6 +611,10 @@ def main(argv:list[str]) -> int:
 
             weather = WEATHER[value[0]]
 
+        elif key in ["--combine"] and len(value) == 0:
+
+            raise NotImplementedError("combine is not implemented yet")
+
         elif not key.startswith("-"):
 
             tag = ["country","state","county"][len(location)]
@@ -617,17 +670,19 @@ def test():
         n_tested += 1
         try:
             print("Testing",btype,end="...",flush=True)
-            ls = Enduse("US","WA","Snohomish",[btype],electrification={"heating":1.0},weather="amy2018")
+            ls = Enduse("US","WA","Snohomish",[btype],electrification={"heating":1.0},weather="amy2018",ignore=True)
             if ls.has_buildingtype(btype):
-                assert len(ls.data[btype]) == 8761, f"incorrect number of rows downloaded for building type {btype} (expected 8761, got {len(ls.data[btype])})"
-                assert len(ls.data[btype].columns) == 19, f"incorrect number of columns downloaded for building type {btype} (expected 20, got {len(ls.data[btype].columns)})"
+                assert len(ls.data[btype]) == 8761, f"incorrect number of enduse rows downloaded for building type {btype} (expected 8761, got {len(ls.data[btype])})"
+                assert len(ls.data[btype].columns) == 19, f"incorrect number of enduse columns downloaded for building type {btype} (expected 20, got {len(ls.data[btype].columns)})"
+                assert len(ls.weather) == 8760, f"incorrect number of weather rows downloaded"
+                assert len(ls.weather.columns) == 7, f"incorrect number of weather columns downloaded"
                 for enduse in ENDUSES:
                     total = ls.sum(btype,enduse).round(1)
                     if total > 0:
-                        print(enduse,"=",total,"kWh",end=", ",flush=True)
-                print("ok")
+                        print(enduse,"=",total,"kWh",end=", ")
+                avg,std = ls.weather.mean().round(1),ls.weather.std().round(1)
+                print(", ".join([f"{x.split('[')[0]} = {avg[x]}+/-{std[x]} {x.split('[')[1][:-1]}" for x in ls.weather.columns]),end="... ok\n",flush=True)
         except:
-            raise
             e_type,e_value,e_trace = sys.exc_info()
             print(f"FAILED: {__file__}@{e_trace.tb_lineno} ({e_type.__name__}) {e_value}")
             n_failed += 1

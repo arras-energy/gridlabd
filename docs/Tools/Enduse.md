@@ -17,13 +17,15 @@ Options:
 * `--timestep=FREQ`: set the timestep of the date/time range (only 15min or longer
   is available from NREL)
 
-* `--type=PATTERN[,...]`: specify the building type(s)
+* `--type=PATTERN[:SCALE][,...]`: specify the building type(s) and load scale
 
 * `--model=FILENAME`: specify the GLM or JSON file to generate
 
 * `--player=FILENAME`: specify the CSV file to generate
 
 * `--weather={actual,typical}`: select weather data to use
+
+* `--combine: combine buildings types into a single load
 
 Description:
 
@@ -47,6 +49,9 @@ Valid values for list `FEATURE` are `sector`, `type`, `country`, `state`, `count
 `enduse`. If `state` is requests the COUNTRY must be specified. If `county` is 
 requested, the COUNTRY and STATE must be specified.
 
+When using `SCALE`, the enduse factors are per building for residential
+building types, and per thousand square foot for commercial building types.
+
 Example:
 
 The following command generates a GLM and CSV file for mobile homes in
@@ -64,7 +69,7 @@ gridlabd enduse US WA Snohomish --type=MOBILE
 
 Enduse class
 
-### `Enduse(country:str, state:str, county:str | None, building_types:list[str] | None, weather:str, timestep:str | None, electrification:dict)`
+### `Enduse(country:str, state:str, county:str | None, building_types:list[str] | None, weather:str, timestep:str | None, electrification:dict, ignore:bool)`
 
 Access building enduse data
 
@@ -82,6 +87,8 @@ default). See `BUILDING_TYPE` for valid building types
 * `timestep`: timeseries aggregate timestep (default '1h')
 
 * `electrification`: electrification fractions for enduses (see ENDUSES)
+
+* `ignore`: ignore download errors
 
 
 ### `Enduse.has_buildingtype(building_type:str) -> bool`
@@ -178,6 +185,7 @@ Returns:
 * `SECTORS`
 * `TYPES`
 * `WEATHER`
+* `WEATHER_COLUMNS`
 * `WEATHER_URL`
 * `types`
 
