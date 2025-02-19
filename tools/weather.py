@@ -1,8 +1,20 @@
 """Access weather data from NREL
 
-Syntax: gridlabd weather COUNTRY STATE COUNTY TYPE [OPTIONS ...]
+Syntax: gridlabd weather COUNTRY STATE COUNTY [OPTIONS ...]
 
 Options:
+
+* `--model[=GLMFILE]`: enable model GLM output (default is to
+  `{COUNTRY}_{STATE}_{COUNTY}_{TYPE}.glm`) 
+
+* `--player[=CSVFILE]`: enable player CSV output (default is to 
+  `{COUNTRY}_{STATE}_{COUNTY}_{TYPE}.csv`) 
+
+* `--type=TYPE`: specify the type of weather data to download
+
+* `--start`: set the start date (default is `2018-01-01 00:00:00 EST`)
+
+* `--end`: set the end date (default is `2019-01-01 00:00:00 EST`)
 
 Description:
 
@@ -13,13 +25,24 @@ can also be used for other purposes in GridLAB-D.
 The only COUNTRY supported now is `US`. Valid STATE and COUNTY values can be obtained
 from the `census` tool.
 
-There are two types of weather available, `tmy3` and `amy2018`.
+The follow weather TYPE values are supported:
+
+* `tmy3`: typical meteorological data from NREL that corresponds to enduse load data (see `enduse` tool)
+
+* `amy2018`: actual meteorological data from NREL that corresponds to enduse load data (see `enduse` tool)
 
 Example:
 
-~~~
-gridlabd weather US WA Snohomish 
+The following example create a typical weather model for December 2020 in Snohomish County Washington 
 
+~~~
+gridlabd weather US WA Snohomish --player --model -type=tmy3 --start='2020-12-01 00:00:00-08:00' --end='2021-01-01 00:00:00-08:00'
+~~~
+
+See also:
+
+* [[/Tools/Census]]
+* [[/Toosl/Enduse]]
 """
 
 import os
@@ -49,7 +72,7 @@ WEATHER_COLUMNS = {
 
 TIMEZONE = "UTC"
 
-FLOATFORMAT = ".1g"
+FLOATFORMAT = ".1f"
 
 START = None
 END = None
@@ -91,7 +114,7 @@ class Weather:
         if country != "US":
             raise WeatherError("only US enduse data is available")
         self.country = country
-        cachedir = os.path.join(os.environ["GLD_ETC"],".weather")
+        cachedir = os.path.join(os.environ["GLD_ETC"],".cache/weather")
         os.makedirs(cachedir,exist_ok=True)
 
         # get location spec from Census Bureau
@@ -112,6 +135,7 @@ class Weather:
         if not weather_type in WEATHER_URL:
             raise TypeError(f"weather_type {weather_type} is valid")
         self.data = {}
+        self.type = weather_type
 
         # handle weather cache
         cachefile = os.path.join(cachedir,f"{country}_{state}_{county}_{weather_type}.csv.gz")
@@ -119,7 +143,6 @@ class Weather:
             data = pd.read_csv(cachefile,index_col=[0],parse_dates=True)
         else:
             url = WEATHER_URL[weather_type].format(gcode=gcode.upper())
-            print("Downloading",url,"...")
             import urllib
             try:
                 data = pd.read_csv(url,
@@ -173,7 +196,7 @@ class Weather:
         else:
             result = self.data
         result.to_csv(csvname,index=True,header=True,float_format=f"%{FLOATFORMAT}")
-        glm[f"{self.country}_{self.state}_{self.county}_weather"] = {
+        glm[f"{self.country}_{self.state}_{self.county}_{self.type}"] = {
             "class" : "tape.multiplayer",
             "file" : csvname,
         }
@@ -230,6 +253,7 @@ def main(argv:list[str]) -> int:
 
         if key in ["-h","--help","help"] and len(value) == 0:
             print(__doc__,file=sys.stdout)
+            return app.E_OK
 
         elif key in ["--local"] and len(value) == 0:
 
@@ -253,7 +277,7 @@ def main(argv:list[str]) -> int:
 
             model = value[0] if value else True
 
-        elif key in ["--type"] and 0 < len(value) < 2 and value[0] not in WEATHER_URL:
+        elif key in ["--type"] and 0 < len(value) < 2 and value[0] in WEATHER_URL:
 
             weather_type = value[0]
 
@@ -264,7 +288,7 @@ def main(argv:list[str]) -> int:
 
         else:
 
-            app.error(f"'{key}={value}' is invalid")
+            app.error(f"'{key}={','.join(value) if value else 'None'}' is invalid")
             return app.E_INVALID
 
     weather = Weather(**location,
@@ -337,10 +361,10 @@ if __name__ == "__main__":
 
     if not sys.argv[0]:
     
-        # dev test
-        sys.argv = [__file__,"US","WA","Snohomish","--start=2020-12-01 00:00:00-08:00","--end=2021-02-01 00:00:00-08:00","--player","--model"] 
-        app.run(main)
-        quit()
+        # dev test0
+        # sys.argv = [__file__,"US","WA","Snohomish","--start=2020-12-01 00:00:00-08:00","--end=2021-02-01 00:00:00-08:00","--player","--model"] 
+        # app.run(main)
+        # quit()
 
         app.read_stdargs([__file__])
         app.test(test)

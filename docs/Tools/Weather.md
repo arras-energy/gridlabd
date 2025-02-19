@@ -1,8 +1,20 @@
 [[/Tools/Weather]] -- Access weather data from NREL
 
-Syntax: gridlabd weather COUNTRY STATE COUNTY TYPE [OPTIONS ...]
+Syntax: gridlabd weather COUNTRY STATE COUNTY [OPTIONS ...]
 
 Options:
+
+* `--model[=GLMFILE]`: enable model GLM output (default is to
+  `{COUNTRY}_{STATE}_{COUNTY}_{TYPE}.glm`) 
+
+* `--player[=CSVFILE]`: enable player CSV output (default is to 
+  `{COUNTRY}_{STATE}_{COUNTY}_{TYPE}.csv`) 
+
+* `--type=TYPE`: specify the type of weather data to download
+
+* `--start`: set the start date (default is `2018-01-01 00:00:00 EST`)
+
+* `--end`: set the end date (default is `2019-01-01 00:00:00 EST`)
 
 Description:
 
@@ -10,11 +22,27 @@ The `weather` tool downloads weather data from the NREL building stock data
 respositories. This weather data is used for building energy modeling, but
 can also be used for other purposes in GridLAB-D.
 
-The only COUNTRY supported now is `US`.  The 
+The only COUNTRY supported now is `US`. Valid STATE and COUNTY values can be obtained
+from the `census` tool.
 
+The follow weather TYPE values are supported:
+
+* `tmy3`: typical meteorological data from NREL that corresponds to enduse load data (see `enduse` tool)
+
+* `amy2018`: actual meteorological data from NREL that corresponds to enduse load data (see `enduse` tool)
 
 Example:
 
+The following example create a typical weather model for December 2020 in Snohomish County Washington 
+
+~~~
+gridlabd weather US WA Snohomish --player --model -type=tmy3 --start='2020-12-01 00:00:00-08:00' --end='2021-01-01 00:00:00-08:00'
+~~~
+
+See also:
+
+* [[/Tools/Census]]
+* [[/Toosl/Enduse]]
 
 
 

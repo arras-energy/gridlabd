@@ -60,6 +60,11 @@ Snohomish County, Washington in December 2020:
 ~~~
 gridlabd weather US WA Snohomish --type=tmy3 --start='2020-12-01 00:00:00-08:00' --end=12021-02-01 00:00:00-08:00'
 ~~~
+
+See also:
+
+* [[/Tools/Census]]
+* [[/Toosl/Weather]]
 """
 
 import os
@@ -272,7 +277,7 @@ class Enduse:
         if country != "US":
             raise EnduseError("only US enduse data is available")
         self.country = country
-        cachedir = os.path.join(os.environ["GLD_ETC"],".enduse",country,state,county,weather)
+        cachedir = os.path.join(os.environ["GLD_ETC"],".cache/enduse",country,state,county,weather)
         os.makedirs(cachedir,exist_ok=True)
 
         # get location spec from Census Bureau
@@ -537,6 +542,7 @@ def main(argv:list[str]) -> int:
 
         if key in ["-h","--help","help"] and len(value) == 0:
             print(__doc__,file=sys.stdout)
+            return app.E_OK
 
         elif key in ["--local"] and len(value) == 0:
 
@@ -622,7 +628,7 @@ def main(argv:list[str]) -> int:
 
         else:
 
-            app.error(f"'{key}={value}' is invalid")
+            app.error(f"'{key}={','.join(value) if value else 'None'}' is invalid")
             return app.E_INVALID
 
     enduse = Enduse(**location,
