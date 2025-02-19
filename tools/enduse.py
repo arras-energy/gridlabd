@@ -493,7 +493,7 @@ class Enduse:
         properties = "\n    ".join([f"double {x}[kW];" for x in sorted(ENDUSES)])
         with open(glmname,"w") as fh:
             print(f"""module tape;
-module building;
+// module building;
 class building 
 {{
     {properties}
