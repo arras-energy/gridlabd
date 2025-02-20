@@ -16,6 +16,8 @@ Data obtained include the following:
 
 * `tzspec`: timezone specification for state and county
 
+* `population_{year}`: population for the indicated year
+
 Caveats:
 
 The value of `STATE` must be the two character abbreviation, e.g., `CA`.  The
@@ -34,6 +36,10 @@ the county. The following counties are affected by this issue:
 * Oregon: Malheur
 * South Dakota: Cherry
 
+Example:
+
+
+
 See also:
 
 * [[/Tools/Framework]]
@@ -44,16 +50,77 @@ import sys
 import re
 import pandas as pd
 import gridlabd.framework as app
+import urllib
 
+CACHEDIR = os.path.join(os.environ["GLD_ETC"],".cache/census")
 CENSUS_DATA = "https://www2.census.gov/geo/docs/reference"
+POPULATION_DATA = {
+    "2000" : "https://www2.census.gov/geo/docs/reference/cenpop2000/county/cou_{fips}_{state}.txt",
+    "2010" : "https://www2.census.gov/geo/docs/reference/cenpop2010/county/CenPop2010_Mean_CO{fips}.txt",
+    "2020" : "https://www2.census.gov/geo/docs/reference/cenpop2020/county/CenPop2020_Mean_CO{fips}.txt",
+}
+POPULATION_SPEC = {
+    "2000" : {
+        "header": None,
+        "usecols": [0,1,3],
+        "index_col": [0,1],
+        "encoding" : "utf-8",
+        "names": ["state","county","population"],
+        "converters": {
+            "state" : lambda x: f"{int(x):02.0f}",
+            "county" : lambda x: f"{int(x):03.0f}",
+            "population" : float,
+        },
+    },
+    "2010" : {
+        "header": 0,
+        "usecols": [0,1,4],
+        "index_col": [0,1],
+        "encoding" : "utf-8",
+        "names": ["state","county","population"],
+        "converters": {
+            "state" : lambda x: f"{int(x):02.0f}",
+            "county" : lambda x: f"{int(x):03.0f}",
+            "population" : float,
+        },
+    },
+    "2020" : {
+        "header": 0,
+        "usecols": [0,1,4],
+        "index_col": [0,1],
+        "encoding" : "utf-8",
+        "names": ["state","county","population"],
+        "converters": {
+            "state" : lambda x: f"{int(x):02.0f}",
+            "county" : lambda x: f"{int(x):03.0f}",
+            "population" : float,
+        },
+    },
+}
 
-FIPS_STATES = pd.read_csv(f"{CENSUS_DATA}/state.txt",
-    delimiter="|",
-    index_col=[1],
-    usecols=[0,1,2],
-    header=0,
-    names=["fips","state","name"]
+def strict_ascii(text):
+    return ''.join([NONASCII[x] if x in NONASCII else x for x in text])
+
+def get_cache(file,url,cacheargs={},**kwargs):
+    os.makedirs(CACHEDIR,exist_ok=True)
+    path = os.path.join(CACHEDIR,file)
+    if not os.path.exists(path):
+        pd.read_csv(url,**kwargs).to_csv(path,index=True,header=True)
+    return pd.read_csv(path,**cacheargs)
+
+FIPS_STATES = get_cache(file="states.txt",
+        url=f"{CENSUS_DATA}/state.txt",
+        cacheargs={
+            "index_col":[0],
+            "header": 0,
+        },
+        delimiter="|",
+        index_col=[1],
+        usecols=[0,1,2],
+        header=0,
+        names=["fips","state","name"],
     ).to_dict('index')
+
 
 TIMEZONES = {
     "01": "CST+6CDT", # AL
@@ -277,13 +344,23 @@ TIMEZONES = {
     "78": "AST+4", # VI
 }
 
+NONASCII = {
+    "\xe1" : "a",
+    "\xe9" : "e",
+    "\xed" : "i",
+    "\xf1" : "n",
+    "\xf3" : "o",
+    "\xfc" : "u",
+    # may need to add other someday
+}
+
 class CensusError(Exception):
     """Census exception"""
 
 class Census:
     """Census object class"""
-    cache = {}
-    def __init__(self,country:str,state:str,county:str=None):
+
+    def __init__(self,country:str,state:str,county:str=None,on_error=app.warning):
         """Get census data
 
         Arguments:
@@ -298,25 +375,49 @@ class Census:
         if state not in FIPS_STATES:
             raise CensusError(f"state {repr(state)} not found")
 
-        file = f"""st{int(FIPS_STATES[state]["fips"]):02.0f}_{state.lower()}_cou.txt"""
-        if file in self.cache:
-            result = self.cache[file]
-        else:
-            self.cache[file] = result = pd.read_csv(f"{CENSUS_DATA}/codes/files/{file}",
-                usecols=[1,2,3],
+        file = f"""counties_{int(FIPS_STATES[state]["fips"]):02.0f}_2020.txt"""
+        result = get_cache(
+                file=file,
+                url=os.path.join(CENSUS_DATA,"codes2020","cou",f"""st{int(FIPS_STATES[state]["fips"]):02.0f}_{state.lower()}_cou2020.txt"""),
+                cacheargs={
+                    "header": 0,
+                    "index_col": [0],
+                    "dtype": str,
+                },
+                usecols=[1,2,4],
                 names=["state","county","name"],
-                header=None,
+                header=0,
+                delimiter="|",
                 converters={
                     "state" : lambda x: f"{int(x):02.0f}",
                     "county" : lambda x: f"{int(x):03.0f}",
+                    "name" : strict_ascii,
                 },
-                index_col=[2]
+                index_col=[0,1],
             )
 
         # compute the g-code used by NREL resstock and comstock
         result["pcode"] = [f"{x}{y}" for x,y in zip(result["state"],result["county"])]
         result["gcode"] = [f"g{x}0{y}0" for x,y in zip(result["state"],result["county"])]
         result["tzspec"] = [TIMEZONES[x+y] if x+y in TIMEZONES else TIMEZONES[x] for x,y in zip(result["state"],result["county"])]
+        result.reset_index(inplace=True)
+        result.set_index(["state","county"],inplace=True)
+        for year,url in POPULATION_DATA.items():
+            file = f"""population_{FIPS_STATES[state]['fips']:02.0f}_{year}.txt"""
+            url = url.format(fips=f"{FIPS_STATES[state]['fips']:02.0f}",state=state.lower())
+            try:
+                population = get_cache(file,url,
+                    **POPULATION_SPEC[year],
+                    )
+                population["state"] = [f"{x:02.0f}" for x in population["state"]]
+                population["county"] = [f"{x:03.0f}" for x in population["county"]]
+                population.set_index(["state","county"],inplace=True,drop=True)
+                result[f"population_{year}"] = population["population"]
+            except urllib.error.HTTPError:
+                on_error(f"{year} population data for {state} not available")
+
+        result.reset_index(inplace=True)
+        result.set_index("name",inplace=True)
         result = result.to_dict("index")
         self.args = {"state":state,"county":county}
         if county is None:
@@ -349,12 +450,12 @@ class Census:
         """Get the census data for a county that matches"""
         return self.data[county]
 
-def test(state:str=None,county:str=None) -> (int,int):
+def test(state:list=None,county:str=None) -> (int,int):
     """Test census data access
 
     Arguments:
 
-    * `state`: state to test
+    * `state`: states to test
 
     * `county`: county name pattern to test
 
@@ -417,9 +518,10 @@ def main(argv:list[str]) -> int:
         raise CensusError("missing state/county specification")
 
     result = Census(**location)
-    print(f"county,state,country,state_fips,county_fips,nrel_gcode,timezone")
+    keys = list(result[list(result.data)[0]].keys())
+    print("name,"+",".join(keys))
     for county,spec in result.dict().items():
-        print(f"{county},{location['state']},{location['country']},{spec['state']},{spec['county']},{spec['gcode']},{spec['tzspec']}")
+        print(f"{county},{','.join([str(spec[x]) for x in keys])}")
 
     # normal termination condition
     return app.E_OK

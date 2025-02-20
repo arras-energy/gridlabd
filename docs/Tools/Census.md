@@ -16,6 +16,8 @@ Data obtained include the following:
 
 * `tzspec`: timezone specification for state and county
 
+* `population_{year}`: population for the indicated year
+
 Caveats:
 
 The value of `STATE` must be the two character abbreviation, e.g., `CA`.  The
@@ -33,6 +35,10 @@ the county. The following counties are affected by this issue:
 * North Dakota: McKenzie, Dunn, Sioux
 * Oregon: Malheur
 * South Dakota: Cherry
+
+Example:
+
+
 
 See also:
 
@@ -77,13 +83,13 @@ Census exception
 
 # Functions
 
-## `test(state:str, county:str) -> None`
+## `test(state:list, county:str) -> None`
 
 Test census data access
 
 Arguments:
 
-* `state`: state to test
+* `state`: states to test
 
 * `county`: county name pattern to test
 
@@ -97,6 +103,9 @@ Returns:
 # Constants
 
 * `FIPS_STATES`
+* `NONASCII`
+* `POPULATION_DATA`
+* `POPULATION_SPEC`
 * `TIMEZONES`
 
 # Modules
@@ -106,3 +115,4 @@ Returns:
 * `pandas`
 * `re`
 * `sys`
+* `urllib`
