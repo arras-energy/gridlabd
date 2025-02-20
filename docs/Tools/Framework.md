@@ -273,13 +273,15 @@ This function does not return. When the function is done it calls exit(E_SYNTAX)
 
 ---
 
-## `test(test:callable) -> None`
+## `test(test:callable, name:str) -> None`
 
 Run module test routine
 
 Arguments:
 
 * `test`: the test function to run
+
+* `name`: name of the app to test
 
 * `exit`: the exit function to call (default is `exit`)
 

@@ -1,6 +1,6 @@
 [[/Tools/Census]] -- Census data access
 
-Syntax: gridlabd census STATE [COUNTY]
+Syntax: gridlabd census COUNTRY STATE [COUNTY]
 
 The census tool obtains Census Bureau data about counties
 
@@ -12,6 +12,8 @@ Data obtained include the following:
 
 * `gcode`: NREL county $g$-code
 
+* `pgode`: HIFLD county $p$-code
+
 * `tzspec`: timezone specification for state and county
 
 Caveats:
@@ -21,9 +23,20 @@ value `COUNTY` may be a county name or a `regex` pattern to match multiple
 counties.  The defaults value for `COUNTY` is `.*`, which will match all
 counties in the state.
 
-Some states have multiple timezones. The `tzspec` specification for states
-that have more than one timezone is given for the more populous portion of
-the state. 
+Some counties have multiple timezones. The `tzspec` specification for counties
+that have more than one timezone is given for the more populous/larger portion of
+the county. The following counties are affected by this issue:
+
+* Florida: Gulf
+* Idaho: Idaho
+* Nebraska: Cherry
+* North Dakota: McKenzie, Dunn, Sioux
+* Oregon: Malheur
+* South Dakota: Cherry
+
+See also:
+
+* [[/Tools/Framework]]
 
 
 
@@ -33,7 +46,7 @@ the state.
 
 Census object class
 
-### `Census(state:str, county:str)`
+### `Census(country:str, state:str, county:str)`
 
 Get census data
 

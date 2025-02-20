@@ -64,7 +64,8 @@ gridlabd weather US WA Snohomish --type=tmy3 --start='2020-12-01 00:00:00-08:00'
 See also:
 
 * [[/Tools/Census]]
-* [[/Toosl/Weather]]
+* [[/Tools/Framework]]
+* [[/Tools/Weather]]
 
 
 

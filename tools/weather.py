@@ -43,6 +43,7 @@ See also:
 
 * [[/Tools/Census]]
 * [[/Toosl/Enduse]]
+* [[/Tools/Framework]]
 """
 
 import os
@@ -119,7 +120,7 @@ class Weather:
 
         # get location spec from Census Bureau
         self.state = state
-        fips = census.Census(state,county)
+        fips = census.Census(country,state,county)
         if fips.length() == 0:
             raise WeatherError(f"state='{state}' county='{county}' not found")
         if fips.length() > 1:
@@ -365,9 +366,7 @@ if __name__ == "__main__":
         # sys.argv = [__file__,"US","WA","Snohomish","--start=2020-12-01 00:00:00-08:00","--end=2021-02-01 00:00:00-08:00","--player","--model"] 
         # app.run(main)
         # quit()
-
-        app.read_stdargs([__file__])
-        app.test(test)
+        app.test(test,__file__)
 
     else:
 

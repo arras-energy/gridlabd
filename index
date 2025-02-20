@@ -4072,6 +4072,8 @@ tools/autotest/test_rest_server_opt.glm
 tools/autotest/test_server.glm
 tools/autotest/test_unitcalc.glm
 tools/autotest/test_unitcalc.txt
+tools/autotest/test_weather.csv
+tools/autotest/test_weather.glm
 tools/cache.py
 tools/census.py
 tools/create_childs.py

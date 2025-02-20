@@ -64,7 +64,8 @@ gridlabd weather US WA Snohomish --type=tmy3 --start='2020-12-01 00:00:00-08:00'
 See also:
 
 * [[/Tools/Census]]
-* [[/Toosl/Weather]]
+* [[/Tools/Framework]]
+* [[/Tools/Weather]]
 """
 
 import os
@@ -282,7 +283,7 @@ class Enduse:
 
         # get location spec from Census Bureau
         self.state = state
-        fips = census.Census(state,county)
+        fips = census.Census(country,state,county)
         if fips.length() == 0:
             raise EnduseError(f"state='{state}' county='{county}' not found")
         if fips.length() > 1:
@@ -485,6 +486,8 @@ class Enduse:
             glm[f"{self.country}_{self.state}_{self.county}_{bt.lower()}"] = {
                 "class" : "tape.multiplayer",
                 "file" : file,
+                "type" : bt,
+                "units" : 1, # TODO: get units from source
             }
         return glm
 
@@ -493,9 +496,11 @@ class Enduse:
         properties = "\n    ".join([f"double {x}[kW];" for x in sorted(ENDUSES)])
         with open(glmname,"w") as fh:
             print(f"""module tape;
-// module building;
+// module building; // TODO: include this if/when the generic building module is implemented
 class building 
 {{
+    char32 type;
+    int32 units;
     {properties}
 }}
 """,file=fh)
@@ -503,6 +508,8 @@ class building
                 print(f"""object building
 {{
     name "{name}";
+    type "{data['type']}";
+    units "{data['units']}";
     object {data['class']}
     {{
         file "{data['file']}";
@@ -701,8 +708,7 @@ if __name__ == "__main__":
     
         # sys.argv = [__file__,"US","WA","Snohomish","--type=MOBILE","--start=2020-12-01 00:00:00-08:00","--end=2021-02-01 00:00:00-08:00"] 
         # app.run(main)
-        app.read_stdargs([__file__])
-        app.test(test)
+        app.test(test,__file__)
 
     else:
 

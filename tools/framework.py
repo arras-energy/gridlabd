@@ -433,12 +433,14 @@ def syntax(docs:str,print=print):
     print("\n".join([x for x in docs.split("\n") if x.startswith("Syntax: ")]))
     exit(E_SYNTAX)
 
-def test(test:callable,exit=exit,print=print):
+def test(test:callable,name:str,exit=exit,print=print):
     """Run module test routine
 
     Arguments:
 
     * `test`: the test function to run
+
+    * `name`: name of the app to test
 
     * `exit`: the exit function to call (default is `exit`)
 
@@ -446,6 +448,7 @@ def test(test:callable,exit=exit,print=print):
 
     This function does not return. When the test is done it calls exit.
     """
+    read_stdargs([name])    
     n_failed,n_tested = test()
     print(f"{EXENAME}: {n_tested} tests, {n_failed} failed")
     if n_failed:
