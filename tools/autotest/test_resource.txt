@@ -48,41 +48,41 @@ Properties:
   mimetype: ''
   deprecation: ''
   comment: 'Compiled AutoBEM4 building data'
-buildings/US/CA_Alameda.csv.gz... 18632521 bytes
-buildings/US/CA_Contra_Costa.csv.gz... 15657475 bytes
-buildings/US/CA_Los_Angeles.csv.gz... 119942371 bytes
-buildings/US/CA_Orange.csv.gz... 35373139 bytes
-buildings/US/CA_Riverside.csv.gz... 35813122 bytes
-buildings/US/CA_San_Bernardino.csv.gz... 32401374 bytes
-buildings/US/CA_San_Diego.csv.gz... 40106258 bytes
-buildings/US/CA_San_Francisco.csv.gz... 9616400 bytes
-buildings/US/CA_San_Mateo.csv.gz... 9042463 bytes
-buildings/US/CA_Santa_Clara.csv.gz... 20501437 bytes
-buildings/US/ME_Androscoggin.csv.gz... 2435518 bytes
-buildings/US/ME_Aroostook.csv.gz... 2882124 bytes
-buildings/US/ME_Cumberland.csv.gz... 6800068 bytes
-buildings/US/ME_Franklin.csv.gz... 1261789 bytes
-buildings/US/ME_Hancock.csv.gz... 2577025 bytes
-buildings/US/ME_Kennebec.csv.gz... 3678406 bytes
-buildings/US/ME_Knox.csv.gz... 1606996 bytes
-buildings/US/ME_Lincoln.csv.gz... 1634632 bytes
-buildings/US/ME_Oxford.csv.gz... 2024315 bytes
-buildings/US/ME_Penobscot.csv.gz... 4441180 bytes
-buildings/US/ME_Piscataquis.csv.gz... 1030636 bytes
-buildings/US/ME_Sagadahoc.csv.gz... 1172538 bytes
-buildings/US/ME_Somerset.csv.gz... 2163186 bytes
-buildings/US/ME_Waldo.csv.gz... 1635656 bytes
-buildings/US/ME_Washington.csv.gz... 1670936 bytes
-buildings/US/ME_York.csv.gz... 5920601 bytes
-buildings/US/NH_Belknap.csv.gz... 2112766 bytes
-buildings/US/NH_Carroll.csv.gz... 2268762 bytes
-buildings/US/NH_Cheshire.csv.gz... 1918629 bytes
-buildings/US/NH_Coos.csv.gz... 986734 bytes
-buildings/US/NH_Grafton.csv.gz... 2107669 bytes
-buildings/US/NH_Hillsborough.csv.gz... 6474492 bytes
-buildings/US/NH_Merrimack.csv.gz... 3239426 bytes
-buildings/US/NH_Rockingham.csv.gz... 6095088 bytes
-buildings/US/NH_Strafford.csv.gz... 2249422 bytes
-buildings/US/NH_Sullivan.csv.gz... 1206218 bytes
-buildings/US/TN_Hamilton.csv.gz... 6563451 bytes
+buildings/US/CA_Alameda.csv.gz... OK (18632.5 kB)
+buildings/US/CA_Contra_Costa.csv.gz... OK (15657.5 kB)
+buildings/US/CA_Los_Angeles.csv.gz... OK (119942.4 kB)
+buildings/US/CA_Orange.csv.gz... OK (35373.1 kB)
+buildings/US/CA_Riverside.csv.gz... OK (35813.1 kB)
+buildings/US/CA_San_Bernardino.csv.gz... OK (32401.4 kB)
+buildings/US/CA_San_Diego.csv.gz... OK (40106.3 kB)
+buildings/US/CA_San_Francisco.csv.gz... OK (9616.4 kB)
+buildings/US/CA_San_Mateo.csv.gz... OK (9042.5 kB)
+buildings/US/CA_Santa_Clara.csv.gz... OK (20501.4 kB)
+buildings/US/ME_Androscoggin.csv.gz... OK (2435.5 kB)
+buildings/US/ME_Aroostook.csv.gz... OK (2882.1 kB)
+buildings/US/ME_Cumberland.csv.gz... OK (6800.1 kB)
+buildings/US/ME_Franklin.csv.gz... OK (1261.8 kB)
+buildings/US/ME_Hancock.csv.gz... OK (2577.0 kB)
+buildings/US/ME_Kennebec.csv.gz... OK (3678.4 kB)
+buildings/US/ME_Knox.csv.gz... OK (1607.0 kB)
+buildings/US/ME_Lincoln.csv.gz... OK (1634.6 kB)
+buildings/US/ME_Oxford.csv.gz... OK (2024.3 kB)
+buildings/US/ME_Penobscot.csv.gz... OK (4441.2 kB)
+buildings/US/ME_Piscataquis.csv.gz... OK (1030.6 kB)
+buildings/US/ME_Sagadahoc.csv.gz... OK (1172.5 kB)
+buildings/US/ME_Somerset.csv.gz... OK (2163.2 kB)
+buildings/US/ME_Waldo.csv.gz... OK (1635.7 kB)
+buildings/US/ME_Washington.csv.gz... OK (1670.9 kB)
+buildings/US/ME_York.csv.gz... OK (5920.6 kB)
+buildings/US/NH_Belknap.csv.gz... OK (2112.8 kB)
+buildings/US/NH_Carroll.csv.gz... OK (2268.8 kB)
+buildings/US/NH_Cheshire.csv.gz... OK (1918.6 kB)
+buildings/US/NH_Coos.csv.gz... OK (986.7 kB)
+buildings/US/NH_Grafton.csv.gz... OK (2107.7 kB)
+buildings/US/NH_Hillsborough.csv.gz... OK (6474.5 kB)
+buildings/US/NH_Merrimack.csv.gz... OK (3239.4 kB)
+buildings/US/NH_Rockingham.csv.gz... OK (6095.1 kB)
+buildings/US/NH_Strafford.csv.gz... OK (2249.4 kB)
+buildings/US/NH_Sullivan.csv.gz... OK (1206.2 kB)
+buildings/US/TN_Hamilton.csv.gz... OK (6563.5 kB)
 Tested 37 resources (415.2 MB) with 0 failures
