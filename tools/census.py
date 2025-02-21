@@ -393,7 +393,7 @@ class Census:
                     "county" : lambda x: f"{int(x):03.0f}",
                     "name" : strict_ascii,
                 },
-                # index_col=[0,1],
+                index_col=[0,1],
             )
 
         # compute the g-code used by NREL resstock and comstock
@@ -417,7 +417,7 @@ class Census:
                 on_error(f"{year} population data for {state} not available")
 
         result.reset_index(inplace=True)
-        result.set_index("name",inplace=True)
+        result.set_index("name",drop=True,inplace=True)
         result = result.to_dict("index")
         self.args = {"state":state,"county":county}
         if county is None:
