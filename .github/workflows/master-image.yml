@@ -26,7 +26,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
-        role-session-name: master website sync workflow
+        role-session-name: masterWebsiteSyncWorkflow
         aws-region: ${{ secrets.AWS_REGION }}
 
     - name: Website s3 sync
@@ -59,7 +59,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
-        role-session-name: develop images macos13 update
+        role-session-name: developImagesMacos13Update
         aws-region: ${{ secrets.AWS_REGION }}
 
     - name: Symlink for libtool
@@ -93,7 +93,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
-        role-session-name: develop images macos14 update
+        role-session-name: developImagesMacos14Update
         aws-region: ${{ secrets.AWS_REGION }}
 
     - name: Symlink for libtool
@@ -130,7 +130,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
-        role-session-name: develop images macos15 update
+        role-session-name: developImagesMacos15Update
         aws-region: ${{ secrets.AWS_REGION }}
 
     - name: Symlink for libtool
@@ -174,7 +174,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
-        role-session-name: develop images ubuntu22 update
+        role-session-name: developImagesUbuntu22Update
         aws-region: ${{ secrets.AWS_REGION }}
 
     - name: Deploy to S3
@@ -211,7 +211,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
-        role-session-name: develop images ubuntu24 update
+        role-session-name: developImagesUbuntu24Update
         aws-region: ${{ secrets.AWS_REGION }}
 
     - name: Deploy to S3
@@ -239,7 +239,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
-        role-session-name: master dockerhub workflow
+        role-session-name: masterDockerhubDeploymentWorkflow
         aws-region: ${{ secrets.AWS_REGION }}
 
 #    - name: Run CF invalidation
@@ -325,7 +325,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE }}
-          role-session-name: master images lambda update
+          role-session-name: masterImagesLambdaUpdate
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Install dependencies and package Lambda function
