@@ -466,13 +466,15 @@ def test(pattern='.*'):
             if index:
                 for item in index:
                     tested += 1
+                    print(f"{name}/{item}... ",end="",flush=True,file=sys.stderr)
                     content = resource.headers(name=name,index=item)
                     size = content['content-length']
                     checked += int(size.split()[0])
-                    print(f"{name}/{item}... {size} bytes",flush=True,file=sys.stderr)
-        except ResourceError as err:
+                    print(f"OK ({float(size)/1e3:.1f} kB)",flush=True,file=sys.stderr)
+        except:
             failed += 1
-            print(f"FAILED: {name}... {err}",file=sys.stderr)
+            e_type,e_value,e_trace = sys.exc_info()
+            print(f"FAILED ({e_type.__name__} {e_value})",file=sys.stderr)
 
     print(f"Tested {tested} resources ({checked/1e6:.1f} MB) with {failed} failures",file=sys.stderr)
     return app.E_OK if failed == 0 else app.E_FAILED
@@ -483,6 +485,7 @@ if __name__ == "__main__":
     # TODO: comment this block entire when done developing
     if not sys.argv[0]:
 
+        app.test(test,__file__)
         #
         # Test library functions (comprehensive scan of all contents)
         #

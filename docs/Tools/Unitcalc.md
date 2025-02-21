@@ -130,3 +130,18 @@ Arguments:
 
 * `unit (str|Unit)`: the unit to which the value should be convertor
 
+
+# Constants
+
+* `SCALARS`
+* `SPECS`
+* `TAGS`
+* `UNITS`
+
+# Modules
+
+* `copy`
+* `math`
+* `os`
+* `re`
+* `sys`

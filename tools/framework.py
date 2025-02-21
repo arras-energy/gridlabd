@@ -46,7 +46,7 @@ def main(argv:list[str]) -> int:
 
     # implement your code here
 
-    # normal termination condigion
+    # normal termination condition
     return app.E_OK
 
 if __name__ == "__main__":
@@ -432,6 +432,28 @@ def syntax(docs:str,print=print):
     """
     print("\n".join([x for x in docs.split("\n") if x.startswith("Syntax: ")]))
     exit(E_SYNTAX)
+
+def test(test:callable,name:str,exit=exit,print=print):
+    """Run module test routine
+
+    Arguments:
+
+    * `test`: the test function to run
+
+    * `name`: name of the app to test
+
+    * `exit`: the exit function to call (default is `exit`)
+
+    * `print`: the print funtion to call on exceptions (default is `print`)
+
+    This function does not return. When the test is done it calls exit.
+    """
+    read_stdargs([name])    
+    n_failed,n_tested = test()
+    print(f"{EXENAME}: {n_tested} tests, {n_failed} failed")
+    if n_failed:
+        exit(E_FAILED)
+    exit(E_OK)
 
 def run(main:callable,exit=exit,print=print):
     """Run a main function under this app framework
