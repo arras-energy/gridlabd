@@ -393,7 +393,7 @@ class Census:
                     "county" : lambda x: f"{int(x):03.0f}",
                     "name" : strict_ascii,
                 },
-                index_col=[0,1],
+                # index_col=[0,1],
             )
 
         # compute the g-code used by NREL resstock and comstock
