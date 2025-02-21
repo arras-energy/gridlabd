@@ -12,13 +12,13 @@ bash$ ./install.sh [<install-options>] [<configure-options>]
 
 **WARNING**: If you have not made a backup of your system, *stop here and read the **Caveat** section below*.
 
-Building GridLAB-D from the source code is only for developers of the *Arras Energy* version of GridLAB-D. General users do not need to do this, and should refer to the [[/Getting Started]] page instead.  
+Building GridLAB-D from the source code is only for developers of the *Arras Energy* version of GridLAB-D. General users do not need to do this, and should refer to the [[/Getting Started]] page instead.
 
 This installer is for the *Array Energy* releases of GridLAB-D (HiPAS GridLAB-D 4.3-) only.  The installers for research release versions of GridLAB-D are available at http://sourceforge.net/projects/gridlab-d/files/ (for Version 3 and older) or https://github.com/gridlab-d/gridlab-d (Version 4 or later).
 
 # Downloading and installing from the source repository
 
-The `master`, `develop`, and all working branches of the source code can be downloaded from the GitHub project http://source.gridlabd.us/.  
+The `master`, `develop`, and all working branches of the source code can be downloaded from the GitHub project http://source.arras.energy/.
 
 ## System preparation
 
@@ -35,20 +35,20 @@ bash$ git version
 
 The exact command to install `curl` will depend on your hardware and software platform.  Generally, Mac OS X users should use [`brew`](https://brew.sh).  Linux users should use `yum`, `apt`, or whichever package installer is available.
 
-Calling git on newer MacOS systems will likely prompt installation of the xcode developer toolset, which includes git. 
+Calling git on newer MacOS systems will likely prompt installation of the xcode developer toolset, which includes git.
 
 ## Automated installation
 
 Normally on Linux and Mac OS X developers should use the `install.sh` script to setup the system, perform the initial build, and install GridLAB-D for all users on the system. *Do not* run the install.sh script with sudo, as that will create a broken install. The script itself selectively uses sudo only where necessary.
 ~~~
-host% git clone https://source.gridlabd.us/ gridlabd
+host% git clone https://source.arras.energy/ gridlabd
 host% cd gridlabd
-host% ./install.sh 
+host% ./install.sh
 ~~~
 
 To clone a specific branch for development into a specfic location, use
 ~~~
-host% git clone -b desired-branch https://source.gridlabd.us/ gridlabd
+host% git clone -b desired-branch https://source.arras.energy/ gridlabd
 host% cd gridlabd
 host% ./install.sh --prefix /path/to/install/location
 ~~~
@@ -70,12 +70,12 @@ Further details on supported flags can be found below, in the `options` section.
 
 ### Manual installation
 
-Manual installation is discouraged because the process is complex, highly error-prone, and varies widely from one platform to another.  However, it is necessary on platforms that are not supported by the automated installation script.  The general approach is roughly as follows, keeping in mind that the specifics will vary from one system to another, and you may need to install certain tools and libraries to be successful. You can reference one of the setup files in this repository's build-aux directory for the kind of preparation that may be needed to manually build gridlabd. 
+Manual installation is discouraged because the process is complex, highly error-prone, and varies widely from one platform to another.  However, it is necessary on platforms that are not supported by the automated installation script.  The general approach is roughly as follows, keeping in mind that the specifics will vary from one system to another, and you may need to install certain tools and libraries to be successful. You can reference one of the setup files in this repository's build-aux directory for the kind of preparation that may be needed to manually build gridlabd.
 
-*IMPORTANT*: Each version requires its own internal python package to use, and this can be a very involved process as well. This will need to be built inside the package directory for the specific gridlabd version. 
+*IMPORTANT*: Each version requires its own internal python package to use, and this can be a very involved process as well. This will need to be built inside the package directory for the specific gridlabd version.
 
 ~~~
-bash$ git clone https://source.gridlabd.us/ gridlabd
+bash$ git clone https://source.arras.energy/ gridlabd
 bash$ cd gridlabd
 bash$ autoreconf -isf
 bash$ ./configure
@@ -140,7 +140,7 @@ Install supports the following command line options:
 
 # Caveat
 
-The automated installer, and certainly any attempt to manually install is risky.  As with any change to your system, you must be certain you have a backup of your system prior to running the installation procedure.  If the process goes wrong, only a backup made prior to running these commands can restore your system to its condition prior to running the installation procedure. 
+The automated installer, and certainly any attempt to manually install is risky.  As with any change to your system, you must be certain you have a backup of your system prior to running the installation procedure.  If the process goes wrong, only a backup made prior to running these commands can restore your system to its condition prior to running the installation procedure.
 
 # See also
 

@@ -24,11 +24,6 @@ variable "aws_region" {
   description = "AWS region"
 }
 
-variable "prod_s3_url" {
-  type        = string
-  description = "S3 bucket URL"
-}
-
 variable "version" {
   type        = string
   description = "GridLAB-D Version"
@@ -74,7 +69,7 @@ build {
       "sudo apt-get update && sudo apt-get install -y apt-transport-https",
       "sudo apt-get install -y git curl nano",
       "cd /usr/local/src",
-      "curl -sL http://install.gridlabd.us/install.sh | sudo sh",
+      "curl -sL http://install.arras.energy/install.sh | sudo sh",
       "sudo chown -R $USER /usr/local",
       "gridlabd --version=all"
     ]

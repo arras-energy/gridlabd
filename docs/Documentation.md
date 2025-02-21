@@ -1,4 +1,4 @@
-Welcome to the user and modeling manuals for Arras Energy. The following manual sections are available in this branch. 
+Welcome to the user and modeling manuals for Arras Energy. The following manual sections are available in this branch.
 
 # [Cloud](/index.html?folder=/Cloud)
 *Arras Energy resources on the cloud using AWS, GitHub, and CircleCI*
@@ -30,5 +30,5 @@ Welcome to the user and modeling manuals for Arras Energy. The following manual 
 # [Subcommand](/index.html?folder=/Subcommand)
 *Subcommand deliver extra features and extensions to Arras Energy*
 
-# [Tips and Tricks](http://docs-dev.gridlabd.us/_page.html?folder=/Tips%20and%20tricks)
+# [Tips and Tricks](http://docs-dev.arras.energy/_page.html?folder=/Tips%20and%20tricks)
 *Lots of helpful hints and solutions to common problems*
