@@ -1069,6 +1069,7 @@ docs/Subcommand/Validate.md
 docs/Subcommand/Version.md
 docs/Subcommand/Weather.md
 docs/Tips and tricks/Saving_randomseed.md
+docs/Tools/Buildings.md
 docs/Tools/Create_filter.md
 docs/Tools/Create_player.md
 docs/Tools/Create_poles.md
@@ -3973,6 +3974,7 @@ third_party/tnt_126/tnt_version.h
 tools/Makefile.mk
 tools/README.md
 tools/__init__.py
+tools/autobem4_to_glm.py
 tools/autotest/IEEE-123.tmy3
 tools/autotest/case14.json
 tools/autotest/case14.py
@@ -3999,6 +4001,8 @@ tools/autotest/notnodes-withloads-meters.glm
 tools/autotest/notnodes-withloads.glm
 tools/autotest/rbsa_single_family_2011.mdb
 tools/autotest/solver_nr_profile.csv
+tools/autotest/test_buildings.glm
+tools/autotest/test_buildings_opt.glm
 tools/autotest/test_create_filter.glm
 tools/autotest/test_create_filter_opt.glm
 tools/autotest/test_create_meters.glm
@@ -4065,6 +4069,7 @@ tools/autotest/test_rest_server_opt.glm
 tools/autotest/test_server.glm
 tools/autotest/test_unitcalc.glm
 tools/autotest/test_unitcalc.txt
+tools/buildings.py
 tools/create_childs.py
 tools/create_ductbank.py
 tools/create_filter.py
