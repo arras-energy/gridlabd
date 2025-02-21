@@ -4,7 +4,7 @@ Syntax: `gridlabd buildings [OPTIONS ...]`
 
 Options:
 
-* `-A|--address: include address (warning: this can take a long time to process)
+* `-A|--address`: include address (warning: this can take a long time to process)
 
 * `-C|--county=COUNTRY/STATE/COUNTY`: download county-level data
 
