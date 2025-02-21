@@ -1,5 +1,5 @@
 #system gridlabd census US WA --debug > test_census.csv 2>gridlabd.txt
 
 #ifexist ../test_census.csv
-#on_exit 0 diff ../test_census.csv test_census.csv
+#on_exit 0 diff -w ../test_census.csv test_census.csv
 #endif
