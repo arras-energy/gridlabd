@@ -117,7 +117,7 @@ def getforecast(lat,lon):
     url = server.format(latitude=lat,longitude=lon)
     headers = {'User-agent' : user_agent}
     location = json.loads(requests.get(url,headers=headers).content.decode("utf-8"))
-
+    
     data = {}
     result = {
         "datetime" : [],
@@ -143,10 +143,12 @@ def getforecast(lat,lon):
         result["datetime"].append(dateutil.parser.parse(item["startTime"])+datetime.timedelta(hours=item["number"]))
         result["temperature[degF]"].append(float(item["temperature"]))
         result["wind_speed[m/s]"].append(float(item["windSpeed"].split()[0])*0.44704)
-        result["wind_dir[deg]"].append(dict(
+        wind_dirs = dict(
             N=0, NNE=22.5, NE=45, ENE=67.5, E=90, ESE=112.5, SE=135, SSE=157.5,
             S=180, SSW=202.5, SW=225, WSW=247.5, W=270, WNW=292.5, NW=315, NNW=337.5,
-            )[item["windDirection"]])
+            )
+        wind_dir = item["windDirection"]
+        result["wind_dir[deg]"].append(wind_dirs[wind_dir] if wind_dir in wind_dirs else float('nan'))
     df = pandas.DataFrame(result).set_index("datetime")
     if interpolate_time:
         starttime = df.index.min()

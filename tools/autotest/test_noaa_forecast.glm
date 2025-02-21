@@ -26,3 +26,7 @@ object recorder
 }
 
 #endif
+
+#ifexist "../test_noaa_forecast_opt.glm"
+#on_exit 0 diff -I'^#define' ../test_noaa_forecast_opt.glm test_noaa_forecast_opt.glm > gridlabd.diff
+#endif
