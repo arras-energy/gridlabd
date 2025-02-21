@@ -1,4 +1,4 @@
-#system gridlabd weather US WA Snohomish --type=tmy3 --start='2020-08-01 00:00:00-07:00' --end='2020-09-01 00:00:00-07:00' --player --model --debug 2>gridlabd.txt
+#system gridlabd weather US WA Snohomish --type=tmy3 --start='2020-08-01 00:00:00-07:00' --end='2020-09-01 00:00:00-07:00' --player --model
 
 #include "US_WA_Snohomish_tmy3.glm"
 

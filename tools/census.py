@@ -105,7 +105,8 @@ def get_cache(file,url,cacheargs={},**kwargs):
     os.makedirs(CACHEDIR,exist_ok=True)
     path = os.path.join(CACHEDIR,file)
     if not os.path.exists(path):
-        pd.read_csv(url,**kwargs).to_csv(path,index=True,header=True)
+        data = pd.read_csv(url,**kwargs)
+        data.to_csv(path,index=True,header=True)
     return pd.read_csv(path,**cacheargs)
 
 FIPS_STATES = get_cache(file="states.txt",
@@ -381,8 +382,12 @@ class Census:
                 url=os.path.join(CENSUS_DATA,"codes2020","cou",f"""st{int(FIPS_STATES[state]["fips"]):02.0f}_{state.lower()}_cou2020.txt"""),
                 cacheargs={
                     "header": 0,
-                    "index_col": [0],
-                    "dtype": str,
+                    "index_col": ["name"],
+                    "converters":{
+                        "state" : lambda x: f"{int(x):02.0f}",
+                        "county" : lambda x: f"{int(x):03.0f}",
+                        "name" : strict_ascii,
+                    },
                 },
                 usecols=[1,2,4],
                 names=["state","county","name"],
@@ -396,10 +401,12 @@ class Census:
                 index_col=[0,1],
             )
 
-        # compute the g-code used by NREL resstock and comstock
+        # compute the county codes building, weather, and timezone tools
         result["pcode"] = [f"{x}{y}" for x,y in zip(result["state"],result["county"])]
         result["gcode"] = [f"g{x}0{y}0" for x,y in zip(result["state"],result["county"])]
         result["tzspec"] = [TIMEZONES[x+y] if x+y in TIMEZONES else TIMEZONES[x] for x,y in zip(result["state"],result["county"])]
+
+        # join population data
         result.reset_index(inplace=True)
         result.set_index(["state","county"],inplace=True)
         for year,url in POPULATION_DATA.items():
@@ -415,9 +422,10 @@ class Census:
                 result[f"population_{year}"] = population["population"]
             except urllib.error.HTTPError:
                 on_error(f"{year} population data for {state} not available")
-
         result.reset_index(inplace=True)
-        result.set_index("name",drop=True,inplace=True)
+        result.set_index("name",inplace=True)
+
+        # convert to dict and deliver
         result = result.to_dict("index")
         self.args = {"state":state,"county":county}
         if county is None:
