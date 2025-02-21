@@ -79,9 +79,20 @@ class PowerPlantError(Exception):
     """Powerplant exception"""
 
 class Powerplant:
+    """Powerplant class"""
+    def __init__(self,country:str,state:str,county:str,planttype:str=None):
+        """Create a powerplant dataset
 
-    def __init__(self,country,state,county,planttype=None):
+        Arguments:
 
+        * `country`: only `'US'` is supported
+
+        * `state`: state name (abbreviated)
+
+        * `county`: country name regex pattern (e.g., starting with)
+
+        * `planttype`: plant type filter
+        """
         if country != "US":
             raise PowerplantError("only US powerplant supported")
 
@@ -108,7 +119,13 @@ class Powerplant:
             index_col=["plant_code"]
             ).sort_index()
 
-    def to_glm(self,fh=sys.stdout):
+    def to_glm(self,fh:str=sys.stdout):
+        """Generate GLM file from powerplant data
+
+        Arguments:
+
+        * `fh`: file name or file handle
+        """
         converters = {
             "name": lambda x: x.upper().replace(" ","_"),
             "address": str,
@@ -199,7 +216,16 @@ class Powerplant:
 }}""",file=fh)
 
 def main(argv):
+    """Main process
 
+    Arguments:
+
+    * `argv`: command line argument list
+
+    Returns:
+
+    * `int`: exit code (see `framework.E_*` codes)
+    """
     if len(argv) == 1:
         app.syntax(__doc__)
     args = app.read_stdargs(argv)
@@ -243,15 +269,17 @@ def main(argv):
     return app.E_INVALID
 
 def test():
+    """Test procedure
 
+    Returns:
+
+    * `int,int`: number failed and number tested
+    """
     n_tested,n_failed = 0,0
     try:
         n_tested += 1
         plants = Powerplant("US","WA","Grant")
-        pd.options.display.max_columns=None
-        pd.options.display.width=None
-        pd.options.display.max_rows=None
-        print(plants.data)
+        assert len(plants.data) == 6, "incorrect number of powerplants in Grant County, WA"
     except:
         n_failed += 1
     return n_failed,n_tested
@@ -260,9 +288,7 @@ if __name__ == "__main__":
 
     if not sys.argv[0]:
 
-        sys.argv = [__file__,"US","WA","Grant","-o=/tmp/test.glm"]
-        app.run(main)
-        # app.test(test,__file__)
+        app.test(test,__file__)
 
     else:
 

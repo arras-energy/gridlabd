@@ -4066,6 +4066,7 @@ tools/autotest/test_noaa_forecast_opt.glm
 tools/autotest/test_pole_analysis.glm
 tools/autotest/test_pole_analysis_opt.csv
 tools/autotest/test_pole_analysis_opt.glm
+tools/autotest/test_powerplant.glm
 tools/autotest/test_resource.glm
 tools/autotest/test_resource.txt
 tools/autotest/test_rest_server.glm
@@ -4122,6 +4123,7 @@ tools/network.py
 tools/noaa_forecast.py
 tools/nsrdb_weather.py
 tools/pole_analysis.py
+tools/powerplant.py
 tools/read_dlp.py
 tools/resource.py
 tools/rest_client.py
