@@ -202,7 +202,7 @@ jobs:
         apt-get install -y git curl nano sudo zip
         curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
         unzip awscliv2.zip
-        sudo ./aws/install
+        ./aws/install
 
     - uses: actions/checkout@v4
 
@@ -215,13 +215,12 @@ jobs:
 
     - name: Deploy to S3
       run: |
-        sudo aws configure set role_arn ${{ secrets.AWS_ROLE }} && sudo aws configure set default.region ${{ secrets.AWS_REGION }}
         export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
         chown -R root $PWD
-        sudo sh ./setup.sh --local
-        sudo sh ./build.sh --system --parallel
+        sh ./setup.sh --local
+        sh ./build.sh --system --parallel
         gridlabd python -m pip install awscli
-        sudo sh ./build.sh --upload --release
+        sh ./build.sh --upload --release
   buildUbuntuDockerhub:
 
     runs-on: ubuntu-24.04
