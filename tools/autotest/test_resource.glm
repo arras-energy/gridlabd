@@ -10,7 +10,7 @@ with open('test_resource.txt','w') as fh:
             print(err,file=fh)
 #end
 
-#system gridlabd resource --test=buildings 1>>test_resource.txt 2>&1
+#system gridlabd resource --test=buildings --debug 1>>test_resource.txt 2>gridlabd.txt
 
 #ifexist "../test_resource.txt"
 #on_exit 0 diff ../test_resource.txt test_resource.txt > gridlabd.diff
