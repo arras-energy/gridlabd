@@ -41,11 +41,11 @@ the command line or using call the python API.
 
 Interpolation is usually necessary because the data samples received from NOAA span several hours.
 The default interval is 60 minutes, but can be set to any integer value in minutes. The sampling
-method is by default `linear`.  Interpolation methods supported include 
+method is by default `linear`.  Interpolation methods supported include
 
   - `linear`
 
-    Ignore the index and treat the values as equally spaced. This is the only method 
+    Ignore the index and treat the values as equally spaced. This is the only method
     supported on MultiIndexes.
 
   - `time`
@@ -62,8 +62,8 @@ method is by default `linear`.  Interpolation methods supported include
 
   - `nearest`, `zero`, `slinear`, `quadratic`, `cubic`, `spline`, `barycentric`, `polynomial`
 
-    Passed to `scipy.interpolate.interp1d`. These methods use the numerical values of the index. 
-    Both `polynomial` and `spline` require that you also specify an order (`int`), e.g. 
+    Passed to `scipy.interpolate.interp1d`. These methods use the numerical values of the index.
+    Both `polynomial` and `spline` require that you also specify an order (`int`), e.g.
     `df.interpolate(method='polynomial', order=5)`.
 
   - `krogh`, `piecewise_polynomial`, `spline`, `pchip`, `akima`, `cubicspline`
@@ -72,18 +72,18 @@ method is by default `linear`.  Interpolation methods supported include
 
   - `from_derivatives`
 
-    Refers to `scipy.interpolate.BPoly.from_derivatives` which replaces `piecewise_polynomial` 
+    Refers to `scipy.interpolate.BPoly.from_derivatives` which replaces `piecewise_polynomial`
     interpolation method in scipy 0.18.
 
 ## Parameters
 
-The module uses several parameters to control its behavior. 
+The module uses several parameters to control its behavior.
 
 ~~~
     server = "https://api.weather.gov/points/{latitude},{longitude}" # NOAA location server (provides forecast URL)
-    user_agent = "(gridlabd.us, gridlabd@gmail.com)" # default user agent to report to NOAA
+    user_agent = "(arras.energy, gridlabd@gmail.com)" # default user agent to report to NOAA
     date_format = "%Y-%m-%d %H:%M:%S"
-    float_format="%.1f" # float format to use 
+    float_format="%.1f" # float format to use
     interpolate_time = 60
     interpolate_method = 'quadratic'
 ~~~

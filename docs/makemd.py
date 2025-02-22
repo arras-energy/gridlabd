@@ -37,6 +37,8 @@ try:
     NAME = sys.argv[1]
     PATH = sys.argv[2]
 
+    if "/usr/local/opt/current/gridlabd/share" not in sys.path:
+        sys.path.append("/usr/local/opt/current/gridlabd/share")
     module = importlib.import_module("gridlabd." + NAME)
 
     with open(os.path.join(PATH,NAME.title()+".md"),"w") as md:

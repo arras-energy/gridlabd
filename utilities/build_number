@@ -37,7 +37,7 @@ if [ -d $TOP/.git ]; then
 		else
 			echo "#define HOST_OS \"$(uname -s | tr A-Z a-z)_$(uname -r | cut -f1 -d.)\"" >> $FIL
 			echo "#define HOST_CPU \"$(uname -m)\"" >> $FIL
-		fi	
+		fi
 	fi
 
 else
@@ -53,7 +53,7 @@ else
 		echo "#define BRANCH \"<unknown>\"" >> $FIL
 		echo "#define REV_YEAR $(date '+%Y')" >> $FIL
 		echo "#define BUILD_NAME \"download\"" >> $FIL
-		echo "#define BUILD_URL \"http://source.gridlabd.us/\"" >> $FIL
+		echo "#define BUILD_URL \"http://source.arras.energy/\"" >> $FIL
 		echo "#define BUILD_ORIGIN \"arras-energy/gridlabd\"" >> $FIL
 		echo "#define BUILD_BRANCH \"<unknown>\"" >> $FIL
 		echo "#define BUILD_SYSTEM \"$(uname -s)\"" >> $FIL
@@ -68,7 +68,7 @@ else
 		else
 			echo "#define HOST_OS \"$(uname -s | tr A-Z a-z)_$(uname -r | cut -f1 -d.)\"" >> $FIL
 			echo "#define HOST_CPU \"$(uname -m)\"" >> $FIL
-		fi	
+		fi
 	fi
 fi
 

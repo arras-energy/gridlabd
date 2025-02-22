@@ -18,7 +18,7 @@ OUTPUT
 
 OPTIONS
 
-    units - specifies the units in which output is given (default is meters). 
+    units - specifies the units in which output is given (default is meters).
     Valid units are "m", "meters", "ft", and "feet".
 
     precision - dictionary of output precisions
@@ -30,25 +30,25 @@ OPTIONS
 CONFIGURATION
 
     nan_error -  Return NaN values instead of raising exceptions on bad data (default is False)
-    
+
     cachedir - Location of local data cache (default is "/usr/local/opt/gridlabd/<version>/share/gridlabd/geodata/vegetation")
-    
-    repourl - Location of remote vegetation data (default is "http://geodata.gridlabd.us/vegetation")
-    
+
+    repourl - Location of remote vegetation data (default is "http://geodata.arras.energy/vegetation")
+
     layers - Layers to collect from data repository (default is "base,cover,height")
-    
+
     layer_units - Dictionary of layer units to use (default is {"base":"m","cover":"%","height":"m"})
-    
+
     vegetation - Dictionary of vegetation access information.
-    
+
         username -  Username for access credentials (usually an email, default is "")
-    
+
         password - Password for access credentials (usually a token, default is "")
-    
+
         provider - Data provider name (default is "cfo")
-    
+
         usecache - Enable caching of data (default is True)
-    
+
     maximum_image_size - Maximum size of remote data block (default is 2e9 bytes)
 
 EXAMPLES
@@ -88,7 +88,7 @@ default_options = {
 default_config = {
     "nan_error" : False,
     "cachedir" : f"{GLD_ETC}/gridlabd/geodata/vegetation",
-    "repourl" : "http://geodata.gridlabd.us/vegetation",
+    "repourl" : "http://geodata.arras.energy/vegetation",
     "layers" : ["base","cover","height"],
     "layer_units" : {"base":"m","cover":"%","height":"m"},
     "vegetation" : {
@@ -105,7 +105,7 @@ default_config = {
 #
 
 def cfo(username,password,usecache=True):
-    import cfo 
+    import cfo
     if "CFO_EMAIL" not in os.environ.keys() and username:
         os.environ['CFO_EMAIL'] = username
     if "CFO_PASS" not in os.environ.keys() and password:

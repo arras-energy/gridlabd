@@ -52,7 +52,7 @@ OUTPUT
     CUSTOMERS
     YEAR
     SHAPE_Length
-    SHAPE_Area   
+    SHAPE_Area
 
 OPTIONS
 
@@ -63,23 +63,23 @@ OPTIONS
 CONFIGURATION
 
     repourl - The url from which utility is retrieved (default is REPOURL/utility)
-    
+
     kmlrepo - The url from which KML data is retrieved (default is  REPOURL}/utility/geometry.kml)
-    
+
     csvrepo - The url from which CSV data is retrieve (default is REPOURL/utility/information.csv)
-    
+
     cachedir - The folder in which utility data is cached (default is CACHEDIR/geodata/utility)
-    
+
     kmlfile - The folder in whichf KML data is cached (default is CACHEDIR}/geometry.kml)
-    
+
     csvfile - The folder in which CSV data is cached (default is CACHEDIR/information.csv)
 
 ENVIRONMENT
 
-    GLD_ETC - specifies where the GridLAB-D shared data folder is. This is basis for the 
+    GLD_ETC - specifies where the GridLAB-D shared data folder is. This is basis for the
     CACHEDIR global, which is by default "/usr/local/share/gridlabd"
 
-    REPOURL - specifies the URL to use for GridLAB-D geodata (default is "http://geodata.gridlabd.us")
+    REPOURL - specifies the URL to use for GridLAB-D geodata (default is "http://geodata.arras.energy")
 
 
 EXAMPLES
@@ -121,7 +121,7 @@ if not CACHEDIR:
 
 REPOURL = os.getenv("REPOURL")
 if not REPOURL:
-    REPOURL = "http://geodata.gridlabd.us"
+    REPOURL = "http://geodata.arras.energy"
 
 #
 # Defaults

@@ -22,10 +22,10 @@ object pole
     susceptibility "0 pu*s/m";
     total_moment "0 ft*lb";
     resisting_moment "0 ft*lb";
-    pole_moment "0 ft*lb"; 
-    pole_moment_nowind "0 ft*lb"; 
-    equipment_moment "0 ft*lb"; 
-    equipment_moment_nowind "0 ft*lb"; 
+    pole_moment "0 ft*lb";
+    pole_moment_nowind "0 ft*lb";
+    equipment_moment "0 ft*lb";
+    equipment_moment_nowind "0 ft*lb";
     critical_wind_speed "0 m/s";
     wire_moment "0 ft*lb";
     wire_tension "0 ft*lb";
@@ -184,7 +184,7 @@ The total moment on the pole.
     double pole_moment[ft*lb];
 ~~~
 
-The moment of the pole. 
+The moment of the pole.
 
 ### `pole_moment_nowind`
 
@@ -192,7 +192,7 @@ The moment of the pole.
     double pole_moment_nowind[ft*lb];
 ~~~
 
-The moment of the pole without wind. 
+The moment of the pole without wind.
 
 ### `equipment_moment`
 
@@ -200,7 +200,7 @@ The moment of the pole without wind.
     double equipment_moment[ft*lb];
 ~~~
 
-The moment of the equipment. 
+The moment of the equipment.
 
 ### `equipment_moment_nowind`
 
@@ -208,7 +208,7 @@ The moment of the equipment.
     double equipment_moment_nowind[ft*lb];
 ~~~
 
-The moment of the equipment without wind. 
+The moment of the equipment without wind.
 
 The resisting moment on the pole.
 
@@ -246,12 +246,12 @@ Guy wire attachment height.
 
 # Model
 
-The pole failure model is described in [Pole Loading Model](https://source.gridlabd.us/raw/master/module/powerflow/docs/pole_loading.pdf).
+The pole failure model is described in [Pole Loading Model](https://source.arras.energy/raw/master/module/powerflow/docs/pole_loading.pdf).
 
 The pole reaches end of life status based on a degradation rate that is defined by minimum shell thickness of 2". See [Pole Degradation Model](https://www.sciencedirect.com/science/article/pii/S0167473005000457) details.
 
 # See also
 
 * [[/Module/Powerflow/Pole_configuration]]
-* [Pole Loading Model](https://source.gridlabd.us/raw/master/module/powerflow/docs/pole_loading.pdf)
+* [Pole Loading Model](https://source.arras.energy/raw/master/module/powerflow/docs/pole_loading.pdf)
 * [Pole Degradation Model](https://www.sciencedirect.com/science/article/pii/S0167473005000457)

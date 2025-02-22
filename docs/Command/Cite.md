@@ -18,7 +18,7 @@ The following example prints the citation text for the version of GridLAB-D 4.2 
 
 ~~~
 bash$ gridlabd --cite
-Chassin, D.P., et al., "GridLAB-D 4.2.0-191009 (master) Darwin" (2019) [online]. Available at https://source.gridlabd.us/. Accessed Oct. 9, 2019
+Chassin, D.P., et al., "GridLAB-D 4.2.0-191009 (master) Darwin" (2019) [online]. Available at https://source.arras.energy/. Accessed Oct. 9, 2019
 ~~~
 
 # See also

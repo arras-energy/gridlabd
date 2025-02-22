@@ -114,6 +114,9 @@ while [ $# -gt 0 ]; do
 		--release )
 			UPLOAD=aws-image-default
 			;;
+		--nomakemd )
+			MAKEFLAGS="$MAKEFLAGS MAKEMD=no"
+			;;
 		--parallel | --parallel=* )
 			PROCS=$(echo $1 | cut -f2 -d=)
 			test "$PROCS" = "--parallel" && PROCS=3

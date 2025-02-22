@@ -461,18 +461,18 @@ def test(pattern='.*'):
         print("Properties:",file=sys.stderr)
         for key,value in resource.properties(name=name).items():
             print(f"  {key}: {repr(value)}",file=sys.stderr)
-        try:
-            index = resource.index(name=name)
-            if index:
-                for item in index:
+        index = resource.index(name=name)
+        if index:
+            for item in index:
+                try:
                     tested += 1
                     content = resource.headers(name=name,index=item)
                     size = content['content-length']
                     checked += int(size.split()[0])
                     print(f"{name}/{item}... {size} bytes",flush=True,file=sys.stderr)
-        except ResourceError as err:
-            failed += 1
-            print(f"FAILED: {name}... {err}",file=sys.stderr)
+                except Exception as err:
+                    failed += 1
+                    print(f"FAILED: {name}... {err}",file=sys.stderr)
 
     print(f"Tested {tested} resources ({checked/1e6:.1f} MB) with {failed} failures",file=sys.stderr)
     return app.E_OK if failed == 0 else app.E_FAILED
@@ -482,6 +482,8 @@ if __name__ == "__main__":
     # local development tests
     # TODO: comment this block entire when done developing
     if not sys.argv[0]:
+
+        test()
 
         #
         # Test library functions (comprehensive scan of all contents)
@@ -503,7 +505,7 @@ if __name__ == "__main__":
         # Test command line options (e.g., one at a time)
         #
 
-        options = []
+        # options = []
         # options.extend(["--debug"])
         # options.extend(["--verbose"])
         # options.extend(["--format=csv"])

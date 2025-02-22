@@ -1,10 +1,10 @@
-Welcome to the [Arras Energy](http://www.gridlabd.us/) documentation.
+Welcome to the [Arras Energy](http://www.arras.energy/) documentation.
 
-# [[/Features]] 
+# [[/Features]]
 
 *Learn the latest features of Arras Energy*
 
-# [[/Getting Started]] 
+# [[/Getting Started]]
 
 *Get started using Arras Energy*
 

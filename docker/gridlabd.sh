@@ -23,7 +23,7 @@ cd $HOME/gridlabd
 
 # build and validate gridlabd
 . $HOME/.gridlabd/bin/activate
-if ./build.sh --parallel --system; then
+if ./build.sh --system --nomakemd; then
 	if [ gridlabd -W $HOME/gridlabd -T 0 --validate ]; then
 		cd -
 		rm -rf $HOME/gridlabd

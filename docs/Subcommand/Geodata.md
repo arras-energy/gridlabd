@@ -122,7 +122,7 @@ formule for `(latitude,longitude)` tuples.
 ## `elevation`
 
 The `elevation` dataset provides 1 arcsecond resolution ground elevation data
-from the USGS. The default data source is located at `http://geodata.gridlabd.us/elevation/10m`.
+from the USGS. The default data source is located at `http://geodata.arras.energy/elevation/10m`.
 
 ## `address`
 

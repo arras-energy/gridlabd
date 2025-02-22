@@ -1,6 +1,6 @@
 #!/bin/gawk -f
 
-# This file extracts all TROUBLESHOOT comments from input files 
+# This file extracts all TROUBLESHOOT comments from input files
 # and outputs the sorted results in html format
 
 BEGIN { # this is executed before any files are processed
@@ -32,7 +32,7 @@ BEGIN { # this is executed before any files are processed
 }
 
 {
-	# get the module and filename - it is assumed that this script will be 
+	# get the module and filename - it is assumed that this script will be
 	# run from the trunk (or branch) and that arguments will be in the format
 	# "module/filename" - see generate_troubleshooting.sh
 	if ( module "/" filename != FILENAME ) { # if at the beginning of a new file
@@ -61,7 +61,7 @@ BEGIN { # this is executed before any files are processed
 		gsub(/%[0-9.]*g/,"<i>real</i>",message); # replace %g with "real"
 		gsub(/%[0-9.]*f/,"<i>real</i>",message); # replace %f with "real"
 		gsub(/%[0-9.]*c/,"<i>character</i>",message); # replace %c with "character"
-		message = gensub(/<[^><]*>[^><]*<[^><]*>/,"'&'","g",message); # put single quotes around any text with html tags 
+		message = gensub(/<[^><]*>[^><]*<[^><]*>/,"'&'","g",message); # put single quotes around any text with html tags
 		gsub(/'+/,"'",message); # remove any duplicate single quotes
 
 		# check for TROUBLESHOOT tag
@@ -81,9 +81,9 @@ BEGIN { # this is executed before any files are processed
 				getline;
 			}
 			while ( index($0,"*/") == 0 )
-			
-			info = explanation "<cite>See <a href=\"http://source.gridlabd.us/blob/master/" module "/" filename "#L" tag "\">" id "</a>.</cite>"
-			
+
+			info = explanation "<cite>See <a href=\"http://source.arras.energy/blob/master/" module "/" filename "#L" tag "\">" id "</a>.</cite>"
+
 			# add message and TROUBLESHOOT text to appropriate array
 			if ( group == "Warnings" ) {
 				if ( message in warnings )
@@ -100,7 +100,7 @@ BEGIN { # this is executed before any files are processed
 			else if ( group == "Fatal errors" ) {
 				if ( message in fatal_errors )
 					print "Repeated message: " message;
-				fatal_errors[message] = fatal_errors[message] "\n<LI>" info "</LI>"; 
+				fatal_errors[message] = fatal_errors[message] "\n<LI>" info "</LI>";
 				nfatal++;
 			}
 			else if ( group == "Exceptions" ) {
@@ -127,7 +127,7 @@ END { # this is executed after all files have been processed
 	table_header = "<TABLE STYLE=\"BACKGROUND-COLOR:YELLOW\" BORDER=\"1\" CELLPADDING=\"5\" CELLSPACING=\"0\"><TR>";
 
 	print "This troubleshooting guide lists all the errors and warning messages from "
-    system("echo $(build-aux/version.sh --version).") 
+    system("echo $(build-aux/version.sh --version).")
     print "Simply search for your message and follow the recommendations given."
 	print "<CITE>Last updated " strftime() "</CITE>."
 
@@ -142,7 +142,7 @@ END { # this is executed after all files have been processed
         }
 	IGNORECASE = 1; # ignore case for the sorting of messages
         n = asort(ndx) # sort by message
-	IGNORECASE = 0; 
+	IGNORECASE = 0;
         for ( i = 1; i <= n; i++ ) { # create entries for each message, adding anchors as necessary
                 tag = toupper(substr(ndx[i],1,1));
                 if ( !(tag in links) ) {
@@ -175,7 +175,7 @@ END { # this is executed after all files have been processed
 		if ( !(tag in links) ) {
 			links[tag] = 1; # set to true so no other anchors are created for this character
 			print "<TD><A HREF=\"#Errors_" tag "\">" tag "</A></TD>";
-			error_str = error_str "\n<A ID=\"Errors_" tag "\"></A><H2>" ndx[i] "</H2><UL>" errors[ndx[i]] "</UL>";	
+			error_str = error_str "\n<A ID=\"Errors_" tag "\"></A><H2>" ndx[i] "</H2><UL>" errors[ndx[i]] "</UL>";
 		}
 		else {
 			error_str = error_str "\n<H2>" ndx[i] "</H2><UL>" errors[ndx[i]] "</UL>";
@@ -252,7 +252,7 @@ END { # this is executed after all files have been processed
 #    3. the variable "status" was removed because it was not being used
 #    4. several gensub calls were replaced with gsub calls because gsub intrinsically updates the string it is passed
 #    5. the "other" section was removed because it is impossible to get a message of that type
-#    6. by using the built in variable IGNORECASE, a lowercase copy of each message was no longer needed (since the 
+#    6. by using the built in variable IGNORECASE, a lowercase copy of each message was no longer needed (since the
 #       asort function is case sensitive unless IGNORCASE is set to 1)
 #    7. PERSISTING ISSUES:
 #          - some format specifiers (i.e. %lld in powerflow/frequency_gen.cpp(425)) are not caught

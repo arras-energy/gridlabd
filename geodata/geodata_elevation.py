@@ -14,7 +14,7 @@ OUTPUT
 
 OPTIONS
 
-    units - elevation units (default "meters"). Valid units are "m", "meters", 
+    units - elevation units (default "meters"). Valid units are "m", "meters",
     "ft", and "feet".
 
     precision - elevation precision (default 0 decimals)
@@ -26,7 +26,7 @@ CONFIGURATION
 
     cachedir - identifies the cache folder (default is ""/usr/local/share/gridlabd/geodata/elevation/10m")
 
-    repourl - identifies the source URL for the elevation data (default is ""http://geodata.gridlabd.us/elevation/10m")
+    repourl - identifies the source URL for the elevation data (default is ""http://geodata.arras.energy/elevation/10m")
 
 EXAMPLES
 
@@ -63,7 +63,7 @@ if not GLD_ETC:
 default_config = {
     "nan_error" : False,
     "cachedir" : f"{GLD_ETC}/geodata/elevation/10m",
-    "repourl" : "http://geodata.gridlabd.us/elevation/10m",
+    "repourl" : "http://geodata.arras.energy/elevation/10m",
 }
 
 units = {
@@ -166,7 +166,7 @@ def get_elevation(pos,repourl=default_config["repourl"],cachedir=default_config[
     else:
         e11 = e00
     e0 = dx*e00 + (1-dx)*e01
-    e1 = dx*e10 + (1-dx)*e11 
+    e1 = dx*e10 + (1-dx)*e11
 
     elev = dy*e0 + (1-dy)*e1
 
