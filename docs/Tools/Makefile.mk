@@ -9,6 +9,7 @@ DOCS_UTILITIES += docs/Tools/Mapping.md
 DOCS_UTILITIES += docs/Tools/Moutils.md
 DOCS_UTILITIES += docs/Tools/Powerplant.md
 DOCS_UTILITIES += docs/Tools/Resource.md
+DOCS_UTILITIES += docs/Tools/Runner.md
 DOCS_UTILITIES += docs/Tools/Timeseries.md
 DOCS_UTILITIES += docs/Tools/Unitcalc.md
 DOCS_UTILITIES += docs/Tools/Weather.md

@@ -6,11 +6,11 @@ import os, sys
 import json
 import re
 import io
-from gridlabd.gridlabd_runner import gridlabd
+from gridlabd.runner import gridlabd
 import pandas as pd
 
 VERSION = "4.3.1" # oldest version supported by this module
-ENCODING = "utf-8" # data encode to use for JSON files
+ENCODING = "utf-8" # data encoding to use for JSON files
 
 class GridlabdModelException(Exception):
     pass
@@ -18,11 +18,23 @@ class GridlabdModelException(Exception):
 class GridlabdModel:
 
     def __init__(self,
-                 data = None, # GLM filename, JSON data, or JSON filename
-                 name = None, # filename to use (overrides default filename)
-                 force = False, # force overwrite of existing JSON
-                 initialize = False, # initialize GLM first
+                 data:str = None,
+                 name:str = None,
+                 force:bool = False,
+                 initialize:bool = False,
                  ):
+        """Create a gridlabd model object
+
+        Arguments:
+
+        * `data`: GLM filename, JSON data, or JSON filename
+
+        * `name`: filename to use (overrides default filename)
+
+        * `force`: force overwrite of existing JSON
+
+        * `initialize`: initialize GLM first
+        """
 
         if name:
             self.filename = name
@@ -70,7 +82,7 @@ class GridlabdModel:
         """
         with open(filename,"r") as fh:
             self.filename = filename
-            self.load(data)
+            self.load(fh.read())
 
     def read_json(self,filename):
         """Read JSON file
@@ -95,8 +107,7 @@ class GridlabdModel:
             if data[0] in ["[","{"]:
                 data = json.loads(data)
             else:
-                data = json.loads(gridlabd("-C",".glm","-o","-json",binary=True,source=io.StringIO(data)))
-                print(data)
+                data = json.loads(gridlabd("-C",".glm","-o","-json",source=data,binary=True))
         if not type(data) is dict:
             raise GridlabdModelException("data is not a dictionary")
         if data["application"] != "gridlabd":
@@ -123,7 +134,8 @@ class GridlabdModel:
         else:
             match = []
             for y in classes if classes else '.*':
-                match.extend([x for x in self.classes if re.match(y,x)])
+                regex = re.compile(y)
+                match.extend([x for x in self.classes if regex.match(x)])
         data = dict([(obj,data) for obj,data in self.objects.items() if data["class"] in match])
         return as_type(data,**kwargs)
 
@@ -133,43 +145,31 @@ class GridlabdModel:
 
 if __name__ == "__main__":
 
-    import unittest
+    if not sys.argv[0]:
+        import unittest
 
-    if not os.path.exists("/tmp/13.glm"):
-        gridlabd("model","get","IEEE/13")
-        os.system("mv 13.glm /tmp")
-        gridlabd("-C","/tmp/13.glm","-o","/tmp/13.json")
+        class TestModel(unittest.TestCase):
 
-    class TestModel(unittest.TestCase):
+            def test_glm_get_objects_pattern(self):
+                gridlabd("model","get","IEEE/13","-o=/tmp/13.glm")
+                glm = GridlabdModel("/tmp/13.glm",force=True)
+                loads = glm.get_objects(classes=[".*load"])
+                self.assertEqual(len(loads),10)
 
-        # def test_glm(self):
-        #     glm = GridlabdModel("/tmp/13.glm",force=True)
-        #     loads = glm.get_objects(classes=[".*load"])
-        #     self.assertEqual(len(loads),10)
-
-        # def test_json(self):
-        #     glm = GridlabdModel("/tmp/13.json")
-        #     loads = glm.get_objects(classes=["load","triplex_load"])
-        #     self.assertEqual(len(loads),10)
-
-        # def test_new(self):
-
-        #     glm = GridlabdModel("/tmp/test.json",force=True)
-        #     self.assertEqual(glm.objects,{})
-        #     self.assertEqual(glm.classes,{})
-
-        def test_str_glm(self):
-            with open("/tmp/13.glm","r") as fh:
-                data = fh.read()
-                glm = GridlabdModel(data)
+            def test_json_get_objects_list(self):
+                gridlabd("model","get","IEEE/13","-o=/tmp/13.json")
+                glm = GridlabdModel("/tmp/13.json")
                 loads = glm.get_objects(classes=["load","triplex_load"])
                 self.assertEqual(len(loads),10)
 
-        # def test_str_json(self):
-        #     with open("/tmp/13.json","r") as fh:
-        #         data = json.load(fh)
-        #         glm = GridlabdModel(data)
-        #         loads = glm.get_objects(classes=["load","triplex_load"])
-        #         self.assertEqual(len(loads),10)
+            def test_new_members(self):
+                glm = GridlabdModel(force=True)
+                self.assertEqual(glm.objects,{})
+                self.assertEqual(glm.classes,{})
 
-    unittest.main()
+        unittest.main()
+
+    else:
+
+        print(f"ERROR [modeler]: cannot be run from command line",file=sys.stderr)
+        exit(1)
