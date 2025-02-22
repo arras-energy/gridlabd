@@ -69,6 +69,7 @@ build {
       "sudo apt-get update && sudo apt-get install -y apt-transport-https",
       "sudo apt-get install -y git curl nano",
       "cd /usr/local/src",
+      "export INSTALL_SOURCE=http://install.arras.energy",
       "curl -sL http://install.arras.energy/install.sh | sudo sh",
       "sudo chown -R $USER /usr/local",
       "gridlabd --version=all"
