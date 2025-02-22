@@ -14,6 +14,8 @@ WORKDIR /app/gridlabd
 # Copy the contents of the local directory to the app directory in the container
 COPY . /app/gridlabd
 
+ENV INSTALL_SOURCE=http://install.arras.energy
+
 EXPOSE 6266-6299/tcp
 # Run the install.sh script with the desired arguments
 RUN curl -sL http://install.arras.energy/install.sh | sh
