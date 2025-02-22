@@ -1095,6 +1095,7 @@ docs/Tools/Powerplant.md
 docs/Tools/Resource.md
 docs/Tools/Rest_client.md
 docs/Tools/Rest_server.md
+docs/Tools/Runner.md
 docs/Tools/Timeseries.md
 docs/Tools/Unitcalc.md
 docs/Tools/Weather.md
@@ -4104,8 +4105,6 @@ tools/framework.py
 tools/gldserver.py
 tools/gridlabd-editor.png
 tools/gridlabd-editor.py
-tools/gridlabd_model.py
-tools/gridlabd_runner.py
 tools/group.py
 tools/insights.py
 tools/install.py
@@ -4119,6 +4118,7 @@ tools/market_model.py
 tools/mdb_info.py
 tools/metar2glm.py
 tools/meteostat_weather.py
+tools/modeler.py
 tools/moutils.py
 tools/network.py
 tools/noaa_forecast.py
@@ -4130,6 +4130,7 @@ tools/resource.py
 tools/rest_client.py
 tools/rest_server.py
 tools/rest_server_config.py
+tools/runner.py
 tools/test_api.py
 tools/timeseries.py
 tools/ucar_weather.py

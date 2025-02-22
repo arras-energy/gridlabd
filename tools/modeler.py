@@ -6,17 +6,18 @@ import os, sys
 import json
 import re
 import io
-from gridlabd.runner import gridlabd
+import gridlabd.runner as runner
 import pandas as pd
+from typing import Any
 
 VERSION = "4.3.1" # oldest version supported by this module
 ENCODING = "utf-8" # data encoding to use for JSON files
 
 class GridlabdModelException(Exception):
-    pass
+    """GridLAB-D modeler exception handler"""
 
 class GridlabdModel:
-
+    """GridLAB-D modeler class implementation"""
     def __init__(self,
                  data:str = None,
                  name:str = None,
@@ -42,7 +43,7 @@ class GridlabdModel:
         if data is None: # new file
             if not name:
                 self.autoname(force)
-            gridlabd("-o",self.filename)
+            runner.gridlabd("-o",self.filename)
             self.read_json(self.filename)
 
         elif type(data) is str and os.path.splitext(data)[1] == ".glm": # glm file
@@ -59,11 +60,17 @@ class GridlabdModel:
                 self.autoname(force)
             self.load(data)
 
-    def autoname(self,force=False):
+    def autoname(self,force:bool=False) -> str:
         """Generate a new filename
 
         Arguments:
-        - force (bool): use the first name generate regardless of whether the file exists
+        
+        * `force`: use the first name generate regardless of whether the file
+          exists
+
+        Returns:
+
+        * `str`: new filename
         """
         num = 0
         def _name(num):
@@ -71,24 +78,29 @@ class GridlabdModel:
         while os.path.exists(_name(num)) and not force:
             num += 1
         self.filename = _name(num)
+        return self.filename
 
-    def read_glm(self,filename,force=True,initialize=False):
+    def read_glm(self,filename:str,force:bool=True,initialize:bool=False):
         """Read GLM file
     
         Arguments:
-        - filename (str): name of GLM file to read
-        - force (bool): force overwrite of JSON
-        - initialize (bool): initialize GLM first
+        
+        * `filename`: name of GLM file to read
+
+        * `force`: force overwrite of JSON
+
+        * `initialize`: initialize GLM first
         """
         with open(filename,"r") as fh:
             self.filename = filename
             self.load(fh.read())
 
-    def read_json(self,filename):
+    def read_json(self,filename:str):
         """Read JSON file
 
         Arguments:
-        - filename (str): name of JSON file to read
+        
+        * `filename`: name of JSON file to read
         """
         with open(filename,"r") as fh:
             data = json.load(fh)
@@ -99,7 +111,8 @@ class GridlabdModel:
         """Load data from dictionary
 
         Arguments:
-        - data (dict|str|bytes): data to load (must be a valid GLM model)
+        
+        * `data`: data to load (must be a valid GLM model)
         """
         if type(data) is bytes:
             data = data.decode(ENCODING)
@@ -107,7 +120,7 @@ class GridlabdModel:
             if data[0] in ["[","{"]:
                 data = json.loads(data)
             else:
-                data = json.loads(gridlabd("-C",".glm","-o","-json",source=data,binary=True))
+                data = json.loads(runner.gridlabd("-C",".glm","-o","-json",source=data,binary=True))
         if not type(data) is dict:
             raise GridlabdModelException("data is not a dictionary")
         if data["application"] != "gridlabd":
@@ -118,16 +131,20 @@ class GridlabdModel:
             setattr(self,key,values)
         self.is_modified = False
 
-    def get_objects(self,classes=None,as_type=dict,**kwargs):
+    def get_objects(self,classes=None,as_type:Any=dict,**kwargs) -> Any:
         """Find objects belonging to specified classes
 
         Arguments:
-        - classes (str|list of str): patterns of class names to search (default is '.*')
-        - as_type (class): type to use for return value
-        - kwargs (dict): arguments for as_type
+        
+        * `classes`: patterns of class names to search (default is '.*')
+        
+        * `as_type`: type to use for return value
+        
+        * `**kwargs`: arguments for as_type
 
         Return:
-        - as_type: object data
+        
+        * `as_type`: object data
         """
         if type(classes) is str:
             match = classes.split(",")
@@ -151,13 +168,13 @@ if __name__ == "__main__":
         class TestModel(unittest.TestCase):
 
             def test_glm_get_objects_pattern(self):
-                gridlabd("model","get","IEEE/13","-o=/tmp/13.glm")
+                runner.gridlabd("model","get","IEEE/13","-o=/tmp/13.glm")
                 glm = GridlabdModel("/tmp/13.glm",force=True)
                 loads = glm.get_objects(classes=[".*load"])
                 self.assertEqual(len(loads),10)
 
             def test_json_get_objects_list(self):
-                gridlabd("model","get","IEEE/13","-o=/tmp/13.json")
+                runner.gridlabd("model","get","IEEE/13","-o=/tmp/13.json")
                 glm = GridlabdModel("/tmp/13.json")
                 loads = glm.get_objects(classes=["load","triplex_load"])
                 self.assertEqual(len(loads),10)
