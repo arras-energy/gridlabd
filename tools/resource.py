@@ -267,6 +267,33 @@ class Resource:
                 },
             **spec)
 
+    def cache(self,name:str,index:str) -> str:
+        """Get local cache filename for resource
+
+        Arguments:
+
+        * `name`: name of resource
+
+        * `index`: index of file in resource
+
+        Returns:
+
+        * `str`: filename of local cache copy of resource content
+        """
+        cachepath = os.path.join(os.environ["GLD_ETC"],".cache",name,index)
+        if os.path.exists(cachepath):
+            return cachepath
+        data = self.download_raw(name=name,index=index)
+        os.makedirs(os.path.split(cachepath)[0],exist_ok=True)
+        with open(cachepath,"wb") as fh:
+            fh.write(data)
+        return cachepath
+
+    def download_raw(self,name,index,**kwargs):
+        spec = self.data.loc['name']
+        url = f"{spec['protocol']}://{spec['hostname']}:{spec['port']}{spec[content]}".format(index=index,**kwargs)
+        return requests.get(url).content
+
 def main(argv:list) -> int:
     """Resource tool main routine
 
