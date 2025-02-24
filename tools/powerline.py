@@ -91,7 +91,7 @@ class Network:
         self.branch = lines.to_dict('index')
         self.bus = {x:{} for x in set(list(lines["sub_1"])+list(lines["sub_2"]))}
 
-    def write_glm(outfile:str):
+    def write_glm(self,outfile:str):
 
         with open(outfile,"w") as fh:
             print("module pypower;",file=fh)
@@ -101,7 +101,7 @@ class Network:
     name "N_{node}";
 }}""",file=fh)
 
-            for name,line in self.branch.iterrows():
+            for name,line in self.branch.items():
                 if line['sub_1'] and line['sub_2']:
                     print(f"""object branch
 {{
@@ -147,6 +147,8 @@ def main(argv):
             return app.E_INVALID
 
     # implement your code here
+    model = Network()
+    model.write_glm(output)
 
     # normal termination condition
     return app.E_OK
