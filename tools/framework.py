@@ -28,6 +28,7 @@ def main(argv:list[str]) -> int:
     if len(argv) == 1:
 
         app.syntax(__doc__)
+        return app.E_SYNTAX
 
     # handle stardard app arguments --debug, --warning, --verbose, --quiet, --silent
     args = app.read_stdargs(argv)
@@ -35,7 +36,9 @@ def main(argv:list[str]) -> int:
     for key,value in args:
 
         if key in ["-h","--help","help"]:
+            
             print(__doc__,file=sys.stdout)
+            return app.E_OK
 
         # add your options here
 

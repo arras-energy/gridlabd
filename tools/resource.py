@@ -56,6 +56,7 @@ import json
 import re
 import pandas as pd
 import gridlabd.framework as app
+import gridlabd.runner as run
 import subprocess
 import requests
 from typing import TypeVar, Union
@@ -267,7 +268,7 @@ class Resource:
                 },
             **spec)
 
-    def cache(self,name:str,index:str) -> str:
+    def cache(self,name:str,index:str,freshen=None,**kwargs) -> str:
         """Get local cache filename for resource
 
         Arguments:
@@ -276,22 +277,60 @@ class Resource:
 
         * `index`: index of file in resource
 
+        * `freshen`: method of refreshing the cache
+          (`None`=never, `False`=always, `True`=updated)
+
+        * `**kwargs`: override(s) of gridlabd globals
         Returns:
 
         * `str`: filename of local cache copy of resource content
         """
-        cachepath = os.path.join(os.environ["GLD_ETC"],".cache",name,index)
-        if os.path.exists(cachepath):
-            return cachepath
-        data = self.download_raw(name=name,index=index)
-        os.makedirs(os.path.split(cachepath)[0],exist_ok=True)
-        with open(cachepath,"wb") as fh:
-            fh.write(data)
+
+        # add default values from gridlabd globals
+        for key,value in self.globals.items():
+            if not key in kwargs:
+                kwargs[key] = value;
+
+        # locate cache file
+        cachepath = os.path.join(os.environ["GLD_ETC"],".cache",name,self.data[name]['content'].format(index=index,**kwargs).strip("/"))
+        
+        # if not found or need to freshen, download data
+        if not os.path.exists(cachepath) or not freshen is None:
+
+            # get the data to cache
+            data = self._download_raw(name=name,index=index)
+
+            # create the cache directory
+            os.makedirs(os.path.split(cachepath)[0],exist_ok=True)
+
+            # write data to cache
+            with open(cachepath,"wb") as fh:
+                fh.write(data)
+
+        # return the path to the cache
         return cachepath
 
-    def download_raw(self,name,index,**kwargs):
-        spec = self.data.loc['name']
-        url = f"{spec['protocol']}://{spec['hostname']}:{spec['port']}{spec[content]}".format(index=index,**kwargs)
+    def _download_raw(self,name,index,**kwargs):
+
+        # add default values from gridlabd globals
+        for key,value in self.globals.items():
+            if not key in kwargs:
+                kwargs[key] = value;
+
+        # get specs for this resource name
+        spec = self.data[name]
+
+        # build URL from specs
+        url = f"{spec['protocol']}://{spec['hostname']}:{spec['port']}{spec['content']}".format(index=index,**kwargs)
+
+        # make request
+        res = requests.get(url)
+
+        # handle failures
+        if not res.ok:
+            raise ResourceError(f"ERROR: {res.status_code} {res.reason}\nQUERY: {url}\n\nREPLY: {requests.get(url).text}")
+
+        # return result
         return requests.get(url).content
 
 def main(argv:list) -> int:

@@ -1,6 +1,6 @@
 [[/Tools/Powerplant]] -- Powerplant data tool
 
-Syntax: gridlabd powerplant COUNTRY STATE COUNTY [OPTIONS ...]
+Syntax: `gridlabd powerplant COUNTRY STATE COUNTY [OPTIONS ...]`
 
 Options:
 
@@ -22,7 +22,7 @@ gridlabd powerplant US WA Grant
 See Also:
 
 * [[/Tools/Framework]]
-* [https://hifld-geoplatform.hub.arcgis.com/datasets/geoplatform::power-plants-2]
+* [HIFLD powerplant data repository](https://hifld-geoplatform.hub.arcgis.com/datasets/geoplatform::power-plants-2)
 
 
 

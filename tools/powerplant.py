@@ -1,6 +1,6 @@
 """Powerplant data tool
 
-Syntax: gridlabd powerplant COUNTRY STATE COUNTY [OPTIONS ...]
+Syntax: `gridlabd powerplant COUNTRY STATE COUNTY [OPTIONS ...]`
 
 Options:
 
@@ -22,7 +22,7 @@ gridlabd powerplant US WA Grant
 See Also:
 
 * [[/Tools/Framework]]
-* [https://hifld-geoplatform.hub.arcgis.com/datasets/geoplatform::power-plants-2]
+* [HIFLD powerplant data repository](https://hifld-geoplatform.hub.arcgis.com/datasets/geoplatform::power-plants-2)
 
 """
 
@@ -227,7 +227,10 @@ def main(argv):
     * `int`: exit code (see `framework.E_*` codes)
     """
     if len(argv) == 1:
+        
         app.syntax(__doc__)
+        return app.E_SYNTAX
+
     args = app.read_stdargs(argv)
 
     location = {}

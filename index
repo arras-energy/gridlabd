@@ -1087,6 +1087,7 @@ docs/Tools/Market_data.md
 docs/Tools/Market_model.md
 docs/Tools/Metar2glm.md
 docs/Tools/Meteostat_weather.md
+docs/Tools/Modeler.md
 docs/Tools/Moutils.md
 docs/Tools/Network.md
 docs/Tools/Noaa_forecast.md
@@ -4124,6 +4125,7 @@ tools/network.py
 tools/noaa_forecast.py
 tools/nsrdb_weather.py
 tools/pole_analysis.py
+tools/powerline.py
 tools/powerplant.py
 tools/read_dlp.py
 tools/resource.py
