@@ -35,7 +35,7 @@
 ## 
 ## See also:
 ## 
-## * https://docs.gridlabd.us/
+## * https://docs.arras.energy/
 ## 
 
 ORG=$($GLD_BIN/gridlabd.bin --version=origin | cut -f4 -d/)
@@ -81,4 +81,4 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-open 'https://docs.gridlabd.us/'${PAGE}'.html?owner='${ORG:-arras.energy}'&project=gridlabd&branch='${BRA:-master}'&folder='$DIR'&doc='$DOC
+open 'https://docs.arras.energy/'${PAGE}'.html?owner='${ORG:-arras.energy}'&project=gridlabd&branch='${BRA:-master}'&folder='$DIR'&doc='$DOC

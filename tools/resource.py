@@ -527,20 +527,19 @@ def test(pattern='.*'):
         print("Properties:",file=sys.stderr)
         for key,value in resource.properties(name=name).items():
             print(f"  {key}: {repr(value)}",file=sys.stderr)
-        try:
-            index = resource.index(name=name)
-            if index:
-                for item in index:
+        index = resource.index(name=name)
+        if index:
+            for item in index:
+                try:
                     tested += 1
                     print(f"{name}/{item}... ",end="",flush=True,file=sys.stderr)
                     content = resource.headers(name=name,index=item)
                     size = content['content-length']
                     checked += int(size.split()[0])
                     print(f"OK ({float(size)/1e3:.1f} kB)",flush=True,file=sys.stderr)
-        except:
-            failed += 1
-            e_type,e_value,e_trace = sys.exc_info()
-            print(f"FAILED ({e_type.__name__} {e_value})",file=sys.stderr)
+                except Exception as err:
+                    failed += 1
+                    print(f"FAILED: {name}... {err}",file=sys.stderr)
 
     print(f"Tested {tested} resources ({checked/1e6:.1f} MB) with {failed} failures",file=sys.stderr)
     return app.E_OK if failed == 0 else app.E_FAILED
@@ -552,6 +551,7 @@ if __name__ == "__main__":
     if not sys.argv[0]:
 
         app.test(test,__file__)
+
         #
         # Test library functions (comprehensive scan of all contents)
         #
@@ -572,7 +572,7 @@ if __name__ == "__main__":
         # Test command line options (e.g., one at a time)
         #
 
-        options = []
+        # options = []
         # options.extend(["--debug"])
         # options.extend(["--verbose"])
         # options.extend(["--format=csv"])
