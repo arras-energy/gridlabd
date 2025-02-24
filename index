@@ -4069,6 +4069,8 @@ tools/autotest/test_noaa_forecast_opt.glm
 tools/autotest/test_pole_analysis.glm
 tools/autotest/test_pole_analysis_opt.csv
 tools/autotest/test_pole_analysis_opt.glm
+tools/autotest/test_powerline.glm
+tools/autotest/test_powerline_opt.glm
 tools/autotest/test_powerplant.glm
 tools/autotest/test_resource.glm
 tools/autotest/test_resource.txt

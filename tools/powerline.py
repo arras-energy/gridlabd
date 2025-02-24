@@ -34,6 +34,7 @@ import geojson as gj
 import pandas as pd
 import gridlabd.resource as gr
 import gridlabd.framework as app
+import random
 
 CONVERTERS = {
     "TYPE" : lambda x: x.replace("; ","|") if x not in ["","NOT AVAILABLE"] else None,
@@ -95,6 +96,8 @@ class Network:
 
         with open(outfile,"w") as fh:
             print("module pypower;",file=fh)
+
+            # write node objects
             for node in self.bus:
                 print(f"""object bus
 {{
@@ -102,15 +105,28 @@ class Network:
 }}""",file=fh)
 
             for name,line in self.branch.items():
-                if line['sub_1'] and line['sub_2']:
-                    print(f"""object branch
+
+                # create nodes for missing nodes
+                while not line['sub_1'] or line['sub_1'] in self.bus:
+                    line['sub_1'] = hex(random.randint(0,2**64))[2:]
+                print(f"""object bus
+{{
+    name "N_{line['sub_1']}";
+}}""",file=fh)
+                while not line['sub_2'] or line['sub_2'] in self.bus:
+                    line['sub_2'] = hex(random.randint(0,2**64))[2:]
+                print(f"""object bus
+{{
+    name "N_{line['sub_2']}";
+}}""",file=fh)
+
+                # write branch object
+                print(f"""object branch
 {{
     name "L_{name}";
     from "N_{line['sub_1']}";
     to "N_{line['sub_2']}";
 }}""",file=fh)
-                else:
-                    print(f"WARNING [powerline]: branch 'L_{name}' is missing properties: {', '.join([x for x in ['sub_1','sub_2'] if not line[x]])} not found",file=sys.stderr)
 
 def main(argv):
 
