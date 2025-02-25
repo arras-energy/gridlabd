@@ -8,12 +8,15 @@ EXPORT_CREATE(bus);
 EXPORT_INIT(bus);
 EXPORT_SYNC(bus);
 EXPORT_PRECOMMIT(bus);
+EXPORT_COMMIT(bus);
 
 CLASS *bus::oclass = NULL;
 bus *bus::defaults = NULL;
 
 static int last_i = 0;
 char256 bus::timestamp_format = ""; // "%Y-%m-%d %H:%M:%S%z"; // RFC-822/ISO8601 standard timestamp
+double bus::low_voltage_warning = 0.0;
+double bus::high_voltage_warning = 0.0;
 
 bus::bus(MODULE *module)
 {
@@ -36,12 +39,12 @@ bus::bus(MODULE *module)
 
 			PT_enumeration, "type", get_type_offset(),
 				PT_DESCRIPTION, "bus type (1 = PQ, 2 = PV, 3 = ref, 4 = isolated)",
-				PT_KEYWORD, "UNKNOWN", (enumeration)0,
-				PT_KEYWORD, "PQ", (enumeration)1,
-				PT_KEYWORD, "PV", (enumeration)2,
-				PT_KEYWORD, "REF", (enumeration)3,
-				PT_KEYWORD, "NONE", (enumeration)4,
-				PT_KEYWORD, "PQREF", (enumeration)1,
+				PT_KEYWORD, "UNKNOWN", (enumeration)BT_UNKNOWN,
+				PT_KEYWORD, "PQ", (enumeration)BT_PQ,
+				PT_KEYWORD, "PV", (enumeration)BT_PV,
+				PT_KEYWORD, "REF", (enumeration)BT_REF,
+				PT_KEYWORD, "ISOLATED", (enumeration)BT_ISOLATED,
+				PT_KEYWORD, "PQREF", (enumeration)BT_PQ,
 
 			PT_double, "Pd[MW]", get_Pd_offset(),
 				PT_OUTPUT,
@@ -63,7 +66,7 @@ bus::bus(MODULE *module)
 			PT_double, "baseKV[kV]", get_baseKV_offset(),
 				PT_DESCRIPTION, "voltage magnitude (p.u.)",
 
-			PT_double, "Vm[pu*V]", get_Vm_offset(),
+			PT_double, "Vm[pu]", get_Vm_offset(),
 				PT_DESCRIPTION, "voltage angle (degrees)",
 
 			PT_double, "Va[deg]", get_Va_offset(),
@@ -72,12 +75,12 @@ bus::bus(MODULE *module)
 			PT_int32, "zone", get_zone_offset(),
 				PT_DESCRIPTION, "loss zone (1-999)",
 
-			PT_double, "Vmax[pu*V]", get_Vmax_offset(),
-				PT_DEFAULT,"1.2 pu*V",
+			PT_double, "Vmax[pu]", get_Vmax_offset(),
+				PT_DEFAULT,"1.2 pu",
 				PT_DESCRIPTION, "maximum voltage magnitude (p.u.)",
 
-			PT_double, "Vmin[pu*V]", get_Vmin_offset(),
-				PT_DEFAULT,"0.8 pu*V",
+			PT_double, "Vmin[pu]", get_Vmin_offset(),
+				PT_DEFAULT,"0.8 pu",
 				PT_DESCRIPTION, "minimum voltage magnitude (p.u.)",
 
 			PT_double, "lam_P", get_lam_P_offset(),
@@ -139,10 +142,25 @@ bus::bus(MODULE *module)
 			PT_char1024, "weather_sensitivity", get_weather_sensitivity_offset(),
 				PT_DESCRIPTION, "Weather sensitivities {PROP: VAR[ REL VAL],SLOPE[; ...]}",
 
+			PT_complex, "shunt", get_shunt_offset(),
+				PT_DESCRIPTION, "Initial shunt value before external shunt inputs",
+
 			NULL)<1)
 		{
 				throw "unable to publish bus properties";
 		}
+
+	    gl_global_create("pypower::low_voltage_warning",
+	        PT_double, &low_voltage_warning, 
+	        PT_UNITS, "pu",
+	        PT_DESCRIPTION, "Voltage level for low voltage warning",
+	        NULL);
+
+	    gl_global_create("pypower::high_voltage_warning",
+	        PT_double, &high_voltage_warning, 
+	        PT_UNITS, "pu",
+	        PT_DESCRIPTION, "Voltage level for high voltage warning",
+	        NULL);
 	}
 }
 
@@ -158,6 +176,22 @@ int bus::create(void)
 	{
 		throw "maximum bus entities exceeded";
 	}
+
+	// defaults
+	set_bus_i(0);
+	set_type(nbus == 1 ? 3 : 1); // first bus is REF by default all other PQ by default
+	set_Pd(0.0);
+	set_Qd(0.0);
+	set_Gs(0.0);
+	set_Bs(0.0);
+	set_area(1);
+	set_baseKV(500.0);
+	set_Vm(1.0);
+	set_Va(0.0);
+	set_zone(1);
+	set_Vmax(1.2);
+	set_Vmin(0.8);
+	set_S(0.0);
 
 	// initialize weather data
 	current = first = last = NULL;
@@ -241,8 +275,23 @@ int bus::init(OBJECT *parent)
 			return 0;
 		}
 	}
+	if ( shunt.Re() == 0 && shunt.Im() == 0 )
+	{
+		shunt = complex(Gs,Bs);
+	}
 
 	return 1; // return 1 on success, 0 on failure, 2 on retry later
+}
+
+void bus::add_load(double P, double Q)
+{
+	Pd += P;
+	Qd += Q;
+}
+void bus::add_shunt(double G, double B)
+{
+	Gs += G;
+	Bs += B;
 }
 
 TIMESTAMP bus::precommit(TIMESTAMP t0)
@@ -275,8 +324,8 @@ TIMESTAMP bus::presync(TIMESTAMP t0)
 	// reset to base load/shunt
 	Pd = S.Re();
 	Qd = S.Im();
-	Gs = 0.0;
-	Bs = 0.0;
+	Gs = shunt.Re();
+	Bs = shunt.Im();
 
 	return TS_NEVER;
 }
@@ -290,6 +339,19 @@ TIMESTAMP bus::sync(TIMESTAMP t0)
 TIMESTAMP bus::postsync(TIMESTAMP t0)
 {
 	exception("invalid postsync call");
+	return TS_NEVER;
+}
+
+TIMESTAMP bus::commit(TIMESTAMP t0, TIMESTAMP t1)
+{
+	if ( high_voltage_warning > 0 && Vm > high_voltage_warning )
+	{
+		warning("bus voltage is high");
+	}
+	else if ( Vm < low_voltage_warning )
+	{
+		warning("bus voltage is low");
+	}
 	return TS_NEVER;
 }
 

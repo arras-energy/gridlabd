@@ -244,7 +244,7 @@ int transfer_function_add(char *name,		///< transfer function name
 	{
 		char buffer[1024];
 		dump_function(a,n,b,m,buffer,sizeof(buffer)-1);
-		output_debug("%s(%s) = %s",name,domain,buffer);
+		IN_MYCONTEXT output_debug("%s(%s) = %s",name,domain,buffer);
 	}
 	return 1;
 }
@@ -342,7 +342,7 @@ static bool read_vector(const char *name, double *vector, size_t len)
 	{
 		char buffer[1024];
 		dump_vector(vector,len,buffer,sizeof(buffer));
-		output_debug("transform.cpp/read_vector(name='%s',vector=%x,len=%ld): --> %s",name,vector,len,buffer);
+		IN_MYCONTEXT output_debug("transform.cpp/read_vector(name='%s',vector=%x,len=%ld): --> %s",name,vector,len,buffer);
 	}
 	return true;
 }
@@ -534,11 +534,11 @@ TIMESTAMP apply_filter(TRANSFERFUNCTION *f,	///< transfer function
 	IN_MYCONTEXT 
 	{
 		dump_function(a,n,b,m,buffer,sizeof(buffer));
-		output_debug("apply_transform(f={name='%s'; domain='%s'}): tf = %s",f->name,f->domain, buffer);
+		IN_MYCONTEXT output_debug("apply_transform(f={name='%s'; domain='%s'}): tf = %s",f->name,f->domain, buffer);
 		dump_vector(a,n,buffer,sizeof(buffer));
-		output_debug("apply_transform(f={name='%s'; domain='%s'}): a = %s",f->name,f->domain, buffer);
+		IN_MYCONTEXT output_debug("apply_transform(f={name='%s'; domain='%s'}): a = %s",f->name,f->domain, buffer);
 		dump_vector(b,n,buffer,sizeof(buffer));
-		output_debug("apply_transform(f={name='%s'; domain='%s'}): b = %s",f->name,f->domain, buffer);
+		IN_MYCONTEXT output_debug("apply_transform(f={name='%s'; domain='%s'}): b = %s",f->name,f->domain, buffer);
 	}
 
 	// update input
@@ -547,7 +547,7 @@ TIMESTAMP apply_filter(TRANSFERFUNCTION *f,	///< transfer function
 	IN_MYCONTEXT
 	{
 		dump_vector(u,n,buffer,sizeof(buffer));
-		output_debug("apply_transform(f={name='%s'; domain='%s'}): u = %s",f->name,f->domain, buffer);
+		IN_MYCONTEXT output_debug("apply_transform(f={name='%s'; domain='%s'}): u = %s",f->name,f->domain, buffer);
 	}
 
 	// update state
@@ -563,7 +563,7 @@ TIMESTAMP apply_filter(TRANSFERFUNCTION *f,	///< transfer function
 	IN_MYCONTEXT
 	{
 		dump_vector(x,n,buffer,sizeof(buffer));
-		output_debug("apply_transform(f={name='%s'; domain='%s'}): x = %s",f->name,f->domain, buffer);
+		IN_MYCONTEXT output_debug("apply_transform(f={name='%s'; domain='%s'}): x = %s",f->name,f->domain, buffer);
 	}
 
 	return ((int64)(t1/f->timestep)+1)*f->timestep + f->timeskew;
@@ -613,7 +613,7 @@ void transform_reset(TRANSFORM *xform, TIMESTAMP t1)
 			IN_MYCONTEXT
 			{
 				dump_vector(x,n,buffer,sizeof(buffer));
-				output_debug("transform_reset(f={name='%s'; domain='%s'},t1=%ld): x = %s",f->name,f->domain, t1, buffer);
+				IN_MYCONTEXT output_debug("transform_reset(f={name='%s'; domain='%s'},t1=%ld): x = %s",f->name,f->domain, t1, buffer);
 			}
 
 			// update output

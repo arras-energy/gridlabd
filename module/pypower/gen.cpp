@@ -41,7 +41,7 @@ gen::gen(MODULE *module)
 			PT_double, "Qmin[MVAr]", get_Qmin_offset(),
 				PT_DESCRIPTION, "minimum reactive power output (MVAr)",
 
-			PT_double, "Vg[pu*V]", get_Vg_offset(),
+			PT_double, "Vg[pu]", get_Vg_offset(),
 				PT_DESCRIPTION, "voltage magnitude setpoint (p.u.)",
 
 			PT_double, "mBase[MVA]", get_mBase_offset(),
@@ -139,27 +139,29 @@ int gen::create(void)
 
 int gen::init(OBJECT *parent)
 {
+	if ( parent == NULL )
+	{
+		error("parent and bus not specified");
+		return 0;
+	}
+	class bus *p = OBJECTDATA(parent,class bus);
+	if ( ! p->isa("bus","pypower") )
+	{
+		error("parent object '%s' is not a pypower bus",p->get_name());
+		return 0;
+	}
 	if ( get_bus() == 0 )
 	{
-		if ( parent == NULL )
+		if ( p->get_bus_i() == 0 )
 		{
-			error("cannot find bus id without a known parent");
-			return 0;
+			return 2; // defer until bus is initialized
 		}
-		class bus *p = OBJECTDATA(parent,class bus);
-		if ( p->isa("bus","pypower") )
-		{
-			if ( p->get_bus_i() == 0 )
-			{
-				return 2; // defer until bus is initialized
-			}
-			set_bus(p->get_bus_i());
-		}
-		else
-		{
-			error("parent object '%s' is not a pypower bus",p->get_name());
-			return 0;
-		}
+		set_bus(p->get_bus_i());
+	}
+
+	if ( p->get_type() != bus::BT_PV && p->get_type() != bus::BT_REF )
+	{
+		warning("bus '%s' type is not PV or REF as expected for generators",p->get_name());
 	}
 
 	return 1;
@@ -179,7 +181,8 @@ TIMESTAMP gen::precommit(TIMESTAMP t0)
 
 void gen::add_powerplant(class powerplant *plant)
 {
-	gl_debug("powerplant '%s' connected",plant->get_name());
+	const char *status[] = {"OFFLINE","ONLINE"};
+	gl_debug("powerplant '%s' connected (%s)",plant->get_name(),status[plant->get_status()]);
 	plant_count++;
 }
 
