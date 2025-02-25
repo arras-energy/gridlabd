@@ -278,7 +278,8 @@ def solver(pf_case):
 
             write_case(results,f"{modelname}_failed.{save_format}")
 
-            return False if stop_on_failure else pf_case
+            if stop_on_failure:
+                return False
             
         for name in ['bus','branch']:
             pf_case[name] = results[name].tolist()

@@ -431,24 +431,6 @@ EXPORT bool on_init(void)
 }
 
 // conditional solver send/receive (only if value differs or is not set yet)
-#define SEND(INDEX,NAME,FROM,TO) { PyObject *py = PyList_GetItem(pyobj,INDEX); \
-    if ( py == NULL || fabs(obj->get_##NAME()-Py##TO##_As##FROM(py)) > solver_update_resolution ) { \
-        PyObject *value = Py##TO##_From##FROM(obj->get_##NAME()); \
-        if ( value == NULL ) { \
-            gl_warning("pypower:on_*(t0=%lld): unable to create value " #NAME " for data item %d",t0,INDEX); \
-        } \
-        else { \
-            PyList_SET_ITEM(pyobj,INDEX,value); \
-            Py_XDECREF(py); \
-            n_changes++; \
-}}}
-
-#define RECV(NAME,INDEX,FROM,TO) { PyObject *py = PyList_GET_ITEM(pyobj,INDEX);\
-    if ( fabs(obj->get_##NAME()-Py##FROM##_As##TO(py)) > solver_update_resolution ) { \
-        n_changes++; \
-        obj->set_##NAME(Py##FROM##_As##TO(py)); \
-    }}
-
 #define SENDX(INDEX,NAME,FROM,TO) { PyObject *py = PyList_GetItem(pyobj,INDEX); \
     if ( py == NULL || fabs(obj->get_##NAME()-Py##TO##_As##FROM(py)) > solver_update_resolution ) { \
         PyObject *value = Py##TO##_From##FROM(obj->get_##NAME()); \
@@ -459,11 +441,6 @@ EXPORT bool on_init(void)
             PyList_SET_ITEM(pyobj,INDEX,value); \
             Py_XDECREF(py); \
 }}}
-
-#define RECVX(NAME,INDEX,FROM,TO) { PyObject *py = PyList_GET_ITEM(pyobj,INDEX);\
-    if ( fabs(obj->get_##NAME()-Py##FROM##_As##TO(py)) > solver_update_resolution ) { \
-        obj->set_##NAME(Py##FROM##_As##TO(py)); \
-    }}
 
 static TIMESTAMP update_controller(TIMESTAMP t0,PyObject *command,const char *name)
 {
@@ -602,6 +579,32 @@ static TIMESTAMP update_controller(TIMESTAMP t0,PyObject *command,const char *na
     }
     return t1;
 }
+
+#define SEND(INDEX,NAME,FROM,TO) { PyObject *py = PyList_GetItem(pyobj,INDEX); \
+    if ( py == NULL || fabs(obj->get_##NAME()-Py##TO##_As##FROM(py)) > solver_update_resolution ) { \
+        PyObject *value = Py##TO##_From##FROM(obj->get_##NAME()); \
+        if ( value == NULL ) { \
+            gl_warning("pypower:on_*(t0=%lld): unable to create value " #NAME " for data item %d",t0,INDEX); \
+        } \
+        else { \
+            PyList_SET_ITEM(pyobj,INDEX,value); \
+            Py_XDECREF(py); \
+}}}
+
+#define RECV(NAME,INDEX,FROM,TO,CHANGE) { PyObject *py = PyList_GET_ITEM(pyobj,INDEX);\
+    double a = obj->get_##NAME(); \
+    double b = Py##FROM##_As##TO(py); \
+    if ( fabs(a-b) > solver_update_resolution ) { \
+        gl_debug("pypower.update_solution(t=%lld): updating bus %d %s from %lf to %lf", \
+            t0,n,#NAME,a,b); \
+        if ( CHANGE ) { n_changes++; } \
+        obj->set_##NAME(b); \
+    }}
+
+// #define RECVX(NAME,INDEX,FROM,TO) { PyObject *py = PyList_GET_ITEM(pyobj,INDEX);\
+//     if ( fabs(obj->get_##NAME()-Py##FROM##_As##TO(py)) > solver_update_resolution ) { \
+//         obj->set_##NAME(Py##FROM##_As##TO(py)); \
+//     }}
 
 static TIMESTAMP update_solution(TIMESTAMP t0)
 {
@@ -805,19 +808,19 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
                 PyObject *pyobj = PyList_GetItem(busdata,n);
                 if ( ! isnan(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,7))) )
                 {
-                    RECV(Vm,7,Float,Double)
+                    RECV(Vm,7,Float,Double,false)
                 }
                 if ( ! isnan(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,8))) )
                 {
-                    RECV(Va,8,Float,Double)
+                    RECV(Va,8,Float,Double,false)
                 }
 
                 if ( enable_opf )
                 {
-                    RECV(lam_P,13,Float,Double)
-                    RECV(lam_Q,14,Float,Double)
-                    RECV(mu_Vmax,15,Float,Double)
-                    RECV(mu_Vmin,16,Float,Double)
+                    RECV(lam_P,13,Float,Double,false)
+                    RECV(lam_Q,14,Float,Double,false)
+                    RECV(mu_Vmax,15,Float,Double,false)
+                    RECV(mu_Vmin,16,Float,Double,false)
                 }
                 obj->V.SetPolar(obj->get_Vm(),obj->get_Va());
             }
@@ -861,15 +864,15 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
             {
                 gen *obj = genlist[n];
                 PyObject *pyobj = PyList_GetItem(gendata,n);
-                RECV(Pg,1,Float,Double)
-                RECV(Qg,2,Float,Double)
-                RECV(apf,20,Float,Double)
+                RECV(Pg,1,Float,Double,true)
+                RECV(Qg,2,Float,Double,true)
+                RECV(apf,20,Float,Double,false)
                 if ( enable_opf )
                 {
-                    RECV(mu_Pmax,21,Float,Double)
-                    RECV(mu_Pmin,22,Float,Double)
-                    RECV(mu_Qmax,23,Float,Double)
-                    RECV(mu_Qmin,24,Float,Double)
+                    RECV(mu_Pmax,21,Float,Double,false)
+                    RECV(mu_Pmin,22,Float,Double,false)
+                    RECV(mu_Qmax,23,Float,Double,false)
+                    RECV(mu_Qmin,24,Float,Double,false)
                 }
                 generation_shortfall += max(obj->get_Pg() - obj->get_Pmax(),0.0);
             }
@@ -897,6 +900,7 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
         }
         if ( n_changes > 0 )
         {
+            gl_debug("%d values changed, requesting resolve",n_changes);
             return t0;
         }
         TIMESTAMP t2 = maximum_timestep > 0 ? TIMESTAMP(t0+maximum_timestep) : TS_NEVER;
