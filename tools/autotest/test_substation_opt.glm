@@ -1,0 +1,2087 @@
+module pypower;
+object substation
+{
+    name "TAP209798";
+    city Arlington;
+    state WA;
+    zip 98223;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.2149664840001;
+    longitude -122.028331692;
+    lines 1;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "TAP209801";
+    city Lynnwood;
+    state WA;
+    zip 98037;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.8419333690001;
+    longitude -122.297446837;
+    lines 1;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "TAP209802";
+    city Edmonds;
+    state WA;
+    zip 98026;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.799559442;
+    longitude -122.35069505;
+    lines 1;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "JIM_CREEK";
+    city Arlington;
+    state WA;
+    zip 98223;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.212443009;
+    longitude -121.930843522;
+    lines 1;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "SNOHOMISH";
+    city Snohomish;
+    state WA;
+    zip 98290;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.923777407;
+    longitude -122.103874206;
+    lines 19;
+    max_volt 345.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "BEVERLY_PARK";
+    city Everett;
+    state WA;
+    zip 98203;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.928703725;
+    longitude -122.209876448;
+    lines 7;
+    max_volt 115.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "BOTHELL";
+    city Bothell;
+    state WA;
+    zip 98012;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.854684062;
+    longitude -122.179508541;
+    lines 13;
+    max_volt 230.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "SNO-KING";
+    city Bothell;
+    state WA;
+    zip 98012;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.812983575;
+    longitude -122.1867063;
+    lines 10;
+    max_volt 500.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "NORTH_STANWOOD";
+    city Stanwood;
+    state WA;
+    zip 98292;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.243579556;
+    longitude -122.351551324;
+    lines 3;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "LAKE_GOODWIN";
+    city Stanwood;
+    state WA;
+    zip 98292;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.1554552490001;
+    longitude -122.302721806;
+    lines 2;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "GRANTIE_FALLS";
+    city Granite Falls;
+    state WA;
+    zip 98252;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.086341535;
+    longitude -121.979422258;
+    lines 2;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "QUIL_CEDA";
+    city Marysville;
+    state WA;
+    zip 98271;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.0745347380001;
+    longitude -122.186563388;
+    lines 2;
+    max_volt 115.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "TULALIP";
+    city Marysville;
+    state WA;
+    zip 98271;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.0523944940001;
+    longitude -122.209311758;
+    lines 1;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "LAKE_STEVENS";
+    city Lake Stevens;
+    state WA;
+    zip 98258;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.9784408240001;
+    longitude -122.092869835;
+    lines 1;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "TENTH_STREET";
+    city Everett;
+    state WA;
+    zip 98201;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.003769918;
+    longitude -122.192474937;
+    lines 1;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "WATERFRONT";
+    city Everett;
+    state WA;
+    zip 98201;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.986618122;
+    longitude -122.217783188;
+    lines 2;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "SNOHOMISH_COUNTY_52ND_STREET";
+    city Everett;
+    state WA;
+    zip 98203;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.9482406860001;
+    longitude -122.202087824;
+    lines 2;
+    max_volt 115.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "CASINO";
+    city Everett;
+    state WA;
+    zip 98204;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.917855268;
+    longitude -122.232489702;
+    lines 2;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "SNOHOMISH_COUNTY_HILTON_LAKE";
+    city Everett;
+    state WA;
+    zip 98208;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.891991509;
+    longitude -122.172695226;
+    lines 2;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "MURPHYS";
+    city Mill Creek;
+    state WA;
+    zip 98012;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.8777355390001;
+    longitude -122.207123221;
+    lines 2;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "CASCADE";
+    city Everett;
+    state WA;
+    zip 98208;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.8761340250001;
+    longitude -122.156685383;
+    lines 2;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "POLARIS";
+    city Lynnwood;
+    state WA;
+    zip 98087;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.8503630710001;
+    longitude -122.268990186;
+    lines 1;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "MARTHA_LAKE";
+    city Lynnwood;
+    state WA;
+    zip 98087;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.853103891;
+    longitude -122.253491103;
+    lines 1;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "NORTH_CREEK";
+    city Mill Creek;
+    state WA;
+    zip 98012;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.854563302;
+    longitude -122.219035316;
+    lines 2;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "NORTH_ALDERWOOD";
+    city Lynnwood;
+    state WA;
+    zip 98036;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.8296691190001;
+    longitude -122.265930999;
+    lines 2;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "FLORAL_HILLS";
+    city Lynnwood;
+    state WA;
+    zip 98037;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.83427283;
+    longitude -122.247794654;
+    lines 3;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "BRIER";
+    city Lynnwood;
+    state WA;
+    zip 98036;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.8062502230001;
+    longitude -122.254698851;
+    lines 2;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "CANYON_PARK";
+    city Bothell;
+    state WA;
+    zip 98021;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.7909614870001;
+    longitude -122.218422321;
+    lines 1;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "PARK_RIDGE";
+    city Bothell;
+    state WA;
+    zip 98021;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.789676108;
+    longitude -122.179036681;
+    lines 1;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "OLYMPIC_PIPE";
+    city Bothell;
+    state WA;
+    zip 98021;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.798759293;
+    longitude -122.171282631;
+    lines 1;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "TURNERS_CORNER";
+    city Woodinville;
+    state WA;
+    zip 98072;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.8044973470001;
+    longitude -122.142788724;
+    lines 2;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "MUKILTEO";
+    city Mukilteo;
+    state WA;
+    zip 98275;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.91538174;
+    longitude -122.298201842;
+    lines 1;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "PICNIC_POINT";
+    city Edmonds;
+    state WA;
+    zip 98026;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.8720756180001;
+    longitude -122.309826184;
+    lines 2;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "LAKE_SERENE";
+    city Lynnwood;
+    state WA;
+    zip 98087;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.8558977440001;
+    longitude -122.290633416;
+    lines 2;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "MEADOWDALE";
+    city Lynnwood;
+    state WA;
+    zip 98037;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.8471238490001;
+    longitude -122.319358814;
+    lines 1;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "KEELERS";
+    city Lynnwood;
+    state WA;
+    zip 98037;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.84169303;
+    longitude -122.300069169;
+    lines 1;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "ALDERWOOD_MANOR";
+    city Lynnwood;
+    state WA;
+    zip 98036;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.820389418;
+    longitude -122.281568788;
+    lines 2;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "HALLS_LAKE";
+    city Mountlake Terrace;
+    state WA;
+    zip 98043;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.806252681;
+    longitude -122.31711507;
+    lines 6;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "BALLINGER";
+    city Mountlake Terrace;
+    state WA;
+    zip 98043;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.792957513;
+    longitude -122.331021216;
+    lines 2;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "MOUNTLAKE";
+    city Mountlake Terrace;
+    state WA;
+    zip 98043;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.7933293500001;
+    longitude -122.299300563;
+    lines 2;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "RICHMOND_PARK";
+    city Edmonds;
+    state WA;
+    zip 98026;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.777992028;
+    longitude -122.353947723;
+    lines 1;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "HORSE_RANCH";
+    city Lake Stevens;
+    state WA;
+    zip 98258;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.9716985040001;
+    longitude -122.113125985;
+    lines 3;
+    max_volt 230.0;
+    min_volt 230.0;
+}
+object substation
+{
+    name "TRASHERS";
+    city Bothell;
+    state WA;
+    zip 98021;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.8061563210001;
+    longitude -122.205847456;
+    lines 2;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "OLIVIA_PARK";
+    city Everett;
+    state WA;
+    zip 98204;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.904421207;
+    longitude -122.235823956;
+    lines 1;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "TAP200917";
+    city Monroe;
+    state WA;
+    zip 98272;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.804148233;
+    longitude -121.915800788;
+    lines 3;
+    max_volt 500.0;
+    min_volt 500.0;
+}
+object substation
+{
+    name "UNKNOWN200935";
+    city Edmonds;
+    state WA;
+    zip 98020;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.790768997;
+    longitude -122.36162946;
+    lines 2;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "LYNNWOOD";
+    city Lynnwood;
+    state WA;
+    zip 98037;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.8288464760001;
+    longitude -122.311656695;
+    lines 2;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "PERRINVILLE";
+    city Edmonds;
+    state WA;
+    zip 98037;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.8300804360001;
+    longitude -122.331807128;
+    lines 1;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "UNKNOWN201430";
+    city Monroe;
+    state WA;
+    zip 98272;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.912151217;
+    longitude -121.818838368;
+    lines 2;
+    max_volt 138.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "UNKNOWN201927";
+    city Marysville;
+    state WA;
+    zip 98271;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.1293657530001;
+    longitude -122.187575495;
+    lines 5;
+    max_volt 115.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "UNKNOWN201930";
+    city Snohomish;
+    state WA;
+    zip 98290;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.9245505220001;
+    longitude -122.10107887;
+    lines 1;
+    max_volt 230.0;
+    min_volt 230.0;
+}
+object substation
+{
+    name "UNKNOWN201933";
+    city Gold Bar;
+    state WA;
+    zip 98251;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.854087974;
+    longitude -121.695321072;
+    lines 2;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "UNKNOWN201934";
+    city Marysville;
+    state WA;
+    zip 98270;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.053949618;
+    longitude -122.122094887;
+    lines 2;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "NORTH_MOUNTAIN";
+    city Darrington;
+    state WA;
+    zip 98241;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.272968421;
+    longitude -121.641777048;
+    lines 2;
+    max_volt 230.0;
+    min_volt 230.0;
+}
+object substation
+{
+    name "UNKNOWN201981";
+    city Monroe;
+    state WA;
+    zip 98272;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.8660683040001;
+    longitude -121.994171359;
+    lines 2;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "BRIGHTWATER";
+    city Woodinville;
+    state WA;
+    zip 98072;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.7917750980001;
+    longitude -122.140411054;
+    lines 2;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "PAINE_FIELD";
+    city Everett;
+    state WA;
+    zip 98204;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.8982677270001;
+    longitude -122.265636954;
+    lines 4;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "UNKNOWN202810";
+    city Marysville;
+    state WA;
+    zip 98271;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.10098943;
+    longitude -122.175189698;
+    lines 1;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "UNKNOWN202855";
+    city Monroe;
+    state WA;
+    zip 98272;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.8575403500001;
+    longitude -121.8302801;
+    lines 2;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "UNKNOWN202856";
+    city Sultan;
+    state WA;
+    zip 98294;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.8694677500001;
+    longitude -121.77136825;
+    lines 2;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "UNKNOWN202857";
+    city Monroe;
+    state WA;
+    zip 98272;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.8590917710001;
+    longitude -121.962424652;
+    lines 2;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "UNKNOWN202860";
+    city Lake Stevens;
+    state WA;
+    zip 98258;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.952593592;
+    longitude -122.092699487;
+    lines 2;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "UNKNOWN202861";
+    city Marysville;
+    state WA;
+    zip 98270;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.0854005350001;
+    longitude -122.143750472;
+    lines 2;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "BOEING";
+    city Everett;
+    state WA;
+    zip 98275;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.924598786;
+    longitude -122.261832707;
+    lines 3;
+    max_volt 115.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "SNOHOMISH_PUD";
+    city Everett;
+    state WA;
+    zip 98203;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.9295737780001;
+    longitude -122.259315352;
+    lines 2;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "HARDESON";
+    city Everett;
+    state WA;
+    zip 98203;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.936206344;
+    longitude -122.246869225;
+    lines 2;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "HARBOUR_POINTE";
+    city Mukilteo;
+    state WA;
+    zip 98275;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.8937550540001;
+    longitude -122.309371029;
+    lines 2;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "UNKNOWN202877";
+    city Everett;
+    state WA;
+    zip 98208;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.888042587;
+    longitude -122.227568614;
+    lines 2;
+    max_volt 115.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "UNKNOWN202885";
+    city Everett;
+    state WA;
+    zip 98207;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.9937102000001;
+    longitude -122.21420415;
+    lines 1;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "UNKNOWN202886";
+    city Everett;
+    state WA;
+    zip 98207;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.989634203;
+    longitude -122.217855521;
+    lines 2;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "UNKNOWN202891";
+    city Marysville;
+    state WA;
+    zip 98271;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.096529957;
+    longitude -122.197863774;
+    lines 2;
+    max_volt 115.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "UNKNOWN202892";
+    city Arlington;
+    state WA;
+    zip 98223;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.1468860460001;
+    longitude -122.181801375;
+    lines 1;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "UNKNOWN202893";
+    city Marysville;
+    state WA;
+    zip 98271;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.1433764500001;
+    longitude -122.16047635;
+    lines 2;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "UNKNOWN202894";
+    city Arlington;
+    state WA;
+    zip 98223;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.1769950780001;
+    longitude -122.146497994;
+    lines 2;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "UNKNOWN202895";
+    city Marysville;
+    state WA;
+    zip 98270;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.0680298670001;
+    longitude -122.16979371;
+    lines 1;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "UNKNOWN202898";
+    city Lake Stevens;
+    state WA;
+    zip 98258;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.0297016860001;
+    longitude -122.058696261;
+    lines 1;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "UNKNOWN202899";
+    city Arlington;
+    state WA;
+    zip 98223;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.2634349310001;
+    longitude -121.917556563;
+    max_volt nan;
+    min_volt nan;
+}
+object substation
+{
+    name "TAP206030";
+    city Snohomish;
+    state WA;
+    zip 98290;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.9363476360001;
+    longitude -122.096140763;
+    lines 3;
+    max_volt 230.0;
+    min_volt 230.0;
+}
+object substation
+{
+    name "TAP206032";
+    city Lake Stevens;
+    state WA;
+    zip 98205;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.9716669570001;
+    longitude -122.123692822;
+    lines 3;
+    max_volt 230.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "TAP206096";
+    city Bothell;
+    state WA;
+    zip 98021;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.7987724450001;
+    longitude -122.170846029;
+    lines 3;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "TAP207870";
+    city Lake Stevens;
+    state WA;
+    zip 98258;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.072308783;
+    longitude -122.048021134;
+    lines 3;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "UNKNOWN207871";
+    city Marysville;
+    state WA;
+    zip 98270;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.0715361840001;
+    longitude -122.122717411;
+    lines 3;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "UNKNOWN207872";
+    city Lake Stevens;
+    state WA;
+    zip 98258;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.9776095870001;
+    longitude -122.093151459;
+    lines 3;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "TAP207873";
+    city Lake Stevens;
+    state WA;
+    zip 98258;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.9528175070001;
+    longitude -122.093545498;
+    lines 3;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "TAP207874";
+    city Snohomish;
+    state WA;
+    zip 98290;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.9521150900001;
+    longitude -122.093187627;
+    lines 3;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "TAP207875";
+    city Marysville;
+    state WA;
+    zip 98271;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.1341326890001;
+    longitude -122.183353823;
+    lines 3;
+    max_volt 115.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "TAP207876";
+    city Arlington;
+    state WA;
+    zip 98223;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.166500973;
+    longitude -122.219200403;
+    lines 3;
+    max_volt 115.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "UNKNOWN207877";
+    city Marysville;
+    state WA;
+    zip 98271;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.0783732100001;
+    longitude -122.211847521;
+    lines 3;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "UNKNOWN207878";
+    city Marysville;
+    state WA;
+    zip 98271;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.0738469400001;
+    longitude -122.18544062;
+    lines 3;
+    max_volt 115.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "TAP207879";
+    city Marysville;
+    state WA;
+    zip 98271;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.05582852;
+    longitude -122.195151703;
+    lines 3;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "TAP207880";
+    city Marysville;
+    state WA;
+    zip 98271;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.0758174260001;
+    longitude -122.194631145;
+    lines 3;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "UNKNOWN207881";
+    city Marysville;
+    state WA;
+    zip 98270;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.075414036;
+    longitude -122.176185837;
+    lines 3;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "TAP207882";
+    city Marysville;
+    state WA;
+    zip 98271;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.0893964110001;
+    longitude -122.173771678;
+    lines 3;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "TAP207883";
+    city Marysville;
+    state WA;
+    zip 98271;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.1007843420001;
+    longitude -122.1756796;
+    lines 3;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "UNKNOWN207884";
+    city Everett;
+    state WA;
+    zip 98201;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 48.002700383;
+    longitude -122.188864782;
+    lines 3;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "TAP207930";
+    city Everett;
+    state WA;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.9816754650001;
+    longitude -122.192251231;
+    lines 1;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "UNKNOWN207886";
+    city Everett;
+    state WA;
+    zip 98201;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.993696802;
+    longitude -122.213639894;
+    lines 3;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "UNKNOWN207887";
+    city Everett;
+    state WA;
+    zip 98201;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.9881342260001;
+    longitude -122.214630332;
+    lines 3;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "TAP207888";
+    city Everett;
+    state WA;
+    zip 98203;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.934978673;
+    longitude -122.207180076;
+    lines 3;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "TAP207889";
+    city Everett;
+    state WA;
+    zip 98204;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.9217489270001;
+    longitude -122.240235579;
+    lines 3;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "TAP207890";
+    city Everett;
+    state WA;
+    zip 98204;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.906265724;
+    longitude -122.23525403;
+    lines 3;
+    max_volt 115.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "TAP207891";
+    city Everett;
+    state WA;
+    zip 98208;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.8983103310001;
+    longitude -122.216431276;
+    lines 3;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "TAP207892";
+    city Mukilteo;
+    state WA;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.905271166;
+    longitude -122.292778735;
+    lines 3;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "TAP207893";
+    city Snohomish;
+    state WA;
+    zip 98290;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.910273949;
+    longitude -122.090304671;
+    lines 3;
+    max_volt 69.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "TAP207939";
+    city Gold Bar;
+    state WA;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.853900723;
+    longitude -121.696466181;
+    lines 1;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "TAP207895";
+    city Sultan;
+    state WA;
+    zip 98294;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.8646977830001;
+    longitude -121.799356872;
+    lines 3;
+    max_volt 115.0;
+    min_volt 69.0;
+}
+object substation
+{
+    name "TAP207896";
+    city Lynnwood;
+    state WA;
+    zip 98087;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.853516406;
+    longitude -122.254467915;
+    lines 3;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "TAP207897";
+    city Lynnwood;
+    state WA;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.8500728500001;
+    longitude -122.256577069;
+    lines 3;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "TAP208800";
+    city Lynnwood;
+    state WA;
+    zip 98037;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.828490366;
+    longitude -122.30903386;
+    lines 3;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "TAP208801";
+    city Lynnwood;
+    state WA;
+    zip 98036;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.82870201;
+    longitude -122.331180118;
+    lines 3;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "TAP208802";
+    city Martha Lake;
+    state WA;
+    zip 98037;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.8341625620001;
+    longitude -122.247943246;
+    lines 3;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "TAP208803";
+    city Lynnwood;
+    state WA;
+    zip 98036;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.80693932;
+    longitude -122.316249467;
+    lines 3;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "ESPERANCE";
+    city Lynnwood;
+    state WA;
+    zip 98036;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.806892863;
+    longitude -122.31623011;
+    lines 1;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "TAP208804";
+    city Bothell;
+    state WA;
+    zip 98011;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.7911453940001;
+    longitude -122.22089111;
+    lines 3;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "TAP208805";
+    city Edmonds;
+    state WA;
+    zip 98020;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.799529826;
+    longitude -122.361557804;
+    lines 3;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "TAP208806";
+    city Lynnwood;
+    state WA;
+    zip 98037;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.846706081;
+    longitude -122.294875362;
+    lines 3;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "TAP208807";
+    city Clearview;
+    state WA;
+    zip 98296;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.83055398;
+    longitude -122.128618486;
+    lines 3;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "TAP208808";
+    city Clearview;
+    state WA;
+    zip 98296;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.8303560090001;
+    longitude -122.128782193;
+    lines 3;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "TAP208809";
+    city North Creek;
+    state WA;
+    zip 98012;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.8304321520001;
+    longitude -122.159454397;
+    lines 3;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "UNKNOWN208810";
+    city North Creek;
+    state WA;
+    zip 98012;
+    type SUBSTATION;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.8300857030001;
+    longitude -122.159442976;
+    lines 1;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "TAP208811";
+    city North Creek;
+    state WA;
+    zip 98012;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.824348666;
+    longitude -122.207227987;
+    lines 3;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "TAP208812";
+    city North Creek;
+    state WA;
+    zip 98021;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.790823866;
+    longitude -122.175635081;
+    lines 3;
+    max_volt 115.0;
+    min_volt 115.0;
+}
+object substation
+{
+    name "TAP208813";
+    city Edmonds;
+    state WA;
+    zip 98026;
+    type TAP;
+    status IN_SERVICE;
+    county Snohomish;
+    countyfips 53061;
+    country US;
+    latitude 47.792251213;
+    longitude -122.331518504;
+    lines 3;
+    max_volt 115.0;
+    min_volt 115.0;
+}

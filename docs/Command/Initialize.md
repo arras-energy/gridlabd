@@ -9,9 +9,14 @@ bash$ gridlabd --initialize filename [options ...]
 
 # Description
 
-The `--initialize` or `-I` command line option is used to compile and initialize the model specified in the `filename`.
+The `--initialize` or `-I` command line option is used to compile and
+initialize the model specified in the `filename`. If the filename is `.glm`
+the GLM data is read from `/dev/stdin`.
 
-The option is somewhat is misnomer in the sense that GridLAB-D not only creates the model and sets initial conditions for the solvers, but it also attempts to obtain the first solution in time.  For this reason, the option is particularly useful to validate a model.
+The option is somewhat is misnomer in the sense that GridLAB-D not only
+creates the model and sets initial conditions for the solvers, but it also
+attempts to obtain the first solution in time.  For this reason, the option
+is particularly useful to validate a model.
 
 # See also
 

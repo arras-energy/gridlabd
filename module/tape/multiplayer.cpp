@@ -89,7 +89,7 @@ int multiplayer::init(OBJECT *parent)
 		error("no targets specified");
 	}
 
-	return 1;
+	return advance(gl_globalclock) ? 1 : 0;
 }
 
 TIMESTAMP multiplayer::precommit(TIMESTAMP t1)
@@ -98,13 +98,29 @@ TIMESTAMP multiplayer::precommit(TIMESTAMP t1)
 	{
 		return next_t;
 	}
+	return advance(t1) ? TS_NEVER : TS_INVALID;
+}
+
+bool multiplayer::advance(TIMESTAMP t)
+{
+	while ( next_t <= t )
+	{
+		if ( ! update() || ! read() )
+		{
+			break;
+		}
+	}
+	return status != MS_ERROR;
+}
+
+bool multiplayer::update(void)
+{
 	char *last;
 	char *next = strtok_r(line,",",&last);
 	if ( next == NULL && target_list->size() > 0 )
 	{
 		error("no data on record at index '%s'", line);
-		status = MS_ERROR;
-		return TS_INVALID;
+		return false;
 	}
 	char *ts = next;
 	std::list<gld_property>::iterator prop = target_list->begin();
@@ -122,8 +138,7 @@ TIMESTAMP multiplayer::precommit(TIMESTAMP t1)
 					{
 					case ERR_STOP:
 						error("double value '%s' is invalid",next);
-						status = MS_ERROR;
-						return TS_INVALID;
+						return false;
 					case ERR_WARN:
 						warning("double value '%s' is invalid",next);
 						status = MS_ERROR;
@@ -146,8 +161,7 @@ TIMESTAMP multiplayer::precommit(TIMESTAMP t1)
 					{
 					case ERR_STOP:
 						error("complex value '%s' is invalid",next);
-						status = MS_ERROR;
-						return TS_INVALID;
+						return false;
 					case ERR_WARN:
 						warning("complex value '%s' is invalid",next);
 						status = MS_ERROR;
@@ -167,8 +181,7 @@ TIMESTAMP multiplayer::precommit(TIMESTAMP t1)
 				{
 				case ERR_STOP:
 					error("unit conversion of '%s' not possible for '%s.%s'",next,get_object(prop->get_object())->get_name());
-					status = MS_ERROR;
-					return TS_INVALID;
+					return false;
 				case ERR_WARN:
 					warning("unit conversion '%s' not possible for '%s.%s'",next,get_object(prop->get_object())->get_name());
 					status = MS_ERROR;
@@ -186,8 +199,7 @@ TIMESTAMP multiplayer::precommit(TIMESTAMP t1)
 			{
 			case ERR_STOP:
 				error("unable to set '%s.%s' to value '%s'",get_object(prop->get_object())->get_name(),prop->get_name(),next);
-				status = MS_ERROR;
-				return TS_INVALID;
+				return false;
 			case ERR_WARN:
 				warning("ignoring unable to set '%s.%s' to value '%s'",get_object(prop->get_object())->get_name(),prop->get_name(),next);					
 				status = MS_ERROR;
@@ -207,8 +219,7 @@ TIMESTAMP multiplayer::precommit(TIMESTAMP t1)
 		{
 		case ERR_STOP:
 			error("extra data '%s' at index '%s'",next,ts);
-			status = MS_ERROR;
-			return TS_INVALID;
+			return false;
 		case ERR_WARN:
 			warning("ignoring extra data '%s' at index '%s'",next,ts);
 			status = MS_ERROR;
@@ -225,8 +236,7 @@ TIMESTAMP multiplayer::precommit(TIMESTAMP t1)
 		{
 		case ERR_STOP:
 			error("missing data for '%s.%s' at index '%s'",get_object(prop->get_object())->get_name(),prop->get_name(),ts);
-			status = MS_ERROR;
-			return TS_INVALID;
+			return false;
 		case ERR_WARN:
 			warning("ignoring missing data for '%s.%s' at index '%s'",get_object(prop->get_object())->get_name(),prop->get_name(),ts);
 			status = MS_ERROR;
@@ -237,8 +247,7 @@ TIMESTAMP multiplayer::precommit(TIMESTAMP t1)
 			break;
 		}		
 	}
-
-	return read() ? next_t : TS_INVALID;
+	return true;
 }
 
 TIMESTAMP multiplayer::presync(TIMESTAMP t1)
@@ -453,6 +462,19 @@ bool multiplayer::read(void)
 	}
 	size_t len;
 	char *buffer = fgetln(fp,&len);
+	if ( buffer == NULL )
+	{
+		if ( feof(fp) )
+		{
+			next_t = TS_NEVER;
+			return true;
+		}
+		else
+		{
+			status = MS_ERROR;
+			return false;
+		}
+	}
 	if ( len+1 > maxlen )
 	{
 		line = (char*)realloc(line,maxlen*=2);

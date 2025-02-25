@@ -13,6 +13,7 @@ elevation,https,443,s3.us-west-1.amazonaws.com,/elevation.arras.energy/index,/el
 examples,https,443,raw.githubusercontent.com,/{organization}/gridlabd-examples/master/index,/{organization}/gridlabd-examples/master/{index},,,GridLAB-D model examples with supporting files
 # geodata-dev,https,443,geodata.arras.energy
 geodata,https,443,s3.us-west-1.amazonaws.com,/geodata.arras.energy/index,/geodata.arras.energy/{index},*/*,,Geodata
+infrastructure,https,443,s3.us-east-2.amazonaws.com,/infrastructure.arras.energy/index,/infrastructure.arras.energy/{country}/{index},*/*,,US electricity infrastructure data
 # gridchat,https,443,gridchat.arras.energy
 # gridlabd,https,443,arras.energy
 # help,https,443,help.arras.energy

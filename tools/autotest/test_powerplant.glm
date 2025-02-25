@@ -1,0 +1,7 @@
+#system gridlabd powerplant US WA Grant -o=test_powerplant_opt.glm
+
+#include "test_powerplant_opt.glm"
+
+#ifexist "../test_powerplant_opt.glm"
+#on_exit 0 diff ../test_powerplant_opt.glm test_powerplant_opt.glm
+#endif

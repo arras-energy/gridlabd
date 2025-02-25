@@ -411,3 +411,18 @@ Arguments:
 
 * `unit (str|Unit)`: the unit to which the value should be convertor
 
+
+# Constants
+
+* `DEBUG`
+
+# Modules
+
+* `datetime`
+* `inspect`
+* `json`
+* `numpy`
+* `os`
+* `re`
+* `scipy`
+* `sys`
