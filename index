@@ -80,7 +80,6 @@ cloud/websites/docs.arras.energy/_topbar.html
 cloud/websites/docs.arras.energy/index.html
 cloud/websites/docs.arras.energy/logo.png
 cloud/websites/geodata.arras.energy/census/income_CA.csv
-cloud/websites/geodata.arras.energy/census/states.zip
 cloud/websites/geodata.arras.energy/census/zipcodes.py
 cloud/websites/geodata.arras.energy/census/zipcodes9.csv
 cloud/websites/geodata.arras.energy/index.html
@@ -1092,11 +1091,13 @@ docs/Tools/Moutils.md
 docs/Tools/Network.md
 docs/Tools/Noaa_forecast.md
 docs/Tools/Nsrdb_weather.md
+docs/Tools/Powerline.md
 docs/Tools/Powerplant.md
 docs/Tools/Resource.md
 docs/Tools/Rest_client.md
 docs/Tools/Rest_server.md
 docs/Tools/Runner.md
+docs/Tools/Substation.md
 docs/Tools/Timeseries.md
 docs/Tools/Unitcalc.md
 docs/Tools/Weather.md
@@ -4078,6 +4079,8 @@ tools/autotest/test_rest_server.glm
 tools/autotest/test_rest_server.sh
 tools/autotest/test_rest_server_opt.glm
 tools/autotest/test_server.glm
+tools/autotest/test_substation.glm
+tools/autotest/test_substation_opt.glm
 tools/autotest/test_unitcalc.glm
 tools/autotest/test_unitcalc.txt
 tools/autotest/test_weather.csv
@@ -4094,6 +4097,7 @@ tools/create_poles.py
 tools/create_schedule.py
 tools/edit.py
 tools/eia_recs.py
+tools/encoding.py
 tools/enduse.py
 tools/example/isone_data.glm
 tools/example/load_model.glm
@@ -4135,6 +4139,7 @@ tools/rest_client.py
 tools/rest_server.py
 tools/rest_server_config.py
 tools/runner.py
+tools/substation.py
 tools/test_api.py
 tools/timeseries.py
 tools/ucar_weather.py
