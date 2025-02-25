@@ -4,6 +4,8 @@ Syntax: `gridlabd powerline COUNTRY [STATE [COUNTY]] [OPTIONS ...]
 
 Options:
 
+* `--consolidate={state,county}`: substation consolidate level
+
 * `-o|--output=FILENAME`: output network model to FILENAME
 
 Description:
@@ -11,6 +13,10 @@ Description:
 The `powerline` tool reads the HIFLD transmission line data repository and
 generates a network model for the specified region.  The output FILENAME may
 a `.glm` or `.json` file.  
+
+If substation consolidation is included, then all the substations at the
+specified level are consolidated into a single node with all substation loads
+and generation connected at that node.
 
 Example:
 
@@ -28,13 +34,15 @@ See also:
 
 Powerline class implementation
 
-### `Powerline()`
+### `Powerline(args:list, consolidate:str, kwargs:dict)`
 
 Create network class object
 
 Arguments:
 
 * `args`: substation class arguments (e.g., `country`, `state`, `county`)
+
+* `consolidate`: consolidation level desired (e.g., `state`, `county`)
 
 * `kwargs`: substation class arguments (e.g., filters)
 

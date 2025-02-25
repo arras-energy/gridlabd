@@ -57,7 +57,7 @@ class Powerline:
     """Powerline class implementation"""
     resource = gr.Resource()
 
-    def __init__(self,*args,consolidate:str=None,**kwargs):
+    def __init__(self,*args:list,consolidate:str=None,**kwargs:dict):
         """Create network class object
 
         Arguments:
