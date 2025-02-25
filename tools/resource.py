@@ -512,7 +512,7 @@ def test(pattern='.*'):
         print("Properties:",file=sys.stderr)
         for key,value in resource.properties(name=name).items():
             print(f"  {key}: {repr(value)}",file=sys.stderr)
-            index = resource.index(name=name)
+        index = resource.index(name=name)
         if index:
             for item in index:
                 try:
@@ -524,7 +524,6 @@ def test(pattern='.*'):
                 except Exception as err:
                     failed += 1
                     print(f"FAILED: {name}... {err}",file=sys.stderr)
-
 
     print(f"Tested {tested} resources ({checked/1e6:.1f} MB) with {failed} failures",file=sys.stderr)
     return app.E_OK if failed == 0 else app.E_FAILED

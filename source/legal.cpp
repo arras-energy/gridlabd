@@ -118,13 +118,13 @@ STATUS legal_license(void)
 }
 
 /**************************************************************************************
- 
+
  CHECK VERSION
 
- The purpose of check_version is to look for a file located at 
+ The purpose of check_version is to look for a file located at
  http://www.gridlabd.org/versions.xml or http://www.gridlabd.org/versions.txt
- and verify whether the patch and build of this version is the latest one for the 
- major/minor of this version.  If the patch or build is not the latest, a warning 
+ and verify whether the patch and build of this version is the latest one for the
+ major/minor of this version.  If the patch or build is not the latest, a warning
  notice is displayed.
 
  **************************************************************************************/
@@ -145,7 +145,7 @@ static pthread_t check_version_thread_id;
 void *check_version_proc(void *ptr)
 {
 	int patch, build;
-	const char *url = "https://code.gridlabd.us/master/source/versions.txt";
+	const char *url = "https://code.arras.energy/master/source/versions.txt";
 	HTTPRESULT *result = http_read(url,0x1000);
 	char target[32];
 	char *pv = NULL, *nv = NULL;

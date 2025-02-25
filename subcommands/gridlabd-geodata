@@ -383,7 +383,7 @@ CONFIGDIR = {
     "local" : os.getenv("PWD"),
 }
 CONFIG = {
-    "geodata_url" : "http://geodata.gridlabd.us/",
+    "geodata_url" : "http://geodata.arras.energy/",
     "output_format" : "CSV",
     "path_join" : "outer",
     "column_names" : {
