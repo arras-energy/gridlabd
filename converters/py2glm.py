@@ -95,7 +95,7 @@ module pypower
 """)
 
         for name,spec in dict(
-            # pypower properties must be in the save order as the case array columns
+            # pypower properties must be in the same order as the case array columns
             bus = "bus_i type Pd Qd Gs Bs area Vm Va baseKV zone Vmax Vmin",
             gen = "bus Pg Qg Qmax Qmin Vg mBase status Pmax Pmin Pc1 Pc2 Qc1min"\
                 + " Qc1max Qc2min Qc2max ramp_agc ramp_10 ramp_30 ramp_q apf",
@@ -104,8 +104,9 @@ module pypower
             glm.write(f"{NL}//{NL}// {name}{NL}//{NL}")
             for n,line in enumerate(data[name]):
                 oname = f"{NL}    name pp_{name}_{n+1};" if autoname else ""
+                pname = f"{NL}    parent pp_bus_{line[0]:.0f};" if name == "gen" else f""
                 glm.write(f"""object pypower.{name} 
-{{{oname}
+{{{oname}{pname}
 {NL.join([f"    {x} {line[n]};" for n,x in enumerate(spec.split())])}
 }}
 """)
