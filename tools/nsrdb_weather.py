@@ -407,7 +407,7 @@ def decode_exactly(geohash):
 
 def geocode(geohash):
     """
-    Decode geohash, returning two strings with latitude and longitude
+    Decode geohash, returning two float with latitude and longitude
     containing only relevant digits and with trailing zeroes removed.
     """
     lat, lon, lat_err, lon_err = decode_exactly(geohash)
