@@ -6,19 +6,11 @@ Options:
 
 * `-o|--output=FILENAME`: output network model to FILENAME
 
-* `--verify={syntax,solve}`: verify the model before saving
-
-* `--reference=BUS`: specify the reference bus to start from (only connected
-  nodes will be included)
-
 Description:
 
 The `powerline` tool reads the HIFLD transmission line data repository and
 generates a network model for the specified region.  The output FILENAME may
-a `.glm` or `.json` file.  If the `--verify=syntax` option is included, the
-generated model is loaded in GridLAB-D using the compile option. If the
-`--verify=solve` option is included, the network powerflow is solve for
-initial conditions.
+a `.glm` or `.json` file.  
 
 Example:
 
@@ -29,12 +21,15 @@ See also:
 """
 import os
 import sys
+import io
 import requests
 import geojson as gj
 import pandas as pd
 import gridlabd.resource as gr
 import gridlabd.framework as app
+import gridlabd.substation as substation
 import random
+import gzip
 
 CONVERTERS = {
     "TYPE" : lambda x: x.replace("; ","|") if x not in ["","NOT AVAILABLE"] else None,
@@ -50,6 +45,8 @@ CONVERTERS = {
 
 class Network:
 
+    resource = gr.Resource()
+
     def __init__(self):
 
         cachedir = os.path.join(os.environ['GLD_ETC'],".cache","powerline")
@@ -60,9 +57,9 @@ class Network:
 
             # print("Downloading data",end="...",flush=True,file=sys.stderr)
             # data = requests.get("https://s3.us-east-2.amazonaws.com/infrastructure.arras.energy/US/powerlines.geojson").content
-            file = gr.Resource().cache(name="infrastructure",index="powerlines.geojson")
+            file = self.resource.cache(name="infrastructure",index="powerlines.geojson.gz")
             # print("cache from",file,file=sys.stderr,flush=True)
-            data = gj.load(open(file,"r"))
+            data = gj.loads(gzip.decompress(open(file,"rb").read()))
             # print("ok",flush=True,file=sys.stderr)
 
             header = []
@@ -90,7 +87,8 @@ class Network:
         lines.index.name = "name"
 
         self.branch = lines.to_dict('index')
-        self.bus = {x:{} for x in set(list(lines["sub_1"])+list(lines["sub_2"]))}
+        substations = substation.Substation("US").to_dict()
+        self.bus = {x:(substations[x] if x in substations else {}) for x in set(list(lines["sub_1"])+list(lines["sub_2"]))}
 
     def write_glm(self,outfile:str):
 
@@ -98,10 +96,12 @@ class Network:
             print("module pypower;",file=fh)
 
             # write node objects
-            for node in self.bus:
+            for node,data in self.bus.items():
+                properties = "\n".join([f"    {x.lower()} {data[x]};" for x in ["LATITUDE","LONGITUDE","MIN_VOLT","MAX_VOLT","LINES","COUNTY","CITY","STATE","ZIP","STATUS","COUNTYFIPS","COUNTRY"] if x in data])
                 print(f"""object bus
 {{
     name "N_{node}";
+{properties}
 }}""",file=fh)
 
             for name,line in self.branch.items():
