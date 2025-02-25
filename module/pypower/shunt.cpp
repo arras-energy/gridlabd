@@ -228,7 +228,7 @@ TIMESTAMP shunt::update(TIMESTAMP t0,bool control)
                     {
                         admittance += admittance_1;
                         output->add_shunt(real?admittance_1:0,real?0:admittance_1);
-                        debug("stepping up admittance to %.1lf MVAr",admittance);
+                        verbose("Vm = %lf, stepping up admittance to %.1lf MVAr",Vm,admittance);
                     }
                     return t0;
                 }
@@ -245,7 +245,7 @@ TIMESTAMP shunt::update(TIMESTAMP t0,bool control)
                     {
                         admittance -= admittance_1;
                         output->add_shunt(real?-admittance_1:0,real?0:-admittance_1);
-                        debug("stepping down admittance to %.1lf MVAr",admittance);
+                        verbose("Vm = %lf, stepping down admittance to %.1lf MVAr",Vm,admittance);
                     }
                     return t0;
                 }

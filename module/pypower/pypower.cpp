@@ -580,7 +580,7 @@ static TIMESTAMP update_controller(TIMESTAMP t0,PyObject *command,const char *na
     return t1;
 }
 
-#define SEND(INDEX,NAME,FROM,TO) { PyObject *py = PyList_GetItem(pyobj,INDEX); \
+#define SEND(INDEX,NAME,FROM,TO,CHANGE) { PyObject *py = PyList_GetItem(pyobj,INDEX); \
     if ( py == NULL || fabs(obj->get_##NAME()-Py##TO##_As##FROM(py)) > solver_update_resolution ) { \
         PyObject *value = Py##TO##_From##FROM(obj->get_##NAME()); \
         if ( value == NULL ) { \
@@ -588,6 +588,7 @@ static TIMESTAMP update_controller(TIMESTAMP t0,PyObject *command,const char *na
         } \
         else { \
             PyList_SET_ITEM(pyobj,INDEX,value); \
+            if ( CHANGE ) { n_changes++; } \
             Py_XDECREF(py); \
 }}}
 
@@ -615,77 +616,77 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
     {
         bus *obj = buslist[n];
         PyObject *pyobj = PyList_GetItem(busdata,n);
-        SEND(0,bus_i,Double,Float)
-        SEND(1,type,Long,Long)
-        SEND(2,Pd,Double,Float)
-        SEND(3,Qd,Double,Float)
-        SEND(4,Gs,Double,Float)
-        SEND(5,Bs,Double,Float)
-        SEND(6,area,Long,Long)
-        SEND(7,Vm,Double,Float)
-        SEND(8,Va,Double,Float)
-        SEND(9,baseKV,Double,Float)
-        SEND(10,zone,Long,Long)
-        SEND(11,Vmax,Double,Float)
-        SEND(12,Vmin,Double,Float)
+        SEND(0,bus_i,Double,Float,true)
+        SEND(1,type,Long,Long,true)
+        SEND(2,Pd,Double,Float,true)
+        SEND(3,Qd,Double,Float,true)
+        SEND(4,Gs,Double,Float,true)
+        SEND(5,Bs,Double,Float,true)
+        SEND(6,area,Long,Long,false)
+        SEND(7,Vm,Double,Float,false)
+        SEND(8,Va,Double,Float,false)
+        SEND(9,baseKV,Double,Float,false)
+        SEND(10,zone,Long,Long,false)
+        SEND(11,Vmax,Double,Float,false)
+        SEND(12,Vmin,Double,Float,false)
         if ( enable_opf )
         {
-            SEND(13,lam_P,Double,Float)
-            SEND(14,lam_Q,Double,Float)
-            SEND(15,mu_Vmax,Double,Float)
-            SEND(16,mu_Vmin,Double,Float)
+            SEND(13,lam_P,Double,Float,false)
+            SEND(14,lam_Q,Double,Float,false)
+            SEND(15,mu_Vmax,Double,Float,false)
+            SEND(16,mu_Vmin,Double,Float,false)
         }
     }
     for ( size_t n = 0 ; n < nbranch ; n++ )
     {
         branch *obj = branchlist[n];
         PyObject *pyobj = PyList_GetItem(branchdata,n);
-        SEND(0,fbus,Long,Long)
-        SEND(1,tbus,Long,Long)
-        SEND(2,r,Double,Float)
-        SEND(3,x,Double,Float)
-        SEND(4,b,Double,Float)
-        SEND(5,rateA,Double,Float)
-        SEND(6,rateB,Double,Float)
-        SEND(7,rateC,Double,Float)
-        SEND(8,ratio,Double,Float)
-        SEND(9,angle,Double,Float)
-        SEND(10,status,Long,Long)
-        SEND(11,angmin,Double,Float)
-        SEND(12,angmax,Double,Float)
+        SEND(0,fbus,Long,Long,true)
+        SEND(1,tbus,Long,Long,true)
+        SEND(2,r,Double,Float,true)
+        SEND(3,x,Double,Float,true)
+        SEND(4,b,Double,Float,true)
+        SEND(5,rateA,Double,Float,enable_opf)
+        SEND(6,rateB,Double,Float,enable_opf)
+        SEND(7,rateC,Double,Float,enable_opf)
+        SEND(8,ratio,Double,Float,true)
+        SEND(9,angle,Double,Float,true)
+        SEND(10,status,Long,Long,true)
+        SEND(11,angmin,Double,Float,true)
+        SEND(12,angmax,Double,Float,true)
 
     }
     for ( size_t n = 0 ; n < ngen ; n++ )
     {
         gen *obj = genlist[n];
         PyObject *pyobj = PyList_GetItem(gendata,n);
-        SEND(0,bus,Long,Long)
-        SEND(1,Pg,Double,Float)
-        SEND(2,Qg,Double,Float)
-        SEND(3,Qmax,Double,Float)
-        SEND(4,Qmin,Double,Float)
-        SEND(5,Vg,Double,Float)
-        SEND(6,mBase,Double,Float)
-        SEND(7,status,Long,Long)
-        SEND(8,Pmax,Double,Float)
-        SEND(9,Pmin,Double,Float)
-        SEND(10,Pc1,Double,Float)
-        SEND(11,Pc2,Double,Float)
-        SEND(12,Qc1min,Double,Float)
-        SEND(13,Qc1max,Double,Float)
-        SEND(14,Qc2min,Double,Float)
-        SEND(15,Qc2max,Double,Float)
-        SEND(16,ramp_agc,Double,Float)
-        SEND(17,ramp_10,Double,Float)
-        SEND(18,ramp_30,Double,Float)
-        SEND(19,ramp_q,Double,Float)
-        SEND(20,apf,Double,Float)
+        SEND(0,bus,Long,Long,true)
+        SEND(1,Pg,Double,Float,true)
+        SEND(2,Qg,Double,Float,true)
+        SEND(3,Qmax,Double,Float,true)
+        SEND(4,Qmin,Double,Float,true)
+        SEND(5,Vg,Double,Float,true)
+        SEND(6,mBase,Double,Float,true)
+        SEND(7,status,Long,Long,true)
+        SEND(8,Pmax,Double,Float,true)
+        SEND(9,Pmin,Double,Float,true)
+        SEND(10,Pc1,Double,Float,true)
+        SEND(11,Pc2,Double,Float,true)
+        SEND(12,Qc1min,Double,Float,true)
+        SEND(13,Qc1max,Double,Float,true)
+        SEND(14,Qc2min,Double,Float,true)
+        SEND(15,Qc2max,Double,Float,true)
+        SEND(16,ramp_agc,Double,Float,false)
+        SEND(17,ramp_10,Double,Float,false)
+        SEND(18,ramp_30,Double,Float,false)
+        SEND(19,ramp_q,Double,Float,false)
+        SEND(20,apf,Double,Float,false)
         if ( enable_opf )
         {
-            SEND(21,mu_Pmax,Double,Float)
-            SEND(22,mu_Pmin,Double,Float)
-            SEND(23,mu_Qmax,Double,Float)
-            SEND(24,mu_Qmin,Double,Float)
+            SEND(21,mu_Pmax,Double,Float,false)
+            SEND(22,mu_Pmin,Double,Float,false)
+            SEND(23,mu_Qmax,Double,Float,false)
+            SEND(24,mu_Qmin,Double,Float,false)
         }
     }
     if ( gencostdata )
@@ -694,14 +695,15 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
         {
             gencost *obj = gencostlist[n];
             PyObject *pyobj = PyList_GetItem(gencostdata,n);
-            SEND(0,model,Long,Long)
-            SEND(1,startup,Double,Float)
-            SEND(2,shutdown,Double,Float)
+            SEND(0,model,Long,Long,enable_opf)
+            SEND(1,startup,Double,Float,enable_opf)
+            SEND(2,shutdown,Double,Float,enable_opf)
             PyObject *py = PyList_GetItem(pyobj,3);
             if ( py == NULL || strcmp((const char*)PyUnicode_DATA(py),obj->get_costs())!=0 )
             {
                 Py_XDECREF(py);
                 PyList_SET_ITEM(pyobj,3,PyUnicode_FromString(obj->get_costs()));
+                n_changes++;
             }
         }
     }
@@ -746,6 +748,8 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
     static PyObject *result = NULL;
     if ( result == NULL || n_changes > 0 )
     {
+        n_changes = 0;
+
         // run pypower solver
         if ( result != data )
         {
