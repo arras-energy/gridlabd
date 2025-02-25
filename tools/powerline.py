@@ -4,6 +4,8 @@ Syntax: `gridlabd powerline COUNTRY [STATE [COUNTY]] [OPTIONS ...]
 
 Options:
 
+* `--consolidate={state,county}`: substation consolidate level
+
 * `-o|--output=FILENAME`: output network model to FILENAME
 
 Description:
@@ -12,11 +14,16 @@ The `powerline` tool reads the HIFLD transmission line data repository and
 generates a network model for the specified region.  The output FILENAME may
 a `.glm` or `.json` file.  
 
+If substation consolidation is included, then all the substations at the
+specified level are consolidated into a single node with all substation loads
+and generation connected at that node.
+
 Example:
 
 See also:
 
 * [[/Tools/Powerplant]]
+* [[/Tools/Substation]]
 * [HIFLD transmission line data repository](https://hifld-geoplatform.hub.arcgis.com/datasets/geoplatform::transmission-lines/about)
 """
 import os
@@ -43,11 +50,28 @@ CONVERTERS = {
     "to": str,
 }
 
-class Network:
+class PowerlineException(Exception):
+    """Powerline class exception handler"""
 
+class Powerline:
+    """Powerline class implementation"""
     resource = gr.Resource()
 
-    def __init__(self):
+    def __init__(self,*args,consolidate:str=None,**kwargs):
+        """Create network class object
+
+        Arguments:
+
+        * `args`: substation class arguments (e.g., `country`, `state`, `county`)
+
+        * `consolidate`: consolidation level desired (e.g., `state`, `county`)
+
+        * `kwargs`: substation class arguments (e.g., filters)
+        """
+        self._args = args
+        self._kwargs = kwargs
+
+        self.bus = substation.Substation(*args,**kwargs).to_dict()
 
         cachedir = os.path.join(os.environ['GLD_ETC'],".cache","powerline")
         os.makedirs(cachedir,exist_ok=True)
@@ -55,12 +79,8 @@ class Network:
 
         if not os.path.exists(cachename):
 
-            # print("Downloading data",end="...",flush=True,file=sys.stderr)
-            # data = requests.get("https://s3.us-east-2.amazonaws.com/infrastructure.arras.energy/US/powerlines.geojson").content
             file = self.resource.cache(name="infrastructure",index="powerlines.geojson.gz")
-            # print("cache from",file,file=sys.stderr,flush=True)
             data = gj.loads(gzip.decompress(open(file,"rb").read()))
-            # print("ok",flush=True,file=sys.stderr)
 
             header = []
             rows = []
@@ -72,26 +92,30 @@ class Network:
                 rows.append([properties[x] if x in properties else "" for x in header])
                 if "geometry" in properties:
                     geometry = properties["geometry"]
-                    # TODO
+                    # TODO: power line path
                 n += 1
-            # print(f"{len(rows)} powerlines found",file=sys.stderr)
             data = pd.DataFrame(rows,columns=header,dtype=str)
-            # print(f"Saving to {cachename}",end="...",file=sys.stderr)
             data.set_index("ID").sort_index().to_csv(cachename,header=True,index=True)
-            # print("ok",file=sys.stderr,flush=True)
-            del data
 
-        lines = pd.read_csv(cachename,index_col="ID",converters=CONVERTERS)
-        lines.drop([x for x in lines.columns if x not in CONVERTERS],inplace=True,axis=1)
-        lines.columns = [x.lower() for x in lines.columns]
-        lines.index.name = "name"
+        data = pd.read_csv(cachename,index_col="ID",converters=CONVERTERS)
+        data.drop([x for x in data.columns if x not in CONVERTERS],inplace=True,axis=1)
+        data.columns = [x.lower() for x in data.columns]
+        data.index.name = "name"
 
-        self.branch = lines.to_dict('index')
-        substations = substation.Substation("US").to_dict()
-        self.bus = {x:(substations[x] if x in substations else {}) for x in set(list(lines["sub_1"])+list(lines["sub_2"]))}
+        self.branch = {x:y for x,y in data.to_dict('index').items() if y['sub_1'] in self.bus and y['sub_2'] in self.bus}
+        self.link = {x:y for x,y in data.to_dict('index').items() if ( y['sub_1'] in self.bus or y['sub_2'] in self.bus ) and x not in self.branch}
+
+    def __repr__(self):
+        arglist = [repr(x) for x in self._args] + [f"{x}={repr(y)}" for x,y in self._kwargs.items()]
+        return f"gridlabd.powerline.Powerline({','.join(arglist)})"
 
     def write_glm(self,outfile:str):
+        """Write GLM
 
+        Arguments:
+
+        * `outfile`: output file name
+        """
         with open(outfile,"w") as fh:
             print("module pypower;",file=fh)
 
@@ -129,7 +153,12 @@ class Network:
 }}""",file=fh)
 
 def main(argv):
+    """Main routine
 
+    Arguments:
+
+    * `argv`: command line arguments
+    """
     # handle no options case -- typically a cry for help
     if len(argv) == 1:
 
@@ -141,6 +170,7 @@ def main(argv):
 
     location = {}
     output = None
+    consolidate = None
     for key,value in args:
 
         if key in ["-h","--help","help"]:
@@ -152,6 +182,10 @@ def main(argv):
 
             output = value[0]
 
+        elif key == "--consolidate" and len(value) == 1 and value[0] in ["county","state"]:
+
+            consolidate = value[0]
+
         elif not key.startswith("-"):
 
             tag = ["country","state","county"][len(location)]
@@ -162,30 +196,112 @@ def main(argv):
             app.error(f"'{key}={value}' is invalid")
             return app.E_INVALID
 
-    # implement your code here
-    model = Network()
+    model = Powerline(**location)
     model.write_glm(output)
 
     # normal termination condition
     return app.E_OK
 
 def test():
+    """Test routine"""
 
-    test = Network()
-    n_tested = len(test.bus) + len(test.branch)
-    n_failed = 0
-    if len(test.bus) != 67801:
-        print(f"TEST: incorrect number of busses, expected 67801, got {len(test.bus)}")
-        n_failed += 1
-    if len(test.branch) != 94216:
-        print(f"TEST: incorrect number of branches, expected 94216, got {len(test.branch)}")
-        n_failed += 1
+    def verify(name,value,expected):
+        if value != expected and not expected is None:
+            print(f"{name}({expected}!={value})",end=", ",file=sys.stderr)
+            return False
+        return True
+
+    def test_state(state,n_bus=None,n_branch=None,n_link=None):
+        print("Testing",state,end="... ",flush=True,file=sys.stderr)
+        test = Powerline("US",state)
+        global n_tested
+        n_tested += 1
+        a = verify(f"{state} busses",len(test.bus),n_bus)
+        b = verify(f"{state} branches",len(test.branch),n_branch)
+        c = verify(f"{state} links",len(test.link),n_link)
+        if n_bus is None or n_branch is None or n_link is None:
+            print(f"test_state({repr(state)},{len(test.bus)},{len(test.branch)},{len(test.link)})")
+        if a and b and c:
+            print("ok",file=sys.stderr)
+        else:
+            print("failed",file=sys.stderr)
+            global n_failed
+            n_failed += 1
+
+    def test_county(state,county,n_bus=0,n_branch=0,n_link=0):
+        print("Testing",county,state,end="... ",flush=True,file=sys.stderr)
+        test = Powerline("US",state,county)
+        a = verify(f"{county} {state} busses",len(test.bus),n_bus)
+        b = verify(f"{county} {state} branches",len(test.branch),n_branch)
+        c = verify(f"{county} {state} links",len(test.link),n_link)
+        global n_tested
+        n_tested += 1
+        if n_bus is None or n_branch is None or n_link is None:
+            print(f"test_county({repr(state)},{repr(county)},{len(test.bus)},{len(test.branch)},{len(test.link)})")
+        if a and b and c:
+            print("ok",file=sys.stderr)
+        else:
+            print("failed",file=sys.stderr)
+            global n_failed
+            n_failed += 1
+
+    def test_consolidated_state(state,n_link=0):
+        print("Testing consolidated",state,end="... ",flush=True,file=sys.stderr)
+        test = Powerline("US",state)
+        a = verify(f"consolidated {state} busses",len(test.bus),1)
+        b = verify(f"consolidated {state} branches",len(test.branch),0)
+        c = verify(f"consolidated {state} links",len(test.link),n_link)
+        global n_tested
+        n_tested += 1
+        if n_link is None:
+            print(f"test_consolidated_state({repr(state)},{len(test.link)})")            
+        if a and b and c:
+            print("ok",file=sys.stderr)
+        else:
+            print("failed",file=sys.stderr)
+            global n_failed
+            n_failed += 1
+
+    def test_consolidated_county(state,county,n_link=0):
+        print("Testing consolidated",county,state,end="... ",flush=True,file=sys.stderr)
+        test = Powerline("US",state,county)
+        a = verify(f"consolidated {county} {state} busses",len(test.bus),1)
+        b = verify(f"consolidated {county} {state} branches",len(test.branch),0)
+        c = verify(f"consolidated {county} {state} links",len(test.link),n_link)
+        global n_tested
+        n_tested += 1
+        if a and b and c:
+            print("ok",file=sys.stderr)
+        else:
+            print("failed",file=sys.stderr)
+            global n_failed
+            n_failed += 1
+
+    test_consolidated_state("WA")
+    test_consolidated_county("WA","Pierce",154)
+    test_county("WA","Snohomish",123,130,78)
+
+    from gridlabd.census import Census, FIPS_STATES
+    expected = {
+        "ID": (813,854,411),
+        "CA": (3722,2649,1445),
+        "NY": (2761,2833,1130),
+    }
+    for state in FIPS_STATES:
+        if state in expected:
+            test_state(state,*expected[state])
+        else:
+            test_state(state)
+
+
     return n_failed,n_tested
 
 if __name__ == "__main__":
 
     if not sys.argv[0]:
 
+        n_tested = 0
+        n_failed = 0
         app.test(test,__file__)
 
     else:

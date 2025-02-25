@@ -50,21 +50,22 @@ def _asminmax(x):
         return x
     return minmax(min(x),max(x))
 
+NAVALUES = ["-999999","NOT AVAILABLE"]
 CONVERTERS = {
-    "NAME": lambda x: encoding.strict_ascii(x).replace(" ","_") if x not in ["NOT AVAILABLE"] else "UNKNOWN",
-    "CITY": lambda x: encoding.strict_ascii(x).title() if x not in ["NOT AVAILABLE"] else "",
+    "NAME": lambda x: encoding.strict_ascii(x).replace(" ","_") if x not in NAVALUES else "UNKNOWN",
+    "CITY": lambda x: encoding.strict_ascii(x).title() if x not in NAVALUES else "",
     "ZIP": _asint,
     "STATE": lambda x: x[:2].upper(),
-    "TYPE": lambda x: x.upper().replace(" ","_") if x not in ["NOT AVAILABLE"] else "UNKNOWN",
-    "STATUS": lambda x: x.upper().replace(" ","_") if x not in ["NOT AVAILABLE"] else "UNKNOWN",
-    "COUNTY": lambda x: encoding.strict_ascii(x).title() if x not in ["NOT AVAILABLE"] else "",
-    "COUNTYFIPS": lambda x: str(x) if x not in ["NOT AVAILABLE"] else "",
+    "TYPE": lambda x: x.upper().replace(" ","_") if x not in NAVALUES else "UNKNOWN",
+    "STATUS": lambda x: x.upper().replace(" ","_") if x not in NAVALUES else "UNKNOWN",
+    "COUNTY": lambda x: encoding.strict_ascii(x).title() if x not in NAVALUES else "",
+    "COUNTYFIPS": lambda x: str(x) if x not in NAVALUES else "",
     "COUNTRY": lambda x: x[:2].upper(),
-    "LATITUDE": lambda x: float(x) if x not in ["NOT AVAILABLE"] else float('nan'),
-    "LONGITUDE": lambda x: float(x) if x not in ["NOT AVAILABLE"] else float('nan'),
+    "LATITUDE": lambda x: float(x) if x not in NAVALUES else float('nan'),
+    "LONGITUDE": lambda x: float(x) if x not in NAVALUES else float('nan'),
     "LINES": _asint,
-    "MAX_VOLT": lambda x: float(x) if x not in ["-999999","NOT AVAILABLE"] else float('nan'),
-    "MIN_VOLT": lambda x: float(x) if x not in ["-999999","NOT AVAILABLE"] else float('nan'),
+    "MAX_VOLT": lambda x: float(x) if x not in NAVALUES else float('nan'),
+    "MIN_VOLT": lambda x: float(x) if x not in NAVALUES else float('nan'),
 }
 
 class SubstationError(Exception):

@@ -6,28 +6,70 @@ Options:
 
 * `-o|--output=FILENAME`: output network model to FILENAME
 
-* `--verify={syntax,solve}`: verify the model before saving
-
-* `--reference=BUS`: specify the reference bus to start from (only connected
-  nodes will be included)
-
 Description:
 
 The `powerline` tool reads the HIFLD transmission line data repository and
 generates a network model for the specified region.  The output FILENAME may
-a `.glm` or `.json` file.  If the `--verify=syntax` option is included, the
-generated model is loaded in GridLAB-D using the compile option. If the
-`--verify=solve` option is included, the network powerflow is solve for
-initial conditions.
+a `.glm` or `.json` file.  
 
 Example:
 
 See also:
 
 * [[/Tools/Powerplant]]
+* [[/Tools/Substation]]
 * [HIFLD transmission line data repository](https://hifld-geoplatform.hub.arcgis.com/datasets/geoplatform::transmission-lines/about)
 
 
+
+# Classes
+
+## Powerline
+
+Powerline class implementation
+
+### `Powerline()`
+
+Create network class object
+
+Arguments:
+
+* `args`: substation class arguments (e.g., `country`, `state`, `county`)
+
+* `kwargs`: substation class arguments (e.g., filters)
+
+
+### `Powerline.write_glm(outfile:str) -> None`
+
+Write GLM
+
+Arguments:
+
+* `outfile`: output file name
+
+
+---
+
+## PowerlineException
+
+Powerline class exception handler
+
+# Functions
+
+## `main() -> None`
+
+Main routine
+
+Arguments:
+
+* `argv`: command line arguments
+
+
+---
+
+## `test() -> None`
+
+Test routine
 
 # Constants
 
@@ -38,6 +80,7 @@ See also:
 * `geojson`
 * `gridlabd.framework`
 * `gridlabd.resource`
+* `gridlabd.substation`
 * `gzip`
 * `io`
 * `os`
