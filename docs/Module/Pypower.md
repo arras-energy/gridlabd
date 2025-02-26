@@ -14,6 +14,7 @@ module pypower
 	int32 maximum_timestep; // Maximum timestep allowed between solutions
 	double baseMVA[MVA]; // Base MVA value
 	bool enable_opf; // Flag to enable optimal powerflow (OPF) solver
+    double opf_update_interval[s]; // Interval at which to update OPF solution (only if enable_opf is TRUE, 0 is always)
 	bool stop_on_failure; // Flag to stop simulation on solver failure
 	bool save_case; // Flag to save pypower case data and results
 	char1024 controllers_path; // Path to find module containing controller functions

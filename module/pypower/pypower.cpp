@@ -8,6 +8,7 @@
 #include "Python.h"
 
 bool enable_opf = false;
+double opf_update_interval = 0;
 double base_MVA = 100.0;
 int32 pypower_version = 2;
 bool stop_on_failure = false;
@@ -106,6 +107,12 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
     gl_global_create("pypower::enable_opf",
         PT_bool, &enable_opf, 
         PT_DESCRIPTION, "Flag to enable optimal powerflow (OPF) solver",
+        NULL);
+
+    gl_global_create("pypower::opf_update_interval",
+        PT_double, &opf_update_interval, 
+        PT_UNITS, "s",
+        PT_DESCRIPTION, "Interval at which to update OPF solution (only if enable_opf is TRUE, 0 is always)",
         NULL);
 
     gl_global_create("pypower::stop_on_failure",
@@ -208,6 +215,11 @@ PyObject *gendata = NULL;
 size_t ngencost = 0;
 gencost *gencostlist[MAXENT];
 PyObject *gencostdata = NULL;
+
+inline bool opf_needed(TIMESTAMP t)
+{
+    return enable_opf && ( opf_update_interval == 0 || fmod(t,opf_update_interval) == 0 );
+}
 
 EXPORT bool on_init(void)
 {
@@ -463,7 +475,7 @@ static TIMESTAMP update_controller(TIMESTAMP t0,PyObject *command,const char *na
         SENDX(10,zone,Long,Long)
         SENDX(11,Vmax,Double,Float)
         SENDX(12,Vmin,Double,Float)
-        if ( enable_opf )
+        if ( opf_needed(t0) )
         {
             SENDX(13,lam_P,Double,Float)
             SENDX(14,lam_Q,Double,Float)
@@ -515,7 +527,7 @@ static TIMESTAMP update_controller(TIMESTAMP t0,PyObject *command,const char *na
         SENDX(18,ramp_30,Double,Float)
         SENDX(19,ramp_q,Double,Float)
         SENDX(20,apf,Double,Float)
-        if ( enable_opf )
+        if ( opf_needed(t0) )
         {
             SENDX(21,mu_Pmax,Double,Float)
             SENDX(22,mu_Pmin,Double,Float)
@@ -618,6 +630,7 @@ static TIMESTAMP update_controller(TIMESTAMP t0,PyObject *command,const char *na
 static TIMESTAMP update_solution(TIMESTAMP t0)
 {
     int n_changes = 0;
+    bool do_opf = opf_needed(t0);
 
     // send values out to solver
     for ( size_t n = 0 ; n < nbus ; n++ )
@@ -637,7 +650,7 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
         SEND(10,zone,Long,Long,false)
         SEND(11,Vmax,Double,Float,false)
         SEND(12,Vmin,Double,Float,false)
-        if ( enable_opf )
+        if ( do_opf )
         {
             SEND(13,lam_P,Double,Float,false)
             SEND(14,lam_Q,Double,Float,false)
@@ -654,9 +667,9 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
         SEND(2,r,Double,Float,true)
         SEND(3,x,Double,Float,true)
         SEND(4,b,Double,Float,true)
-        SEND(5,rateA,Double,Float,enable_opf)
-        SEND(6,rateB,Double,Float,enable_opf)
-        SEND(7,rateC,Double,Float,enable_opf)
+        SEND(5,rateA,Double,Float,do_opf)
+        SEND(6,rateB,Double,Float,do_opf)
+        SEND(7,rateC,Double,Float,do_opf)
         SEND(8,ratio,Double,Float,true)
         SEND(9,angle,Double,Float,true)
         SEND(10,status,Long,Long,true)
@@ -689,7 +702,7 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
         SEND(18,ramp_30,Double,Float,false)
         SEND(19,ramp_q,Double,Float,false)
         SEND(20,apf,Double,Float,false)
-        if ( enable_opf )
+        if ( do_opf )
         {
             SEND(21,mu_Pmax,Double,Float,false)
             SEND(22,mu_Pmin,Double,Float,false)
@@ -703,9 +716,9 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
         {
             gencost *obj = gencostlist[n];
             PyObject *pyobj = PyList_GetItem(gencostdata,n);
-            SEND(0,model,Long,Long,enable_opf)
-            SEND(1,startup,Double,Float,enable_opf)
-            SEND(2,shutdown,Double,Float,enable_opf)
+            SEND(0,model,Long,Long,do_opf)
+            SEND(1,startup,Double,Float,do_opf)
+            SEND(2,shutdown,Double,Float,do_opf)
             PyObject *py = PyList_GetItem(pyobj,3);
             if ( py == NULL || strcmp((const char*)PyUnicode_DATA(py),obj->get_costs())!=0 )
             {
@@ -826,7 +839,7 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
                     RECV(Va,8,Float,Double,false)
                 }
 
-                if ( enable_opf )
+                if ( do_opf )
                 {
                     RECV(lam_P,13,Float,Double,false)
                     RECV(lam_Q,14,Float,Double,false)
@@ -875,7 +888,7 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
             {
                 gen *obj = genlist[n];
                 PyObject *pyobj = PyList_GetItem(gendata,n);
-                if ( enable_opf )
+                if ( do_opf )
                 {
                     RECV(Ps,1,Float,Double,true)
                     RECV(Qs,2,Float,Double,true)
@@ -886,7 +899,7 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
                     RECV(Qg,2,Float,Double,true)
                 }
                 RECV(apf,20,Float,Double,false)
-                if ( enable_opf )
+                if ( do_opf )
                 {
                     RECV(mu_Pmax,21,Float,Double,false)
                     RECV(mu_Pmin,22,Float,Double,false)
@@ -938,8 +951,18 @@ EXPORT TIMESTAMP on_precommit(TIMESTAMP t0)
     // run controller on_precommit, if any
     TIMESTAMP t1 = py_precommit ? update_controller(t0,py_precommit,"precommit") : TS_NEVER;
 
-    TIMESTAMP t2 = maximum_timestep > 0 ? TIMESTAMP(t0+maximum_timestep) : TS_NEVER;
-    return (TIMESTAMP)min((unsigned long long)t1,(unsigned long long)t2);
+    // maximum update interval (if any)
+    if ( maximum_timestep > 0 )
+    {
+        t1 = (TIMESTAMP)min(TIMESTAMP(t0 + maximum_timestep),t1);
+    }
+
+    // apply OPF interval (if any)
+    if ( opf_update_interval > 0 )
+    {
+        t1 = (TIMESTAMP)min(t1,TIMESTAMP((floor(t0/opf_update_interval)+1)*opf_update_interval));
+    }
+    return t1;
 }
 
 EXPORT TIMESTAMP on_sync(TIMESTAMP t0)

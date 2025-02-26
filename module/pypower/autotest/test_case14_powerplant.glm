@@ -9,9 +9,10 @@
 
 module pypower
 {
-    maximum_timestep 3600;
+    maximum_timestep 1h;
     message_flags DEBUG|VERBOSE;
     enable_opf TRUE;
+    opf_update_interval 1h;
 }
 
 module tape
