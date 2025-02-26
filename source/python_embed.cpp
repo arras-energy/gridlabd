@@ -6,6 +6,8 @@ static wchar_t *program = NULL;
 static PyObject *main_module = NULL;
 PyObject *gridlabd_module = NULL;
 
+SET_MYCONTEXT(DMC_PYTHON)
+
 void python_embed_init(int argc, const char *argv[])
 {
     if ( gridlabd_module == NULL )
@@ -70,7 +72,7 @@ PyObject *python_embed_import(const char *module, const char *path)
     {
         snprintf(tmp,sizeof(tmp)-1,"import io, sys\nsys.path.extend('%s'.split(':'))\n",path);
         int len = strlen(tmp);
-        output_debug("python_embed_import(const char *module='%s', const char *path='%s'): running [%s]",module,path,tmp);
+        IN_MYCONTEXT output_debug("python_embed_import(const char *module='%s', const char *path='%s'): running [%s]",module,path,tmp);
         if ( len > 0 && PyRun_SimpleString(tmp) )
         {
             PyObject *pType, *pValue, *pTraceback;

@@ -1468,7 +1468,7 @@ int randomvar_update(randomvar *var)
 		if ( var->correlation )
 		{
 			double vv = v + (*(var->correlation->source)) * var->correlation->scale + var->correlation->bias;
-			output_debug("randomvar_update(): correlation is to %s.%s: %g + %g*%g%+g -> %g", var->correlation->object->name, var->correlation->property->name, v, *(var->correlation->source), var->correlation->scale, var->correlation->bias, vv);
+			IN_MYCONTEXT output_debug("randomvar_update(): correlation is to %s.%s: %g + %g*%g%+g -> %g", var->correlation->object->name, var->correlation->property->name, v, *(var->correlation->source), var->correlation->scale, var->correlation->bias, vv);
 			v = vv;
 		}
 		if ( var->flags&RNF_INTEGRATE )

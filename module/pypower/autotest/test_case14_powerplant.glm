@@ -3,12 +3,15 @@
 #define DIR=..
 #endif
 
-// #set debug=TRUE
-// #set suppress_repeat_messages=FALSE
+//#set debug=TRUE
+#set output_message_context=NONE
+#set suppress_repeat_messages=FALSE
 
 module pypower
 {
     maximum_timestep 3600;
+    message_flags DEBUG|VERBOSE;
+    enable_opf TRUE;
 }
 
 module tape
@@ -37,9 +40,17 @@ object pypower.powerplant
     fixed_cost 0.1;
     variable_cost 0.3;
     scarcity_cost 0.7;
+    ramp_rate 10 MW/min;
 }
 
 #include "${DIR:-.}/case.glm"
+
+clock
+{
+    timezone PST+8PDT;
+    starttime "2020-05-01 00:00:00 PDT";
+    stoptime "2020-05-02 00:00:00 PDT";
+}
 
 object recorder
 {
@@ -52,3 +63,4 @@ object recorder
 #ifdef ../${modelname/.glm/}_pp_bus_2_record.csv
 #on_exit 0 diff ../test_case14_powerplant_pp_bus_2_record.csv ${modelname/.glm/}_pp_bus_2_record.csv > gridlabd.diff
 #endif
+

@@ -89,6 +89,7 @@ class bus {
     double PW[in]; // Precipitable_water (in)
     double HI[degF]; // Heat index (degF)
     char1024 weather_sensitivity; // Weather sensitivities {PROP: VAR[ REL VAL],SLOPE[; ...]}
+    complex shunt[MVA]; // Base shunt values (to which `shunt` objects will be added)
 }}
 ~~~
 
@@ -314,6 +315,7 @@ The `weather` object is used to read weather data from a weather file.
 * [[/Module/Pypower/Powerplant]]
 * [[/Module/Pypower/Relay]]
 * [[/Module/Pypower/Scada]]
+* [[/Module/Pypower/Shunt]]
 * [[/Module/Pypower/Weather]]
 * [[/Module/Pypower/Transformer]]
 * [[/Module/Python]]

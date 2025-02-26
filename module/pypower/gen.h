@@ -43,7 +43,8 @@ public:
 	GL_ATOMIC(double,mu_Qmax);
 	GL_ATOMIC(double,mu_Qmin);
 
-
+	GL_ATOMIC(double,Ps);
+	GL_ATOMIC(double,Qs);
 
 private:
 
