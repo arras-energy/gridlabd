@@ -104,6 +104,12 @@ gen::gen(MODULE *module)
 			PT_double, "mu_Qmin[pu/MVAr]", get_mu_Qmin_offset(),
 				PT_DESCRIPTION, "Kuhn-Tucker multiplier on lower Qg limit (p.u./MVAr)",
 
+			PT_double, "Ps[MW]", get_Ps_offset(),
+				PT_DESCRIPTION, "real power OPF setpoint (MW)",
+
+			PT_double, "Qs[MVAr]", get_Qs_offset(),
+				PT_DESCRIPTION, "reactive power OPF setpoint (MVAr)",
+
 			NULL)<1)
 		{
 				throw "unable to publish gen properties";
@@ -133,6 +139,7 @@ int gen::create(void)
 	extern double base_MVA;
 	cost = NULL;
 	plant_count = 0;
+	set_Vg(1.0);
 
 	return 1; /* return 1 on success, 0 on failure */
 }

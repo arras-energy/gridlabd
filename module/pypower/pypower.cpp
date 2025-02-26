@@ -581,14 +581,20 @@ static TIMESTAMP update_controller(TIMESTAMP t0,PyObject *command,const char *na
 }
 
 #define SEND(INDEX,NAME,FROM,TO,CHANGE) { PyObject *py = PyList_GetItem(pyobj,INDEX); \
-    if ( py == NULL || fabs(obj->get_##NAME()-Py##TO##_As##FROM(py)) > solver_update_resolution ) { \
-        PyObject *value = Py##TO##_From##FROM(obj->get_##NAME()); \
+    double a = obj->get_##NAME(); \
+    double b = Py##TO##_As##FROM(py); \
+    if ( py == NULL || fabs(a-b) > solver_update_resolution ) { \
+        PyObject *value = Py##TO##_From##FROM(a); \
         if ( value == NULL ) { \
             gl_warning("pypower:on_*(t0=%lld): unable to create value " #NAME " for data item %d",t0,INDEX); \
         } \
         else { \
             PyList_SET_ITEM(pyobj,INDEX,value); \
-            if ( CHANGE ) { n_changes++; } \
+            if ( CHANGE ) { \
+                gl_debug("pypower.update_solution(t=%lld): sending bus %d %s, updating from %lf to %lf", \
+                    t0,n,#NAME,b,a); \
+                n_changes++; \
+            } \
             Py_XDECREF(py); \
 }}}
 
@@ -596,9 +602,11 @@ static TIMESTAMP update_controller(TIMESTAMP t0,PyObject *command,const char *na
     double a = obj->get_##NAME(); \
     double b = Py##FROM##_As##TO(py); \
     if ( fabs(a-b) > solver_update_resolution ) { \
-        gl_debug("pypower.update_solution(t=%lld): updating bus %d %s from %lf to %lf", \
-            t0,n,#NAME,a,b); \
-        if ( CHANGE ) { n_changes++; } \
+        if ( CHANGE ) { \
+            gl_debug("pypower.update_solution(t=%lld): receiving bus %d %s, updating from %lf to %lf", \
+                t0,n,#NAME,a,b); \
+            n_changes++; \
+        } \
         obj->set_##NAME(b); \
     }}
 
@@ -798,7 +806,6 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
             }
 
             // copy values back from solver
-            n_changes = 0;
             PyObject *busdata = PyDict_GetItemString(result,"bus");
             if ( nbus > 0 && busdata == NULL )
             {
@@ -868,8 +875,16 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
             {
                 gen *obj = genlist[n];
                 PyObject *pyobj = PyList_GetItem(gendata,n);
-                RECV(Pg,1,Float,Double,true)
-                RECV(Qg,2,Float,Double,true)
+                if ( enable_opf )
+                {
+                    RECV(Ps,1,Float,Double,true)
+                    RECV(Qs,2,Float,Double,true)
+                }
+                else
+                {    
+                    RECV(Pg,1,Float,Double,true)
+                    RECV(Qg,2,Float,Double,true)
+                }
                 RECV(apf,20,Float,Double,false)
                 if ( enable_opf )
                 {

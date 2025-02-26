@@ -195,11 +195,11 @@ void shunt::push_admittance(void)
 {
     if ( real )
     {
-        output->add_shunt(admittance,0);
+        output->add_load(-admittance,0);
     }
     else
     {
-        output->add_shunt(0,admittance);
+        output->add_load(0,-admittance);
     }
 }
 
@@ -212,16 +212,12 @@ TIMESTAMP shunt::update(TIMESTAMP t0,bool control)
             if ( control_mode == CM_DISCRETE_V )
             {
                 double Vm = input->get_Vm();
-                //debug("input voltage is %.3lf pu (Vmin=%.3lf, Vmax=%.3lf)",Vm,voltage_low,voltage_high);
                 bool Vhigh = Vm > voltage_high;
                 bool Vlow = Vm < voltage_low;
                 bool Alo = admittance <= 0;
                 bool Ahi = admittance >= admittance_1 * steps_1;
                 bool Amax = admittance_1 > 0 ? Ahi : Alo ;
                 bool Amin = admittance_1 > 0 ? Alo : Ahi;
-                // debug("admittance_1=%lf, steps_1=%d, admittance=%lf; %s %s %s %s",
-                //     admittance_1, steps_1, admittance,
-                //     Vhigh?"Vhigh":"!Vhigh",Vlow?"Vlow":"!Vlow",Amax?"Amax":"!Amax",Amin?"Amin":"!Amin");
                 if ( ( Vlow && ! Amax ) || ( Vhigh && ! Amin ) )
                 {
                     if ( control )
