@@ -38,3 +38,246 @@ clock
 #ifexists ../case.glm
 #on_exit 0 diff ../test_case14_sensitivity_pp_bus_1_record.csv test_case14_sensitivity_pp_bus_1_record.csv > gridlabd.diff
 #endif
+
+module assert;
+#define MRES=0.002 // magnitude test resolution
+#define ARES=0.02 // angle test resolution
+
+object assert
+{      
+    parent pp_bus_1;
+    target Vm;
+    relation ==;
+    value 1.060;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_1;
+    target Va;
+    relation ==;
+    value 0.00;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_2;
+    target Vm;
+    relation ==;
+    value 1.045;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_2;
+    target Va;
+    relation ==;
+    value -4.98;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_3;
+    target Vm;
+    relation ==;
+    value 1.010;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_3;
+    target Va;
+    relation ==;
+    value -12.72;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_4;
+    target Vm;
+    relation ==;
+    value 1.019;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_4;
+    target Va;
+    relation ==;
+    value -10.33;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_5;
+    target Vm;
+    relation ==;
+    value 1.020;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_5;
+    target Va;
+    relation ==;
+    value -8.78;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_6;
+    target Vm;
+    relation ==;
+    value 1.070;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_6;
+    target Va;
+    relation ==;
+    value -14.22;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_7;
+    target Vm;
+    relation ==;
+    value 1.062;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_7;
+    target Va;
+    relation ==;
+    value -13.37;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_8;
+    target Vm;
+    relation ==;
+    value 1.090;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_8;
+    target Va;
+    relation ==;
+    value -13.36;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_9;
+    target Vm;
+    relation ==;
+    value 1.056;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_9;
+    target Va;
+    relation ==;
+    value -14.94;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_10;
+    target Vm;
+    relation ==;
+    value 1.051;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_10;
+    target Va;
+    relation ==;
+    value -15.10;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_11;
+    target Vm;
+    relation ==;
+    value 1.057;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_11;
+    target Va;
+    relation ==;
+    value -14.79;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_12;
+    target Vm;
+    relation ==;
+    value 1.055;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_12;
+    target Va;
+    relation ==;
+    value -15.07;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_13;
+    target Vm;
+    relation ==;
+    value 1.050;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_13;
+    target Va;
+    relation ==;
+    value -15.16;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_14;
+    target Vm;
+    relation ==;
+    value 1.036;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_14;
+    target Va;
+    relation ==;
+    value -16.04;
+    within ${ARES};
+}
+
