@@ -8,3 +8,21 @@ module pypower
 {
 	solver_method NR;
 }
+
+module assert;
+
+#define MRES=0.01 // magnitude test resolution
+
+// NB: bus 46 result in case57 may not be correct in pypower
+#define ARES=0.8 // angle test resolution
+
+
+#begin python
+import sys
+sys.path.append("${DIR:-.}")
+import case${CASE}
+import verify
+verify.write_glm("case${CASE}_verify.glm",case${CASE}.case${CASE}())
+#end
+
+#include "case${CASE}_verify.glm"

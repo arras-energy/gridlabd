@@ -22,7 +22,7 @@ module tape
 
 object pypower.load
 {
-    parent pp_bus_2;
+    parent "pp_bus_2";
     Vn 12.5 kV;
     object player
     {
@@ -33,7 +33,8 @@ object pypower.load
 
 object pypower.powerplant
 {
-    parent pp_gen_2;
+    name "pp_powerplant_2";
+    parent "pp_gen_2";
     S 10.0;
     status ONLINE;
     startup_cost 1.0;
@@ -41,10 +42,16 @@ object pypower.powerplant
     fixed_cost 0.1;
     variable_cost 0.3;
     scarcity_cost 0.7;
-    ramp_rate 10 MW/min;
+    ramp_rate 1 MW/min;
 }
 
 #include "${DIR:-.}/case.glm"
+
+//modify pp_gen_2.Pg 0;
+//modify pp_gen_2.Qg 0;
+//modify pp_gen_2.Ps 10;
+//modify pp_gen_2.Qs 1;
+//modify pp_gen_2.S 0+0j;
 
 clock
 {
@@ -55,11 +62,27 @@ clock
 
 object recorder
 {
-    parent pp_bus_2;
+    parent "pp_bus_2";
     property S,Pd,Qd,Gs,Bs,Vm,Va;
-    interval 3600;
+    interval -1;
     file "test_case14_powerplant_pp_bus_2_record.csv";
 }
+
+object recorder
+{
+    parent "pp_gen_2";
+    property Vg,Pg,Qg,Ps,Qs;
+    interval -1;
+    file "test_case14_powerplant_pp_gen_2_record.csv";
+}
+
+object recorder
+{
+    parent "pp_powerplant_2";
+    property S,Pg,Qg;
+    interval -1;
+    file "test_case14_powerplant_pp_powerplant_2_record.csv";
+};
 
 #ifdef ../${modelname/.glm/}_pp_bus_2_record.csv
 #on_exit 0 diff ../test_case14_powerplant_pp_bus_2_record.csv ${modelname/.glm/}_pp_bus_2_record.csv > gridlabd.diff

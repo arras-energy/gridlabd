@@ -9,3 +9,17 @@ module pypower
 	solver_method GS;
 	save_case TRUE;
 }
+
+module assert;
+#define MRES=0.002 // magnitude test resolution
+#define ARES=0.02 // angle test resolution
+
+#begin python
+import sys
+sys.path.append("${DIR:-.}")
+import case${CASE}
+import verify
+verify.write_glm("case${CASE}_verify.glm",case${CASE}.case${CASE}())
+#end
+
+#include "case${CASE}_verify.glm"
