@@ -1,24 +1,11 @@
+// This test verifies that OPF updates Ps and Qs and does not change Pg and Qg
+
 #define CASE=14
 #ifexists "../case.glm"
 #define DIR=..
 #endif
+
 #include "${DIR:-.}/case.glm"
-
-//#option verbose
-//#option debug
-
-#for BUS in ${FIND class=bus}
-modify ${BUS}.Vm 1.0;
-modify ${BUS}.Va 0.0;
-#done
-
-//object shunt
-//{
-//    parent pp_bus_9;
-//    admittance 19;
-//    control_mode FIXED; 
-//    status ONLINE;
-//}
 
 module pypower
 {
@@ -358,3 +345,94 @@ object assert
     value 17.4;
     within ${QRES};
 }
+
+object assert
+{
+    parent pp_gen_1;
+    target Ps;
+    relation ==;
+    value 194.33;
+    within ${PRES};
+}
+
+object assert
+{
+    parent pp_gen_1;
+    target Qs;
+    relation ==;
+    value 0.00;
+    within ${QRES};
+}
+
+object assert
+{
+    parent pp_gen_2;
+    target Ps;
+    relation ==;
+    value 36.72;
+    within ${PRES};
+}
+
+object assert
+{
+    parent pp_gen_2;
+    target Qs;
+    relation ==;
+    value 23.69;
+    within ${QRES};
+}
+
+object assert
+{
+    parent pp_gen_3;
+    target Ps;
+    relation ==;
+    value 28.74;
+    within ${PRES};
+}
+
+object assert
+{
+    parent pp_gen_3;
+    target Qs;
+    relation ==;
+    value 24.13;
+    within ${QRES};
+}
+
+object assert
+{
+    parent pp_gen_4;
+    target Ps;
+    relation ==;
+    value 0.00;
+    within ${PRES};
+}
+
+object assert
+{
+    parent pp_gen_4;
+    target Qs;
+    relation ==;
+    value 11.55;
+    within ${QRES};
+}
+
+object assert
+{
+    parent pp_gen_5;
+    target Ps;
+    relation ==;
+    value 8.50;
+    within ${PRES};
+}
+
+object assert
+{
+    parent pp_gen_5;
+    target Qs;
+    relation ==;
+    value 8.27;
+    within ${QRES};
+}
+
