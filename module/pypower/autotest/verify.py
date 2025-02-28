@@ -3,7 +3,7 @@ def write_glm(glm,case):
     with open(glm,"w") as fh:
         for bus in case['bus']:
             print(f"""object assert
-{{      
+{{
     parent pp_bus_{bus[0]:.0f};
     target Vm;
     relation ==;
