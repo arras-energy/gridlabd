@@ -2,48 +2,47 @@
 #ifexists "../case.glm"
 #define DIR=..
 #endif
-#include "${DIR:-.}/case.glm"
+
+// #set debug=TRUE
+// #set suppress_repeat_messages=FALSE
 
 module pypower
 {
-	maximum_timestep 3600;
-#ifdef DIR
-    controllers_path "${DIR}";
-#endif
-    controllers "controllers";
+    maximum_timestep 3600;
 }
 
-#for N in ${RANGE 1,14}
-object pypower.load
-{
-    parent pp_bus_${N};
-    Vn 12.5 kV;
-    status ONLINE;
-    controller "load_control";
-}
-#done
+#include "${DIR:-.}/case.glm"
 
-module tape
-{
-	csv_header_type NAME;
-}
-
-#set suppress_repeat_messages=FALSE
-object multi_recorder
-{
-	file "test_case14_ts.csv";
-#for N in ${RANGE 1,14}
-	property "pp_bus_${N}:Pd,pp_bus_${N}:Qd";
-#done
-	interval -1;
-}
+// drop load on bus 2
+modify pp_bus_2.Pd 0;
+modify pp_bus_2.Qd 0;
 
 module assert;
+
 #define MRES=0.002 // magnitude test resolution
 #define ARES=0.02 // angle test resolution
+#define PRES=0.1 // real power test resolution
+#define QRES=0.1 // reactive power test resolution
 
 object assert
+{      
+    parent pp_bus_2;
+    target Pd;
+    relation ==;
+    value 0;
+    within ${PRES};
+}
+object assert
 {
+    parent pp_bus_2;
+    target Qd;
+    relation ==;
+    value 0;
+    within ${QRES};
+}
+
+object assert
+{      
     parent pp_bus_1;
     target Vm;
     relation ==;
@@ -60,7 +59,7 @@ object assert
 }
 
 object assert
-{
+{      
     parent pp_bus_2;
     target Vm;
     relation ==;
@@ -72,12 +71,12 @@ object assert
     parent pp_bus_2;
     target Va;
     relation ==;
-    value -4.98;
+    value -4.351;
     within ${ARES};
 }
 
 object assert
-{
+{      
     parent pp_bus_3;
     target Vm;
     relation ==;
@@ -89,16 +88,16 @@ object assert
     parent pp_bus_3;
     target Va;
     relation ==;
-    value -12.72;
+    value -12.161;
     within ${ARES};
 }
 
 object assert
-{
+{      
     parent pp_bus_4;
     target Vm;
     relation ==;
-    value 1.019;
+    value 1.018;
     within ${MRES};
 }
 object assert
@@ -106,12 +105,12 @@ object assert
     parent pp_bus_4;
     target Va;
     relation ==;
-    value -10.33;
+    value -9.812;
     within ${ARES};
 }
 
 object assert
-{
+{      
     parent pp_bus_5;
     target Vm;
     relation ==;
@@ -123,12 +122,12 @@ object assert
     parent pp_bus_5;
     target Va;
     relation ==;
-    value -8.78;
+    value -8.318;
     within ${ARES};
 }
 
 object assert
-{
+{      
     parent pp_bus_6;
     target Vm;
     relation ==;
@@ -140,12 +139,12 @@ object assert
     parent pp_bus_6;
     target Va;
     relation ==;
-    value -14.22;
+    value -13.751;
     within ${ARES};
 }
 
 object assert
-{
+{      
     parent pp_bus_7;
     target Vm;
     relation ==;
@@ -157,12 +156,12 @@ object assert
     parent pp_bus_7;
     target Va;
     relation ==;
-    value -13.37;
+    value -12.867;
     within ${ARES};
 }
 
 object assert
-{
+{      
     parent pp_bus_8;
     target Vm;
     relation ==;
@@ -174,12 +173,12 @@ object assert
     parent pp_bus_8;
     target Va;
     relation ==;
-    value -13.36;
+    value -12.867;
     within ${ARES};
 }
 
 object assert
-{
+{      
     parent pp_bus_9;
     target Vm;
     relation ==;
@@ -191,12 +190,12 @@ object assert
     parent pp_bus_9;
     target Va;
     relation ==;
-    value -14.94;
+    value -14.450;
     within ${ARES};
 }
 
 object assert
-{
+{      
     parent pp_bus_10;
     target Vm;
     relation ==;
@@ -208,12 +207,12 @@ object assert
     parent pp_bus_10;
     target Va;
     relation ==;
-    value -15.10;
+    value -14.612;
     within ${ARES};
 }
 
 object assert
-{
+{      
     parent pp_bus_11;
     target Vm;
     relation ==;
@@ -225,12 +224,12 @@ object assert
     parent pp_bus_11;
     target Va;
     relation ==;
-    value -14.79;
+    value -14.313;
     within ${ARES};
 }
 
 object assert
-{
+{      
     parent pp_bus_12;
     target Vm;
     relation ==;
@@ -242,12 +241,12 @@ object assert
     parent pp_bus_12;
     target Va;
     relation ==;
-    value -15.07;
+    value -14.604;
     within ${ARES};
 }
 
 object assert
-{
+{      
     parent pp_bus_13;
     target Vm;
     relation ==;
@@ -259,12 +258,12 @@ object assert
     parent pp_bus_13;
     target Va;
     relation ==;
-    value -15.16;
+    value -14.683;
     within ${ARES};
 }
 
 object assert
-{
+{      
     parent pp_bus_14;
     target Vm;
     relation ==;
@@ -276,7 +275,7 @@ object assert
     parent pp_bus_14;
     target Va;
     relation ==;
-    value -16.04;
+    value -15.552;
     within ${ARES};
 }
 
