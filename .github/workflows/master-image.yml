@@ -39,8 +39,8 @@ jobs:
         aws s3 sync ./cloud/websites/tutorials.arras.energy/ s3://tutorials.arras.energy --acl public-read
         aws s3 sync ./cloud/websites/www.arras.energy/ s3://www.arras.energy --acl public-read
 
-#    - name: Run CF invalidation
-#      run: aws cloudfront create-invalidation --distribution-id ${{ secrets.PROD_CF_ID }} --paths '/*'
+    - name: Run CF invalidation
+      run: aws cloudfront create-invalidation --distribution-id ${{ secrets.PROD_CF_ID }} --paths '/*'
 
   buildMacos13FastS3:
 
@@ -240,8 +240,8 @@ jobs:
         role-session-name: masterDockerhubDeploymentWorkflow
         aws-region: ${{ secrets.AWS_REGION }}
 
-#    - name: Run CF invalidation
-#      run: aws cloudfront create-invalidation --distribution-id ${{ secrets.PROD_CF_ID }} --paths '/*'
+    - name: Run CF invalidation
+      run: aws cloudfront create-invalidation --distribution-id ${{ secrets.PROD_CF_ID }} --paths '/*'
 
     - name: Set output
       run: |
@@ -281,8 +281,8 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
-#    - name: Run CF invalidation
-#      run: aws cloudfront create-invalidation --distribution-id ${{ secrets.PROD_CF_ID }} --paths '/*'
+    - name: Run CF invalidation
+      run: aws cloudfront create-invalidation --distribution-id ${{ secrets.PROD_CF_ID }} --paths '/*'
 
     - name: Set output
       run: |
