@@ -26,7 +26,7 @@ object pypower.load
     Vn 12.5 kV;
     object player
     {
-        file "${DIR:-.}/test_case14_load_pp_bus_2.csv";
+        file "${DIR:-.}/test_case14_powerplant_pp_bus_2.csv";
     };
     status ONLINE;
 }

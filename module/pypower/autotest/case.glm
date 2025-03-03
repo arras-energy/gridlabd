@@ -3,6 +3,8 @@
 #define DIR=..
 #endif
 
+#set suppress_repeat_messages=FALSE
+
 clock
 {
     timezone "PST+8PDT";

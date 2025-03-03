@@ -888,13 +888,17 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
             {
                 gen *obj = genlist[n];
                 PyObject *pyobj = PyList_GetItem(gendata,n);
-                if ( do_opf )
+
+                // if doing OPF and powerplant are connected to this generation object
+                if ( do_opf && obj->get_powerplant_count() > 0 )
                 {
+                    // only update generation setpoints (powerplant control active)
                     RECV(Ps,1,Float,Double,true)
                     RECV(Qs,2,Float,Double,true)
                 }
                 else
-                {    
+                {   
+                    // update actual generation (not powerplant controls active)
                     RECV(Pg,1,Float,Double,true)
                     RECV(Qg,2,Float,Double,true)
                 }

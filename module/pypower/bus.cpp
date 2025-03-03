@@ -191,9 +191,24 @@ int bus::create(void)
 	set_zone(1);
 	set_Vmax(1.2);
 	set_Vmin(0.8);
-	set_S(0.0);
+	set_S(complex(0,0));
 
 	// initialize weather data
+	set_weather_file("");
+	set_weather_variables("");
+	set_weather_resolution(0.0);
+	set_Sh(0.0);
+	set_Sh(0.0);
+	set_Sg(0.0);
+	set_Wd(0.0);
+	set_Ws(0.0);
+	set_Td(0.0);
+	set_Tw(0.0);
+	set_RH(0.0);
+	set_PW(0.0);
+	set_HI(0.0);
+	set_weather_sensitivity("");
+	set_shunt(complex(0,0));
 	current = first = last = NULL;
 	sensitivity_list = NULL;
 
@@ -275,23 +290,36 @@ int bus::init(OBJECT *parent)
 			return 0;
 		}
 	}
+
+	// initialize load values
+	if ( S.Re() == 0 && S.Im() == 0 )
+	{
+		// copy initial load to dispatched load
+		S = complex(Pd,Qd); 
+	}
+	else if ( Pd == 0 && Qd == 0 )
+	{
+		// set initial load to dispatch
+		Pd = S.Re();
+		Qd = S.Im();
+	}
+
+	// initialize shunt values
 	if ( shunt.Re() == 0 && shunt.Im() == 0 )
 	{
 		shunt = complex(Gs,Bs);
 	}
+	else if ( Gs == 0 && Bs == 0 )
+	{
+		Gs = shunt.Re();
+		Bs = shunt.Im();
+	}
+	else
+	{
+		warning("both shunt and Gs/Bs are non-zero, not initialization either");
+	}
 
 	return 1; // return 1 on success, 0 on failure, 2 on retry later
-}
-
-void bus::add_load(double P, double Q)
-{
-	Pd += P;
-	Qd += Q;
-}
-void bus::add_shunt(double G, double B)
-{
-	Gs += G;
-	Bs += B;
 }
 
 TIMESTAMP bus::precommit(TIMESTAMP t0)
@@ -328,6 +356,17 @@ TIMESTAMP bus::presync(TIMESTAMP t0)
 	Bs = shunt.Im();
 
 	return TS_NEVER;
+}
+
+void bus::add_load(double P, double Q)
+{
+	Pd += P;
+	Qd += Q;
+}
+void bus::add_shunt(double G, double B)
+{
+	Gs += G;
+	Bs += B;
 }
 
 TIMESTAMP bus::sync(TIMESTAMP t0)

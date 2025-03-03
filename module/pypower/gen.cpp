@@ -50,8 +50,8 @@ gen::gen(MODULE *module)
 
 			PT_enumeration, "status", get_status_offset(),
 				PT_DESCRIPTION, "1 - in service, 0 - out of service",
-				PT_KEYWORD, "IN_SERVICE", (enumeration)1,
-				PT_KEYWORD, "OUT_OF_SERVICE", (enumeration)0,
+				PT_KEYWORD, "IN_SERVICE", (enumeration)GS_INSERVICE,
+				PT_KEYWORD, "OUT_OF_SERVICE", (enumeration)GS_OUTOFSERVICE,
 
 			PT_double, "Pmax[MW]", get_Pmax_offset(),
 				PT_DESCRIPTION, "maximum real power output (MW)",
@@ -125,6 +125,39 @@ gen::gen(MODULE *module)
 
 int gen::create(void) 
 {
+	extern double base_MVA;
+
+	set_bus(0);
+	set_Pg(0.0);
+	set_Qg(0.0);
+	set_Qmax(0.0);
+	set_Qmin(0.0);
+	set_Vg(1.0);
+	set_mBase(base_MVA);
+	set_status(GS_INSERVICE);
+	set_Pmax(0.0);
+	set_Pmin(0.0);
+	set_Pc1(0.0);
+	set_Pc2(0.0);
+	set_Qc1min(0.0);
+	set_Qc1max(0.0);
+	set_Qc2min(0.0);
+	set_Qc2max(0.0);
+	set_ramp_agc(0.0);
+	set_ramp_10(0.0);
+	set_ramp_30(0.0);
+	set_ramp_q(0.0);
+	set_apf(0.0);
+	set_mu_Pmax(0.0);
+	set_mu_Pmin(0.0);
+	set_mu_Qmax(0.0);
+	set_mu_Qmin(0.0);
+	set_Ps(0.0);
+	set_Qs(0.0);
+
+	plant_count = 0;
+
+	cost = NULL;
 	extern gen *genlist[MAXENT];
 	extern size_t ngen;
 	if ( ngen < MAXENT )
@@ -135,11 +168,6 @@ int gen::create(void)
 	{
 		throw "maximum gen entities exceeded";
 	}
-
-	extern double base_MVA;
-	cost = NULL;
-	plant_count = 0;
-	set_Vg(1.0);
 
 	return 1; /* return 1 on success, 0 on failure */
 }
@@ -183,6 +211,13 @@ TIMESTAMP gen::precommit(TIMESTAMP t0)
 		Pg = 0.0;
 		Qg = 0.0;
 	}
+
+	// change generation to match non-zero setpoint if valid
+	else if ( Pmin > 0 && Ps >= Pmin && Qs >= Qmin && Ps <= Pmax && Qs <= Qmax )
+	{
+		Pg = Ps;
+		Qg = Qs;
+	}
 	return TS_NEVER;
 }
 
@@ -222,4 +257,9 @@ void gen::add_cost(class gencost *add)
 	{
 		error("unable to add to different gencost models");
 	}
+}
+
+unsigned int gen::get_powerplant_count(void)
+{
+	return plant_count;
 }

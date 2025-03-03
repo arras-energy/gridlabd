@@ -1,5 +1,3 @@
-// This test verifies that OPF updates Ps and Qs and does not change Pg and Qg
-
 #define CASE=14
 #ifexists "../case.glm"
 #define DIR=..
@@ -261,96 +259,6 @@ object assert
     parent pp_gen_1;
     target Pg;
     relation ==;
-    value 232.4;
-    within ${PRES};
-}
-
-object assert
-{
-    parent pp_gen_1;
-    target Qg;
-    relation ==;
-    value -16.9;
-    within ${QRES};
-}
-
-object assert
-{
-    parent pp_gen_2;
-    target Pg;
-    relation ==;
-    value 40.0;
-    within ${PRES};
-}
-
-object assert
-{
-    parent pp_gen_2;
-    target Qg;
-    relation ==;
-    value 42.4;
-    within ${QRES};
-}
-
-object assert
-{
-    parent pp_gen_3;
-    target Pg;
-    relation ==;
-    value 0;
-    within ${PRES};
-}
-
-object assert
-{
-    parent pp_gen_3;
-    target Qg;
-    relation ==;
-    value 23.4;
-    within ${QRES};
-}
-
-object assert
-{
-    parent pp_gen_4;
-    target Pg;
-    relation ==;
-    value 0;
-    within ${PRES};
-}
-
-object assert
-{
-    parent pp_gen_4;
-    target Qg;
-    relation ==;
-    value 12.2;
-    within ${QRES};
-}
-
-object assert
-{
-    parent pp_gen_5;
-    target Pg;
-    relation ==;
-    value 0;
-    within ${PRES};
-}
-
-object assert
-{
-    parent pp_gen_5;
-    target Qg;
-    relation ==;
-    value 17.4;
-    within ${QRES};
-}
-
-object assert
-{
-    parent pp_gen_1;
-    target Ps;
-    relation ==;
     value 194.33;
     within ${PRES};
 }
@@ -358,7 +266,7 @@ object assert
 object assert
 {
     parent pp_gen_1;
-    target Qs;
+    target Qg;
     relation ==;
     value 0.00;
     within ${QRES};
@@ -367,7 +275,7 @@ object assert
 object assert
 {
     parent pp_gen_2;
-    target Ps;
+    target Pg;
     relation ==;
     value 36.72;
     within ${PRES};
@@ -376,7 +284,7 @@ object assert
 object assert
 {
     parent pp_gen_2;
-    target Qs;
+    target Qg;
     relation ==;
     value 23.69;
     within ${QRES};
@@ -385,7 +293,7 @@ object assert
 object assert
 {
     parent pp_gen_3;
-    target Ps;
+    target Pg;
     relation ==;
     value 28.74;
     within ${PRES};
@@ -394,7 +302,7 @@ object assert
 object assert
 {
     parent pp_gen_3;
-    target Qs;
+    target Qg;
     relation ==;
     value 24.13;
     within ${QRES};
@@ -403,7 +311,7 @@ object assert
 object assert
 {
     parent pp_gen_4;
-    target Ps;
+    target Pg;
     relation ==;
     value 0.00;
     within ${PRES};
@@ -412,7 +320,7 @@ object assert
 object assert
 {
     parent pp_gen_4;
-    target Qs;
+    target Qg;
     relation ==;
     value 11.55;
     within ${QRES};
@@ -421,7 +329,7 @@ object assert
 object assert
 {
     parent pp_gen_5;
-    target Ps;
+    target Pg;
     relation ==;
     value 8.50;
     within ${PRES};
@@ -430,7 +338,7 @@ object assert
 object assert
 {
     parent pp_gen_5;
-    target Qs;
+    target Qg;
     relation ==;
     value 8.27;
     within ${QRES};

@@ -172,6 +172,7 @@ int powerplant::create(void)
 	py_kwargs = PyDict_New();
 	last_t = 0;
 	last_Sm = 0;
+	gen_cf = 1.0;
 
 	return 1; // return 1 on success, 0 on failure
 }
@@ -317,6 +318,20 @@ TIMESTAMP powerplant::precommit(TIMESTAMP t0)
 	if ( last_t > 0)
 	{
 		// handle ramp rates
+		if ( is_dynamic ) // gen parent
+		{
+			gen *parent = (gen*)get_parent();
+			gen_cf = operating_capacity / parent->get_Pmax();
+			extern bool enable_opf;
+			if  ( enable_opf )
+			{
+				S = complex(parent->get_Pg(),parent->get_Qg());
+			}
+			else
+			{
+				S = complex(parent->get_Ps(),parent->get_Qs());
+			}
+		}
 		if ( ramp_rate > 0 && Pg != S.Re() )
 		{
 			debug("ramping from %.1lf%+.1lfj MVA to %.1lf%+.1lfj MVA",Pg,Qg,S.Re(),S.Im());
@@ -368,6 +383,7 @@ TIMESTAMP powerplant::precommit(TIMESTAMP t0)
 	// post costs
 	if ( costobj != NULL )
 	{
+		costobj->set_model(gencost::CM_POLYNOMIAL);
 		costobj->set_startup(get_startup_cost());
 		costobj->set_shutdown(get_shutdown_cost());
 		char buffer[1025];
@@ -411,6 +427,7 @@ TIMESTAMP powerplant::sync(TIMESTAMP t0)
 		PyDict_SetItemString(py_kwargs,"S",PyComplex_FromCComplex(z));
 		PyDict_SetItemString(py_kwargs,"Pg",PyFloat_FromDouble(Pg));
 		PyDict_SetItemString(py_kwargs,"Qg",PyFloat_FromDouble(Qg));
+		PyDict_SetItemString(py_kwargs,"gen_cf",PyFloat_FromDouble(gen_cf));
 		if ( get_parent() && get_parent()->isa("bus","pypower") )
 		{
 			bus *parent = (bus*)get_parent();
@@ -479,6 +496,7 @@ TIMESTAMP powerplant::sync(TIMESTAMP t0)
 			Py_DECREF(result);
 		}
 	}
+
 	return t1;
 }
 

@@ -46,6 +46,13 @@ gencost::gencost(MODULE *module)
 
 int gencost::create(void) 
 {
+	set_model(CM_UNKNOWN);
+	set_startup(0.0);
+	set_shutdown(0.0);
+	set_costs("");
+
+	index = 0;
+
 	extern gencost *gencostlist[MAXENT];
 	extern size_t ngencost;
 	if ( ngencost < MAXENT )
