@@ -75,3 +75,7 @@ if [ "$(autoconf --version | head -n 1 | cut -f4 -d' ')" != "2.72" ] ; then
     (cd /tmp/autoconf-2.72 ; ./configure ; make ; make install)
     test "$(autoconf --version | head -n 1 | cut -f4 -d' ')" = "2.72" || error "autoconf installation failed"
 fi
+
+# make sure python3.10 is available through /usr/local/bin
+ln -sf $(which python3.10) /usr/local/bin/python3
+ln -sf $(which python3.10-config) /usr/local/bin/python3-config
