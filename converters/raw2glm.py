@@ -15,12 +15,13 @@ config = {"input":"raw","output":"glm","type":[],"format":[]}
 
 def help():
     return """raw2glm.py -i <inputfile> -o <outputfile> [options...]
-    -c|--config               output converter configuration data
-    -h|--help                 output this help
-    -i|--ifile <FILENAME.raw> [REQUIRED] PY input file
-    -o|--ofile <FILENAME.glm> [OPTIONAL] GLM output file name
-    -N|--name <STRING>        [OPTIONAL] object name prefix (default is output
-                              file name)
+    -c|--config                output converter configuration data
+    -h|--help                  output this help
+    -i|--ifile <FILENAME.raw>  [REQUIRED] PY input file
+    -o|--ofile <FILENAME.glm>  [OPTIONAL] GLM output file name
+    -N|--name <STRING>         [OPTIONAL] object name prefix (default is output
+                               file name)
+    -X|--exclude <CLASS>[,...] classes to exclude from output
 """
 
 E_OK = 0
@@ -45,6 +46,7 @@ def main():
     filename_raw = None
     filename_glm = None
     prefix = None
+    exclude = []
     try : 
         opts, args = getopt.getopt(sys.argv[1:],
             "chi:o:N:",
@@ -67,6 +69,8 @@ def main():
             filename_glm = arg
         elif opt in ("-N", "--name"):
             prefix = arg
+        elif opt in ("-X","--exclude"):
+            exclude.extends(arg.split(","))
         else : 
             error("{opt}={arg} is not a valid option",exitcode=E_SYNTAX)
 
@@ -207,7 +211,8 @@ def convert(ifile,ofile,options={}):
                     bus_S[row[0]] += P + V*I.conjugate()
                     if Z.real != 0.0 and Z.imag != 0.0:
                         bus_S[row[0]] += V.conjugate()*V/Z.conjugate()
-                    print(f"""object pypower.load
+                    if "load" not in exclude:
+                        print(f"""object pypower.load
 {{
     name "{oname}_L_{row[0]}";
     parent "{oname}_N_{row[0]}";
@@ -230,7 +235,8 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
                     if not row[0] in busndx:
                         warning(f"gen '{row[0]}' not a valid bus index",ifile,lineno)
                     # PSSE: I,'ID', PG, QG, QT, QB, VS, IREG, MBASE, ZR, ZX, RT, XT, GTAP, STAT, RMPCT, PT, PB, O1, F1, O2, F2, O3, F3, O4, F4, WMOD, WPF, NREG
-                    print(f"""object pypower.gen
+                    if "gen" not in exclude:
+                        print(f"""object pypower.gen
 {{
     name "{oname}_G_{row[0]}_{genndx[genid]}";
     bus {busndx[row[0]]};
@@ -253,7 +259,8 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
                         warning(f"branch '{row[0]}' or '{row[1]}' not a valid bus index",ifile,lineno)
 
                     # PSSE: I,     J,'CKT',     R,          X,         B,                    'N A M E'                 ,   RATE1,   RATE2,   RATE3,   
-                    print(f"""object pypower.branch
+                    if "branch" not in exclude:
+                        print(f"""object pypower.branch
 {{
     name "{oname}_B_{branchid}_{branchndx[branchid]}"; 
     from "{oname}_N_{row[0]}";
@@ -292,7 +299,8 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
                             rd.extend([f"""    //   {x.replace(' ','').strip("'")} "{y}";""" for x,y in r.items()])
                             dd.update(r)
                         rd = "\n".join(rd)
-                        print(f"""object pypower.branch
+                        if "branch" not in exclude:
+                            print(f"""object pypower.branch
 {{
     name "{oname}_B_{branchid}_{branchndx[branchid]}";
     fbus {busndx[dd['I']]};
@@ -366,8 +374,8 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
                         "steps_8" : int,
                         "admittance_8": lambda x: f"{float(x)} MVAr",
                     }
-
-                    print(f"""object shunt {{ 
+                    if "shunt" not in exclude:
+                        print(f"""object shunt {{ 
     name "{oname}_S_{row[0]}";
     parent "{oname}_N_{row[0]}";""",file=glm)
                     for name,value in zip(fields[block][1:],row[1:]):
@@ -389,17 +397,19 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
                     oclass = f"""psse_{block.replace("_DATA","").lower()}"""
                     if block not in ocount:
                         ocount[block] = ocount[block]+1 if block in ocount else 0
-                        print(f"class {oclass} {{ // runtime definition",file=glm)
-                        for field in fields[block][1:]:
-                            ftype = 'char1024' if field[0] == "'" else 'double'
-                            print(f"""    {ftype} {field.replace("'","")};""",file=glm)
-                        print("}",file=glm)
-                        warning(f"""GLM class {oclass} defined at runtime, incomplete model conversion possible""",ifile,lineno)
-                    print(f"""object {oclass} {{ 
+                        if oclass not in exclude:
+                            print(f"class {oclass} {{ // runtime definition",file=glm)
+                            for field in fields[block][1:]:
+                                ftype = 'char1024' if field[0] == "'" else 'double'
+                                print(f"""    {ftype} {field.replace("'","")};""",file=glm)
+                            print("}",file=glm)
+                            warning(f"""GLM class {oclass} defined at runtime, incomplete model conversion possible""",ifile,lineno)
+                    if oclass not in exclude:
+                        print(f"""object {oclass} {{ 
     name "{oname}_{oclass.upper()}_{row[0]}";""",file=glm)
-                    for name,value in zip(fields[block][1:],row[1:]):
-                        print(f"""    {name.replace("'","")} "{value}";""",file=glm)
-                    print(f"""}}""",file=glm)
+                        for name,value in zip(fields[block][1:],row[1:]):
+                            print(f"""    {name.replace("'","")} "{value}";""",file=glm)
+                        print(f"""}}""",file=glm)
 
 if __name__ == '__main__':
     main()
