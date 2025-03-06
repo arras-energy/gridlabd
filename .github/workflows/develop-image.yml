@@ -38,9 +38,9 @@ jobs:
         aws s3 sync ./cloud/websites/status.arras.energy/ s3://status-dev.arras.energy --acl public-read
         aws s3 sync ./cloud/websites/tutorials.arras.energy/ s3://tutorials-dev.arras.energy --acl public-read
         aws s3 sync ./cloud/websites/www.arras.energy/ s3://www-dev.arras.energy --acl public-read
-# re-enable when buckets live and cloudfront added
-#    - name: Run CF invalidation
-#      run: aws cloudfront create-invalidation --distribution-id ${{ secrets.DEV_CF_ID }} --paths '/*'
+
+    - name: Run CF invalidation
+      run: aws cloudfront create-invalidation --distribution-id ${{ secrets.DEV_CF_ID }} --paths '/*'
 
   buildMacos13FastS3:
 
@@ -219,8 +219,10 @@ jobs:
         chown -R root $PWD
         sh ./setup.sh --local
         sh ./build.sh --system --parallel
+        ln -sf /usr/bin/python3.10 /usr/local/opt/gridlabd/current/bin/python3.10
         gridlabd python -m pip install awscli
         sh ./build.sh --upload --release
+
   buildUbuntuDockerhub:
 
     runs-on: ubuntu-24.04
@@ -238,8 +240,8 @@ jobs:
         role-session-name: developDockerhubDeploymentWorkflow
         aws-region: ${{ secrets.AWS_REGION }}
 
-#    - name: Run CF invalidation
-#      run: aws cloudfront create-invalidation --distribution-id ${{ secrets.DEV_CF_ID }} --paths '/*'
+    - name: Run CF invalidation
+      run: aws cloudfront create-invalidation --distribution-id ${{ secrets.DEV_CF_ID }} --paths '/*'
 
     - name: Login to DockerHub
       uses: docker/login-action@v3
@@ -275,8 +277,8 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
-#    - name: Run CF invalidation
-#      run: aws cloudfront create-invalidation --distribution-id ${{ secrets.DEV_CF_ID }} --paths '/*'
+    - name: Run CF invalidation
+      run: aws cloudfront create-invalidation --distribution-id ${{ secrets.DEV_CF_ID }} --paths '/*'
 
     - name: Set output
       run: |
