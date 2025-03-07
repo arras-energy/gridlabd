@@ -217,7 +217,6 @@ def convert(ifile,ofile,options={}):
 {{
     name "{oname}_L_{row[0]}";
     parent "{oname}_N_{row[0]}";
-    status "{"ONLINE" if row[2] == 1 else "OFFLINE"}";
     Z {Z.real:.4g}{Z.imag:+.4g}j Ohm;
     I {I.real:.4g}{I.imag:+.4g}j A;
     P {P.real:.4g}{P.imag:+.4g}j MVA;
