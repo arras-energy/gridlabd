@@ -8,9 +8,6 @@ import csv
 from math import cos, sin
 from collections import namedtuple
 
-if os.path.exists("autotest/wecc240.raw") and len(sys.argv) == 1:
-    sys.argv.extend(["-i","autotest/wecc240.raw","-o","autotest/wecc240.glm"])
-
 config = {"input":"raw","output":"glm","type":[],"format":[]}
 
 def help():
@@ -412,5 +409,16 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
                         print(f"""}}""",file=glm)
 
 if __name__ == '__main__':
+
+    if not sys.argv[0]:
+
+        # dev test
+        if os.path.exists("autotest/wecc240.raw"):        
+            sys.argv = [__file__,"-i","autotest/wecc240.raw","-o","autotest/wecc240.glm","-X","gen,psse_area,psse_zone,psse_owner"]
+        
+        else:
+        
+            raise Exception("ERROR:",__file__,"cannot be run as a script",file=sys.stderr)
+
     main()
 
