@@ -1,5 +1,15 @@
 #system gridlabd powerline US WA Snohomish -o=test_powerline_opt.glm
 
+// TODO: remove this when pypower module works ok with powerlines
+class bus
+{
+}
+class branch
+{
+    object from;
+    object to;
+}
+
 #include "test_powerline_opt.glm"
 
 #ifexist "../test_powerline_opt.glm"

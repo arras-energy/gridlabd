@@ -117,7 +117,7 @@ class Powerline:
         * `outfile`: output file name
         """
         with open(outfile,"w") as fh:
-            print("module pypower;",file=fh)
+            # print("module pypower;",file=fh)
 
             # write node objects
             for node,data in self.bus.items():

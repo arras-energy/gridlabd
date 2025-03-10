@@ -54,11 +54,11 @@ building types, and per thousand square foot for commercial building types.
 
 Example:
 
-The following command generates GLM and CSV files for typical weather in
-Snohomish County, Washington in December 2020:
+The following command generates GLM and CSV files for detached single family
+homes in Snohomish County, Washington in August 2020:
 
 ~~~
-gridlabd weather US WA Snohomish --type=tmy3 --start='2020-12-01 00:00:00-08:00' --end=12021-02-01 00:00:00-08:00'
+gridlabd enduse US WA Snohomish --type=SINGLE_FAMILY_DETACHED --start=2020-08-01T00:00:00-08:00 --end=2020-09-01T00:00:00-08:00
 ~~~
 
 See also:

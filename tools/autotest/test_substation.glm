@@ -1,5 +1,21 @@
 #system gridlabd substation US WA Snohomish -o=test_substation_opt.glm
 
+// TODO: delete this one pypower module support substations
+class substation
+{
+    char32 city;
+    char8 state;
+    int16 zip;
+    char32 type;
+    char32 status;
+    char32 county;
+    int16 countyfips;
+    char8 country;
+    int16 lines;
+    double max_volt[kV];
+    double min_volt[kV];
+
+}
 #include "test_substation_opt.glm"
 
 #ifexist "../test_substation_opt.glm"
