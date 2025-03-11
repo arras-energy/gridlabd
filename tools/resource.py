@@ -56,6 +56,7 @@ import json
 import re
 import pandas as pd
 import gridlabd.framework as app
+import gridlabd.runner as run
 import subprocess
 import requests
 from typing import TypeVar, Union
@@ -318,6 +319,71 @@ class Resource:
                 },
             **spec)
 
+    def cache(self,name:str,index:str,freshen=None,**kwargs) -> str:
+        """Get local cache filename for resource
+
+        Arguments:
+
+        * `name`: name of resource
+
+        * `index`: index of file in resource
+
+        * `freshen`: method of refreshing the cache
+          (`None`=never, `False`=always, `True`=updated)
+
+        * `**kwargs`: override(s) of gridlabd globals
+        Returns:
+
+        * `str`: filename of local cache copy of resource content
+        """
+
+        # add default values from gridlabd globals
+        for key,value in self.globals.items():
+            if not key in kwargs:
+                kwargs[key] = value;
+
+        # locate cache file
+        cachepath = os.path.join(os.environ["GLD_ETC"],".cache",name,self.data[name]['content'].format(index=index,**kwargs).strip("/"))
+        
+        # if not found or need to freshen, download data
+        if not os.path.exists(cachepath) or not freshen is None:
+
+            # get the data to cache
+            data = self._download_raw(name=name,index=index)
+
+            # create the cache directory
+            os.makedirs(os.path.split(cachepath)[0],exist_ok=True)
+
+            # write data to cache
+            with open(cachepath,"wb") as fh:
+                fh.write(data)
+
+        # return the path to the cache
+        return cachepath
+
+    def _download_raw(self,name,index,**kwargs):
+
+        # add default values from gridlabd globals
+        for key,value in self.globals.items():
+            if not key in kwargs:
+                kwargs[key] = value;
+
+        # get specs for this resource name
+        spec = self.data[name]
+
+        # build URL from specs
+        url = f"{spec['protocol']}://{spec['hostname']}:{spec['port']}{spec['content']}".format(index=index,**kwargs)
+
+        # make request
+        res = requests.get(url)
+
+        # handle failures
+        if not res.ok:
+            raise ResourceError(f"ERROR: {res.status_code} {res.reason}\nQUERY: {url}\n\nREPLY: {requests.get(url).text}")
+
+        # return result
+        return requests.get(url).content
+
 def main(argv:list) -> int:
     """Resource tool main routine
 
@@ -517,10 +583,11 @@ def test(pattern='.*'):
             for item in index:
                 try:
                     tested += 1
+                    print(f"{name}/{item}... ",end="",flush=True,file=sys.stderr)
                     content = resource.headers(name=name,index=item)
                     size = content['content-length']
                     checked += int(size.split()[0])
-                    print(f"{name}/{item}... {size} bytes",flush=True,file=sys.stderr)
+                    print(f"OK ({float(size)/1e3:.1f} kB)",flush=True,file=sys.stderr)
                 except Exception as err:
                     failed += 1
                     print(f"FAILED: {name}... {err}",file=sys.stderr)
@@ -534,7 +601,7 @@ if __name__ == "__main__":
     # TODO: comment this block entire when done developing
     if not sys.argv[0]:
 
-        test()
+        app.test(test,__file__)
 
         #
         # Test library functions (comprehensive scan of all contents)
