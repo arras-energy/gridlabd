@@ -8410,7 +8410,15 @@ STATUS GldLoader::loadall_glm(const char *fname) /**< a pointer to the first cha
 	int move = 0;
 	errno = 0;
 
-	fp = fopen(file,"rt");
+	if ( strcmp(file,".glm") == 0 )
+	{
+		fp = stdin;
+		strcpy(file,"/dev/stdin");
+	}
+	else
+	{
+		fp = fopen(file,"rt");
+	}
 	if (fp==NULL)
 		goto Failed;
 	if (fstat(fileno(fp),&stat)==0)

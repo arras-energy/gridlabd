@@ -8,9 +8,6 @@ import csv
 from math import cos, sin
 from collections import namedtuple
 
-if os.path.exists("autotest/wecc240.raw") and len(sys.argv) == 1:
-    sys.argv.extend(["-i","autotest/wecc240.raw","-o","autotest/wecc240.glm"])
-
 config = {"input":"raw","output":"glm","type":[],"format":[]}
 
 def help():
@@ -230,7 +227,6 @@ def convert(ifile,ofile,options={}):
 {{
     name "{oname}_L_{row[0]}";
     parent "{oname}_N_{row[0]}";
-    status "{"ONLINE" if row[2] == 1 else "OFFLINE"}";
     Z {Z.real:.4g}{Z.imag:+.4g}j Ohm;
     I {I.real:.4g}{I.imag:+.4g}j A;
     P {P.real:.4g}{P.imag:+.4g}j MVA;
@@ -433,5 +429,16 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
         warning(f"unable to convert {count} unsupported {block} (use --runtime to enable runtime classes)")
 
 if __name__ == '__main__':
+
+    if not sys.argv[0]:
+
+        # dev test
+        if os.path.exists("autotest/wecc240.raw"):        
+            sys.argv = [__file__,"-i","autotest/wecc240.raw","-o","autotest/wecc240.glm","-X","gen,psse_area,psse_zone,psse_owner"]
+        
+        else:
+        
+            raise Exception("ERROR:",__file__,"cannot be run as a script",file=sys.stderr)
+
     main()
 
