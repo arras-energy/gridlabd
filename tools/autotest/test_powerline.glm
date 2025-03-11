@@ -13,5 +13,5 @@ class branch
 #include "test_powerline_opt.glm"
 
 #ifexist "../test_powerline_opt.glm"
-#on_exit 0 diff -I '    (name|from|to)' ../test_powerline_opt.glm test_powerline_opt.glm > gridlabd.diff
+#on_exit 0 diff -I '^[ ]*(name|from|to)' ../test_powerline_opt.glm test_powerline_opt.glm > gridlabd.diff
 #endif
