@@ -1,0 +1,17 @@
+#system gridlabd powerline US WA Snohomish -o=test_powerline_data_opt.glm
+
+// TODO: remove this when pypower module works ok with powerlines
+class bus
+{
+}
+class branch
+{
+    object from;
+    object to;
+}
+
+#include "test_powerline_data_opt.glm"
+
+#ifexist "../test_powerline_opt.glm"
+#on_exit 0 diff -I '^[ ]*(name|from|to)' ../test_powerline_data_opt.glm test_powerline_data_opt.glm > gridlabd.diff
+#endif

@@ -65,6 +65,25 @@ Arguments:
 * `file`: resource file (default is $GLD_ETC/resource.csv)
 
 
+### `Resource.cache(name:str, index:str) -> str`
+
+Get local cache filename for resource
+
+Arguments:
+
+* `name`: name of resource
+
+* `index`: index of file in resource
+
+* `freshen`: method of refreshing the cache
+(`None`=never, `False`=always, `True`=updated)
+
+* `**kwargs`: override(s) of gridlabd globals
+Returns:
+
+* `str`: filename of local cache copy of resource content
+
+
 ### `Resource.content(kwargs:dict) -> str`
 
 Get resource content
@@ -111,7 +130,7 @@ Resource exception
 
 # Functions
 
-## `main() -> int`
+## `main(argv:list) -> int`
 
 Resource tool main routine
 
@@ -138,3 +157,21 @@ Returns:
 
 * Exit code: E_OK on success, E_FAILED on failure
 
+
+# Constants
+
+
+# Modules
+
+* `PIL.Image`
+* `gridlabd.framework`
+* `gridlabd.runner`
+* `io`
+* `json`
+* `numpy`
+* `os`
+* `pandas`
+* `re`
+* `requests`
+* `subprocess`
+* `sys`
