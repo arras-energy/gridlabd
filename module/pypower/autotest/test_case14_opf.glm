@@ -1,8 +1,24 @@
-#define CASE=14
-#ifexists "../case.glm"
+#ifexist ../case14.py
+#system cp ../case14.py .
 #define DIR=..
 #endif
-#include "${DIR:-.}/case.glm"
+
+clock
+{
+    timezone "PST+8PDT";
+    starttime "2020-01-01 00:00:00 PST";
+    stoptime "2020-02-01 00:00:00 PST";
+}
+
+#ifexists "case14.glm"
+#include "case14.glm"
+#else
+#input "case14.py" -t pypower
+#endif
+
+#gridlabd -C "case14.glm" -D "starttime=${starttime}" -o "case14_ref.json" 
+
+#set savefile=case14.json
 
 module pypower
 {
