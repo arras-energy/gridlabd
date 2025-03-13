@@ -24,3 +24,12 @@ module pypower
 {
     enable_opf TRUE;
 }
+
+module assert;
+object assert {
+    parent "pp_bus_1";
+    target Vm;
+    relation "==";
+    value 0.991374;
+    within 1e-6;
+}
