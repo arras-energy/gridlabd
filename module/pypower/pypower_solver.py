@@ -23,6 +23,11 @@ use_dc_powerflow = False
 save_format = "csv"
 modelname = "pypower"
 stop_on_failure = True
+maximum_iterations_opf = 20
+opf_feasibility_tolerance = 1e-06
+opf_gradient_tolerance = 1e-06
+opf_condition_tolerance = 1e-06
+opf_cost_tolerance = 1e-06
 
 csv_headers = {
     "bus" : "bus_i,type,Pd,Qd,Gs,Bs,area,Vm,Va,baseKV,zone,Vmax,Vmin,lam_P,lam_Q,mu_Vmax,mu_Vmin",
@@ -168,6 +173,11 @@ def solver(pf_case):
             OUT_LINE_LIM = verbose,
             OUT_PG_LIM = verbose,
             OUT_QG_LIM = verbose,
+            PDIPM_MAX_IT = maximum_iterations_opf,
+            PDIPM_FEASTOL = opf_feasibility_tolerance,
+            PDIPM_GRADTOL = opf_gradient_tolerance,
+            PDIPM_COMPTOL = opf_condition_tolerance,
+            PDIPM_COSTTOL = opf_cost_tolerance,
             )
         for key in options:
             if key in pf_case:
