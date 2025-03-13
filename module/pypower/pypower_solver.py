@@ -200,10 +200,10 @@ def solver(pf_case):
                     ,file=sys.stderr)
 
             print(f"\n*** BRANCH DATA ***\n",file=sys.stderr)
-            print("F_BUS T_BUS   BR_R     BR_X   RATE_A RATE_B RATE_C  TAP  SHIFT BR_STATUS ANGMIN ANGMAX",file=sys.stderr)
-            print("----- ----- -------- -------- ------ ------ ------ ----- ----- --------- ------ ------",file=sys.stderr)
+            print("F_BUS T_BUS   BR_R     BR_X     BR_B   RATE_A RATE_B RATE_C  TAP  SHIFT BR_STATUS ANGMIN ANGMAX",file=sys.stderr)
+            print("----- ----- -------- -------- -------- ------ ------ ------ ----- ----- --------- ------ ------",file=sys.stderr)
             for row in sorted(casedata["branch"],key=lambda x:(x[0],x[1])):
-                print(f"{row[0]:5.0f} {row[1]:5.0f} {row[2]:8.5f} {row[3]:8.5f} {row[4]:6.0f}"
+                print(f"{row[0]:5.0f} {row[1]:5.0f} {row[2]:8.5f} {row[3]:8.5f} {row[4]:8.5f}"
                     + f" {row[5]:6.0f} {row[6]:6.0f} {row[7]:6.0f} {row[8]:5.2f} {row[9]:5.1f}"
                     + f" {['OUT','IN'][int(row[10])]:9.9s} {row[11]:6.1f} {row[12]:6.1f}"
                     ,file=sys.stderr)

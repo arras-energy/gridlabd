@@ -150,6 +150,7 @@ converters/autotest/test_object.csv
 converters/autotest/test_object.glm
 converters/autotest/test_object_opt.glm
 converters/autotest/test_onpoint_weather.glm
+converters/autotest/test_raw2glm.glm
 converters/autotest/test_table2glm.glm
 converters/autotest/test_table2glm_err.glm
 converters/autotest/test_table2glm_noclass.glm
@@ -157,7 +158,6 @@ converters/autotest/test_table2glm_noname.glm
 converters/autotest/test_visualcrossing_weather.glm
 converters/autotest/test_weather.csv
 converters/autotest/test_weather.glm
-converters/autotest/test_wecc240.glm
 converters/autotest/test_xls-spida2csv-geodata.csv
 converters/autotest/test_xls-spida2csv-geodata.glm
 converters/autotest/test_xls-spida2csv-geodata.xls
@@ -4031,8 +4031,8 @@ tools/autotest/test_eia_recs.glm
 tools/autotest/test_eia_recs.py
 tools/autotest/test_enduse.csv
 tools/autotest/test_enduse.glm
-tools/autotest/test_fire_danger.glm
 tools/autotest/test_fire_danger.tif
+tools/autotest/test_fire_danger_opt.glm
 tools/autotest/test_fire_report.csv
 tools/autotest/test_fire_report.glm
 tools/autotest/test_fit_filter.glm
@@ -4070,7 +4070,7 @@ tools/autotest/test_noaa_forecast_opt.glm
 tools/autotest/test_pole_analysis.glm
 tools/autotest/test_pole_analysis_opt.csv
 tools/autotest/test_pole_analysis_opt.glm
-tools/autotest/test_powerline.glm
+tools/autotest/test_powerline_data_opt.glm
 tools/autotest/test_powerline_opt.glm
 tools/autotest/test_powerplant.glm
 tools/autotest/test_resource.glm
