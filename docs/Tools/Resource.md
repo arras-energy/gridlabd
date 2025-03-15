@@ -84,7 +84,7 @@ Returns:
 * `str`: filename of local cache copy of resource content
 
 
-### `Resource.content(kwargs:dict) -> str`
+### `Resource.content() -> str`
 
 Get resource content
 
@@ -99,6 +99,25 @@ Arguments:
 Returns:
 
 * `str`: Resource contents
+
+
+### `Resource.dataframe(options:dict) -> pandas.DataFrame`
+
+Get resource dataframe
+
+Arguments:
+
+* `name`: resource name
+
+* `index`: resource index
+
+* `**kwargs`: options (see `properties()`)
+
+* `options`: options (see `pandas.read_csv()`)
+
+Returns:
+
+* `pandas.DataFrame`: Resource contents
 
 
 ### `Resource.headers() -> Union`

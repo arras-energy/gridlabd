@@ -141,7 +141,7 @@ Buildings exception
 
 # Functions
 
-## `main() -> int`
+## `main(argv:list) -> int`
 
 Main routine
 
@@ -153,3 +153,22 @@ Returns:
 
 * `int`: exit code
 
+
+# Constants
+
+
+# Modules
+
+* `contextlib`
+* `datetime`
+* `gridlabd`
+* `gridlabd.framework`
+* `gridlabd.geodata_address`
+* `gridlabd.nsrdb_weather`
+* `gridlabd.resource`
+* `os`
+* `pandas`
+* `re`
+* `requests`
+* `sys`
+* `urllib`

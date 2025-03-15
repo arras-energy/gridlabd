@@ -130,7 +130,7 @@ class Buildings:
 
         # read from source
         else:
-            self.data = res.Resource().content(name="buildings",index=f"{country}/{filename}")
+            self.data = res.Resource().dataframe(name="buildings",index=f"{country}/{filename}")
             for column in ["class","code","type"]:
                 mapper = {y:x for x,y in res.Resource().content(name="buildings",index=f"codes/building_{column}.json").items()}
                 self.data[column] = [mapper[x] for x in self.data[column]]
@@ -308,5 +308,9 @@ def main(argv:list[str]) -> int:
     return app.E_OK
 
 if __name__ == "__main__":
+
+    if len(sys.argv) == 1:
+
+        sys.argv = "buildings -C=US/NH/Sullivan -o=test_buildings_opt.glm".split()
 
     app.run(main)

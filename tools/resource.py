@@ -319,6 +319,38 @@ class Resource:
                 },
             **spec)
 
+    def dataframe(self,options:dict={},**kwargs) -> TypeVar('pandas.DataFrame'):
+        """Get resource dataframe
+
+        Arguments:
+
+        * `name`: resource name
+
+        * `index`: resource index
+
+        * `**kwargs`: options (see `properties()`)
+       
+        * `options`: options (see `pandas.read_csv()`)
+
+        Returns:
+
+        * `pandas.DataFrame`: Resource contents
+        """
+        if not 'passthru' in kwargs:
+            kwargs['passthru'] = '*'
+        spec = self.properties(**kwargs)
+
+        if not spec['content']:
+
+            raise ResourceError(f"{spec['resource']} has no content")
+
+        url = f"{spec['protocol']}://{spec['hostname']}:{spec['port']}{spec['content']}"
+        try:
+            app.verbose(f"pandas.read_csv({repr(url)},{','.join([f'{x}={repr(y)}' for x,y in options.items()])})")
+            return pd.read_csv(url,**options)
+        except Exception as err:
+            raise err from err
+
     def cache(self,name:str,index:str,freshen=None,**kwargs) -> str:
         """Get local cache filename for resource
 
