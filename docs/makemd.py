@@ -122,5 +122,5 @@ except SystemExit:
 except:
 
     e_type,e_value,e_trace = sys.exc_info()
-    print(f"EXCEPTION [{EXEC}]: {e_type.__name__}({os.path.basename(e_trace.tb_frame.f_code.co_filename)}@{e_trace.tb_lineno}) {e_value}",file=sys.stderr)
+    print(f"EXCEPTION [{EXEC}]: {e_type.__name__}({os.path.basename(e_trace.tb_frame.f_code.co_filename)}@{e_trace.tb_lineno}) {e_value} while processing {PATH}/{NAME}",file=sys.stderr)
     exit(E_EXCEPTION)

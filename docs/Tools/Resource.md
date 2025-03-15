@@ -62,7 +62,7 @@ Construct resource object
 
 Arguments:
 
-* `file`: resource file (default is $GLD_ETC/resource.csv)
+* `file`: resource file (default is `$GLD_ETC/resource.csv`)
 
 
 ### `Resource.cache(name:str, index:str) -> str`
@@ -84,42 +84,112 @@ Returns:
 * `str`: filename of local cache copy of resource content
 
 
-### `Resource.content(kwargs:dict) -> str`
+### `Resource.content() -> str`
 
 Get resource content
 
 Arguments:
 
+* `name`: resource name
+
+* `index`: resource index
+
 * `**kwargs`: options (see `properties()`)
 
 Returns:
 
-* Resource contents
+* `str`: Resource contents
 
 
-### `Resource.headers(kwargs:dict) -> Union`
+### `Resource.dataframe(options:dict) -> pandas.DataFrame`
+
+Get resource dataframe
+
+Arguments:
+
+* `name`: resource name
+
+* `index`: resource index
+
+* `**kwargs`: options (see `properties()`)
+
+* `options`: options (see `pandas.read_csv()`)
+
+Returns:
+
+* `pandas.DataFrame`: Resource contents
+
+
+### `Resource.headers() -> Union`
 
 Get resource header
 
+* `name`: resource name
+
+* `index`: resource index
+
+* `**kwargs`: options (see `properties()`)
+
+Returns:
+
+* `str`: header content if a simple string
+
+* `list`: header content if a list
+
+* `dict`: header contents if a dict
 
 
 ### `Resource.index(kwargs:dict) -> Union`
 
 Get resource index (if any)
 
+Arguments:
+
+* `kwargs`: property keys to collect
+
+Returns:
+
+* `str`: a single index value
+
+* `list`: a list of index values
+
+* `dict`: a dict of index values
 
 
 ### `Resource.list(pattern:str) -> list`
 
 Get a list of available resources
 
-Argument
+Arguments:
+
+* `pattern`: regular expression for resource names to be returned
 
 
 ### `Resource.properties(passthru:str, kwargs:dict) -> dict`
 
 Get resource properties
 
+Arguments:
+
+* `passthru`: resource keys that are passed through if not resolved
+
+* `kwargs`: keys to include in resolving properties
+
+Returns:
+
+`dict`: resolved properties
+
+Description:
+
+The following keys are commonly found in resource properties:
+
+* `index`: the resource index
+
+* `origin`: the resource origin on github, e.g. `{organization}/{repo}`
+
+* `organization`: the github organization
+
+* `gitbranch`: the resource branch on github
 
 
 ---

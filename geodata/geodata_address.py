@@ -98,8 +98,8 @@ def apply(data, options=default_options, config=default_config, warning=print):
         options (dict)
 
             "reverse" (bool) specifies the direction of resolution. Forward resolves `address`
-            from `latitude,longitude` from . Reverse resolves `latitude,longitude`
-            `address` from. The default is `options["reverse"] = False`, which provides
+            from `latitude,longitude`. Reverse resolves `latitude,longitude` from
+            `address`. The default is `options["reverse"] = False`, which provides
             forward resolution.
 
         config (dict)
