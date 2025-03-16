@@ -1,11 +1,34 @@
 #!/bin/bash
-# Syntax: model [OPTIONS ...] COMMAND [ARGUMENTS ...]
-#
-# Get models from the gridlabd-models repo
-#
+## Syntax: model [OPTIONS ...] COMMAND [ARGUMENTS ...]
+## 
+## Options:
+##
+## * `-b|--branch=BRANCH`: specify the model repository branch name (default is
+##   `master`)
+## 
+## * `-d|--debug`: enable debugging output
+## 
+## * `-o|--output=FILENAME`: specify output to FILENAME (default is model name)
+## 
+## * `-r|--repository=REPO`: specify the model repository name (default is
+##   `gridlabd-models`)
+## 
+## * `-u|--user=ORG`:
+## 
+## * `-v|--version=VERSION`: specify the model library version (default is 4)
+## 
+## Download model from the gridlabd-models repo. If the extension `.json` is
+## included in the FILENAME, then the model is automatically converted from
+## GLM to JSON format.
+## 
+## Caveat:
+## 
+## When output to JSON is used, the original GLM file is also stored with the
+## final JSON file. This will overwrite any pre-existing GLM file.
+## 
 
 if [ $# -eq 0 ]; then
-    echo "Syntax: gridlabd model [OPTIONS ...] COMMAND [ARGUMENTS ...]"
+    grep '^## Syntax:' $0 | sed 's/^## //g'
     exit 1
 fi
 
@@ -22,55 +45,111 @@ function error()
     exit $RC
 }
 
-while [ "${1:0:1}" == "-" ]; do
+while [ $# -gt 0 ]; do
+
     case "$1" in
+    
+    (-h|--help|help)
+        grep '^## ' $0 | sed 's/^## //g'
+        exit 0
+        ;;
+    
     (-b|--branch)
         GITBRANCH="$2"
         shift 1
         ;;
+    
+    (-b=*|--branch=*)
+        GITBRANCH=$(echo "$1" | cut -f2 -d=)
+        ;;
+    
     (-r|--repository)
         GITREPO="$2"
         shift 1
         ;;
+    
+    (-r=*|--repository=*)
+        GITREPO=$(echo "$1" | cut -f2 -d=)
+        ;;
+    
     (-u|--user)
         GITUSER="$2"
         shift 1
         ;;
+    
+    (-u=*|--user=*)
+        GITUSER=$(echo "$1" | cut -f2 -d=)
+        ;;
+    
     (-v|--version)
         VERSION="$2"
         shift 1
         ;;
+    
     (-d|--debug)
         set -x
         ;;
-    (*)
-        error 1 "option '$1' is not valid"
+    
+    (-o|--output)
+        OUTPUT="$2"
+        shift 1
         ;;
+    
+    (-o=*|--output=*)
+        OUTPUT=$(echo "$1" | cut -f2 -d=)
+        ;;
+    
+    (get|index)
+        COMMAND="$1"
+        ;;
+    
+    (*)
+        if [ "${MODEL}" != "" ]; then
+            error 1 "option '$1' is not valid"
+        else
+            MODEL="$1"
+        fi
+        ;;
+    
     esac
     shift 1
 done
 
-if [ $1 == 'get' ]; then
-    if [ $# -lt 2 ]; then
+if [ "$COMMAND" == "get" ]; then
+
+    # set default output
+    if [ "${OUTPUT}" == "" ]; then
+        OUTPUT="$(basename ${MODEL}).glm"
+    fi
+
+    # check format type
+    if [ "${OUTPUT##*.}" != "glm" -a "${OUTPUT##*.}" != "json" ]; then
+        error 2 "get output file format '${OUTPUT%%.*}' not supported"
+    fi
+
+    # check model name
+    if [ "${MODEL}" == "" ]; then
         error 2 "get missing GROUP/NAME"
         exit 1
-    else
-        curl -sL https://raw.githubusercontent.com/$GITUSER/$GITREPO/$GITBRANCH/gridlabd-$VERSION/$2.glm -o $(basename $2).glm
-        exit 0
     fi
-elif [ $1 == 'index' ]; then
-    if [ $# -eq 2 ]; then
-        PATTERN=$2
+
+    # get file
+    curl -sL "https://raw.githubusercontent.com/$GITUSER/$GITREPO/$GITBRANCH/gridlabd-$VERSION/${MODEL%%.*}.glm" -o "${OUTPUT%%.*}.glm"
+
+    # convert format if needed
+    if [ "${OUTPUT##*.}" != "glm" ]; then
+        gridlabd.bin -C "${OUTPUT%%.*}.glm" -o "${OUTPUT}"
     fi
-    curl -sL https://api.github.com/repos/arras-energy/gridlabd-models/git/trees/master\?recursive=1 | gridlabd json-get tree path -c | grep '\.glm$' | grep ^gridlabd-$VERSION/$PATTERN | sed -e 's/\.glm$//;s/gridlabd-[0-9]\///'
+
     exit 0
-elif [ $1 == 'help' ]; then
-    echo "Syntax: gridlabd model SUBCOMMAND [ARGS...]"
-    echo "Subcommands"
-    echo "  get GROUP/NAME"
-    echo "  help"
-    echo "  index [PATTERN]"
+
+elif [ "$COMMAND" == "index" ]; then
+    
+    curl -sL "https://api.github.com/repos/$GITUSER/$GITREPO/git/trees/$GITBRANCH?recursive=1" | gridlabd json-get tree path -c | grep '\.glm$' | grep ^gridlabd-$VERSION/$MODEL | sed -e 's/\.glm$//;s/gridlabd-[0-9]\///'
     exit 0
+
 else
-    error 3 "'$1' is not a valid subcommand"
+
+    error 3 "'$COMMAND' is not a valid subcommand"
+
 fi

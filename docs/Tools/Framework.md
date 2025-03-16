@@ -28,6 +28,7 @@ def main(argv:list[str]) -> int:
     if len(argv) == 1:
 
         app.syntax(__doc__)
+        return app.E_SYNTAX
 
     # handle stardard app arguments --debug, --warning, --verbose, --quiet, --silent
     args = app.read_stdargs(argv)
@@ -35,7 +36,9 @@ def main(argv:list[str]) -> int:
     for key,value in args:
 
         if key in ["-h","--help","help"]:
+            
             print(__doc__,file=sys.stdout)
+            return app.E_OK
 
         # add your options here
 
@@ -46,7 +49,7 @@ def main(argv:list[str]) -> int:
 
     # implement your code here
 
-    # normal termination condigion
+    # normal termination condition
     return app.E_OK
 
 if __name__ == "__main__":
@@ -64,7 +67,7 @@ Application exception
 
 # Functions
 
-## `complex_unit() -> None`
+## `complex_unit(x:str, form:str, prec:str, unit:str) -> None`
 
 Convert complex value with unit
 
@@ -90,7 +93,7 @@ Returns:
 
 ---
 
-## `debug() -> None`
+## `debug(msg:list) -> None`
 
 Debugging message output
 
@@ -105,7 +108,7 @@ Messages are enabled when the `--debug` option is used.
 
 ---
 
-## `double_unit() -> float`
+## `double_unit(x:str) -> float`
 
 Convert a string with unit to a float
 
@@ -118,7 +121,7 @@ Returns:
 
 ---
 
-## `error() -> None`
+## `error(msg:list) -> None`
 
 Error message output
 
@@ -150,7 +153,7 @@ If `exc` is a string, an `ApplicationError` exception is raised.
 
 ---
 
-## `gridlabd() -> Optional`
+## `gridlabd(args:list) -> Optional`
 
 Simple gridlabd runner
 
@@ -175,7 +178,7 @@ See also:
 
 ---
 
-## `integer() -> int`
+## `integer(x:str) -> int`
 
 Convert a string to an integer
 
@@ -188,7 +191,7 @@ Returns:
 
 ---
 
-## `open_glm() -> io.TextIOWrapper`
+## `open_glm(file:str, tmp:str, init:bool) -> io.TextIOWrapper`
 
 Open GLM file as JSON
 
@@ -211,7 +214,7 @@ Return:
 
 ---
 
-## `output() -> None`
+## `output(msg:list) -> None`
 
 General message output
 
@@ -226,7 +229,7 @@ Messages are suppressed when the `--silent` option is used.
 
 ---
 
-## `read_stdargs() -> list`
+## `read_stdargs(argv:list) -> list`
 
 Read framework options
 
@@ -241,7 +244,7 @@ Returns:
 
 ---
 
-## `run() -> None`
+## `run(main:callable) -> None`
 
 Run a main function under this app framework
 
@@ -258,7 +261,7 @@ This function does not return. When the app is done it calls exit.
 
 ---
 
-## `syntax() -> None`
+## `syntax(docs:str) -> None`
 
 Print syntax message
 
@@ -273,7 +276,26 @@ This function does not return. When the function is done it calls exit(E_SYNTAX)
 
 ---
 
-## `verbose() -> None`
+## `test(test:callable, name:str) -> None`
+
+Run module test routine
+
+Arguments:
+
+* `test`: the test function to run
+
+* `name`: name of the app to test
+
+* `exit`: the exit function to call (default is `exit`)
+
+* `print`: the print funtion to call on exceptions (default is `print`)
+
+This function does not return. When the test is done it calls exit.
+
+
+---
+
+## `verbose(msg:list) -> None`
 
 Verbose message output
 
@@ -288,7 +310,7 @@ Messages are enabled when the `--verbose` option is used.
 
 ---
 
-## `version() -> str`
+## `version(terms:str) -> str`
 
 Get gridlabd version
 
@@ -299,7 +321,7 @@ Returns:
 
 ---
 
-## `warning() -> None`
+## `warning(msg:list) -> None`
 
 Warning message output
 
@@ -311,3 +333,33 @@ Arguments:
 
 Messages are suppress when the `--warning` option is used.
 
+
+# Constants
+
+* `DEBUG`
+* `E_BADVALUE`
+* `E_EXCEPTION`
+* `E_FAILED`
+* `E_INTERRUPT`
+* `E_INVALID`
+* `E_MISSING`
+* `E_NOTFOUND`
+* `E_OK`
+* `E_SYNTAX`
+* `QUIET`
+* `SILENT`
+* `VERBOSE`
+* `WARNING`
+
+# Modules
+
+* `geocoder`
+* `gridlabd.unitcalc`
+* `inspect`
+* `io`
+* `json`
+* `math`
+* `os`
+* `subprocess`
+* `sys`
+* `traceback`

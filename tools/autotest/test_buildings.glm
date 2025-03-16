@@ -1,0 +1,7 @@
+#system gridlabd buildings -C=US/NH/Sullivan -o=test_buildings_opt.glm
+
+#include "test_buildings_opt.glm"
+
+#ifexist ../test_buildings_opt.glm
+#on_exit 0 diff -I "^//" -I '    type ' ../test_buildings_opt.glm test_buildings_opt.glm > gridlabd.diff
+#endif

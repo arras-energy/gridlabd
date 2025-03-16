@@ -37,6 +37,12 @@ double total_loss = 0;
 double generation_shortfall = 0;
 bool with_emissions = false;
 
+int32 maximum_iterations_opf = 10;
+double opf_feasibility_tolerance = 1.3;
+double opf_gradient_tolerance = 3.0;
+double opf_condition_tolerance = 1000;
+double opf_cost_tolerance = 0.01;
+
 enum {
     SS_INIT = 0,
     SS_SUCCESS = 1,
@@ -191,6 +197,31 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
     gl_global_create("pypower::with_emissions",
         PT_bool, &with_emissions,
         PT_DESCRIPTION, "Include emissions results",
+        NULL);
+
+    gl_global_create("pypower::maximum_iterations_opf",
+        PT_int32, &maximum_iterations_opf,
+        PT_DESCRIPTION, "Maximum iterations allowed for OPF",
+        NULL);
+
+    gl_global_create("pypower::opf_feasibility_tolerance",
+        PT_double, &opf_feasibility_tolerance,
+        PT_DESCRIPTION, "OPF feasibility condition convergence tolerance",
+        NULL);
+
+    gl_global_create("pypower::opf_gradient_tolerance",
+        PT_double, &opf_gradient_tolerance,
+        PT_DESCRIPTION, "OPF gradient convergence tolerance",
+        NULL);
+
+    gl_global_create("pypower::opf_condition_tolerance",
+        PT_double, &opf_condition_tolerance,
+        PT_DESCRIPTION, "OPF complimentary condition convergence tolerance",
+        NULL);
+
+    gl_global_create("pypower::opf_cost_tolerance",
+        PT_double, &opf_cost_tolerance,
+        PT_DESCRIPTION, "OPF cost convergence tolerance",
         NULL);
 
     // always return the first class registered
@@ -438,6 +469,12 @@ EXPORT bool on_init(void)
         PyDict_SetItemString(data,"modelname",PyUnicode_FromString(buffer));
     }
     PyDict_SetItemString(data,"stop_on_failure",PyBool_FromLong(stop_on_failure));
+
+    PyDict_SetItemString(data,"maximum_iterations_opf",PyLong_FromLong(maximum_iterations_opf));
+    PyDict_SetItemString(data,"opf_feasibility_tolerance",PyFloat_FromDouble(opf_feasibility_tolerance));
+    PyDict_SetItemString(data,"opf_gradient_tolerance",PyFloat_FromDouble(opf_gradient_tolerance));
+    PyDict_SetItemString(data,"opf_condition_tolerance",PyFloat_FromDouble(opf_condition_tolerance));
+    PyDict_SetItemString(data,"opf_cost_tolerance",PyFloat_FromDouble(opf_cost_tolerance));
 
     return true;
 }
