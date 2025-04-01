@@ -18,6 +18,62 @@ def help():
     -N|--name                do not autoname objects
 """
 
+DATASPEC = {
+    "bus" : {
+        "bus_i": "{:.0f}",
+        "type": "{:.0f}",
+        "Pd": "{:g} MW",
+        "Qd": "{:g} MVAr",
+        "Gs": "{:g} MW",
+        "Bs": "{:g} MVAr",
+        "area": "{:.0f}",
+        "Vm": "{:g} pu.kV",
+        "Va": "{:g} deg",
+        "baseKV": "{:g} kV",
+        "zone": "{:.0f}",
+        "Vmax": "{:g} pu.kV",
+        "Vmin": "{:g} pu.kV",
+    },
+    "gen": {
+        "bus": "{:.0f}",
+        "Pg": "{:g} MW",
+        "Qg": "{:g} MVAr",
+        "Qmax": "{:g} MVAr",
+        "Qmin": "{:g} MVAr",
+        "Vg": "{:g} pu.kV",
+        "mBase": "{:g} MVA",
+        "status": "{:.0f}",
+        "Pmax": "{:g} MW",
+        "Pmin": "{:g} MW",
+        "Pc1": "{:g} MW",
+        "Pc2": "{:g} MW",
+        "Qc1min": "{:g} MVAr",
+        "Qc1max": "{:g} MVAr",
+        "Qc2min": "{:g} MVAr",
+        "Qc2max": "{:g} MVAr",
+        "ramp_agc": "{:g} MW/min",
+        "ramp_10": "{:g} MW",
+        "ramp_30": "{:g} MW",
+        "ramp_q": "{:g} MVAr/min",
+        "apf": "{:g} pu",
+    },
+    "branch": {
+        "fbus": "{:.0f}",
+        "tbus": "{:.0f}",
+        "r": "{:g} pu.Ohm",
+        "x": "{:g} pu.Ohm",
+        "b": "{:g} pu./Ohm",
+        "rateA": "{:g} MVA",
+        "rateB": "{:g} MVA",
+        "rateC": "{:g} MVA",
+        "ratio": "{:g} pu",
+        "angle": "{:g} deg",
+        "status": "{:.0f}",
+        "angmin": "{:g} deg",
+        "angmax": "{:g} deg",
+    }
+}
+
 def main():
     filename_py = None
     filename_glm = None
@@ -94,19 +150,13 @@ module pypower
 }}
 """)
 
-        for name,spec in dict(
-            # pypower properties must be in the save order as the case array columns
-            bus = "bus_i type Pd Qd Gs Bs area Vm Va baseKV zone Vmax Vmin",
-            gen = "bus Pg Qg Qmax Qmin Vg mBase status Pmax Pmin Pc1 Pc2 Qc1min"\
-                + " Qc1max Qc2min Qc2max ramp_agc ramp_10 ramp_30 ramp_q apf",
-            branch = "fbus tbus r x b rateA rateB rateC ratio angle status angmin angmax",
-        ).items():
+        for name,spec in DATASPEC.items():
             glm.write(f"{NL}//{NL}// {name}{NL}//{NL}")
             for n,line in enumerate(data[name]):
                 oname = f"{NL}    name pp_{name}_{n+1};" if autoname else ""
                 glm.write(f"""object pypower.{name} 
 {{{oname}
-{NL.join([f"    {x} {line[n]};" for n,x in enumerate(spec.split())])}
+{NL.join([f"    {x[0]} {x[1].format(line[n])};" for n,x in enumerate(spec.items())])}
 }}
 """)
         if 'gencost' in data:

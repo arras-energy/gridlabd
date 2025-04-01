@@ -1,5 +1,7 @@
+
 #set suppress_repeat_messages=FALSE
-#define CASE=14
+
+#define CASE=4gs
 #ifexists "../case.glm"
 #define DIR=..
 #endif
@@ -7,6 +9,6 @@
 
 module pypower
 {
-	//solver_method GS;
+	solver_method GS;
 	save_case TRUE;
 }
