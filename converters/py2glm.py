@@ -62,7 +62,7 @@ DATASPEC = {
         "tbus": "{:.0f}",
         "r": "{:g} pu.Ohm",
         "x": "{:g} pu.Ohm",
-        "b": "{:g} pu./Ohm",
+        "b": "{:g} pu.S",
         "rateA": "{:g} MVA",
         "rateB": "{:g} MVA",
         "rateC": "{:g} MVA",

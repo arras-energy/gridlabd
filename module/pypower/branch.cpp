@@ -42,7 +42,7 @@ branch::branch(MODULE *module)
 				PT_REQUIRED,
 				PT_DESCRIPTION, "reactance (per unit)",
 
-			PT_double, "b[pu./Ohm]", get_b_offset(),
+			PT_double, "b[pu.S]", get_b_offset(),
 				PT_REQUIRED,
 				PT_DESCRIPTION, "total line charging susceptance (per unit)",
 
