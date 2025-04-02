@@ -111,7 +111,7 @@ pole::pole(MODULE *mod)
                 PT_OUTPUT,
                 PT_DESCRIPTION, "constant c of the pole stress polynomial function",
 
-            PT_double, "susceptibility[pu*s/m]", get_susceptibility_offset(),
+            PT_double, "susceptibility[pu.s/m]", get_susceptibility_offset(),
                 PT_OUTPUT,
                 PT_DESCRIPTION, "susceptibility of pole to wind stress (derivative of pole stress w.r.t wind speed)",
 

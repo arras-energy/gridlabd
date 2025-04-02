@@ -19,7 +19,7 @@ object pole
     pole_stress_polynomial_a "0 ft*lb";
     pole_stress_polynomial_b "0 ft*lb";
     pole_stress_polynomial_c "0 ft*lb";
-    susceptibility "0 pu*s/m";
+    susceptibility "0 pu.s/m";
     total_moment "0 ft*lb";
     resisting_moment "0 ft*lb";
     pole_moment "0 ft*lb";
@@ -159,7 +159,7 @@ Constant c of the pole stress polynomial function.
 ### `susceptibility`
 
 ~~~
-    double susceptibility[pu*s/m];
+    double susceptibility[pu.s/m];
 ~~~
 
 Susceptibility of pole to wind stress (derivative of pole stress w.r.t wind speed).
