@@ -1,0 +1,25 @@
+#system gridlabd enduse US WA Snohomish --type=MOBILE --start='2020-08-01 00:00:00-07:00' --end='2020-09-01 00:00:00-07:00'
+
+module tape
+{
+    csv_header_type NAME;
+
+}
+
+clock 
+{
+    timezone PST+8PDT;
+}
+
+#include "US_WA_Snohomish.glm"
+
+object recorder
+{
+    parent "US_WA_Snohomish_mobile";
+    file "test_enduse.csv";
+    property "total,heating,cooling,solar";
+}
+
+#ifexists "../test_enduse.csv"
+#on_exit 0 diff ../test_enduse.csv test_enduse.csv > gridlabd.diff
+#endif

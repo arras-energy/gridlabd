@@ -1280,7 +1280,7 @@ int GldLoader::unitspec(PARSER, UNIT **unit)
 	char result[1024];
 	size_t size = sizeof(result);
 	START;
-	while ( (size>1 && isalpha(*_p)) || isdigit(*_p) || *_p=='$' || *_p=='%' || *_p=='*' || *_p=='/' || *_p=='^') COPY(result);
+	while ( (size>1 && isalpha(*_p)) || isdigit(*_p) || *_p=='$' || *_p=='%' || *_p=='*' || *_p=='/' || *_p=='^' || *_p=='.' ) COPY(result);
 	result[_n]='\0';
 	try {
 		if ((*unit=unit_find(result))==NULL){
@@ -8410,7 +8410,15 @@ STATUS GldLoader::loadall_glm(const char *fname) /**< a pointer to the first cha
 	int move = 0;
 	errno = 0;
 
-	fp = fopen(file,"rt");
+	if ( strcmp(file,".glm") == 0 )
+	{
+		fp = stdin;
+		strcpy(file,"/dev/stdin");
+	}
+	else
+	{
+		fp = fopen(file,"rt");
+	}
 	if (fp==NULL)
 		goto Failed;
 	if (fstat(fileno(fp),&stat)==0)

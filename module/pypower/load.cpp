@@ -36,7 +36,7 @@ load::load(MODULE *module)
 			PT_complex, "P[MVA]", get_P_offset(),
 				PT_DESCRIPTION, "constant power load (MVA)",
 
-			PT_complex, "V[pu*V]", get_V_offset(),
+			PT_complex, "V[pu.V]", get_V_offset(),
 				PT_DESCRIPTION, "bus voltage (V)",
 
 			PT_double, "Vn[kV]", get_Vn_offset(),
