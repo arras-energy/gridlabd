@@ -203,6 +203,8 @@ def convert(ifile,ofile,options={}):
                         Z = complex(0,0)
                     I = complex(float(row[7]),float(row[8]))
                     P = complex(float(row[5]),float(row[6])) + complex(float(row[14]),float(row[15]))
+                    S = Z + I + P
+                    Z 
                     response = 1 - float(row[12])
                     status = "ONLINE" if float(row[13]) == 0.0 else "CURTAILED"
                     V = bus_V[row[0]]
@@ -217,6 +219,7 @@ def convert(ifile,ofile,options={}):
     Z {Z.real:.4g}{Z.imag:+.4g}j Ohm;
     I {I.real:.4g}{I.imag:+.4g}j A;
     P {P.real:.4g}{P.imag:+.4g}j MVA;
+    S {S.real:.4g}{S.imag:+.4g}j MVA;
     status {status};
     response {response};
     {items(row)}
