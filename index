@@ -3398,6 +3398,7 @@ source/autotest/test_require_pwlf.glm
 source/autotest/test_require_pytz.glm
 source/autotest/test_run.glm
 source/autotest/test_rusage.glm
+source/autotest/test_save.glm
 source/autotest/test_schedule_skew.glm
 source/autotest/test_schedule_skew_1.player
 source/autotest/test_schedule_skew_2.player
