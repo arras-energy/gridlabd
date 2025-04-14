@@ -7,6 +7,6 @@
 
 module pypower
 {
-	//solver_method GS;
+	solver_method GS;
 	save_case TRUE;
 }

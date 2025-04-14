@@ -284,7 +284,20 @@ int unit_derived(const char *name,const char *derivation)
 	char lastOp = '\0', nextOp = '\0';
 	UNIT *lastUnit = NULL;
 	UNIT local;
-	const char *p = derivation;
+
+	// ignore terms after '.' not between digits -- these are derivation terminators, e.g., "pu.V"
+	char buffer[strlen(derivation)+2];
+	strncpy(buffer,derivation,sizeof(buffer)-1);
+	char *p = buffer;
+	while ( (p=strchr(p+1,'.')) != NULL )
+	{
+		if ( ! isdigit(*(p-1)) && ! isdigit(*(p+1)) )
+		{
+			*p = '\0';
+			break;
+		}
+	}	
+	p = buffer;
 	
 	if (unit_find_raw(name) != NULL){
 		throw_exception("%s(%d): derived definition of '%s' failed; unit already defined", filepath, linenum, name);
@@ -301,7 +314,7 @@ int unit_derived(const char *name,const char *derivation)
 		}
 		/* reset pointer */
 		else {
-			p = derivation;
+			p = buffer;
 		}
 	}
 
