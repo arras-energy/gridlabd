@@ -39,20 +39,20 @@ GLM:
     Wind_Speed "<decimal> m/s";
     wind_speed "<decimal> m/s";
     air_density "<decimal> kg/m^3";
-    R_stator "<decimal> pu*Ohm";
-    X_stator "<decimal> pu*Ohm";
-    R_rotor "<decimal> pu*Ohm";
-    X_rotor "<decimal> pu*Ohm";
-    R_core "<decimal> pu*Ohm";
-    X_magnetic "<decimal> pu*Ohm";
-    Max_Vrotor "<decimal> pu*V";
-    Min_Vrotor "<decimal> pu*V";
-    Rs "<decimal> pu*Ohm";
-    Xs "<decimal> pu*Ohm";
-    Rg "<decimal> pu*Ohm";
-    Xg "<decimal> pu*Ohm";
-    Max_Ef "<decimal> pu*V";
-    Min_Ef "<decimal> pu*V";
+    R_stator "<decimal> pu.Ohm";
+    X_stator "<decimal> pu.Ohm";
+    R_rotor "<decimal> pu.Ohm";
+    X_rotor "<decimal> pu.Ohm";
+    R_core "<decimal> pu.Ohm";
+    X_magnetic "<decimal> pu.Ohm";
+    Max_Vrotor "<decimal> pu.V";
+    Min_Vrotor "<decimal> pu.V";
+    Rs "<decimal> pu.Ohm";
+    Xs "<decimal> pu.Ohm";
+    Rg "<decimal> pu.Ohm";
+    Xg "<decimal> pu.Ohm";
+    Max_Ef "<decimal> pu.V";
+    Min_Ef "<decimal> pu.V";
     pf "<decimal> pu";
     power_factor "<decimal> pu";
     voltage_A "<string> V";
@@ -347,7 +347,7 @@ Estimated air density
 ### `R_stator`
 
 ~~~
-  double R_stator[pu*Ohm];
+  double R_stator[pu.Ohm];
 ~~~
 
 Induction generator primary stator resistance in p.u.
@@ -355,7 +355,7 @@ Induction generator primary stator resistance in p.u.
 ### `X_stator`
 
 ~~~
-  double X_stator[pu*Ohm];
+  double X_stator[pu.Ohm];
 ~~~
 
 Induction generator primary stator reactance in p.u.
@@ -363,7 +363,7 @@ Induction generator primary stator reactance in p.u.
 ### `R_rotor`
 
 ~~~
-  double R_rotor[pu*Ohm];
+  double R_rotor[pu.Ohm];
 ~~~
 
 Induction generator primary rotor resistance in p.u.
@@ -371,7 +371,7 @@ Induction generator primary rotor resistance in p.u.
 ### `X_rotor`
 
 ~~~
-  double X_rotor[pu*Ohm];
+  double X_rotor[pu.Ohm];
 ~~~
 
 Induction generator primary rotor reactance in p.u.
@@ -379,7 +379,7 @@ Induction generator primary rotor reactance in p.u.
 ### `R_core`
 
 ~~~
-  double R_core[pu*Ohm];
+  double R_core[pu.Ohm];
 ~~~
 
 Induction generator primary core resistance in p.u.
@@ -387,7 +387,7 @@ Induction generator primary core resistance in p.u.
 ### `X_magnetic`
 
 ~~~
-  double X_magnetic[pu*Ohm];
+  double X_magnetic[pu.Ohm];
 ~~~
 
 Induction generator primary core reactance in p.u.
@@ -395,7 +395,7 @@ Induction generator primary core reactance in p.u.
 ### `Max_Vrotor`
 
 ~~~
-  double Max_Vrotor[pu*V];
+  double Max_Vrotor[pu.V];
 ~~~
 
 Induction generator maximum induced rotor voltage in p.u., e.g. 1.2
@@ -403,7 +403,7 @@ Induction generator maximum induced rotor voltage in p.u., e.g. 1.2
 ### `Min_Vrotor`
 
 ~~~
-  double Min_Vrotor[pu*V];
+  double Min_Vrotor[pu.V];
 ~~~
 
 Induction generator minimum induced rotor voltage in p.u., e.g. 0.8
@@ -411,7 +411,7 @@ Induction generator minimum induced rotor voltage in p.u., e.g. 0.8
 ### `Rs`
 
 ~~~
-  double Rs[pu*Ohm];
+  double Rs[pu.Ohm];
 ~~~
 
 Synchronous generator primary stator resistance in p.u.
@@ -419,7 +419,7 @@ Synchronous generator primary stator resistance in p.u.
 ### `Xs`
 
 ~~~
-  double Xs[pu*Ohm];
+  double Xs[pu.Ohm];
 ~~~
 
 Synchronous generator primary stator reactance in p.u.
@@ -427,7 +427,7 @@ Synchronous generator primary stator reactance in p.u.
 ### `Rg`
 
 ~~~
-  double Rg[pu*Ohm];
+  double Rg[pu.Ohm];
 ~~~
 
 Synchronous generator grounding resistance in p.u.
@@ -435,7 +435,7 @@ Synchronous generator grounding resistance in p.u.
 ### `Xg`
 
 ~~~
-  double Xg[pu*Ohm];
+  double Xg[pu.Ohm];
 ~~~
 
 Synchronous generator grounding reactance in p.u.
@@ -443,7 +443,7 @@ Synchronous generator grounding reactance in p.u.
 ### `Max_Ef`
 
 ~~~
-  double Max_Ef[pu*V];
+  double Max_Ef[pu.V];
 ~~~
 
 Synchronous generator maximum induced rotor voltage in p.u., e.g. 0.8
@@ -451,7 +451,7 @@ Synchronous generator maximum induced rotor voltage in p.u., e.g. 0.8
 ### `Min_Ef`
 
 ~~~
-  double Min_Ef[pu*V];
+  double Min_Ef[pu.V];
 ~~~
 
 Synchronous generator minimum induced rotor voltage in p.u., e.g. 0.8

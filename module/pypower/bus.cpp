@@ -8,15 +8,12 @@ EXPORT_CREATE(bus);
 EXPORT_INIT(bus);
 EXPORT_SYNC(bus);
 EXPORT_PRECOMMIT(bus);
-EXPORT_COMMIT(bus);
 
 CLASS *bus::oclass = NULL;
 bus *bus::defaults = NULL;
 
 static int last_i = 0;
 char256 bus::timestamp_format = ""; // "%Y-%m-%d %H:%M:%S%z"; // RFC-822/ISO8601 standard timestamp
-double bus::low_voltage_warning = 0.0;
-double bus::high_voltage_warning = 0.0;
 
 bus::bus(MODULE *module)
 {
@@ -39,64 +36,75 @@ bus::bus(MODULE *module)
 
 			PT_enumeration, "type", get_type_offset(),
 				PT_DESCRIPTION, "bus type (1 = PQ, 2 = PV, 3 = ref, 4 = isolated)",
-				PT_KEYWORD, "UNKNOWN", (enumeration)BT_UNKNOWN,
-				PT_KEYWORD, "PQ", (enumeration)BT_PQ,
-				PT_KEYWORD, "PV", (enumeration)BT_PV,
-				PT_KEYWORD, "REF", (enumeration)BT_REF,
-				PT_KEYWORD, "ISOLATED", (enumeration)BT_ISOLATED,
-				PT_KEYWORD, "PQREF", (enumeration)BT_PQ,
+				PT_KEYWORD, "UNKNOWN", (enumeration)0,
+				PT_KEYWORD, "PQ", (enumeration)1,
+				PT_KEYWORD, "PV", (enumeration)2,
+				PT_KEYWORD, "REF", (enumeration)3,
+				PT_KEYWORD, "NONE", (enumeration)4,
+				PT_KEYWORD, "PQREF", (enumeration)1,
 
 			PT_double, "Pd[MW]", get_Pd_offset(),
 				PT_OUTPUT,
+				PT_DEFAULT, "0 MW",
 				PT_DESCRIPTION, "real power demand (MW)",
 
 			PT_double, "Qd[MVAr]", get_Qd_offset(),
 				PT_OUTPUT,
+				PT_DEFAULT, "0 MVAr",
 				PT_DESCRIPTION, "reactive power demand (MVAr)",
 
 			PT_double, "Gs[MW]", get_Gs_offset(),
-				PT_DESCRIPTION, "shunt conductance (MW at V = 1.0 p.u.)",
+				PT_DEFAULT, "0 MW",
+				PT_DESCRIPTION, "shunt conductance (MW at V = 1.0 per unit)",
 
 			PT_double, "Bs[MVAr]", get_Bs_offset(),
-				PT_DESCRIPTION, "shunt susceptance (MVAr at V = 1.0 p.u.)",
+				PT_DEFAULT, "0 MVAr",
+				PT_DESCRIPTION, "shunt susceptance (MVAr at V = 1.0 per unit)",
 
 			PT_int32, "area", get_area_offset(),
 				PT_DESCRIPTION, "area number, 1-100",
 
 			PT_double, "baseKV[kV]", get_baseKV_offset(),
-				PT_DESCRIPTION, "voltage magnitude (p.u.)",
+				PT_REQUIRED,
+				PT_DESCRIPTION, "voltage magnitude (per unit)",
 
-			PT_double, "Vm[pu]", get_Vm_offset(),
+			PT_double, "Vm[pu.kV]", get_Vm_offset(),
+				PT_DEFAULT, "1 pu.V",
 				PT_DESCRIPTION, "voltage angle (degrees)",
 
 			PT_double, "Va[deg]", get_Va_offset(),
+				PT_DEFAULT, "0 deg",
 				PT_DESCRIPTION, "base voltage (kV)",
 
 			PT_int32, "zone", get_zone_offset(),
 				PT_DESCRIPTION, "loss zone (1-999)",
 
-			PT_double, "Vmax[pu]", get_Vmax_offset(),
-				PT_DEFAULT,"1.2 pu",
-				PT_DESCRIPTION, "maximum voltage magnitude (p.u.)",
+			PT_double, "Vmax[pu.kV]", get_Vmax_offset(),
+				PT_DEFAULT,"1.2 pu.kV",
+				PT_DESCRIPTION, "maximum voltage magnitude (per unit)",
 
-			PT_double, "Vmin[pu]", get_Vmin_offset(),
-				PT_DEFAULT,"0.8 pu",
-				PT_DESCRIPTION, "minimum voltage magnitude (p.u.)",
+			PT_double, "Vmin[pu.kV]", get_Vmin_offset(),
+				PT_DEFAULT,"0.8 pu.kV",
+				PT_DESCRIPTION, "minimum voltage magnitude (per unit)",
 
 			PT_double, "lam_P", get_lam_P_offset(),
+				PT_OUTPUT,
 				PT_DESCRIPTION, "Lagrange multiplier on real power mismatch (u/MW)",
 				PT_ACCESS, PA_REFERENCE,
 
 			PT_double, "lam_Q", get_lam_Q_offset(),
+				PT_OUTPUT,
 				PT_DESCRIPTION, "Lagrange multiplier on reactive power mismatch (u/MVAr)",
 				PT_ACCESS, PA_REFERENCE,
 
 			PT_double, "mu_Vmax", get_mu_Vmax_offset(),
-				PT_DESCRIPTION, "Kuhn-Tucker multiplier on upper voltage limit (u/p.u.)",
+				PT_OUTPUT,
+				PT_DESCRIPTION, "Kuhn-Tucker multiplier on upper voltage limit (u/per unit)",
 				PT_ACCESS, PA_REFERENCE,
 
 			PT_double, "mu_Vmin", get_mu_Vmin_offset(),
-				PT_DESCRIPTION, "Kuhn-Tucker multiplier on lower voltage limit (u/p.u.)",
+				PT_OUTPUT,
+				PT_DESCRIPTION, "Kuhn-Tucker multiplier on lower voltage limit (u/per unit)",
 				PT_ACCESS, PA_REFERENCE,
 
 			PT_char1024, "weather_file", get_weather_file_offset(),
@@ -142,25 +150,10 @@ bus::bus(MODULE *module)
 			PT_char1024, "weather_sensitivity", get_weather_sensitivity_offset(),
 				PT_DESCRIPTION, "Weather sensitivities {PROP: VAR[ REL VAL],SLOPE[; ...]}",
 
-			PT_complex, "shunt", get_shunt_offset(),
-				PT_DESCRIPTION, "Initial shunt value before external shunt inputs",
-
 			NULL)<1)
 		{
 				throw "unable to publish bus properties";
 		}
-
-	    gl_global_create("pypower::low_voltage_warning",
-	        PT_double, &low_voltage_warning, 
-	        PT_UNITS, "pu",
-	        PT_DESCRIPTION, "Voltage level for low voltage warning",
-	        NULL);
-
-	    gl_global_create("pypower::high_voltage_warning",
-	        PT_double, &high_voltage_warning, 
-	        PT_UNITS, "pu",
-	        PT_DESCRIPTION, "Voltage level for high voltage warning",
-	        NULL);
 	}
 }
 
@@ -177,40 +170,10 @@ int bus::create(void)
 		throw "maximum bus entities exceeded";
 	}
 
-	// defaults
-	set_bus_i(0);
-	set_type(nbus == 1 ? 3 : 1); // first bus is REF by default all other PQ by default
-	set_Pd(0.0);
-	set_Qd(0.0);
-	set_Gs(0.0);
-	set_Bs(0.0);
-	set_area(1);
-	set_baseKV(500.0);
-	set_Vm(1.0);
-	set_Va(0.0);
-	set_zone(1);
-	set_Vmax(1.2);
-	set_Vmin(0.8);
-	set_S(complex(0,0));
-
 	// initialize weather data
-	set_weather_file("");
-	set_weather_variables("");
-	set_weather_resolution(0.0);
-	set_Sh(0.0);
-	set_Sh(0.0);
-	set_Sg(0.0);
-	set_Wd(0.0);
-	set_Ws(0.0);
-	set_Td(0.0);
-	set_Tw(0.0);
-	set_RH(0.0);
-	set_PW(0.0);
-	set_HI(0.0);
-	set_weather_sensitivity("");
-	set_shunt(complex(0,0));
 	current = first = last = NULL;
 	sensitivity_list = NULL;
+	bus_i = 0; // flag for unset
 
 	return 1; // return 1 on success, 0 on failure
 }
@@ -291,34 +254,6 @@ int bus::init(OBJECT *parent)
 		}
 	}
 
-	// initialize load values
-	if ( S.Re() == 0 && S.Im() == 0 )
-	{
-		// copy initial load to dispatched load
-		S = complex(Pd,Qd); 
-	}
-	else if ( Pd == 0 && Qd == 0 )
-	{
-		// set initial load to dispatch
-		Pd = S.Re();
-		Qd = S.Im();
-	}
-
-	// initialize shunt values
-	if ( shunt.Re() == 0 && shunt.Im() == 0 )
-	{
-		shunt = complex(Gs,Bs);
-	}
-	else if ( Gs == 0 && Bs == 0 )
-	{
-		Gs = shunt.Re();
-		Bs = shunt.Im();
-	}
-	else
-	{
-		warning("both shunt and Gs/Bs are non-zero, not initialization either");
-	}
-
 	return 1; // return 1 on success, 0 on failure, 2 on retry later
 }
 
@@ -352,21 +287,10 @@ TIMESTAMP bus::presync(TIMESTAMP t0)
 	// reset to base load/shunt
 	Pd = S.Re();
 	Qd = S.Im();
-	Gs = shunt.Re();
-	Bs = shunt.Im();
+	Gs = 0.0;
+	Bs = 0.0;
 
 	return TS_NEVER;
-}
-
-void bus::add_load(double P, double Q)
-{
-	Pd += P;
-	Qd += Q;
-}
-void bus::add_shunt(double G, double B)
-{
-	Gs += G;
-	Bs += B;
 }
 
 TIMESTAMP bus::sync(TIMESTAMP t0)
@@ -378,19 +302,6 @@ TIMESTAMP bus::sync(TIMESTAMP t0)
 TIMESTAMP bus::postsync(TIMESTAMP t0)
 {
 	exception("invalid postsync call");
-	return TS_NEVER;
-}
-
-TIMESTAMP bus::commit(TIMESTAMP t0, TIMESTAMP t1)
-{
-	if ( high_voltage_warning > 0 && Vm > high_voltage_warning )
-	{
-		warning("bus voltage is high");
-	}
-	else if ( Vm < low_voltage_warning )
-	{
-		warning("bus voltage is low");
-	}
 	return TS_NEVER;
 }
 

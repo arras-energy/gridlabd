@@ -41,17 +41,19 @@ gen::gen(MODULE *module)
 			PT_double, "Qmin[MVAr]", get_Qmin_offset(),
 				PT_DESCRIPTION, "minimum reactive power output (MVAr)",
 
-			PT_double, "Vg[pu]", get_Vg_offset(),
-				PT_DESCRIPTION, "voltage magnitude setpoint (p.u.)",
+			PT_double, "Vg[pu.kV]", get_Vg_offset(),
+				PT_DEFAULT, "1 pu.kV",
+				PT_DESCRIPTION, "voltage magnitude setpoint (per unit)",
 
 			PT_double, "mBase[MVA]", get_mBase_offset(),
 				PT_DEFAULT, "100 MVA",
 				PT_DESCRIPTION, "total MVA base of machine, defaults to baseMVA",
 
 			PT_enumeration, "status", get_status_offset(),
+				PT_KEYWORD, "IN_SERVICE", (enumeration)1,
+				PT_KEYWORD, "OUT_OF_SERVICE", (enumeration)0,
+				PT_DEFAULT, "IN_SERVICE",
 				PT_DESCRIPTION, "1 - in service, 0 - out of service",
-				PT_KEYWORD, "IN_SERVICE", (enumeration)GS_INSERVICE,
-				PT_KEYWORD, "OUT_OF_SERVICE", (enumeration)GS_OUTOFSERVICE,
 
 			PT_double, "Pmax[MW]", get_Pmax_offset(),
 				PT_DESCRIPTION, "maximum real power output (MW)",
@@ -92,23 +94,17 @@ gen::gen(MODULE *module)
 			PT_double, "apf", get_apf_offset(),
 				PT_DESCRIPTION, "area participation factor",
 
-			PT_double, "mu_Pmax[pu/MW]", get_mu_Pmax_offset(),
-				PT_DESCRIPTION, "Kuhn-Tucker multiplier on upper Pg limit (p.u./MW)",
+			PT_double, "mu_Pmax[pu./MW]", get_mu_Pmax_offset(),
+				PT_DESCRIPTION, "Kuhn-Tucker multiplier on upper Pg limit (per unit/MW)",
 
-			PT_double, "mu_Pmin[pu/MW]", get_mu_Pmin_offset(),
-				PT_DESCRIPTION, "Kuhn-Tucker multiplier on lower Pg limit (p.u./MW)",
+			PT_double, "mu_Pmin[pu./MW]", get_mu_Pmin_offset(),
+				PT_DESCRIPTION, "Kuhn-Tucker multiplier on lower Pg limit (per unit/MW)",
 
-			PT_double, "mu_Qmax[pu/MVAr]", get_mu_Qmax_offset(),
-				PT_DESCRIPTION, "Kuhn-Tucker multiplier on upper Qg limit (p.u./MVAr)",
+			PT_double, "mu_Qmax[pu./MVAr]", get_mu_Qmax_offset(),
+				PT_DESCRIPTION, "Kuhn-Tucker multiplier on upper Qg limit (per unit/MVAr)",
 
-			PT_double, "mu_Qmin[pu/MVAr]", get_mu_Qmin_offset(),
-				PT_DESCRIPTION, "Kuhn-Tucker multiplier on lower Qg limit (p.u./MVAr)",
-
-			PT_double, "Ps[MW]", get_Ps_offset(),
-				PT_DESCRIPTION, "real power OPF setpoint (MW)",
-
-			PT_double, "Qs[MVAr]", get_Qs_offset(),
-				PT_DESCRIPTION, "reactive power OPF setpoint (MVAr)",
+			PT_double, "mu_Qmin[pu./MVAr]", get_mu_Qmin_offset(),
+				PT_DESCRIPTION, "Kuhn-Tucker multiplier on lower Qg limit (per unit/MVAr)",
 
 			NULL)<1)
 		{
@@ -125,39 +121,6 @@ gen::gen(MODULE *module)
 
 int gen::create(void) 
 {
-	extern double base_MVA;
-
-	set_bus(0);
-	set_Pg(0.0);
-	set_Qg(0.0);
-	set_Qmax(0.0);
-	set_Qmin(0.0);
-	set_Vg(1.0);
-	set_mBase(base_MVA);
-	set_status(GS_INSERVICE);
-	set_Pmax(0.0);
-	set_Pmin(0.0);
-	set_Pc1(0.0);
-	set_Pc2(0.0);
-	set_Qc1min(0.0);
-	set_Qc1max(0.0);
-	set_Qc2min(0.0);
-	set_Qc2max(0.0);
-	set_ramp_agc(0.0);
-	set_ramp_10(0.0);
-	set_ramp_30(0.0);
-	set_ramp_q(0.0);
-	set_apf(0.0);
-	set_mu_Pmax(0.0);
-	set_mu_Pmin(0.0);
-	set_mu_Qmax(0.0);
-	set_mu_Qmin(0.0);
-	set_Ps(0.0);
-	set_Qs(0.0);
-
-	plant_count = 0;
-
-	cost = NULL;
 	extern gen *genlist[MAXENT];
 	extern size_t ngen;
 	if ( ngen < MAXENT )
@@ -169,34 +132,37 @@ int gen::create(void)
 		throw "maximum gen entities exceeded";
 	}
 
+	extern double base_MVA;
+	cost = NULL;
+	plant_count = 0;
+	bus = 0; // flag for unset
+
 	return 1; /* return 1 on success, 0 on failure */
 }
 
 int gen::init(OBJECT *parent)
 {
-	if ( parent == NULL )
-	{
-		error("parent and bus not specified");
-		return 0;
-	}
-	class bus *p = OBJECTDATA(parent,class bus);
-	if ( ! p->isa("bus","pypower") )
-	{
-		error("parent object '%s' is not a pypower bus",p->get_name());
-		return 0;
-	}
 	if ( get_bus() == 0 )
 	{
-		if ( p->get_bus_i() == 0 )
+		if ( parent == NULL )
 		{
-			return 2; // defer until bus is initialized
+			error("cannot find bus id without a known parent");
+			return 0;
 		}
-		set_bus(p->get_bus_i());
-	}
-
-	if ( p->get_type() != bus::BT_PV && p->get_type() != bus::BT_REF )
-	{
-		warning("bus '%s' type is not PV or REF as expected for generators",p->get_name());
+		class bus *p = OBJECTDATA(parent,class bus);
+		if ( p->isa("bus","pypower") )
+		{
+			if ( p->get_bus_i() == 0 )
+			{
+				return 2; // defer until bus is initialized
+			}
+			set_bus(p->get_bus_i());
+		}
+		else
+		{
+			error("parent object '%s' is not a pypower bus",p->get_name());
+			return 0;
+		}
 	}
 
 	return 1;
@@ -211,20 +177,12 @@ TIMESTAMP gen::precommit(TIMESTAMP t0)
 		Pg = 0.0;
 		Qg = 0.0;
 	}
-
-	// change generation to match non-zero setpoint if valid
-	else if ( Pmin > 0 && Ps >= Pmin && Qs >= Qmin && Ps <= Pmax && Qs <= Qmax )
-	{
-		Pg = Ps;
-		Qg = Qs;
-	}
 	return TS_NEVER;
 }
 
 void gen::add_powerplant(class powerplant *plant)
 {
-	const char *status[] = {"OFFLINE","ONLINE"};
-	gl_debug("powerplant '%s' connected (%s)",plant->get_name(),status[plant->get_status()]);
+	gl_debug("powerplant '%s' connected",plant->get_name());
 	plant_count++;
 }
 
@@ -257,9 +215,4 @@ void gen::add_cost(class gencost *add)
 	{
 		error("unable to add to different gencost models");
 	}
-}
-
-unsigned int gen::get_powerplant_count(void)
-{
-	return plant_count;
 }

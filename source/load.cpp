@@ -1280,7 +1280,7 @@ int GldLoader::unitspec(PARSER, UNIT **unit)
 	char result[1024];
 	size_t size = sizeof(result);
 	START;
-	while ( (size>1 && isalpha(*_p)) || isdigit(*_p) || *_p=='$' || *_p=='%' || *_p=='*' || *_p=='/' || *_p=='^') COPY(result);
+	while ( (size>1 && isalpha(*_p)) || isdigit(*_p) || *_p=='$' || *_p=='%' || *_p=='*' || *_p=='/' || *_p=='^' || *_p=='.' ) COPY(result);
 	result[_n]='\0';
 	try {
 		if ((*unit=unit_find(result))==NULL){
@@ -8365,6 +8365,25 @@ int GldLoader::process_macro(char *line, int size, char *_filename, int linenum)
 		}
 		strcpy(line,"\n");
 		return TRUE;
+	}
+	else if ( strncmp(line, "#save", 5) == 0 )
+	{
+		char fname[1024];
+		if ( sscanf(line+5,"\"%[^\"]",fname) == 1)
+		{
+			if ( saveall(fname) <= 0 )
+			{
+				syntax_error(filename,linenum,"save macro failed");
+				return FALSE;
+			}
+			strcpy(line,"\n");
+			return TRUE;
+		}
+		else
+		{
+			syntax_error(filename,linenum,"save macro syntax error");
+			return FALSE;
+		}
 	}
 	int rc = my_instance->subcommand("%s/" PACKAGE "-%s",getenv("GLD_BIN"),strchr(line,'#')+1);
 	if ( rc != 127 )

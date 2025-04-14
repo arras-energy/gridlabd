@@ -12,15 +12,12 @@ config = {"input":"raw","output":"glm","type":[],"format":[]}
 
 def help():
     return """raw2glm.py -i <inputfile> -o <outputfile> [options...]
-    -c|--config               output converter configuration data
-    -h|--help                 output this help
-    -i|--ifile <FILENAME.raw> [REQUIRED] PY input file
-    -o|--ofile <FILENAME.glm> [OPTIONAL] GLM output file name
-    -N|--name <STRING>        [OPTIONAL] object name prefix (default is output
-                              file name)
-    --annotate                include annotations unsupported object properties
-    --runtime                 include runtime classes for unsupported objects
-    --unsupported             output a warning for each unsupported objects
+    -c|--config                output converter configuration data
+    -h|--help                  output this help
+    -i|--ifile <FILENAME.raw>  [REQUIRED] PY input file
+    -o|--ofile <FILENAME.glm>  [OPTIONAL] GLM output file name
+    -N|--name <STRING>         [OPTIONAL] object name prefix (default is output
+                               file name)
     -X|--exclude <CLASS>[,...] classes to exclude from output
 """
 
@@ -28,11 +25,6 @@ E_OK = 0
 E_SYNTAX = 1
 E_MISSING = 2
 E_EXCEPTION = 9
-
-ANNOTATE = False
-RUNTIME = False
-UNSUPPORTED = False
-
 def error(msg,file="raw2glm.py",lineno=None,exitcode=None):
     if lineno is None:
         print(f"ERROR [{file}]: {msg}",file=sys.stderr,flush=True)
@@ -74,12 +66,6 @@ def main():
             filename_glm = arg
         elif opt in ("-N", "--name"):
             prefix = arg
-        elif opt == "--annotate":
-            ANNOTATE = True
-        elif opt == "--runtime":
-            RUNTIME = True
-        elif opt == "--unsupported":
-            UNSUPPORTED = True
         elif opt in ("-X","--exclude"):
             exclude.extend(arg.split(","))
         else : 
@@ -119,7 +105,6 @@ def convert(ifile,ofile,options={}):
     bus_S = {}
     bus_V = {}
     oname = options['prefix'] if 'prefix' in options and not options['prefix'] is None else os.path.splitext(os.path.basename(ofile))[0]
-    unsupported = {}
     exclude = options['exclude'] if 'exclude' in options else []
     with open(ofile,"w") as glm:
 
@@ -130,7 +115,7 @@ def convert(ifile,ofile,options={}):
             block = None
             lineno = 0
             fields = {}
-            items = lambda row: ""
+            items = lambda row: "// No fields provided"
             rows = []
             rowd = []
             ocount = {}
@@ -151,10 +136,10 @@ def convert(ifile,ofile,options={}):
                             rows = [list(row)]
                         if fields[block][0].startswith("@!"):
                             fields[block][0] = fields[block][0][2:].strip()
-                    if block in fields and ANNOTATE:
-                        items = lambda row:"    " + ";\n    ".join([f"// {x} = {y};" for x,y in zip(fields[block],row)]) + ";\n"
+                    if block in fields:
+                        items = lambda row:"\n    ".join([f"// {x} = {y};" for x,y in zip(fields[block],row)])
                     else:
-                        items = lambda row: ""
+                        items = lambda row: "// No fields provided"
 
                 elif row[0] == '0': # system-wide data
                 
@@ -162,8 +147,9 @@ def convert(ifile,ofile,options={}):
                     print(f"""module pypower 
 {{
     // {block} = {row}
-    version 2; // pypower solver version
+    version 2;
     baseMVA {row[1]};
+    // {row[5]}
 }}
 """,file=glm)
                     data['baseMVA'] = float(row[1])
@@ -198,11 +184,12 @@ def convert(ifile,ofile,options={}):
     type {typemap[int(row[3])]}; 
     area {row[4]};
     zone {row[5]};
-    Vm {Vm} pu;
-    Va {Va} deg;
+    Vm {row[7]} pu.V;
+    Va {row[8]} deg;
     Pd {float(row[9])-float(row[11])} MW;
     Qd {float(row[10])-float(row[12])} MVAr;
-{items(row)}}}""",file=glm)
+    {items(row)};
+}}""",file=glm)
 
                 elif block == 'LOAD_DATA':
 
@@ -216,6 +203,8 @@ def convert(ifile,ofile,options={}):
                         Z = complex(0,0)
                     I = complex(float(row[7]),float(row[8]))
                     P = complex(float(row[5]),float(row[6])) + complex(float(row[14]),float(row[15]))
+                    S = Z + I + P
+                    Z 
                     response = 1 - float(row[12])
                     status = "ONLINE" if float(row[13]) == 0.0 else "CURTAILED"
                     V = bus_V[row[0]]
@@ -230,9 +219,11 @@ def convert(ifile,ofile,options={}):
     Z {Z.real:.4g}{Z.imag:+.4g}j Ohm;
     I {I.real:.4g}{I.imag:+.4g}j A;
     P {P.real:.4g}{P.imag:+.4g}j MVA;
+    S {S.real:.4g}{S.imag:+.4g}j MVA;
     status {status};
     response {response};
-{items(row)}}}
+    {items(row)}
+}}
 modify {oname}_N_{row[0]}.Pd {bus_S[row[0]].real:.6g};
 modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
 """,file=glm)
@@ -248,17 +239,17 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
                         print(f"""object pypower.gen
 {{
     name "{oname}_G_{row[0]}_{genndx[genid]}";
-    parent "{oname}_N_{row[0]}";
     bus {busndx[row[0]]};
     Pg {row[2]} MW;
     Qg {row[3]} MVAr;
-    Vg {row[6]} pu;
+    Vg {row[6]} pu.V;
     Pmax {row[16]} MW;
     Pmin {row[17]} MW;
     Qmax {row[4]} MVAr;
     Qmin {row[5]} MVAr;
     status {"IN_SERVICE" if row[14] == "1" else "OUT_OF_SERVICE"};
-{items(row)}}}""",file=glm)
+    {items(row)}
+}}""",file=glm)
 
                 elif block == "BRANCH_DATA":
 
@@ -287,7 +278,8 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
     status IN;
     angmin -360 deg;
     angmax +360 deg;
-{items(row)}}}""",file=glm)
+    {items(row)}
+}}""",file=glm)
 
                 elif block == "TRANSFORMER_DATA":
 
@@ -306,7 +298,7 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
                             rd.append(f"""    // ROW {n}:""")
                             rd.extend([f"""    //   {x.replace(' ','').strip("'")} "{y}";""" for x,y in r.items()])
                             dd.update(r)
-                        rd = "\n".join(rd) + "\n"
+                        rd = "\n".join(rd)
                         if "branch" not in exclude:
                             print(f"""object pypower.branch
 {{
@@ -324,7 +316,8 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
     }};
     angmin -360 deg;
     angmax +360 deg;
-{rd if ANNOTATE else ""}}}""",file=glm)
+{rd}
+}}""",file=glm)
                         rowd = []
 
                 elif block == "SWITCHED_SHUNT_DATA":
@@ -399,7 +392,7 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
                     print(f"""// END OF INPUT FILE {ifile}""",file=glm)
                     break
 
-                elif RUNTIME:
+                else:
 
                     oclass = f"""psse_{block.replace("_DATA","").lower()}"""
                     if block not in ocount:
@@ -417,16 +410,6 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
                         for name,value in zip(fields[block][1:],row[1:]):
                             print(f"""    {name.replace("'","")} "{value}";""",file=glm)
                         print(f"""}}""",file=glm)
-
-                elif UNSUPPORTED:
-                    warning(f"""unable to convert '{block}' data (use --runtime to enable runtime class)""",ifile,lineno)
-                elif block in unsupported:
-                    unsupported[block] += 1
-                else:
-                    unsupported[block] = 1
-
-    for block,count in unsupported.items():
-        warning(f"unable to convert {count} unsupported {block} (use --runtime to enable runtime classes)")
 
 if __name__ == '__main__':
 

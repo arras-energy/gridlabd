@@ -16,18 +16,18 @@ GLM:
     powerA_rating "<decimal> kVA";
     powerB_rating "<decimal> kVA";
     powerC_rating "<decimal> kVA";
-    resistance "<decimal> pu*Ohm";
-    reactance "<decimal> pu*Ohm";
-    impedance "<string> pu*Ohm";
-    resistance1 "<decimal> pu*Ohm";
-    reactance1 "<decimal> pu*Ohm";
-    impedance1 "<string> pu*Ohm";
-    resistance2 "<decimal> pu*Ohm";
-    reactance2 "<decimal> pu*Ohm";
-    impedance2 "<string> pu*Ohm";
-    shunt_resistance "<decimal> pu*Ohm";
-    shunt_reactance "<decimal> pu*Ohm";
-    shunt_impedance "<string> pu*Ohm";
+    resistance "<decimal> pu.Ohm";
+    reactance "<decimal> pu.Ohm";
+    impedance "<string> pu.Ohm";
+    resistance1 "<decimal> pu.Ohm";
+    reactance1 "<decimal> pu.Ohm";
+    impedance1 "<string> pu.Ohm";
+    resistance2 "<decimal> pu.Ohm";
+    reactance2 "<decimal> pu.Ohm";
+    impedance2 "<string> pu.Ohm";
+    shunt_resistance "<decimal> pu.Ohm";
+    shunt_reactance "<decimal> pu.Ohm";
+    shunt_impedance "<string> pu.Ohm";
     core_coil_weight "<decimal> lb";
     tank_fittings_weight "<decimal> lb";
     oil_volume "<decimal> gal";
@@ -137,7 +137,7 @@ KVA rating of transformer, phase C
 ### `resistance`
 
 ~~~
-  double resistance[pu*Ohm];
+  double resistance[pu.Ohm];
 ~~~
 
 Series impedance, pu, real
@@ -145,7 +145,7 @@ Series impedance, pu, real
 ### `reactance`
 
 ~~~
-  double reactance[pu*Ohm];
+  double reactance[pu.Ohm];
 ~~~
 
 Series impedance, pu, imag
@@ -153,7 +153,7 @@ Series impedance, pu, imag
 ### `impedance`
 
 ~~~
-  complex impedance[pu*Ohm];
+  complex impedance[pu.Ohm];
 ~~~
 
 Series impedance, pu
@@ -161,7 +161,7 @@ Series impedance, pu
 ### `resistance1`
 
 ~~~
-  double resistance1[pu*Ohm];
+  double resistance1[pu.Ohm];
 ~~~
 
 Secondary series impedance (only used when you want to define each individual winding seperately, pu, real
@@ -169,7 +169,7 @@ Secondary series impedance (only used when you want to define each individual wi
 ### `reactance1`
 
 ~~~
-  double reactance1[pu*Ohm];
+  double reactance1[pu.Ohm];
 ~~~
 
 Secondary series impedance (only used when you want to define each individual winding seperately, pu, imag
@@ -177,7 +177,7 @@ Secondary series impedance (only used when you want to define each individual wi
 ### `impedance1`
 
 ~~~
-  complex impedance1[pu*Ohm];
+  complex impedance1[pu.Ohm];
 ~~~
 
 Secondary series impedance (only used when you want to define each individual winding seperately, pu
@@ -185,7 +185,7 @@ Secondary series impedance (only used when you want to define each individual wi
 ### `resistance2`
 
 ~~~
-  double resistance2[pu*Ohm];
+  double resistance2[pu.Ohm];
 ~~~
 
 Secondary series impedance (only used when you want to define each individual winding seperately, pu, real
@@ -193,7 +193,7 @@ Secondary series impedance (only used when you want to define each individual wi
 ### `reactance2`
 
 ~~~
-  double reactance2[pu*Ohm];
+  double reactance2[pu.Ohm];
 ~~~
 
 Secondary series impedance (only used when you want to define each individual winding seperately, pu, imag
@@ -201,7 +201,7 @@ Secondary series impedance (only used when you want to define each individual wi
 ### `impedance2`
 
 ~~~
-  complex impedance2[pu*Ohm];
+  complex impedance2[pu.Ohm];
 ~~~
 
 Secondary series impedance (only used when you want to define each individual winding seperately, pu
@@ -209,7 +209,7 @@ Secondary series impedance (only used when you want to define each individual wi
 ### `shunt_resistance`
 
 ~~~
-  double shunt_resistance[pu*Ohm];
+  double shunt_resistance[pu.Ohm];
 ~~~
 
 Shunt impedance on primary side, pu, real
@@ -217,7 +217,7 @@ Shunt impedance on primary side, pu, real
 ### `shunt_reactance`
 
 ~~~
-  double shunt_reactance[pu*Ohm];
+  double shunt_reactance[pu.Ohm];
 ~~~
 
 Shunt impedance on primary side, pu, imag
@@ -225,7 +225,7 @@ Shunt impedance on primary side, pu, imag
 ### `shunt_impedance`
 
 ~~~
-  complex shunt_impedance[pu*Ohm];
+  complex shunt_impedance[pu.Ohm];
 ~~~
 
 Shunt impedance on primary side, pu
@@ -389,9 +389,9 @@ Inrush decay time constant for inrush current
     resistance2 "0.0";
     reactance2 "0.0";
     impedance2 "0+0i";
-    shunt_resistance "+1e+09 pu*Ohm";
-    shunt_reactance "+1e+09 pu*Ohm";
-    shunt_impedance "+1e+09+1e+09j pu*Ohm";
+    shunt_resistance "+1e+09 pu.Ohm";
+    shunt_reactance "+1e+09 pu.Ohm";
+    shunt_impedance "+1e+09+1e+09j pu.Ohm";
     core_coil_weight "0.0";
     tank_fittings_weight "0.0";
     oil_volume "0.0";

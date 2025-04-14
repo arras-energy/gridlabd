@@ -67,11 +67,11 @@ class bus {
     double Bs[MVAr]; // shunt susceptance (MVAr at V = 1.0 p.u.)
     int32 area; // area number, 1-100
     double baseKV[kV]; // voltage magnitude (p.u.)
-    double Vm[pu*V]; // voltage angle (degrees)
+    double Vm[pu.V]; // voltage angle (degrees)
     double Va[deg]; // base voltage (kV)
     int32 zone; // loss zone (1-999)
-    double Vmax[pu*V]; // maximum voltage magnitude (p.u.)
-    double Vmin[pu*V]; // minimum voltage magnitude (p.u.)
+    double Vmax[pu.V]; // maximum voltage magnitude (p.u.)
+    double Vmin[pu.V]; // minimum voltage magnitude (p.u.)
     double lam_P; // Lagrange multiplier on real power mismatch (u/MW)
     double lam_Q; // Lagrange multiplier on reactive power mismatch (u/MVAr)
     double mu_Vmax; // Kuhn-Tucker multiplier on upper voltage limit (u/p.u.)
@@ -111,8 +111,8 @@ Note that the cutoff value is always used to identify the intercept point, i.e.,
 class branch {
     int32 fbus; // from bus number
     int32 tbus; // to bus number
-    double r[pu*Ohm]; // resistance (p.u.)
-    double x[pu*Ohm]; // reactance (p.u.)
+    double r[pu.Ohm]; // resistance (p.u.)
+    double x[pu.Ohm]; // reactance (p.u.)
     double b[pu/Ohm]; // total line charging susceptance (p.u.)
     double rateA[MVA]; // MVA rating A (long term rating)
     double rateB[MVA]; // MVA rating B (short term rating)
@@ -134,7 +134,7 @@ class gen {
     double Qg[MVAr]; // reactive power output (MVAr)
     double Qmax[MVAr]; // maximum reactive power output (MVAr)
     double Qmin[MVAr]; // minimum reactive power output (MVAr)
-    double Vg[pu*V]; // voltage magnitude setpoint (p.u.)
+    double Vg[pu.V]; // voltage magnitude setpoint (p.u.)
     double mBase[MVA]; // total MVA base of machine, defaults to baseMVA
     enumeration {OUT_OF_SERVICE=0, IN_SERVICE=1} status; // 1 - in service, 0 - out of service
     double Pmax[MW]; // maximum real power output (MW)

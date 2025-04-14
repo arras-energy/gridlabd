@@ -1,3 +1,4 @@
+#set suppress_repeat_messages=FALSE
 #define CASE=118
 #ifexists "../case.glm"
 #define DIR=..

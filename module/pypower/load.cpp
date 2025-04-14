@@ -25,18 +25,18 @@ load::load(MODULE *module)
 		if (gl_publish_variable(oclass,
 
 			PT_complex, "S[MVA]", get_S_offset(),
-				PT_DESCRIPTION, "power demand (MVA)",
+				PT_DESCRIPTION, "total load (MVA)",
 
 			PT_complex, "Z[Ohm]", get_Z_offset(),
-				PT_DESCRIPTION, "constant impedance load (Ohm)",
+				PT_DESCRIPTION, "constant impedance load (MVA)",
 
 			PT_complex, "I[A]", get_I_offset(),
-				PT_DESCRIPTION, "constant current load (A)",
+				PT_DESCRIPTION, "constant current load (MVA)",
 
 			PT_complex, "P[MVA]", get_P_offset(),
 				PT_DESCRIPTION, "constant power load (MVA)",
 
-			PT_complex, "V[pu]", get_V_offset(),
+			PT_complex, "V[pu.V]", get_V_offset(),
 				PT_DESCRIPTION, "bus voltage (V)",
 
 			PT_double, "Vn[kV]", get_Vn_offset(),
@@ -120,16 +120,33 @@ int load::init(OBJECT *parent_hdr)
 		snprintf(buffer,sizeof(buffer)-1,"%64s:%ld",get_oclass()->get_name(),(long)get_id());
 		PyTuple_SET_ITEM(py_args,0,PyUnicode_FromString(buffer));
 	}
-	Py_complex z = {get_S().Re(), get_S().Im()};
-	PyDict_SetItemString(py_kwargs,"S",PyComplex_FromCComplex(z));
-	z.real = get_Z().Re(); z.imag = get_Z().Im(); 
-	PyDict_SetItemString(py_kwargs,"Z",PyComplex_FromCComplex(z));
-	z.real = get_I().Re(); z.imag = get_I().Im(); 
-	PyDict_SetItemString(py_kwargs,"I",PyComplex_FromCComplex(z));
-	z.real = get_P().Re(); z.imag = get_P().Im(); 
-	PyDict_SetItemString(py_kwargs,"P",PyComplex_FromCComplex(z));
-	z.real = get_V().Re(); z.imag = get_V().Im(); 
-	PyDict_SetItemString(py_kwargs,"V",PyComplex_FromCComplex(z));
+	
+	Py_complex Vc = {V.Re(), V.Im()}; 
+	PyDict_SetItemString(py_kwargs,"V",PyComplex_FromCComplex(Vc));
+	
+	complex VZ = Z.Mag()>0 ? complex(V.Mag())/Z : 0;
+	Py_complex Zc = {VZ.Re(), VZ.Im()}; 
+	PyDict_SetItemString(py_kwargs,"Z",PyComplex_FromCComplex(Zc));
+	
+	complex VI = V * ~I;
+	Py_complex Ic = {VI.Re(), VI.Im()}; 
+	PyDict_SetItemString(py_kwargs,"I",PyComplex_FromCComplex(Ic));
+	
+	Py_complex Pc = {get_P().Re(), get_P().Im()}; 
+	PyDict_SetItemString(py_kwargs,"P",PyComplex_FromCComplex(Pc));
+
+	if ( S.Mag() == 0 )
+	{		
+		S = Z + I + P;
+		if ( status == LS_CURTAILED)
+		{
+			S *= 1.0 - get_response();
+		}
+	}
+
+	Py_complex Sc = {get_S().Re(), get_S().Im()};
+	PyDict_SetItemString(py_kwargs,"S",PyComplex_FromCComplex(Sc));
+
 	PyDict_SetItemString(py_kwargs,"status",PyLong_FromLong(get_status()));
 	PyDict_SetItemString(py_kwargs,"response",PyFloat_FromDouble(get_response()));
 	PyDict_SetItemString(py_kwargs,"t",PyFloat_FromDouble((double)gl_globalclock));
@@ -145,24 +162,11 @@ TIMESTAMP load::presync(TIMESTAMP t0)
 	}
 
 	// calculate load based on voltage and ZIP values
-	complex Vpu = V / Vn;
 	S = complex(0,0);
 	enumeration status = get_status();
 	if ( status != LS_OFFLINE )
 	{
-		S = P;
-		if ( I.Re() != 0 || I.Im() != 0 )
-		{
-			S += Vpu * ~I;
-		}
-		if ( Z.Re() != 0 || Z.Im() != 0 )
-		{
-			S += (~Vpu*Vpu) / ~Z;
-		}
-		if ( status == LS_CURTAILED)
-		{
-			S *= 1.0 - get_response();
-		}
+		S = ( Z + I + P ) * (1.0 - (status == LS_CURTAILED ? get_response() : 0));
 	}
 
 	// copy load data to parent
@@ -171,7 +175,8 @@ TIMESTAMP load::presync(TIMESTAMP t0)
 		bus *parent = (bus*)get_parent();
 		if ( parent )
 		{
-			parent->add_load(S.Re(),S.Im());
+			parent->set_Pd(parent->get_Pd()+S.Re());
+			parent->set_Qd(parent->get_Qd()+S.Im());
 		}
 	}
 	return TS_NEVER;
@@ -183,16 +188,25 @@ TIMESTAMP load::sync(TIMESTAMP t0)
 	int nchanges = 0;
 	if ( py_controller )
 	{
-		Py_complex z = {get_S().Re(), get_S().Im()};
-		PyDict_SetItemString(py_kwargs,"S",PyComplex_FromCComplex(z));
-		z.real = get_Z().Re(); z.imag = get_Z().Im(); 
-		PyDict_SetItemString(py_kwargs,"Z",PyComplex_FromCComplex(z));
-		z.real = get_I().Re(); z.imag = get_I().Im(); 
-		PyDict_SetItemString(py_kwargs,"I",PyComplex_FromCComplex(z));
-		z.real = get_P().Re(); z.imag = get_P().Im(); 
-		PyDict_SetItemString(py_kwargs,"P",PyComplex_FromCComplex(z));
-		z.real = get_V().Re(); z.imag = get_V().Im(); 
-		PyDict_SetItemString(py_kwargs,"V",PyComplex_FromCComplex(z));
+		Py_complex Vc = {V.Re(), V.Im()}; 
+		PyDict_SetItemString(py_kwargs,"V",PyComplex_FromCComplex(Vc));
+		
+		complex VZ = Z.Mag()>0 ? complex(V.Mag())/Z : 0;
+		Py_complex Zc = {VZ.Re(), VZ.Im()}; 
+		PyDict_SetItemString(py_kwargs,"Z",PyComplex_FromCComplex(Zc));
+		
+		complex VI = V * ~I;
+		Py_complex Ic = {VI.Re(), VI.Im()}; 
+		PyDict_SetItemString(py_kwargs,"I",PyComplex_FromCComplex(Ic));
+		
+		Py_complex Pc = {get_P().Re(), get_P().Im()}; 
+		PyDict_SetItemString(py_kwargs,"P",PyComplex_FromCComplex(Pc));
+
+		S = ( Z + I + P ) * (1.0 - (status == LS_CURTAILED ? get_response() : 0));
+
+		Py_complex Sc = {get_S().Re(), get_S().Im()};
+		PyDict_SetItemString(py_kwargs,"S",PyComplex_FromCComplex(Sc));
+
 		PyDict_SetItemString(py_kwargs,"status",PyLong_FromLong(get_status()));
 		PyDict_SetItemString(py_kwargs,"response",PyFloat_FromDouble(get_response()));
 		PyDict_SetItemString(py_kwargs,"t",PyFloat_FromDouble((double)gl_globalclock));
