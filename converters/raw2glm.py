@@ -184,7 +184,7 @@ def convert(ifile,ofile,options={}):
     type {typemap[int(row[3])]}; 
     area {row[4]};
     zone {row[5]};
-    Vm {row[7]} pu*V;
+    Vm {row[7]} pu.V;
     Va {row[8]} deg;
     Pd {float(row[9])-float(row[11])} MW;
     Qd {float(row[10])-float(row[12])} MVAr;
@@ -242,7 +242,7 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
     bus {busndx[row[0]]};
     Pg {row[2]} MW;
     Qg {row[3]} MVAr;
-    Vg {row[6]} pu*V;
+    Vg {row[6]} pu.V;
     Pmax {row[16]} MW;
     Pmin {row[17]} MW;
     Qmax {row[4]} MVAr;

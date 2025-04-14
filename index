@@ -2520,7 +2520,9 @@ module/pypower/autotest/case14.py
 module/pypower/autotest/case14e.py
 module/pypower/autotest/case30.py
 module/pypower/autotest/case39.py
+module/pypower/autotest/case4gs.py
 module/pypower/autotest/case57.py
+module/pypower/autotest/case9.py
 module/pypower/autotest/check_case.py
 module/pypower/autotest/controllers.py
 module/pypower/autotest/test_case118.glm
@@ -2545,9 +2547,12 @@ module/pypower/autotest/test_case14_ts.glm
 module/pypower/autotest/test_case14_weather.csv
 module/pypower/autotest/test_case14_weather.glm
 module/pypower/autotest/test_case14_weather_pp_bus_1_record.csv
+module/pypower/autotest/test_case14gs.glm
 module/pypower/autotest/test_case30.glm
 module/pypower/autotest/test_case39.glm
+module/pypower/autotest/test_case4gs.glm
 module/pypower/autotest/test_case57.glm
+module/pypower/autotest/test_case9.glm
 module/pypower/branch.cpp
 module/pypower/branch.h
 module/pypower/bus.cpp

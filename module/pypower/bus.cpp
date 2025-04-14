@@ -45,55 +45,66 @@ bus::bus(MODULE *module)
 
 			PT_double, "Pd[MW]", get_Pd_offset(),
 				PT_OUTPUT,
+				PT_DEFAULT, "0 MW",
 				PT_DESCRIPTION, "real power demand (MW)",
 
 			PT_double, "Qd[MVAr]", get_Qd_offset(),
 				PT_OUTPUT,
+				PT_DEFAULT, "0 MVAr",
 				PT_DESCRIPTION, "reactive power demand (MVAr)",
 
 			PT_double, "Gs[MW]", get_Gs_offset(),
-				PT_DESCRIPTION, "shunt conductance (MW at V = 1.0 p.u.)",
+				PT_DEFAULT, "0 MW",
+				PT_DESCRIPTION, "shunt conductance (MW at V = 1.0 per unit)",
 
 			PT_double, "Bs[MVAr]", get_Bs_offset(),
-				PT_DESCRIPTION, "shunt susceptance (MVAr at V = 1.0 p.u.)",
+				PT_DEFAULT, "0 MVAr",
+				PT_DESCRIPTION, "shunt susceptance (MVAr at V = 1.0 per unit)",
 
 			PT_int32, "area", get_area_offset(),
 				PT_DESCRIPTION, "area number, 1-100",
 
 			PT_double, "baseKV[kV]", get_baseKV_offset(),
-				PT_DESCRIPTION, "voltage magnitude (p.u.)",
+				PT_REQUIRED,
+				PT_DESCRIPTION, "voltage magnitude (per unit)",
 
-			PT_double, "Vm[pu*V]", get_Vm_offset(),
+			PT_double, "Vm[pu.kV]", get_Vm_offset(),
+				PT_DEFAULT, "1 pu.V",
 				PT_DESCRIPTION, "voltage angle (degrees)",
 
 			PT_double, "Va[deg]", get_Va_offset(),
+				PT_DEFAULT, "0 deg",
 				PT_DESCRIPTION, "base voltage (kV)",
 
 			PT_int32, "zone", get_zone_offset(),
 				PT_DESCRIPTION, "loss zone (1-999)",
 
-			PT_double, "Vmax[pu*V]", get_Vmax_offset(),
-				PT_DEFAULT,"1.2 pu*V",
-				PT_DESCRIPTION, "maximum voltage magnitude (p.u.)",
+			PT_double, "Vmax[pu.kV]", get_Vmax_offset(),
+				PT_DEFAULT,"1.2 pu.kV",
+				PT_DESCRIPTION, "maximum voltage magnitude (per unit)",
 
-			PT_double, "Vmin[pu*V]", get_Vmin_offset(),
-				PT_DEFAULT,"0.8 pu*V",
-				PT_DESCRIPTION, "minimum voltage magnitude (p.u.)",
+			PT_double, "Vmin[pu.kV]", get_Vmin_offset(),
+				PT_DEFAULT,"0.8 pu.kV",
+				PT_DESCRIPTION, "minimum voltage magnitude (per unit)",
 
 			PT_double, "lam_P", get_lam_P_offset(),
+				PT_OUTPUT,
 				PT_DESCRIPTION, "Lagrange multiplier on real power mismatch (u/MW)",
 				PT_ACCESS, PA_REFERENCE,
 
 			PT_double, "lam_Q", get_lam_Q_offset(),
+				PT_OUTPUT,
 				PT_DESCRIPTION, "Lagrange multiplier on reactive power mismatch (u/MVAr)",
 				PT_ACCESS, PA_REFERENCE,
 
 			PT_double, "mu_Vmax", get_mu_Vmax_offset(),
-				PT_DESCRIPTION, "Kuhn-Tucker multiplier on upper voltage limit (u/p.u.)",
+				PT_OUTPUT,
+				PT_DESCRIPTION, "Kuhn-Tucker multiplier on upper voltage limit (u/per unit)",
 				PT_ACCESS, PA_REFERENCE,
 
 			PT_double, "mu_Vmin", get_mu_Vmin_offset(),
-				PT_DESCRIPTION, "Kuhn-Tucker multiplier on lower voltage limit (u/p.u.)",
+				PT_OUTPUT,
+				PT_DESCRIPTION, "Kuhn-Tucker multiplier on lower voltage limit (u/per unit)",
 				PT_ACCESS, PA_REFERENCE,
 
 			PT_char1024, "weather_file", get_weather_file_offset(),
@@ -162,6 +173,7 @@ int bus::create(void)
 	// initialize weather data
 	current = first = last = NULL;
 	sensitivity_list = NULL;
+	bus_i = 0; // flag for unset
 
 	return 1; // return 1 on success, 0 on failure
 }
