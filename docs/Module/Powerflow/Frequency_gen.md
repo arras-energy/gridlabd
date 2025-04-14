@@ -11,7 +11,7 @@ GLM:
     FreqChange "<decimal> Hz/s";
     Deadband "<decimal> Hz";
     Tolerance "<decimal> %";
-    M "<decimal> pu*s";
+    M "<decimal> pu.s";
     D "<decimal> %";
     Rated_power "<decimal> W";
     Gen_power "<decimal> W";
@@ -77,7 +77,7 @@ Frequency deadband of the governor
 ### `M`
 
 ~~~
-  double M[pu*s];
+  double M[pu.s];
 ~~~
 
 Inertial constant of the system

@@ -414,9 +414,9 @@ object powerflow.transformer_configuration {
 	powerA_rating "+50 kVA";
 	powerB_rating "+50 kVA";
 	powerC_rating "+50 kVA";
-	resistance "+0.0127 pu*Ohm";
-	reactance "+0.0272 pu*Ohm";
-	impedance "+0.0127+0.0272j pu*Ohm";
+	resistance "+0.0127 pu.Ohm";
+	reactance "+0.0272 pu.Ohm";
+	impedance "+0.0127+0.0272j pu.Ohm";
 	reactance_resistance_ratio "+4.5";
 }
 object powerflow.transformer_configuration {
@@ -430,9 +430,9 @@ object powerflow.transformer_configuration {
 	powerA_rating "+1666.67 kVA";
 	powerB_rating "+1666.67 kVA";
 	powerC_rating "+1666.67 kVA";
-	resistance "+0.01 pu*Ohm";
-	reactance "+0.08 pu*Ohm";
-	impedance "+0.01+0.08j pu*Ohm";
+	resistance "+0.01 pu.Ohm";
+	reactance "+0.08 pu.Ohm";
+	impedance "+0.01+0.08j pu.Ohm";
 	reactance_resistance_ratio "+4.5";
 }
 object powerflow.regulator_configuration {
@@ -7979,9 +7979,9 @@ object powerflow.transformer_configuration {
 	powerA_rating "+75 kVA";
 	powerB_rating "+75 kVA";
 	powerC_rating "+75 kVA";
-	resistance "+0.006 pu*Ohm";
-	reactance "+0.0136 pu*Ohm";
-	impedance "+0.006+0.0136j pu*Ohm";
+	resistance "+0.006 pu.Ohm";
+	reactance "+0.0136 pu.Ohm";
+	impedance "+0.006+0.0136j pu.Ohm";
 	reactance_resistance_ratio "+4.5";
 }
 object powerflow.line_sensor {
