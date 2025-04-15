@@ -2536,9 +2536,9 @@ module/pypower/autotest/test_case14_geodata_load_2_record.csv
 module/pypower/autotest/test_case14_load.glm
 module/pypower/autotest/test_case14_load_drop.glm
 module/pypower/autotest/test_case14_opf.glm
-module/pypower/autotest/test_case14_opf_dispatch.glm
+module/pypower/autotest/test_case14_opf_dispatch_opt.glm
 module/pypower/autotest/test_case14_powerline.glm
-module/pypower/autotest/test_case14_powerplant.glm
+module/pypower/autotest/test_case14_powerplant_opt.glm
 module/pypower/autotest/test_case14_powerplant_pp_bus_2.csv
 module/pypower/autotest/test_case14_powerplant_pp_bus_2_record.csv
 module/pypower/autotest/test_case14_powerplant_pp_gen_2_record.csv
