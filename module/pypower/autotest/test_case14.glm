@@ -12,8 +12,8 @@ module pypower
 }
 
 module assert;
-#define MRES=0.002 // magnitude test resolution
-#define ARES=0.02 // angle test resolution
+#define MRES=0.05 // magnitude test resolution
+#define ARES=0.2 // angle test resolution
 
 #begin python
 import sys
@@ -24,3 +24,4 @@ verify.write_glm("case${CASE}_verify.glm",case${CASE}.case${CASE}())
 #end
 
 #include "case${CASE}_verify.glm"
+

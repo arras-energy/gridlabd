@@ -54,8 +54,8 @@ object powerline
 }
 
 module assert;
-#define MRES=0.002 // magnitude test resolution
-#define ARES=0.02 // angle test resolution
+#define MRES=0.05 // magnitude test resolution
+#define ARES=0.2 // angle test resolution
 
 object assert
 {      

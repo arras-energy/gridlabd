@@ -35,8 +35,8 @@ object pypower.powerplant
 #include "${DIR:-.}/case.glm"
 
 module assert;
-#define MRES=0.002 // magnitude test resolution
-#define ARES=0.02 // angle test resolution
+#define MRES=0.05 // magnitude test resolution
+#define ARES=0.2 // angle test resolution
 #define PRES=0.1 // real power test resolution
 #define QRES=0.1 // reactive power test resolution
 

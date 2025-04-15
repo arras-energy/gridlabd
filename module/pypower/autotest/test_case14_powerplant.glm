@@ -71,7 +71,7 @@ object recorder
 object recorder
 {
     parent "pp_gen_2";
-    property Vg,Pg,Qg,Ps,Qs;
+    property Vg,Pg,Qg;
     interval -1;
     file "test_case14_powerplant_pp_gen_2_record.csv";
 }

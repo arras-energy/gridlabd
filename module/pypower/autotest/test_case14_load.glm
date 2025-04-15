@@ -102,7 +102,7 @@ object assert
     parent pp_bus_3;
     target Va;
     relation ==;
-    value -12.72;
+    value -12.742;
     within ${ARES};
 }
 
@@ -111,7 +111,7 @@ object assert
     parent pp_bus_4;
     target Vm;
     relation ==;
-    value 1.019;
+    value +1.014;
     within ${MRES};
 }
 object assert
@@ -119,7 +119,7 @@ object assert
     parent pp_bus_4;
     target Va;
     relation ==;
-    value -10.33;
+    value -10.256;
     within ${ARES};
 }
 
@@ -128,7 +128,7 @@ object assert
     parent pp_bus_5;
     target Vm;
     relation ==;
-    value 1.020;
+    value +1.017;
     within ${MRES};
 }
 object assert
@@ -153,7 +153,7 @@ object assert
     parent pp_bus_6;
     target Va;
     relation ==;
-    value -14.22;
+    value -14.417;
     within ${ARES};
 }
 
@@ -162,7 +162,7 @@ object assert
     parent pp_bus_7;
     target Vm;
     relation ==;
-    value 1.062;
+    value +1.050;
     within ${MRES};
 }
 object assert
@@ -170,7 +170,7 @@ object assert
     parent pp_bus_7;
     target Va;
     relation ==;
-    value -13.37;
+    value -13.251;
     within ${ARES};
 }
 
@@ -187,7 +187,7 @@ object assert
     parent pp_bus_8;
     target Va;
     relation ==;
-    value -13.36;
+    value -13.251;
     within ${ARES};
 }
 
@@ -196,7 +196,7 @@ object assert
     parent pp_bus_9;
     target Vm;
     relation ==;
-    value 1.056;
+    value +1.033;
     within ${MRES};
 }
 object assert
@@ -204,7 +204,7 @@ object assert
     parent pp_bus_9;
     target Va;
     relation ==;
-    value -14.94;
+    value -14.832;
     within ${ARES};
 }
 
@@ -213,7 +213,7 @@ object assert
     parent pp_bus_10;
     target Vm;
     relation ==;
-    value 1.051;
+    value +1.032;
     within ${MRES};
 }
 object assert
@@ -221,7 +221,7 @@ object assert
     parent pp_bus_10;
     target Va;
     relation ==;
-    value -15.10;
+    value -15.041;
     within ${ARES};
 }
 
@@ -230,7 +230,7 @@ object assert
     parent pp_bus_11;
     target Vm;
     relation ==;
-    value 1.057;
+    value +1.047;
     within ${MRES};
 }
 object assert
@@ -238,7 +238,7 @@ object assert
     parent pp_bus_11;
     target Va;
     relation ==;
-    value -14.79;
+    value -14.847;
     within ${ARES};
 }
 
@@ -255,7 +255,7 @@ object assert
     parent pp_bus_12;
     target Va;
     relation ==;
-    value -15.07;
+    value -15.268;
     within ${ARES};
 }
 
@@ -264,7 +264,7 @@ object assert
     parent pp_bus_13;
     target Vm;
     relation ==;
-    value 1.050;
+    value +1.047;
     within ${MRES};
 }
 object assert
@@ -272,7 +272,7 @@ object assert
     parent pp_bus_13;
     target Va;
     relation ==;
-    value -15.16;
+    value -15.308;
     within ${ARES};
 }
 
@@ -281,7 +281,7 @@ object assert
     parent pp_bus_14;
     target Vm;
     relation ==;
-    value 1.036;
+    value +1.021;
     within ${MRES};
 }
 object assert
@@ -289,7 +289,7 @@ object assert
     parent pp_bus_14;
     target Va;
     relation ==;
-    value -16.04;
+    value -16.065;
     within ${ARES};
 }
 

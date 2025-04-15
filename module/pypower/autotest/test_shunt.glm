@@ -1,9 +1,9 @@
-#option verbose
+//#option verbose
 //#option debug
 
 module pypower
 {
-    message_flags VERBOSE|DEBUG;    
+//    message_flags VERBOSE|DEBUG;    
     stop_on_failure FALSE;
     default_reactive_power_fraction 0.1;
     enable_opf TRUE;

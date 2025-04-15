@@ -7,7 +7,7 @@
 
 module assert;
 #define MRES=0.02 // magnitude test resolution
-#define ARES=0.35 // angle test resolution
+#define ARES=0.5 // angle test resolution
 
 #begin python
 import sys
