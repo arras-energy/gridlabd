@@ -1,0 +1,1 @@
+#save "${modelname/.glm/.json}"

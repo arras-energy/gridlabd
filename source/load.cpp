@@ -8369,11 +8369,12 @@ int GldLoader::process_macro(char *line, int size, char *_filename, int linenum)
 	else if ( strncmp(line, "#save", 5) == 0 )
 	{
 		char fname[1024];
-		if ( sscanf(line+5,"\"%[^\"]",fname) == 1)
+		if ( sscanf(line+5,"%s",fname) == 1 && fname[0] == '"' && fname[strlen(fname)-1] == '"')
 		{
-			if ( saveall(fname) <= 0 )
+			fname[strlen(fname)-1] = '\0';
+			if ( saveall(fname+1) <= 0 )
 			{
-				syntax_error(filename,linenum,"save macro failed");
+				syntax_error(filename,linenum,"save macro failed (fname='%s')",fname+1);
 				return FALSE;
 			}
 			strcpy(line,"\n");

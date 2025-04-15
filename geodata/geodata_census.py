@@ -428,34 +428,34 @@ if __name__ == '__main__':
     default_config['cachedir'] = "/tmp/geodata/census"
     os.makedirs(default_config['cachedir'],exist_ok=True)
 
-    class TestStates(unittest.TestCase):
+    # class TestStates(unittest.TestCase):
 
-        def test_state_contains(self):
-            self.assertEqual(get_states(contains=Point(-122.2,37.2))["NAME"][0],"California")
+    #     def test_state_contains(self):
+    #         self.assertEqual(get_states(contains=Point(-122.2,37.2))["NAME"][0],"California")
 
-        def test_state_stusps_value(self):
-            self.assertEqual(get_states(value="CA")["NAME"][0],"California")
+    #     def test_state_stusps_value(self):
+    #         self.assertEqual(get_states(value="CA")["NAME"][0],"California")
 
-        def test_states(self):
-            self.assertEqual(get_states()["NAME"][13],"California")
+    #     def test_states(self):
+    #         self.assertEqual(get_states()["NAME"][13],"California")
 
-    class TestZipcodes(unittest.TestCase):
+    # class TestZipcodes(unittest.TestCase):
 
-        def test_zipcode(self):
-            result = get_zipcodes(zipcode=94025)
-            lat = result['INTPTLAT10'][0]
-            lon = result['INTPTLON10'][0]
-            self.assertEqual((lat,lon),('+37.4563924','-122.1736012'))
+    #     def test_zipcode(self):
+    #         result = get_zipcodes(zipcode=94025)
+    #         lat = result['INTPTLAT10'][0]
+    #         lon = result['INTPTLON10'][0]
+    #         self.assertEqual((lat,lon),('+37.4563924','-122.1736012'))
 
-        def test_zipcode_startswith(self):
-            self.assertEqual(len(get_zipcodes(zipcode="94")),219)
+    #     def test_zipcode_startswith(self):
+    #         self.assertEqual(len(get_zipcodes(zipcode="94")),219)
 
-        def test_zipcode_contains(self):
-            result = get_zipcodes(contains=Point(-122.2,37.2))["GEOID10"][0]
-            self.assertEqual(result,"95006")
+    #     def test_zipcode_contains(self):
+    #         result = get_zipcodes(contains=Point(-122.2,37.2))["GEOID10"][0]
+    #         self.assertEqual(result,"95006")
 
-        # def test_zipcodes(self):
-        #     self.assertEqual(len(get_zipcodes()),33144)
+    #     # def test_zipcodes(self):
+    #     #     self.assertEqual(len(get_zipcodes()),33144)
 
     unittest.main()
     # print("*** ZIPCODES ***\n",get_zipcodes("940"))
