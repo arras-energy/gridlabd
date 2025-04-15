@@ -1856,6 +1856,7 @@ static PyObject *gridlabd_pstatus(PyObject *self, PyObject *args)
 /////////////////////
 // module interface
 /////////////////////
+static const char *modname = NULL;
 static PyObject *modlist = NULL;
 static MODULE python_module;
 static PyObject *python_init = NULL;
@@ -2330,6 +2331,12 @@ MODULE *python_module_load(const char *file, int argc, const char *argv[])
     if ( modlist == NULL )
     {
         modlist = PyList_New(0);
+        modname = strdup(file);
+    }
+    else
+    {
+        output_error("python module '%s' already loaded, '%s' cannot be loaded in its place",modname,file);
+        return NULL;
     }
     int n;
     for ( n = 0 ; n < PyList_Size(modlist) ; n++ )
