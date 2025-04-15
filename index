@@ -3398,6 +3398,7 @@ source/autotest/test_require_pwlf.glm
 source/autotest/test_require_pytz.glm
 source/autotest/test_run.glm
 source/autotest/test_rusage.glm
+source/autotest/test_save.glm
 source/autotest/test_schedule_skew.glm
 source/autotest/test_schedule_skew_1.player
 source/autotest/test_schedule_skew_2.player
@@ -4019,7 +4020,7 @@ tools/autotest/solver_nr_profile.csv
 tools/autotest/test_buildings.glm
 tools/autotest/test_buildings_opt.glm
 tools/autotest/test_census.csv
-tools/autotest/test_census.glm
+tools/autotest/test_census_opt.glm
 tools/autotest/test_create_filter.glm
 tools/autotest/test_create_filter_opt.glm
 tools/autotest/test_create_meters.glm
@@ -4040,7 +4041,7 @@ tools/autotest/test_edit.glm
 tools/autotest/test_eia_recs.glm
 tools/autotest/test_eia_recs.py
 tools/autotest/test_enduse.csv
-tools/autotest/test_enduse.glm
+tools/autotest/test_enduse_opt.glm
 tools/autotest/test_fire_danger.tif
 tools/autotest/test_fire_danger_opt.glm
 tools/autotest/test_fire_report.csv
@@ -4082,7 +4083,7 @@ tools/autotest/test_pole_analysis_opt.csv
 tools/autotest/test_pole_analysis_opt.glm
 tools/autotest/test_powerline_data_opt.glm
 tools/autotest/test_powerline_opt.glm
-tools/autotest/test_powerplant.glm
+tools/autotest/test_powerplant_opt.glm
 tools/autotest/test_resource.glm
 tools/autotest/test_resource.txt
 tools/autotest/test_rest_server.glm
@@ -4094,7 +4095,7 @@ tools/autotest/test_substation_opt.glm
 tools/autotest/test_unitcalc.glm
 tools/autotest/test_unitcalc.txt
 tools/autotest/test_weather.csv
-tools/autotest/test_weather.glm
+tools/autotest/test_weather_opt.glm
 tools/buildings.py
 tools/cache.py
 tools/census.py
