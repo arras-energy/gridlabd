@@ -180,6 +180,11 @@ TIMESTAMP gen::precommit(TIMESTAMP t0)
 	return TS_NEVER;
 }
 
+unsigned int gen::get_powerplant_count(void)
+{
+	return plant_count;
+}
+
 void gen::add_powerplant(class powerplant *plant)
 {
 	gl_debug("powerplant '%s' connected",plant->get_name());

@@ -370,6 +370,18 @@ bool bus::load_weather()
 	return result;
 }
 
+void bus::add_load(double P, double Q)
+{
+	Pd += P;
+	Qd += Q;
+}
+
+void bus::add_shunt(double G, double B)
+{
+	Gs += G;
+	Bs += B;
+}
+
 bool bus::add_weather(TIMESTAMP t, char *buffer)
 {
 	gld_clock ts(t);
