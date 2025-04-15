@@ -2,6 +2,8 @@
 #system cp ../wecc240.raw wecc240.raw
 #endif
 
+#set compileonly=TRUE
+
 module pypower
 {
     maximum_iterations 50;
