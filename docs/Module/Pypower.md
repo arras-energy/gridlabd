@@ -171,8 +171,9 @@ class gencost {
 # Integration Objects
 
 Integration objects are used to link assets and control models with `pypower`
-objects. An integrated object specified its parent `bus` or `gen` object and
-updates it as needed prior to solving the powerflow problem.
+objects. An integrated object specifies its parent `bus`, `branch`, `gen`, or
+`gencost` object and updates it as needed prior to solving the powerflow
+problem.
 
 ## Loads
 
@@ -184,6 +185,11 @@ and `Qd` values, respectively. When the load is `CURTAILED`, the load is
 reduced by the fractional quantity specified by the `response` property. When
 the load is `OFFLINE`, the values of `S` is zero regardless of the value of
 `P`.
+
+## Shunts
+
+A `shunt` object adds a load in parallel. Shunts can be either real or
+reactive. If reactive, the shunt can either 
 
 ## Powerplants
 
@@ -221,6 +227,10 @@ updated at every `sync` event. The transformer `rated_power` controls the
 `branch` property `rateA`. In addition the `r`, `x`, `b`, values of the
 `branch` are set at initialization using the `impedance` and `susceptance`
 transformer properties.
+
+## Shunts
+
+Shunts are attached to `bus` objects to enable voltage control.  Shunts objects can be capacitors (i.e., `-Pd -> +Gs`), synchronous condensers (i.e., `+/-Pd -> -/+Gs`) or brakes (i.e., `-Pd -> heat`). All shunts can have `FIXED` `control_mode`. Capacitors and brakes can use `DISCRETE` controls and synchronous condensers can use `CONTINUOUS` controls. Voltage measurements can be `MAGNITUDE` or `ANGLE` compared to a `voltage_high` and `voltage_low` range.  Discrete controls use `steps_1` and `admittance_1` to adjust the shunt `admittance`, while continuous controls can adjust admittance between `-admittance_1` and `+admittance_1`.
 
 ## Relays
 
