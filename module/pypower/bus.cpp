@@ -372,12 +372,14 @@ bool bus::load_weather()
 
 void bus::add_load(double P, double Q)
 {
+	verbose("add_load(P=%g,Q=%g)",P,Q);
 	Pd += P;
 	Qd += Q;
 }
 
 void bus::add_shunt(double G, double B)
 {
+	verbose("add_shunt(G=%g,B=%g)",G,B);
 	Gs += G;
 	Bs += B;
 }

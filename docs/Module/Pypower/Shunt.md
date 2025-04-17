@@ -5,20 +5,22 @@
 ~~~
 module pypower
 {
-    double minimum_voltage_deadband[pu]; 
+    double minimum_voltage_magnitude_deadband[pu]; 
+    double minimum_voltage_angle_deadband[pu]; 
 }
 class shunt {
-    enumeration {CONTINUOUS=2, DISCRETE=1, FIXED=0} control_mode; // shunt control mode
+    enumeration {CONTINUOUS_V=2, DISCRETE_V=1, FIXED=0} control_mode; // shunt control mode
     enumeration {ONLINE=1, OFFLINE=0} status; // shunt status
     enumeration {ANGLE=1, MAGNITUDE=0} input; // voltage input
     enumeration {REAL=1, REACTIVE=0} output; // shunt output
-    double voltage_high[pu]; // controlled voltage upper limit
-    double voltage_low[pu]; // controlled voltage lower limit
+    double voltage_high; // controlled voltage upper limit
+    double voltage_low; // controlled voltage lower limit
     object remote_bus; // remote bus name
     double admittance[MW]; // shunt admittance at unity voltage
     int32 steps_1; // numbers of steps in control block 1
     double admittance_1[MW]; // control block 1 shunt admittance step at unity voltage
     double dwell_time[s]; // control lockout time before next control action
+    double control_gain[MW/V]; // proportional feedback control gain
 }
 ~~~
 
@@ -27,8 +29,8 @@ class shunt {
 Shunt objects are used to manage the voltage of its `parent` bus. A shunt device
 can be a capacitor or synchronous condense, depending on the values of the properties describing the device. 
 
-Shunt devices' `control_mode` is either `FIXED`, `DISCRETE` for capacitor, or
-`CONTINOUS` for synchronous condenser. Shunts are controlled by monitoring
+Shunt devices' `control_mode` is either `FIXED`, `DISCRETE_V` for capacitor, or
+`CONTINOUS_V` for synchronous condenser. Shunts are controlled by monitoring
 voltage magnitude on the `parent` bus (or the remote bus if `remote_bus` is
 specified). For example, capacitors are controlled over the ranges of
 `steps_1` if non-zero, with each step incrementing the capacitor by
@@ -42,21 +44,21 @@ The `minimum_voltage_deadband` specifies the minimum separation between the
 
 The following table is a guide to some typical shunt device properties
 
-| Device | Property | Value | Remarks
-| ------ | -------- | ----- | -------
-| Capacitor | `control_mode` | `DISCRETE` | control from `0` to `step_1 x admittance_1`
-|           | `input` | `MAGNITUDE` | measure voltage magnitude
-|           | `output` | `REACTIVE` | convert real power to reactive power
-|           | `voltage_low` | e.g., `0.95` | voltage below which to add reactive power
-|           | `voltage_high` | e.g., `1.05` | voltage above which to reduce reactive power
-|           | `step_1` | e.g., `10` | number of discrete control steps
+| Device    | Property       | Value          | Remarks
+| ----------| -------------- | -------------- | -------
+| Capacitor | `control_mode` | `DISCRETE_V`   | control from `0` to `step_1 x admittance_1`
+|           | `input`        | `MAGNITUDE`    | measure voltage magnitude
+|           | `output`       | `REACTIVE`     | convert real power to reactive power
+|           | `voltage_low`  | e.g., `0.95`   | voltage below which to add reactive power
+|           | `voltage_high` | e.g., `1.05`   | voltage above which to reduce reactive power
+|           | `step_1`       | e.g., `10`     | number of discrete control steps
 |           | `admittance_1` | e.g., `0.1 MW` | susceptance change per control step
-| Condenser | `control_mode` | `CONTINUOUS` | control from `-admittance_1` to `+admittance_1`
-|           | `input` | `MAGNITUDE` | measure voltage magnitude
-|           | `output` | `REACTIVE` | convert real power to reactive power
-|           | `voltage_low` | e.g., `0.95` | voltage below which to add reactive power
-|           | `voltage_high` | e.g., `1.05` | voltage above which to reduce reactive power
-|           | `admittance_1` | e.g., `1 MW` | susceptance limit (positive or negative)
+| Condenser | `control_mode` | `CONTINUOUS_V` | control from `-admittance_1` to `+admittance_1`
+|           | `input`        | `MAGNITUDE`    | measure voltage magnitude
+|           | `output`       | `REACTIVE`     | convert real power to reactive power
+|           | `voltage_low`  | e.g., `0.95`   | voltage below which to add reactive power
+|           | `voltage_high` | e.g., `1.05`   | voltage above which to reduce reactive power
+|           | `admittance_1` | e.g., `1 MW`   | susceptance limit (positive or negative)
 
 # Properties
 
@@ -71,14 +73,14 @@ Determines the shunt device control mode.
 The shunt device is fixed and does not change the shunt admittance of the
 parent bus.
 
-### `DISCRETE`
+### `DISCRETE_V`
 
 The shunt device `admittance` varies the admittance `Gs` or susceptance `Bs`
 of the `parent` bus according to the value of `output` in response to the
 voltage inputs of the `remote_bus`, if specified. If the `remote_bus`
 is not specified then the `parent` bus is used as the control input.
 
-### `CONTINOUS`
+### `CONTINOUS_V`
 
 The shunt device `admittance` varies the admittance `Gs` or susceptance `Bs`
 of the `parent` bus according to the value of `output` in response to the

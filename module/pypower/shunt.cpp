@@ -10,7 +10,8 @@ EXPORT_SYNC(shunt);
 CLASS *shunt::oclass = NULL;
 shunt *shunt::defaults = NULL;
 
-double shunt::minimum_voltage_deadband = 0.002;
+double shunt::minimum_voltage_magnitude_deadband = 0.002;
+double shunt::minimum_voltage_angle_deadband = 0.01;
 
 shunt::shunt(MODULE *module)
 {
@@ -36,26 +37,34 @@ shunt::shunt(MODULE *module)
                 PT_DESCRIPTION, "shunt control mode",
 
             PT_enumeration, "status", get_status_offset(),
-                PT_KEYWORD, "OFFLINE", enumeration(S_OFFLINE),
-                PT_KEYWORD, "ONLINE", enumeration(S_ONLINE),
+                PT_KEYWORD, "OFFLINE", enumeration(CS_OFFLINE),
+                PT_KEYWORD, "ONLINE", enumeration(CS_ONLINE),
                 PT_DESCRIPTION, "shunt status",
 
-            PT_double, "voltage_high[pu]", get_voltage_high_offset(), 
-                PT_DEFAULT, "1 pu",
+            PT_enumeration, "input", get_input_offset(),
+                PT_KEYWORD, "ANGLE", enumeration(CI_ANGLE),
+                PT_KEYWORD, "MAGNITUDE", enumeration(CI_MAGNITUDE),
+                PT_DESCRIPTION, "voltage control input",
+
+            PT_enumeration, "output", get_output_offset(),
+                PT_DEFAULT,"REACTIVE",
+                PT_KEYWORD, "REAL", enumeration(CO_REAL),
+                PT_KEYWORD, "REACTIVE", enumeration(CO_REACTIVE),
+                PT_DESCRIPTION, "voltage control output",
+
+            PT_double, "voltage_high", get_voltage_high_offset(), 
                 PT_DESCRIPTION, "controlled voltage upper limit",
 
-            PT_double, "voltage_low[pu]", get_voltage_low_offset(),
-                PT_DEFAULT, "1 pu",
+            PT_double, "voltage_low", get_voltage_low_offset(),
+                PT_REQUIRED,
                 PT_DESCRIPTION, "controlled voltage lower limit",
 
             PT_object, "remote_bus", get_remote_bus_offset(),
+                PT_REQUIRED,
                 PT_DESCRIPTION, "remote bus name",
 
             PT_double, "admittance[MVAr]", get_admittance_offset(),
                 PT_DESCRIPTION, "shunt admittance at unity voltage",
-
-            PT_bool, "real", get_real_offset(),
-                PT_DESCRIPTION, "admittance is real (not reactive)",
 
             PT_int32, "steps_1", get_steps_1_offset(),
                 PT_DESCRIPTION, "numbers of steps in control block 1",
@@ -105,49 +114,69 @@ shunt::shunt(MODULE *module)
             PT_double, "admittance_8[MVAr]", get_admittance_8_offset(),
                 PT_DESCRIPTION, "control block 8 shunt admittance step at unity voltage",
 
+            PT_double, "dwell_time[s]", get_dwell_time_offset(),
+                PT_DESCRIPTION, "control lockout",
+
+            PT_double, "control_gain[MW/V]", get_dwell_time_offset(),
+                PT_DESCRIPTION, "proportional feedback control gain",
+
             NULL)<1)
         {
                 throw "unable to publish shunt properties";
         }
 
-        gl_global_create("pypower::minimum_voltage_deadband",
-            PT_double, &minimum_voltage_deadband, 
-            PT_UNITS, "pu",
-            PT_DESCRIPTION, "Minimum deadband on voltage control",
+        gl_global_create("pypower::minimum_voltage_magnitude_deadband",
+            PT_double, &minimum_voltage_magnitude_deadband, 
+            PT_UNITS, "pu.kV",
+            PT_DESCRIPTION, "Minimum deadband on voltage magnitude control",
+        NULL);
 
+        gl_global_create("pypower::minimum_voltage_angle_deadband",
+            PT_double, &minimum_voltage_angle_deadband, 
+            PT_UNITS, "deg",
+            PT_DESCRIPTION, "Minimum deadband on voltage angle control",
         NULL);
     }
 }
 
 int shunt::create(void) 
 {
+    last_update = 0;
     return 1; /* return 1 on success, 0 on failure */
 }
 
 int shunt::init(OBJECT *parent)
 {
-    if ( control_mode > CM_DISCRETE_V )
+    if ( control_mode > CM_CONTINUOUS_V )
     {
-        error("advanced control modes not supported yet (use FIXED or DISCRETE_V)");
+        error("advanced control modes not supported yet (use FIXED, DISCRETE_V, or CONTINUOUS_V)");
         return 0;
     }
-    if ( control_mode != CM_FIXED && voltage_low > voltage_high )
+    if ( control_mode != CM_FIXED && voltage_low >= voltage_high )
     {
         error("voltage_low is greater than voltage_high");
         return 0;
     }
-    if ( control_mode != CM_FIXED && voltage_low > voltage_high - minimum_voltage_deadband )
+    double control_deadband = input == CI_MAGNITUDE ? minimum_voltage_magnitude_deadband : minimum_voltage_angle_deadband;
+    if ( control_deadband <= 0 )
     {
-        error("voltage_low is within minimum_voltage_deadband of voltage_high");
+        error("minimum_voltage_{magnitude,angle}_deadband is not positive");
         return 0;
     }
+    if ( control_mode != CM_FIXED && voltage_low > voltage_high - control_deadband )
+    {
+        error("voltage_low is within minimum_voltage_{magnitude,angle}_deadband of voltage_high");
+        return 0;
+    }
+
     if ( parent == NULL )
     {
         error("parent bus must be specified");
         return 0;
     }
-    output = (bus*)get_object(parent);
-    if ( ! output->isa("bus","pypower") )
+
+    output_bus = (bus*)get_object(parent);
+    if ( ! output_bus->isa("bus","pypower") )
     {
         error("parent is not a pypower bus");
         return 0;
@@ -156,8 +185,9 @@ int shunt::init(OBJECT *parent)
     {
         remote_bus = parent;
     }
-    input = (bus*)get_object(remote_bus);
-    if ( ! input->isa("bus","pypower") )
+
+    input_bus = (bus*)get_object(remote_bus);
+    if ( ! input_bus->isa("bus","pypower") )
     {
         error("remote_bus is not a pypower bus");
         return 0;
@@ -172,18 +202,35 @@ int shunt::init(OBJECT *parent)
         error("multiple control blocks not supported yet (steps_[2-8] > 0)");
         return 0;
     }
+
+    if ( dwell_time <= 0 )
+    {
+        error("dwell_time must be positive");
+        return 0;
+    }
+
+    if ( control_mode == CM_CONTINUOUS_V && control_gain <= 0 )
+    {
+        error("control_gain must be positive for control_mode == CONTINUOUS_V");
+        return 0;
+    }
+    else if ( control_mode == CM_DISCRETE_V && steps_1 <= 0 )
+    {
+        error("steps_1 must be positive for control_mode == DISCRETE_V");
+        return 0;
+    }
+
     return 1;
 }
 
 TIMESTAMP shunt::presync(TIMESTAMP t0)
 {
-    update(t0,false); // bus data update
     return TS_NEVER;
 }
 
 TIMESTAMP shunt::sync(TIMESTAMP t0)
 {
-    return update(t0,true); // control update
+    return update_control(t0); // control update
 }
 
 TIMESTAMP shunt::postsync(TIMESTAMP t0)
@@ -191,74 +238,97 @@ TIMESTAMP shunt::postsync(TIMESTAMP t0)
     return TS_NEVER;
 }
 
-void shunt::push_admittance(void)
+void shunt::update_bus(void)
 {
-    if ( real )
+    verbose("update_bus()");
+    if ( output == CO_REAL )
     {
-        output->add_load(-admittance,0);
+        verbose("control output is REAL");
+        output_bus->add_shunt(admittance,0);
     }
-    else
+    else if ( output == CO_REACTIVE )
     {
-        output->add_load(0,-admittance);
+        verbose("control output is REACTIVE");
+        output_bus->add_load(admittance,0);
+        output_bus->add_shunt(0,admittance);
     }
 }
 
-TIMESTAMP shunt::update(TIMESTAMP t0,bool control)
+TIMESTAMP shunt::update_control(TIMESTAMP t0)
 {
-    if ( status == S_ONLINE )
+    TIMESTAMP t1 = TS_NEVER;
+    verbose("update_control(t0=%s)",gld_clock(t0).get_string().get_buffer());
+    verbose("input/output voltage magnitudes/angles are %lg%+lgj/%lg%+lgj respectively",input_bus->get_Vm(),input_bus->get_Va(),output_bus->get_Vm(),output_bus->get_Va());
+    verbose("voltage input is %s",get_input() == CI_MAGNITUDE?"MAGNITUDE":"ANGLE");
+    if ( status == CS_ONLINE && input_bus->get_Vm() > 1e-3 && output_bus->get_Vm() > 1e-3 )
     {
-        if ( control )
+        bool control_ok = t0 >= last_update + dwell_time;
+        if ( ! control_ok )
         {
-            if ( control_mode == CM_DISCRETE_V )
-            {
-                double Vm = input->get_Vm();
-                bool Vhigh = Vm > voltage_high;
-                bool Vlow = Vm < voltage_low;
-                bool Alo = admittance <= 0;
-                bool Ahi = admittance >= admittance_1 * steps_1;
-                bool Amax = admittance_1 > 0 ? Ahi : Alo ;
-                bool Amin = admittance_1 > 0 ? Alo : Ahi;
-                if ( ( Vlow && ! Amax ) || ( Vhigh && ! Amin ) )
-                {
-                    if ( control )
-                    {
-                        admittance += admittance_1;
-                        output->add_shunt(real?admittance_1:0,real?0:admittance_1);
-                        verbose("Vm = %lf, stepping up admittance to %.1lf MVAr",Vm,admittance);
-                    }
-                    return t0;
-                }
-                else if ( ( Vlow && Amax ) || ( Vhigh && Amin ) )
-                {
-                    if ( control )
-                    {
-                        warning("shunt voltage control limit reached at %lf MVAr",admittance);
-                    }
-                }
-                if ( ( Vhigh && ! Amin ) || ( Vlow && ! Amax ) )
-                {
-                    if ( control )
-                    {
-                        admittance -= admittance_1;
-                        output->add_shunt(real?-admittance_1:0,real?0:-admittance_1);
-                        verbose("Vm = %lf, stepping down admittance to %.1lf MVAr",Vm,admittance);
-                    }
-                    return t0;
-                }
-                else if ( ( Vhigh && Amin ) || ( Vlow && Amax ) )
-                {
-                    if ( control )
-                    {
-                        warning("shunt voltage control limit reached at %lf MVAr",admittance);
-                    }
-                }
-            }
+            t1 = TIMESTAMP(last_update + dwell_time);
+            verbose("voltage control is LOCKED until %s",gld_clock(t1).get_string().get_buffer());
         }
         else
-        {
-            debug("adding bus admittance %.1lf MVAr",admittance);
-            push_admittance();            
+        {           
+            double V = get_input() == CI_MAGNITUDE ? input_bus->get_Vm() : input_bus->get_Va();
+            bool Vhigh = V > voltage_high;
+            bool Vlow = V < voltage_low;
+            verbose("voltage check: %lg < %lg < %lg",voltage_low,V,voltage_high);
+            if ( Vhigh ) verbose("voltage is high");
+            if ( Vlow ) verbose("voltage is low");
+            if ( control_mode == CM_DISCRETE_V ) 
+            {
+                // capacitors
+                bool Alo = admittance <= 0;
+                if ( Alo ) verbose("output is at minimum");
+                bool Ahi = admittance >= admittance_1 * steps_1;
+                if ( Ahi ) verbose("output is at maximum");
+                if ( Vlow )
+                {
+                    if ( Ahi )
+                    {
+                        warning("shunt voltage control upper limit reached at %lg MVAr",admittance);
+                    }
+                    else
+                    {
+                        admittance += admittance_1;
+                        last_update = t0;
+                        verbose("stepping up to %lg MVAr",admittance);
+                    }
+                }
+                else if ( Vhigh )
+                {
+                    if ( Alo )
+                    {
+                        warning("shunt voltage control lower limit reached at %lg MVAr",admittance);
+                    }
+                    else
+                    {
+                        admittance -= admittance_1;
+                        last_update = t0;
+                        verbose("stepping down to %lg MVAr",admittance);
+                    }
+                }
+                t1 = TIMESTAMP(last_update + dwell_time);
+            }
+            else if ( control_mode == CM_CONTINUOUS_V )
+            {
+                // synchronous condensers
+                
+                t1 = TIMESTAMP(last_update + dwell_time);
+            }
+            else
+            {
+                // fixed shunt has no dwell time
+            }
         }
+        update_bus();
     }
-    return TS_NEVER;
+    else // offline
+    {
+        admittance = 0;
+    }
+    t1 = t1 <= t0 ? TS_NEVER : t1;
+    verbose("update_control(t0=%s) -> %s",gld_clock(t0).get_string().get_buffer(),gld_clock(t1).get_string().get_buffer());
+    return t1;
 }

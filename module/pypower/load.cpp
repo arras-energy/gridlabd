@@ -27,10 +27,10 @@ load::load(MODULE *module)
 			PT_complex, "S[MVA]", get_S_offset(),
 				PT_DESCRIPTION, "total load (MVA)",
 
-			PT_complex, "Z[Ohm]", get_Z_offset(),
+			PT_complex, "Z[MVA]", get_Z_offset(),
 				PT_DESCRIPTION, "constant impedance load (MVA)",
 
-			PT_complex, "I[A]", get_I_offset(),
+			PT_complex, "I[MVA]", get_I_offset(),
 				PT_DESCRIPTION, "constant current load (MVA)",
 
 			PT_complex, "P[MVA]", get_P_offset(),

@@ -142,27 +142,30 @@ int gen::create(void)
 
 int gen::init(OBJECT *parent)
 {
+	class bus *p = OBJECTDATA(parent,class bus);
+	if ( parent == NULL )
+	{
+		error("cannot find bus id without a known parent");
+		return 0;
+	}
+	if ( ! p->isa("bus","pypower") )
+	{
+		error("parent object '%s' is not a pypower bus",p->get_name());
+		return 0;
+	}
 	if ( get_bus() == 0 )
 	{
-		if ( parent == NULL )
+		if ( p->get_bus_i() == 0 )
 		{
-			error("cannot find bus id without a known parent");
-			return 0;
+			return 2; // defer until bus is initialized
 		}
-		class bus *p = OBJECTDATA(parent,class bus);
-		if ( p->isa("bus","pypower") )
-		{
-			if ( p->get_bus_i() == 0 )
-			{
-				return 2; // defer until bus is initialized
-			}
-			set_bus(p->get_bus_i());
-		}
-		else
-		{
-			error("parent object '%s' is not a pypower bus",p->get_name());
-			return 0;
-		}
+		set_bus(p->get_bus_i());
+		verbose("setting bus index to %d",bus);
+	}
+	else if ( get_bus() != p->get_bus_i() )
+	{
+		error("parent object '%s' bus index mismatch",p->get_name());
+		return 0;		
 	}
 
 	return 1;
