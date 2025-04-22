@@ -131,6 +131,11 @@ int branch::create(void)
 
 int branch::init(OBJECT *parent)
 {
+	if ( get_from() == NULL || get_to() == NULL )
+	{
+		error("from or to bus not specified");
+		return 0;
+	}
 	// automatic bus lookup
 	if ( get_fbus() == 0 )
 	{

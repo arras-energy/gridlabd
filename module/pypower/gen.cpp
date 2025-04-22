@@ -142,12 +142,12 @@ int gen::create(void)
 
 int gen::init(OBJECT *parent)
 {
-	class bus *p = OBJECTDATA(parent,class bus);
 	if ( parent == NULL )
 	{
-		error("cannot find bus id without a known parent");
+		error("parent bus not specified");
 		return 0;
 	}
+	class bus *p = OBJECTDATA(parent,class bus);
 	if ( ! p->isa("bus","pypower") )
 	{
 		error("parent object '%s' is not a pypower bus",p->get_name());

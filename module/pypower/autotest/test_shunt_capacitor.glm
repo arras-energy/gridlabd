@@ -1,4 +1,4 @@
-#option verbose
+//#option verbose
 //#option debug
 #set output_message_context=NONE
 

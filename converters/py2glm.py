@@ -73,6 +73,15 @@ DATASPEC = {
         "angmax": "{:g} deg",
     }
 }
+MODIFY = {
+    "gen" : {
+        "parent":("bus",lambda x:f"pp_bus_{int(x[0])}"),
+        },
+    "branch": {
+        "from":("fbus",lambda x:f"pp_bus_{int(x[0])}"),
+        "to":("tbus",lambda x:f"pp_bus_{int(x[1])}"),
+    }
+}
 
 def main():
     filename_py = None
@@ -153,12 +162,18 @@ module pypower
         for name,spec in DATASPEC.items():
             glm.write(f"{NL}//{NL}// {name}{NL}//{NL}")
             for n,line in enumerate(data[name]):
-                oname = f"{NL}    name pp_{name}_{n+1};" if autoname else ""
+                oname = f"""{NL}    name "pp_{name}_{n+1}";""" if autoname else ""
                 glm.write(f"""object pypower.{name} 
 {{{oname}
-{NL.join([f"    {x[0]} {x[1].format(line[n])};" for n,x in enumerate(spec.items())])}
-}}
 """)
+                for n,x in enumerate(spec.items()):
+                    glm.write(f"    {x[0]} {x[1].format(line[n])};{NL}")
+                    if name in MODIFY:
+                        for key,value in [(y,z) for y,z in MODIFY[name].items() if x[0] == z[0]]:
+                            # print(f"{name=}{NL}{line=}{NL}{n=}{NL}{x=}{NL}{key=}{NL}{value[0]=}{NL}{value[1](line)=}",flush=True,file=sys.stderr)
+                            glm.write(f"""    {key} "{value[1](line)}";{NL}""")
+                glm.write("}\n")
+
         if 'gencost' in data:
             glm.write("\n//\n// gencost\n//\n")
             for n,line in enumerate(data['gencost']):
@@ -171,7 +186,7 @@ module pypower
                 oname = f"{NL}    name pp_gencost_{n};" if autoname else ""
                 glm.write(f"""object pypower.gencost
 {{{oname}
-    parent pp_gen_{n+1};
+    parent "pp_gen_{n+1}";
     model {int(model)};
     startup {startup};
     shutdown {shutdown};

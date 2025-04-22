@@ -239,7 +239,7 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
 {{
     name "{oname}_G_{row[0]}_{genndx[genid]}";
     parent "{oname}_N_{row[0]}";
-    // bus {busndx[row[0]]};
+    bus {busndx[row[0]]};
     Pg {row[2]} MW;
     Qg {row[3]} MVAr;
     Vg {row[6]} pu.V;
@@ -265,8 +265,8 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
     name "{oname}_B_{branchid}_{branchndx[branchid]}"; 
     from "{oname}_N_{row[0]}";
     to "{oname}_N_{row[1]}";
-    // fbus {busndx[row[0]]};
-    // tbus {busndx[row[1]]};
+    fbus {busndx[row[0]]};
+    tbus {busndx[row[1]]};
     r {row[3]};
     x {row[4]};
     b {row[5]};
@@ -303,6 +303,8 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
                             print(f"""object pypower.branch
 {{
     name "{oname}_B_{branchid}_{branchndx[branchid]}";
+    from "{oname}_N_{dd['I']}";
+    to "{oname}_N_{dd['J']}";
     fbus {busndx[dd['I']]};
     tbus {busndx[dd['J']]};
     status IN;
