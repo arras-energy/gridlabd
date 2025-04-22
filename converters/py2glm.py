@@ -183,7 +183,7 @@ module pypower
                 count = line[3]
                 costs = line[4:]
                 assert(len(costs)==count)
-                oname = f"{NL}    name pp_gencost_{n};" if autoname else ""
+                oname = f"{NL}    name pp_gencost_{n+1};" if autoname else ""
                 glm.write(f"""object pypower.gencost
 {{{oname}
     parent "pp_gen_{n+1}";
