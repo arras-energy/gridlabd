@@ -53,6 +53,7 @@ shunt::shunt(MODULE *module)
                 PT_DESCRIPTION, "voltage control output",
 
             PT_double, "voltage_high", get_voltage_high_offset(), 
+                PT_REQUIRED,
                 PT_DESCRIPTION, "controlled voltage upper limit",
 
             PT_double, "voltage_low", get_voltage_low_offset(),
@@ -60,7 +61,6 @@ shunt::shunt(MODULE *module)
                 PT_DESCRIPTION, "controlled voltage lower limit",
 
             PT_object, "remote_bus", get_remote_bus_offset(),
-                PT_REQUIRED,
                 PT_DESCRIPTION, "remote bus name",
 
             PT_double, "admittance[MVAr]", get_admittance_offset(),
@@ -244,13 +244,13 @@ void shunt::update_bus(void)
     if ( output == CO_REAL )
     {
         verbose("control output is REAL");
-        output_bus->add_shunt(admittance,0);
+        output_bus->add_load(admittance,0);
     }
     else if ( output == CO_REACTIVE )
     {
         verbose("control output is REACTIVE");
-        output_bus->add_load(admittance,0);
-        output_bus->add_shunt(0,admittance);
+        output_bus->add_load(admittance,-admittance);
+        // output_bus->add_shunt(0,admittance);
     }
 }
 
@@ -280,9 +280,9 @@ TIMESTAMP shunt::update_control(TIMESTAMP t0)
             {
                 // capacitors
                 bool Alo = admittance <= 0;
-                if ( Alo ) verbose("output is at minimum");
+                if ( Vhigh && Alo ) verbose("output is at minimum");
                 bool Ahi = admittance >= admittance_1 * steps_1;
-                if ( Ahi ) verbose("output is at maximum");
+                if ( Vlow && Ahi ) verbose("output is at maximum");
                 if ( Vlow )
                 {
                     if ( Ahi )

@@ -189,8 +189,13 @@ int bus::init(OBJECT *parent)
 	// copy demand to base load if baseload not set
 	if ( S.Re() == 0.0 && S.Im() == 0.0 )
 	{
+		verbose("copying load (%g%+gj) to baseload S",Pd,Qd);
 		S.Re() = Pd;
 		S.Im() = Qd;
+	}
+	else
+	{
+		verbose("using baseload S = %g%+gj",S.Re(),S.Im());
 	}
 
 	// load weather data, if any
@@ -289,6 +294,7 @@ TIMESTAMP bus::presync(TIMESTAMP t0)
 	Qd = S.Im();
 	Gs = 0.0;
 	Bs = 0.0;
+	verbose("resetting loads to S=(%g%+gj) and shunts to 0j",Pd,Qd);
 
 	return TS_NEVER;
 }

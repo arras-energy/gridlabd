@@ -2559,7 +2559,7 @@ module/pypower/autotest/test_case39.glm
 module/pypower/autotest/test_case4gs.glm
 module/pypower/autotest/test_case57.glm
 module/pypower/autotest/test_case9.glm
-module/pypower/autotest/test_shunt.glm
+module/pypower/autotest/test_shunt_capacitor.glm
 module/pypower/autotest/verify.py
 module/pypower/branch.cpp
 module/pypower/branch.h

@@ -666,10 +666,14 @@ static TIMESTAMP update_controller(TIMESTAMP t0,PyObject *command,const char *na
 
 static TIMESTAMP update_solution(TIMESTAMP t0)
 {
+    gl_verbose("pypower::update_solution(t0='%s')",gld_clock(t0).get_string().get_buffer());
+
     int n_changes = 0;
     bool do_opf = opf_needed(t0);
+    gl_verbose("opf_needed() -> %s",do_opf?"TRUE":"FALSE");
 
     // send values out to solver
+    gl_verbose("updating bus data");
     for ( size_t n = 0 ; n < nbus ; n++ )
     {
         bus *obj = buslist[n];
@@ -695,6 +699,7 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
             SEND(16,mu_Vmin,Double,Float,false)
         }
     }
+    gl_verbose("updating branch data");
     for ( size_t n = 0 ; n < nbranch ; n++ )
     {
         branch *obj = branchlist[n];
@@ -714,6 +719,7 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
         SEND(12,angmax,Double,Float,true)
 
     }
+    gl_verbose("updating gen data");
     for ( size_t n = 0 ; n < ngen ; n++ )
     {
         gen *obj = genlist[n];
@@ -749,6 +755,7 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
     }
     if ( gencostdata )
     {
+        gl_verbose("updating gencost data");
         for ( size_t n = 0 ; n < ngencost ; n++ )
         {
             gencost *obj = gencostlist[n];
@@ -772,6 +779,7 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
     {
         PyDict_SetItemString(data,"t",PyLong_FromLong(t0));        
         PyErr_Clear();
+        gl_verbose("updating controller");
         PyObject *ts = PyObject_CallOneArg(py_sync,data);
         if ( PyErr_Occurred() )
         {
@@ -814,6 +822,7 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
             Py_XDECREF(result);
         }
         PyErr_Clear();
+        gl_verbose("running pypower solver");
         result = PyObject_CallOneArg(solver,data);
 
         // receive results (if new)
@@ -863,6 +872,7 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
                 solver_status = SS_FAILED;
                 return TS_INVALID;
             }
+            gl_verbose("reading bus data");
             for ( size_t n = 0 ; n < nbus ; n++ )
             {
                 bus *obj = buslist[n];
@@ -886,6 +896,7 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
                 obj->V.SetPolar(obj->get_Vm(),obj->get_Va());
             }
 
+            gl_verbose("reading branch data");
             for ( size_t n = 0 ; n < nbranch ; n++ )
             {
                 branch *line = branchlist[n];
@@ -913,6 +924,7 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
                 }
             }
 
+            gl_verbose("reading gencost data");
             PyObject *gendata = PyDict_GetItemString(result,"gen");
             if ( ngencost > 0 && gendata == NULL )
             {
@@ -921,6 +933,7 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
                 return TS_INVALID;
             }
             generation_shortfall = 0;
+            gl_verbose("reading gen data");
             for ( size_t n = 0 ; n < ngen ; n++ )
             {
                 gen *obj = genlist[n];
@@ -983,6 +996,7 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
 
 EXPORT TIMESTAMP on_precommit(TIMESTAMP t0)
 {
+    gl_verbose("pypower::on_precommit(t0='%s')",gld_clock(t0).get_string().get_buffer());
     // not a pypower model
     if ( nbus == 0 || nbranch == 0 )
     {
@@ -1003,35 +1017,44 @@ EXPORT TIMESTAMP on_precommit(TIMESTAMP t0)
     {
         t1 = (TIMESTAMP)min(t1,TIMESTAMP((floor(t0/opf_update_interval)+1)*opf_update_interval));
     }
+
+    gl_verbose("pypower::on_precommit(t0='%s') -> '%s'",gld_clock(t0).get_string().get_buffer(),gld_clock(t1).get_string().get_buffer());    
     return t1;
 }
 
 EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
 {
+    gl_verbose("pypower::on_sync(t0='%s')",gld_clock(t0).get_string().get_buffer());
     // not a pypower model
     if ( nbus == 0 || nbranch == 0 )
     {
         return TS_NEVER;
     }
 
-    return update_solution(t0);
+    TIMESTAMP t1 = update_solution(t0);
+    gl_verbose("pypower::on_sync(t0='%s') -> '%s'",gld_clock(t0).get_string().get_buffer(),gld_clock(t1).get_string().get_buffer());
+    return t1;
 }
 
 EXPORT int on_commit(TIMESTAMP t0)
 {
+    int result = 1;
+    gl_verbose("pypower::on_commit(t0='%s')",gld_clock(t0).get_string().get_buffer());
+
     // not a pypower model
     if ( nbus == 0 || nbranch == 0 )
     {
-        return 1;
+        result = 1;
     }
 
     // run controller on_commit, if any
-    if ( py_commit && update_controller(t0,py_commit,"commit") <= t0 )
+    else if ( py_commit && update_controller(t0,py_commit,"commit") <= t0 )
     {
-        return 0;
+        result = 0;
     }
 
-    return 1;
+    gl_verbose("pypower::on_commit(t0='%s') -> 1",gld_clock(t0).get_string().get_buffer());
+    return result;
 }
 
 EXPORT void on_term(void)
