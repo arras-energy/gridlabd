@@ -18,7 +18,7 @@ clock
 
 #gridlabd -C "case14.glm" -D "starttime=${starttime}" -o "case14_ref.json" 
 
-#set savefile=case14.json
+#set savefile=case14_opf.json
 
 module pypower
 {
