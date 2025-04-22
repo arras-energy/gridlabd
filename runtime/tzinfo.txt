@@ -18,9 +18,7 @@
 ; Note: some zones are coded without start years because the historical rules
 ;       could not be found in an authoritative/comprehensive source
 
-UTC ; Coordinated Universal Time ~ never uses DST
 UTC0 ; Coordinated Universal Time ~ never uses DST
-GMT ; Greenwich Mean Time, no DST
 GMT0 ; Greenwich Mean Time, no DST
  EU/IS/Reykyavik
 
