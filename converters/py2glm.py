@@ -6,7 +6,7 @@ import importlib, copy
 from importlib import util
 
 
-config = {"input":"py","output":"glm","type":["pypower"]}
+config = {"input":"py","output":"glm","type":["python","pypower"]}
 
 def help():
     return """py2glm.py -i <inputfile> -o <outputfile> [options...]
@@ -86,7 +86,7 @@ MODIFY = {
 def main():
     filename_py = None
     filename_glm = None
-    py_type = 'pypower'
+    py_type = 'python'
     autoname = True
     try : 
         opts, args = getopt.getopt(sys.argv[1:],
@@ -138,11 +138,19 @@ def main():
 def convert(ifile,ofile,options={}):
     """Default converter is pypower case"""
 
-    py_type = options['py_type'] if 'py_type' in options else "pypower"
+    py_type = options['py_type'] if 'py_type' in options else "python"
     autoname = options['autoname'] if 'autoname' in options else True
 
-    assert(py_type in ['pypower'])
+    if not py_type in converters:
+        raise ValueError(f"'type={py_type}' is not a valid conversion type")
 
+    return converters[py_type](ifile,ofile,options)
+
+def convert_python(ifile,ofile,options={}):
+    os.system(" ".join([repr(x) for x in [sys.executable,ifile,ofile,*[f"{x}={y}" for x,y in options.items()]]]))
+
+def convert_pypower(ifile,ofile,options={}):
+    """Pypower case converter"""
     modspec = util.spec_from_file_location("glm",ifile)
     modname = os.path.splitext(ifile)[0]
     mod = importlib.import_module(os.path.basename(modname))
@@ -193,6 +201,11 @@ module pypower
     costs "{','.join([str(x) for x in costs])}";
 }}
 """)
+
+converters = {
+    "python": convert_python,
+    "pypower": convert_pypower,
+}
 
 if __name__ == '__main__':
     main()
