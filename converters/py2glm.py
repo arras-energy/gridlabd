@@ -151,6 +151,8 @@ def convert_python(ifile,ofile,options={}):
 
 def convert_pypower(ifile,ofile,options={}):
     """Pypower case converter"""
+    py_type = options['py_type'] if 'py_type' in options else "python"
+    autoname = options['autoname'] if 'autoname' in options else True
     modspec = util.spec_from_file_location("glm",ifile)
     modname = os.path.splitext(ifile)[0]
     mod = importlib.import_module(os.path.basename(modname))
