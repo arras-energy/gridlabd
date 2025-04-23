@@ -249,6 +249,11 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
     Qmin {row[5]} MVAr;
     status {"IN_SERVICE" if row[14] == "1" else "OUT_OF_SERVICE"};
     {items(row)}
+    object gencost
+    {{
+        model POLYNOMIAL;
+        costs "0,0,0"; 
+    }};
 }}""",file=glm)
 
                 elif block == "BRANCH_DATA":
