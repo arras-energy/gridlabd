@@ -10,11 +10,7 @@ clock
     stoptime "2020-02-01 00:00:00 PST";
 }
 
-#ifexists "case14.glm"
-#include "case14.glm"
-#else
 #input "case14.py" -t pypower
-#endif
 
 #gridlabd -C "case14.glm" -D "starttime=${starttime}" -o "case14_ref.json" 
 
