@@ -666,7 +666,7 @@ int unit_convert_ex(UNIT *pFrom, UNIT *pTo, double *pValue)
 		*pValue = (*pValue - pFrom->b) * (pFrom->a / pTo->a) + pTo->b;
 		return 1;
 	} else {
-		output_error("could not convert units from %s to %s, mismatched constant values", pFrom->name, pTo->name);
+		output_error("could not convert units from %s to %s, mismatched units", pFrom->name, pTo->name);
 		return 0;
 	}
 }
@@ -691,7 +691,7 @@ int unit_convert_complex(UNIT *pFrom, UNIT *pTo, complex *pValue)
 		pValue->Im() = (pValue->Im() - pFrom->b) * (pFrom->a / pTo->a) + pTo->b;
 		return 1;
 	} else {
-		output_error("could not convert units from %s to %s, mismatched constant values", pFrom->name, pTo->name);
+		output_error("could not convert units from %s to %s, mismatched units", pFrom->name, pTo->name);
 		return 0;
 	}
 }

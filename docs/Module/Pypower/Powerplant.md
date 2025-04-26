@@ -41,12 +41,18 @@ class powerplant {
 # Description
 
 Generating units are implemented as `powerplant` objects and requires a parent
-`bus` or `gen` object. Each `powerplant` adds its value of `S` to the parent
-object's generation output real and reactive power. If the parent object is a
-`gen` object, the values of `S.real` and `S.imag` are added to `Pg` and `Qg`,
+`bus` or `gen` object. The value `S` is the generator's operating setpoint,
+which determined the values of `Pg` and `Qg` based on the value of
+`ramp_rate`, if non-zero, given the elapsed time since the last update. If
+`ramp_rate` is zero then the values of `Pg` and `Qg` are immediately copied
+from `S`.
+
+Each `powerplant` adds its value of `Pg` and `Qg` to the parent object's
+generation output real and reactive power. If the parent object is a `gen`
+object, the values of `Pg` and `Qg` are added to parent `Pg` and `Qg`,
 respectively. If the parent object is a `bus` object, the values are
-subtracted from `Pd` and `Qd`, respectively. These updates are completed
-during the `presync` event.
+subtracted from the parent `Pd` and `Qd`, respectively. These updates are
+completed during the `presync` event.
 
 During the `sync` event, changed values returned by the `controller` function
 are applied to the object, and the next update is schedule at the time `t`
@@ -63,7 +69,7 @@ dispatch powerplants.
 
 2. `bus` objects are non-dispatchable -- the values of `Pd` and `Qd` will not
 be changed following the powerflow solution. As a result, only
-non-dispatchable resources should use a `bus` parent object. The applies
+non-dispatchable resources should use a `bus` parent object. This applies
 particularly to wind, solar, and batteries. Costs are ignored for powerplants
 that refer directly to `bus` objects and consequently are always dispatched
 according to their status and power attributes.

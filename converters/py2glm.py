@@ -6,7 +6,7 @@ import importlib, copy
 from importlib import util
 
 
-config = {"input":"py","output":"glm","type":["pypower"]}
+config = {"input":"py","output":"glm","type":["python","pypower"]}
 
 def help():
     return """py2glm.py -i <inputfile> -o <outputfile> [options...]
@@ -73,11 +73,20 @@ DATASPEC = {
         "angmax": "{:g} deg",
     }
 }
+MODIFY = {
+    "gen" : {
+        "parent":("bus",lambda x:f"pp_bus_{int(x[0])}"),
+        },
+    "branch": {
+        "from":("fbus",lambda x:f"pp_bus_{int(x[0])}"),
+        "to":("tbus",lambda x:f"pp_bus_{int(x[1])}"),
+    }
+}
 
 def main():
     filename_py = None
     filename_glm = None
-    py_type = 'pypower'
+    py_type = 'python'
     autoname = True
     try : 
         opts, args = getopt.getopt(sys.argv[1:],
@@ -129,11 +138,21 @@ def main():
 def convert(ifile,ofile,options={}):
     """Default converter is pypower case"""
 
-    py_type = options['py_type'] if 'py_type' in options else "pypower"
+    py_type = options['py_type'] if 'py_type' in options else "python"
     autoname = options['autoname'] if 'autoname' in options else True
 
-    assert(py_type in ['pypower'])
+    if not py_type in converters:
+        raise ValueError(f"'type={py_type}' is not a valid conversion type")
 
+    return converters[py_type](ifile,ofile,options)
+
+def convert_python(ifile,ofile,options={}):
+    os.system(" ".join([repr(x) for x in [sys.executable,ifile,ofile,*[f"{x}={y}" for x,y in options.items()]]]))
+
+def convert_pypower(ifile,ofile,options={}):
+    """Pypower case converter"""
+    py_type = options['py_type'] if 'py_type' in options else "python"
+    autoname = options['autoname'] if 'autoname' in options else True
     modspec = util.spec_from_file_location("glm",ifile)
     modname = os.path.splitext(ifile)[0]
     mod = importlib.import_module(os.path.basename(modname))
@@ -153,12 +172,18 @@ module pypower
         for name,spec in DATASPEC.items():
             glm.write(f"{NL}//{NL}// {name}{NL}//{NL}")
             for n,line in enumerate(data[name]):
-                oname = f"{NL}    name pp_{name}_{n+1};" if autoname else ""
+                oname = f"""{NL}    name "pp_{name}_{n+1}";""" if autoname else ""
                 glm.write(f"""object pypower.{name} 
 {{{oname}
-{NL.join([f"    {x[0]} {x[1].format(line[n])};" for n,x in enumerate(spec.items())])}
-}}
 """)
+                for n,x in enumerate(spec.items()):
+                    glm.write(f"    {x[0]} {x[1].format(line[n])};{NL}")
+                    if name in MODIFY:
+                        for key,value in [(y,z) for y,z in MODIFY[name].items() if x[0] == z[0]]:
+                            # print(f"{name=}{NL}{line=}{NL}{n=}{NL}{x=}{NL}{key=}{NL}{value[0]=}{NL}{value[1](line)=}",flush=True,file=sys.stderr)
+                            glm.write(f"""    {key} "{value[1](line)}";{NL}""")
+                glm.write("}\n")
+
         if 'gencost' in data:
             glm.write("\n//\n// gencost\n//\n")
             for n,line in enumerate(data['gencost']):
@@ -168,16 +193,21 @@ module pypower
                 count = line[3]
                 costs = line[4:]
                 assert(len(costs)==count)
-                oname = f"{NL}    name pp_gencost_{n};" if autoname else ""
+                oname = f"{NL}    name pp_gencost_{n+1};" if autoname else ""
                 glm.write(f"""object pypower.gencost
 {{{oname}
-    parent pp_gen_{n+1};
+    parent "pp_gen_{n+1}";
     model {int(model)};
     startup {startup};
     shutdown {shutdown};
     costs "{','.join([str(x) for x in costs])}";
 }}
 """)
+
+converters = {
+    "python": convert_python,
+    "pypower": convert_pypower,
+}
 
 if __name__ == '__main__':
     main()

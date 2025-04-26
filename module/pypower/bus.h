@@ -11,6 +11,8 @@ class bus : public gld_object
 public:
 
 	static char256 timestamp_format;
+	static double low_voltage_warning;
+	static double high_voltage_warning;
 
 public:
 	typedef struct s_sensitivity
@@ -24,6 +26,15 @@ public:
 		double last_adjustment;
 		struct s_sensitivity *next;
 	} SENSITIVITY;
+
+	typedef enum e_bustype
+	{
+		BT_UNKNOWN = 0,
+		BT_PQ = 1,
+		BT_PV = 2,
+		BT_REF = 3,
+		BT_ISOLATED = 4,
+	} BUSTYPE;
 
 public:
 	// published properties
@@ -62,6 +73,7 @@ public:
 #define N_WEATHERDATA 10 // adjust if adding more weather data items
 
 	GL_ATOMIC(char1024,weather_sensitivity);
+	GL_ATOMIC(complex,shunt);
 
 private:
 
@@ -85,6 +97,11 @@ public:
 
 public:
 
+	void add_load(double P, double Q);
+	void add_shunt(double G, double B);
+
+public:
+
 	// event handlers
 	bus(MODULE *module);
 	int create(void);
@@ -93,6 +110,7 @@ public:
 	TIMESTAMP sync(TIMESTAMP t0);
 	TIMESTAMP postsync(TIMESTAMP t0);
 	TIMESTAMP precommit(TIMESTAMP t0);
+	TIMESTAMP commit(TIMESTAMP t0,TIMESTAMP t1);
 
 public:
 	// internal properties

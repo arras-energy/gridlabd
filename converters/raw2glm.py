@@ -204,7 +204,6 @@ def convert(ifile,ofile,options={}):
                     I = complex(float(row[7]),float(row[8]))
                     P = complex(float(row[5]),float(row[6])) + complex(float(row[14]),float(row[15]))
                     S = Z + I + P
-                    Z 
                     response = 1 - float(row[12])
                     status = "ONLINE" if float(row[13]) == 0.0 else "CURTAILED"
                     V = bus_V[row[0]]
@@ -216,8 +215,8 @@ def convert(ifile,ofile,options={}):
 {{
     name "{oname}_L_{row[0]}";
     parent "{oname}_N_{row[0]}";
-    Z {Z.real:.4g}{Z.imag:+.4g}j Ohm;
-    I {I.real:.4g}{I.imag:+.4g}j A;
+    Z {Z.real:.4g}{Z.imag:+.4g}j MVA;
+    I {I.real:.4g}{I.imag:+.4g}j MVA;
     P {P.real:.4g}{P.imag:+.4g}j MVA;
     S {S.real:.4g}{S.imag:+.4g}j MVA;
     status {status};
@@ -239,6 +238,7 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
                         print(f"""object pypower.gen
 {{
     name "{oname}_G_{row[0]}_{genndx[genid]}";
+    parent "{oname}_N_{row[0]}";
     bus {busndx[row[0]]};
     Pg {row[2]} MW;
     Qg {row[3]} MVAr;
@@ -249,6 +249,11 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
     Qmin {row[5]} MVAr;
     status {"IN_SERVICE" if row[14] == "1" else "OUT_OF_SERVICE"};
     {items(row)}
+    object gencost
+    {{
+        model POLYNOMIAL;
+        costs "0,0,0"; 
+    }};
 }}""",file=glm)
 
                 elif block == "BRANCH_DATA":
@@ -303,6 +308,8 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
                             print(f"""object pypower.branch
 {{
     name "{oname}_B_{branchid}_{branchndx[branchid]}";
+    from "{oname}_N_{dd['I']}";
+    to "{oname}_N_{dd['J']}";
     fbus {busndx[dd['I']]};
     tbus {busndx[dd['J']]};
     status IN;
@@ -385,6 +392,7 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
                             else:
                                 value = f'"{value}"'
                             print(f"""    {tag if tag else "// " + name.strip("'")} {value};""",file=glm)
+                        print("    dwell_time 60s;",file=glm)
                         print(f"""}}""",file=glm)
 
                 elif row[0] == "Q":

@@ -142,27 +142,30 @@ int gen::create(void)
 
 int gen::init(OBJECT *parent)
 {
+	if ( parent == NULL )
+	{
+		error("parent bus not specified");
+		return 0;
+	}
+	class bus *p = OBJECTDATA(parent,class bus);
+	if ( ! p->isa("bus","pypower") )
+	{
+		error("parent object '%s' is not a pypower bus",p->get_name());
+		return 0;
+	}
 	if ( get_bus() == 0 )
 	{
-		if ( parent == NULL )
+		if ( p->get_bus_i() == 0 )
 		{
-			error("cannot find bus id without a known parent");
-			return 0;
+			return 2; // defer until bus is initialized
 		}
-		class bus *p = OBJECTDATA(parent,class bus);
-		if ( p->isa("bus","pypower") )
-		{
-			if ( p->get_bus_i() == 0 )
-			{
-				return 2; // defer until bus is initialized
-			}
-			set_bus(p->get_bus_i());
-		}
-		else
-		{
-			error("parent object '%s' is not a pypower bus",p->get_name());
-			return 0;
-		}
+		set_bus(p->get_bus_i());
+		verbose("setting bus index to %d",bus);
+	}
+	else if ( get_bus() != p->get_bus_i() )
+	{
+		error("parent object '%s' bus index mismatch",p->get_name());
+		return 0;		
 	}
 
 	return 1;
@@ -178,6 +181,11 @@ TIMESTAMP gen::precommit(TIMESTAMP t0)
 		Qg = 0.0;
 	}
 	return TS_NEVER;
+}
+
+unsigned int gen::get_powerplant_count(void)
+{
+	return plant_count;
 }
 
 void gen::add_powerplant(class powerplant *plant)

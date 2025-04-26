@@ -1,0 +1,147 @@
+//#option verbose
+//#option debug
+#set output_message_context=NONE
+
+module pypower
+{
+    message_flags VERBOSE|DEBUG;    
+    stop_on_failure FALSE;
+    default_reactive_power_fraction 0.1;
+    save_case TRUE;
+    baseMVA 100;
+}
+module assert;
+
+//
+// Bus objects
+//
+object bus
+{
+    name bus_1;
+    type REF;
+    baseKV 250 kV;
+    object gen 
+    {
+        name "gen_1";
+        Pg 40 MW;
+        Qg 10 MVAr;
+        Pmin 10 MW;
+        Pmax 500 MW;
+        Qmin -50 MVAr;
+        Qmax +50 MVAr;
+        status IN_SERVICE;
+        object gencost
+        {
+            name "cost_1";
+            startup 10 $;
+            shutdown 0 $;
+            model POLYNOMIAL;
+            costs 1,10;
+        };
+    };
+}
+object bus
+{
+    name bus_2;
+    type PQ;
+    baseKV 250 kV;
+}
+object bus
+{
+    name bus_3;
+    type PQ;
+    baseKV 250 kV;
+    object load
+    {
+        name "load_3";
+        Z 50 MVA;
+        I 20 MVA;
+        P 30+10j MVAr;
+        Vn 250 kV;
+        status ONLINE;
+    };
+    object shunt 
+    { 
+        name "caps_3";
+        control_mode DISCRETE_V;
+        status ONLINE;
+        voltage_high 1.05 pu;
+        voltage_low 0.95 pu;
+        admittance 0.0 MVAr;
+        steps_1 20;
+        admittance_1 5.0 MVAr;
+        dwell_time 60s;
+    };
+}
+object bus
+{
+    name bus_4;
+    type PQ;
+    baseKV 250 kV;
+    object load
+    {
+        name "load_4";
+        Z 50 MVAr;
+        I 20 MVAr;
+        P 30+10j MVAr;
+        Vn 250 kV;
+        status ONLINE;
+    };
+    object shunt 
+    { 
+        name "caps_4";
+        control_mode DISCRETE_V;
+        status ONLINE;
+        voltage_high 1.05 pu;
+        voltage_low 0.95 pu;
+        admittance 0.0 MVAr;
+        steps_1 20;
+        admittance_1 5.0 MVAr;
+        dwell_time 60s;
+    };
+}
+
+//
+// Branch objects
+//
+object branch 
+{
+    name "branch_1_2";
+    from "bus_1";
+    to "bus_2";
+    r 0.01;
+    x 0.1;
+    b 0.1;
+    rateA 200 MVA;
+    rateB 220 MVA;
+    rateC 250 MVA;
+    status IN;
+}
+object branch 
+{
+    name "branch_2_3";
+    from "bus_2";
+    to "bus_3";
+    r 0.01;
+    x 0.1;
+    b 0.1;
+    rateA 200 MVA;
+    rateB 220 MVA;
+    rateC 250 MVA;
+    status IN;
+}
+object branch
+{
+    name "branch_2_4";
+    from "bus_2";
+    to "bus_4";
+    r 0.01;
+    x 0.05;
+    b 0.1;
+    rateA 200 MVA;
+    rateB 220 MVA;
+    rateC 250 MVA;
+    status IN;
+}
+
+#set savefile=${modelname/.glm/.json}

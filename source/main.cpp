@@ -467,7 +467,7 @@ struct s_pipes *popens(const char *program, FILE **input, FILE **output, FILE **
 		int readpipe[2] = {-1,-1}, writepipe[2] = {-1,-1}, errorpipe[2] = {-1,-1};
 	if ( ( input && pipe(writepipe) < 0 ) || ( output && pipe(readpipe) < 0 ) || ( error && pipe(errorpipe) < 0 ) )
 	{
-		output_debug("gldcore/main.cpp:popens(const char *program='%s', FILE **output=%p, FILE **error=%p): %s",program,output,error,
+		IN_MYCONTEXT output_debug("gldcore/main.cpp:popens(const char *program='%s', FILE **output=%p, FILE **error=%p): %s",program,output,error,
 			"pipe() failed");
 		return NULL;
 	}
@@ -491,7 +491,7 @@ struct s_pipes *popens(const char *program, FILE **input, FILE **output, FILE **
 	struct s_pipes *pipes = (struct s_pipes*)malloc(sizeof(struct s_pipes));
 	if ( pipes == NULL )
 	{
-		output_debug("gldcore/main.cpp:popens(const char *program='%s', FILE **output=%p, FILE **error=%p): %s",program,output,error,
+		IN_MYCONTEXT output_debug("gldcore/main.cpp:popens(const char *program='%s', FILE **output=%p, FILE **error=%p): %s",program,output,error,
 			"malloc() of 'pipes' failed");
 		return NULL;
 	}
@@ -501,7 +501,7 @@ struct s_pipes *popens(const char *program, FILE **input, FILE **output, FILE **
 	if ( pipes->child_pid == -1 ) // fork failed
 	{
 		free(pipes);
-		output_debug("gldcore/main.cpp:popens(const char *program='%s', FILE **output=%p, FILE **error=%p): %s",program,output,error,
+		IN_MYCONTEXT output_debug("gldcore/main.cpp:popens(const char *program='%s', FILE **output=%p, FILE **error=%p): %s",program,output,error,
 			"fork() failed");
 		return NULL;
 	}

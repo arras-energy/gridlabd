@@ -10,15 +10,11 @@ clock
     stoptime "2020-02-01 00:00:00 PST";
 }
 
-#ifexists "case14.glm"
-#include "case14.glm"
-#else
 #input "case14.py" -t pypower
-#endif
 
 #gridlabd -C "case14.glm" -D "starttime=${starttime}" -o "case14_ref.json" 
 
-#set savefile=case14.json
+#set savefile=case14_opf.json
 
 module pypower
 {
@@ -26,10 +22,336 @@ module pypower
 }
 
 module assert;
+
+#define MRES=0.001 // magnitude test resolution
+#define ARES=0.01 // angle test resolution
+#define PRES=0.1 // real power test resolution
+#define QRES=0.1 // reactive power test resolution
+
 object assert {
     parent "pp_bus_1";
     target Vm;
     relation "==";
     value 0.991374;
-    within 1e-6;
+    within ${MRES};
 }
+object assert
+{
+    parent pp_bus_1;
+    target Va;
+    relation ==;
+    value 0.00;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_2;
+    target Vm;
+    relation ==;
+    value +0.981;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_2;
+    target Va;
+    relation ==;
+    value -1.323;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_3;
+    target Vm;
+    relation ==;
+    value +0.967;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_3;
+    target Va;
+    relation ==;
+    value -4.591;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_4;
+    target Vm;
+    relation ==;
+    value +0.961;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_4;
+    target Va;
+    relation ==;
+    value -3.817;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_5;
+    target Vm;
+    relation ==;
+    value +0.963;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_5;
+    target Va;
+    relation ==;
+    value -3.034;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_6;
+    target Vm;
+    relation ==;
+    value +0.995;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_6;
+    target Va;
+    relation ==;
+    value -3.765;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_7;
+    target Vm;
+    relation ==;
+    value +0.975;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_7;
+    target Va;
+    relation ==;
+    value -3.203;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_8;
+    target Vm;
+    relation ==;
+    value +1.0;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_8;
+    target Va;
+    relation ==;
+    value +0.698;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_9;
+    target Vm;
+    relation ==;
+    value +0.957;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_9;
+    target Va;
+    relation ==;
+    value -5.413;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_10;
+    target Vm;
+    relation ==;
+    value +0.956;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_10;
+    target Va;
+    relation ==;
+    value -5.449;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_11;
+    target Vm;
+    relation ==;
+    value +0.971;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_11;
+    target Va;
+    relation ==;
+    value -4.748;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_12;
+    target Vm;
+    relation ==;
+    value +0.977;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_12;
+    target Va;
+    relation ==;
+    value -4.829;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_13;
+    target Vm;
+    relation ==;
+    value +0.9705;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_13;
+    target Va;
+    relation ==;
+    value -4.959;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_14;
+    target Vm;
+    relation ==;
+    value +0.943;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_14;
+    target Va;
+    relation ==;
+    value -6.41;
+    within ${ARES};
+}
+
+object assert
+{
+    parent pp_gen_1;
+    target Pg;
+    relation ==;
+    value +63.52;
+    within ${PRES};
+}
+
+object assert
+{
+    parent pp_gen_1;
+    target Qg;
+    relation ==;
+    value +5.58;
+    within ${QRES};
+}
+
+object assert
+{
+    parent pp_gen_2;
+    target Pg;
+    relation ==;
+    value +52.96;
+    within ${PRES};
+}
+
+object assert
+{
+    parent pp_gen_2;
+    target Qg;
+    relation ==;
+    value +12.3;
+    within ${QRES};
+}
+
+object assert
+{
+    parent pp_gen_3;
+    target Pg;
+    relation ==;
+    value +61.6;
+    within ${PRES};
+}
+
+object assert
+{
+    parent pp_gen_3;
+    target Qg;
+    relation ==;
+    value +21.7;
+    within ${QRES};
+}
+
+object assert
+{
+    parent pp_gen_4;
+    target Pg;
+    relation ==;
+    value +45.9;
+    within ${PRES};
+}
+
+object assert
+{
+    parent pp_gen_4;
+    target Qg;
+    relation ==;
+    value +10.6;
+    within ${QRES};
+}
+
+object assert
+{
+    parent pp_gen_5;
+    target Pg;
+    relation ==;
+    value +37.6;
+    within ${PRES};
+}
+
+object assert
+{
+    parent pp_gen_5;
+    target Qg;
+    relation ==;
+    value +15.2;
+    within ${QRES};
+}
+

@@ -22,20 +22,33 @@ public:
     } CONTROLMODE;
 
     typedef enum {
-        S_OFFLINE = 0,
-        S_ONLINE = 1,
+        CS_OFFLINE = 0,
+        CS_ONLINE = 1,
     } STATUS;
+
+    typedef enum {
+        CI_MAGNITUDE = 0,
+        CI_ANGLE = 1,
+    } CONTROLINPUT;
+
+    typedef enum {
+        CO_REACTIVE = 0,
+        CO_REAL = 1,
+    } CONTROLOUTPUT;
 
 public:
 
     // module globals
-    static double minimum_voltage_deadband;
+    static double minimum_voltage_magnitude_deadband;
+    static double minimum_voltage_angle_deadband;
 
 public:
 
     // published properties
     GL_ATOMIC(enumeration,control_mode);
     GL_ATOMIC(enumeration,status);
+    GL_ATOMIC(enumeration,input);
+    GL_ATOMIC(enumeration,output);    
     GL_ATOMIC(double,voltage_high);
     GL_ATOMIC(double,voltage_low);
     GL_ATOMIC(object,remote_bus);
@@ -56,12 +69,19 @@ public:
     GL_ATOMIC(double,admittance_7);
     GL_ATOMIC(int32,steps_8);
     GL_ATOMIC(double,admittance_8);
+    GL_ATOMIC(double,dwell_time);
+    GL_ATOMIC(double,control_gain);
 
 private:
 
     // internal variables
-    bus *input;
-    bus *output;
+    bus *input_bus;
+    bus *output_bus;
+    TIMESTAMP last_update;
+
+private:
+    TIMESTAMP update_control(TIMESTAMP t0);
+    void update_bus(void);
 
 public:
 

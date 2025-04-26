@@ -107,13 +107,35 @@ int branch::create(void)
 	}
 	fbus = tbus = 0; // flag for unset
 
-	child_count = 0;
+	set_from("");
+	set_to("");
+	set_fbus(0);
+	set_tbus(0);
+	set_r(0.0);
+	set_x(0.0);
+	set_b(0.0);
+	set_rateA(0.0);
+	set_rateB(0.0);
+	set_rateC(0.0);
+	set_ratio(0.0);
+	set_angle(0.0);
+	set_status(BS_OUT);
+	set_angmin(-360.0);
+	set_angmax(360.0);
+	set_child_count(0);
+	set_current(0.0);
+	set_loss(0.0);
 
 	return 1; /* return 1 on success, 0 on failure */
 }
 
 int branch::init(OBJECT *parent)
 {
+	if ( get_from() == NULL || get_to() == NULL )
+	{
+		error("from or to bus not specified");
+		return 0;
+	}
 	// automatic bus lookup
 	if ( get_fbus() == 0 )
 	{

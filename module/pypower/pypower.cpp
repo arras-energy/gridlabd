@@ -8,6 +8,7 @@
 #include "Python.h"
 
 bool enable_opf = false;
+double opf_update_interval = 0;
 double base_MVA = 100.0;
 int32 pypower_version = 2;
 bool stop_on_failure = false;
@@ -112,6 +113,12 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
     gl_global_create("pypower::enable_opf",
         PT_bool, &enable_opf, 
         PT_DESCRIPTION, "Flag to enable optimal powerflow (OPF) solver",
+        NULL);
+
+    gl_global_create("pypower::opf_update_interval",
+        PT_double, &opf_update_interval, 
+        PT_UNITS, "s",
+        PT_DESCRIPTION, "Interval at which to update OPF solution (only if enable_opf is TRUE, 0 is always)",
         NULL);
 
     gl_global_create("pypower::stop_on_failure",
@@ -239,6 +246,11 @@ PyObject *gendata = NULL;
 size_t ngencost = 0;
 gencost *gencostlist[MAXENT];
 PyObject *gencostdata = NULL;
+
+inline bool opf_needed(TIMESTAMP t)
+{
+    return enable_opf && ( opf_update_interval == 0 || fmod(t,opf_update_interval) == 0 );
+}
 
 EXPORT bool on_init(void)
 {
@@ -468,24 +480,6 @@ EXPORT bool on_init(void)
 }
 
 // conditional solver send/receive (only if value differs or is not set yet)
-#define SEND(INDEX,NAME,FROM,TO) { PyObject *py = PyList_GetItem(pyobj,INDEX); \
-    if ( py == NULL || fabs(obj->get_##NAME()-Py##TO##_As##FROM(py)) > solver_update_resolution ) { \
-        PyObject *value = Py##TO##_From##FROM(obj->get_##NAME()); \
-        if ( value == NULL ) { \
-            gl_warning("pypower:on_*(t0=%lld): unable to create value " #NAME " for data item %d",t0,INDEX); \
-        } \
-        else { \
-            PyList_SET_ITEM(pyobj,INDEX,value); \
-            Py_XDECREF(py); \
-            n_changes++; \
-}}}
-
-#define RECV(NAME,INDEX,FROM,TO) { PyObject *py = PyList_GET_ITEM(pyobj,INDEX);\
-    if ( fabs(obj->get_##NAME()-Py##FROM##_As##TO(py)) > solver_update_resolution ) { \
-        n_changes++; \
-        obj->set_##NAME(Py##FROM##_As##TO(py)); \
-    }}
-
 #define SENDX(INDEX,NAME,FROM,TO) { PyObject *py = PyList_GetItem(pyobj,INDEX); \
     if ( py == NULL || fabs(obj->get_##NAME()-Py##TO##_As##FROM(py)) > solver_update_resolution ) { \
         PyObject *value = Py##TO##_From##FROM(obj->get_##NAME()); \
@@ -497,19 +491,9 @@ EXPORT bool on_init(void)
             Py_XDECREF(py); \
 }}}
 
-#define RECVX(NAME,INDEX,FROM,TO) { PyObject *py = PyList_GET_ITEM(pyobj,INDEX);\
-    if ( fabs(obj->get_##NAME()-Py##FROM##_As##TO(py)) > solver_update_resolution ) { \
-        obj->set_##NAME(Py##FROM##_As##TO(py)); \
-    }}
-
-EXPORT TIMESTAMP on_precommit(TIMESTAMP t0)
+static TIMESTAMP update_controller(TIMESTAMP t0,PyObject *command,const char *name)
 {
-    // not a pypower model
-    if ( nbus == 0 || nbranch == 0 )
-    {
-        return TS_NEVER;
-    }
-
+    TIMESTAMP t1 = TS_NEVER;
     // send values out to solver
     for ( size_t n = 0 ; n < nbus ; n++ )
     {
@@ -528,7 +512,7 @@ EXPORT TIMESTAMP on_precommit(TIMESTAMP t0)
         SENDX(10,zone,Long,Long)
         SENDX(11,Vmax,Double,Float)
         SENDX(12,Vmin,Double,Float)
-        if ( enable_opf )
+        if ( opf_needed(t0) )
         {
             SENDX(13,lam_P,Double,Float)
             SENDX(14,lam_Q,Double,Float)
@@ -580,7 +564,7 @@ EXPORT TIMESTAMP on_precommit(TIMESTAMP t0)
         SENDX(18,ramp_30,Double,Float)
         SENDX(19,ramp_q,Double,Float)
         SENDX(20,apf,Double,Float)
-        if ( enable_opf )
+        if ( opf_needed(t0) )
         {
             SENDX(21,mu_Pmax,Double,Float)
             SENDX(22,mu_Pmin,Double,Float)
@@ -594,7 +578,7 @@ EXPORT TIMESTAMP on_precommit(TIMESTAMP t0)
         {
             if ( genlist[i]->cost == NULL )
             {
-                gl_warning("pypower.on_precommit(t=%lld) missing cost data for generator '%s'",t0,genlist[i]->get_name());
+                gl_warning("pypower.%s(t=%lld) missing cost data for generator '%s'",name,t0,genlist[i]->get_name());
                 continue;
             }
             gencost *obj = genlist[i]->cost;
@@ -612,148 +596,179 @@ EXPORT TIMESTAMP on_precommit(TIMESTAMP t0)
         }
     }
 
-    // run controller on_precommit, if any
-    TIMESTAMP t1 = TS_NEVER;
-    if ( py_precommit )
+    PyDict_SetItemString(data,"t",PyLong_FromLong(t0));        
+    PyErr_Clear();
+    PyObject *ts = PyObject_CallOneArg(command,data);
+    if ( PyErr_Occurred() )
     {
-        PyDict_SetItemString(data,"t",PyLong_FromLong(t0));        
-        PyErr_Clear();
-        PyObject *ts = PyObject_CallOneArg(py_precommit,data);
-        if ( PyErr_Occurred() )
-        {
-            PyErr_Print();
-            return TS_INVALID;
-        }
-        if ( ts == NULL || ! PyLong_Check(ts) )
-        {
-            gl_error("%s.on_precommit(data) returned value that is not a valid timestamp",(const char*)controllers);
-            Py_XDECREF(ts);
-            return TS_INVALID;
-        }
-        t1 = PyLong_AsLong(ts);
-        Py_DECREF(ts);
-        if ( t1 < 0 )
-        {
-            t1 = TS_NEVER;
-        }
-        else if ( t1 == 0 && stop_on_failure )
-        {
-            gl_error("%s.on_precommit(data) halted the simulation",(const char*)controllers);
-            return TS_INVALID;
-        }
-        else if ( t1 < t0 )
-        {
-            gl_error("%s.on_precommit(data) returned a timestamp earlier than precommit time t0=%lld",(const char*)controllers,t0);
-            return TS_INVALID;
-        }
+        PyErr_Print();
+        return TS_INVALID;
     }
-
-    TIMESTAMP t2 = maximum_timestep > 0 ? TIMESTAMP(t0+maximum_timestep) : TS_NEVER;
-    return (TIMESTAMP)min((unsigned long long)t1,(unsigned long long)t2);
+    if ( ts == NULL || ! PyLong_Check(ts) )
+    {
+        gl_error("%s.%s(data) returned value that is not a valid timestamp",(const char*)controllers,name);
+        Py_XDECREF(ts);
+        return TS_INVALID;
+    }
+    t1 = PyLong_AsLong(ts);
+    Py_DECREF(ts);
+    if ( t1 < 0 )
+    {
+        t1 = TS_NEVER;
+    }
+    else if ( t1 == 0 && stop_on_failure )
+    {
+        gl_error("%s.%s(data) halted the simulation",(const char*)controllers,name);
+        return TS_INVALID;
+    }
+    else if ( t1 < t0 )
+    {
+        gl_error("%s.%s(data) returned a timestamp earlier than %s time t0=%lld",(const char*)controllers,name,name,t0);
+        return TS_INVALID;
+    }
+    return t1;
 }
 
-EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
+#define SEND(INDEX,NAME,FROM,TO,CHANGE) { PyObject *py = PyList_GetItem(pyobj,INDEX); \
+    double a = obj->get_##NAME(); \
+    double b = Py##TO##_As##FROM(py); \
+    if ( py == NULL || fabs(a-b) > solver_update_resolution ) { \
+        PyObject *value = Py##TO##_From##FROM(a); \
+        if ( value == NULL ) { \
+            gl_warning("pypower:on_*(t0=%lld): unable to create value " #NAME " for data item %d",t0,INDEX); \
+        } \
+        else { \
+            PyList_SET_ITEM(pyobj,INDEX,value); \
+            if ( CHANGE ) { \
+                gl_debug("pypower.update_solution(t=%lld): sending bus %d %s, updating from %lf to %lf", \
+                    t0,n,#NAME,b,a); \
+                n_changes++; \
+            } \
+            Py_XDECREF(py); \
+}}}
+
+#define RECV(NAME,INDEX,FROM,TO,CHANGE) { PyObject *py = PyList_GET_ITEM(pyobj,INDEX);\
+    double a = obj->get_##NAME(); \
+    double b = Py##FROM##_As##TO(py); \
+    if ( fabs(a-b) > solver_update_resolution ) { \
+        if ( CHANGE ) { \
+            gl_debug("pypower.update_solution(t=%lld): receiving bus %d %s, updating from %lf to %lf", \
+                t0,n,#NAME,a,b); \
+            n_changes++; \
+        } \
+        obj->set_##NAME(b); \
+    }}
+
+// #define RECVX(NAME,INDEX,FROM,TO) { PyObject *py = PyList_GET_ITEM(pyobj,INDEX);\
+//     if ( fabs(obj->get_##NAME()-Py##FROM##_As##TO(py)) > solver_update_resolution ) { \
+//         obj->set_##NAME(Py##FROM##_As##TO(py)); \
+//     }}
+
+static TIMESTAMP update_solution(TIMESTAMP t0)
 {
-    // not a pypower model
-    if ( nbus == 0 || nbranch == 0 )
-    {
-        return TS_NEVER;
-    }
+    gl_verbose("pypower::update_solution(t0='%s')",gld_clock(t0).get_string().get_buffer());
 
     int n_changes = 0;
+    bool do_opf = opf_needed(t0);
+    gl_verbose("opf_needed() -> %s",do_opf?"TRUE":"FALSE");
 
     // send values out to solver
+    gl_verbose("updating bus data");
     for ( size_t n = 0 ; n < nbus ; n++ )
     {
         bus *obj = buslist[n];
         PyObject *pyobj = PyList_GetItem(busdata,n);
-        SEND(0,bus_i,Double,Float)
-        SEND(1,type,Long,Long)
-        SEND(2,Pd,Double,Float)
-        SEND(3,Qd,Double,Float)
-        SEND(4,Gs,Double,Float)
-        SEND(5,Bs,Double,Float)
-        SEND(6,area,Long,Long)
-        SEND(7,Vm,Double,Float)
-        SEND(8,Va,Double,Float)
-        SEND(9,baseKV,Double,Float)
-        SEND(10,zone,Long,Long)
-        SEND(11,Vmax,Double,Float)
-        SEND(12,Vmin,Double,Float)
-        if ( enable_opf )
+        SEND(0,bus_i,Double,Float,true)
+        SEND(1,type,Long,Long,true)
+        SEND(2,Pd,Double,Float,true)
+        SEND(3,Qd,Double,Float,true)
+        SEND(4,Gs,Double,Float,true)
+        SEND(5,Bs,Double,Float,true)
+        SEND(6,area,Long,Long,false)
+        SEND(7,Vm,Double,Float,false)
+        SEND(8,Va,Double,Float,false)
+        SEND(9,baseKV,Double,Float,false)
+        SEND(10,zone,Long,Long,false)
+        SEND(11,Vmax,Double,Float,false)
+        SEND(12,Vmin,Double,Float,false)
+        if ( do_opf )
         {
-            SEND(13,lam_P,Double,Float)
-            SEND(14,lam_Q,Double,Float)
-            SEND(15,mu_Vmax,Double,Float)
-            SEND(16,mu_Vmin,Double,Float)
+            SEND(13,lam_P,Double,Float,false)
+            SEND(14,lam_Q,Double,Float,false)
+            SEND(15,mu_Vmax,Double,Float,false)
+            SEND(16,mu_Vmin,Double,Float,false)
         }
     }
+    gl_verbose("updating branch data");
     for ( size_t n = 0 ; n < nbranch ; n++ )
     {
         branch *obj = branchlist[n];
         PyObject *pyobj = PyList_GetItem(branchdata,n);
-        SEND(0,fbus,Long,Long)
-        SEND(1,tbus,Long,Long)
-        SEND(2,r,Double,Float)
-        SEND(3,x,Double,Float)
-        SEND(4,b,Double,Float)
-        SEND(5,rateA,Double,Float)
-        SEND(6,rateB,Double,Float)
-        SEND(7,rateC,Double,Float)
-        SEND(8,ratio,Double,Float)
-        SEND(9,angle,Double,Float)
-        SEND(10,status,Long,Long)
-        SEND(11,angmin,Double,Float)
-        SEND(12,angmax,Double,Float)
+        SEND(0,fbus,Long,Long,true)
+        SEND(1,tbus,Long,Long,true)
+        SEND(2,r,Double,Float,true)
+        SEND(3,x,Double,Float,true)
+        SEND(4,b,Double,Float,true)
+        SEND(5,rateA,Double,Float,do_opf)
+        SEND(6,rateB,Double,Float,do_opf)
+        SEND(7,rateC,Double,Float,do_opf)
+        SEND(8,ratio,Double,Float,true)
+        SEND(9,angle,Double,Float,true)
+        SEND(10,status,Long,Long,true)
+        SEND(11,angmin,Double,Float,true)
+        SEND(12,angmax,Double,Float,true)
 
     }
+    gl_verbose("updating gen data");
     for ( size_t n = 0 ; n < ngen ; n++ )
     {
         gen *obj = genlist[n];
         PyObject *pyobj = PyList_GetItem(gendata,n);
-        SEND(0,bus,Long,Long)
-        SEND(1,Pg,Double,Float)
-        SEND(2,Qg,Double,Float)
-        SEND(3,Qmax,Double,Float)
-        SEND(4,Qmin,Double,Float)
-        SEND(5,Vg,Double,Float)
-        SEND(6,mBase,Double,Float)
-        SEND(7,status,Long,Long)
-        SEND(8,Pmax,Double,Float)
-        SEND(9,Pmin,Double,Float)
-        SEND(10,Pc1,Double,Float)
-        SEND(11,Pc2,Double,Float)
-        SEND(12,Qc1min,Double,Float)
-        SEND(13,Qc1max,Double,Float)
-        SEND(14,Qc2min,Double,Float)
-        SEND(15,Qc2max,Double,Float)
-        SEND(16,ramp_agc,Double,Float)
-        SEND(17,ramp_10,Double,Float)
-        SEND(18,ramp_30,Double,Float)
-        SEND(19,ramp_q,Double,Float)
-        SEND(20,apf,Double,Float)
-        if ( enable_opf )
+        SEND(0,bus,Long,Long,true)
+        SEND(1,Pg,Double,Float,true)
+        SEND(2,Qg,Double,Float,true)
+        SEND(3,Qmax,Double,Float,true)
+        SEND(4,Qmin,Double,Float,true)
+        SEND(5,Vg,Double,Float,true)
+        SEND(6,mBase,Double,Float,true)
+        SEND(7,status,Long,Long,true)
+        SEND(8,Pmax,Double,Float,true)
+        SEND(9,Pmin,Double,Float,true)
+        SEND(10,Pc1,Double,Float,true)
+        SEND(11,Pc2,Double,Float,true)
+        SEND(12,Qc1min,Double,Float,true)
+        SEND(13,Qc1max,Double,Float,true)
+        SEND(14,Qc2min,Double,Float,true)
+        SEND(15,Qc2max,Double,Float,true)
+        SEND(16,ramp_agc,Double,Float,false)
+        SEND(17,ramp_10,Double,Float,false)
+        SEND(18,ramp_30,Double,Float,false)
+        SEND(19,ramp_q,Double,Float,false)
+        SEND(20,apf,Double,Float,false)
+        if ( do_opf )
         {
-            SEND(21,mu_Pmax,Double,Float)
-            SEND(22,mu_Pmin,Double,Float)
-            SEND(23,mu_Qmax,Double,Float)
-            SEND(24,mu_Qmin,Double,Float)
+            SEND(21,mu_Pmax,Double,Float,false)
+            SEND(22,mu_Pmin,Double,Float,false)
+            SEND(23,mu_Qmax,Double,Float,false)
+            SEND(24,mu_Qmin,Double,Float,false)
         }
     }
     if ( gencostdata )
     {
+        gl_verbose("updating gencost data");
         for ( size_t n = 0 ; n < ngencost ; n++ )
         {
             gencost *obj = gencostlist[n];
             PyObject *pyobj = PyList_GetItem(gencostdata,n);
-            SEND(0,model,Long,Long)
-            SEND(1,startup,Double,Float)
-            SEND(2,shutdown,Double,Float)
+            SEND(0,model,Long,Long,do_opf)
+            SEND(1,startup,Double,Float,do_opf)
+            SEND(2,shutdown,Double,Float,do_opf)
             PyObject *py = PyList_GetItem(pyobj,3);
             if ( py == NULL || strcmp((const char*)PyUnicode_DATA(py),obj->get_costs())!=0 )
             {
                 Py_XDECREF(py);
                 PyList_SET_ITEM(pyobj,3,PyUnicode_FromString(obj->get_costs()));
+                n_changes++;
             }
         }
     }
@@ -764,6 +779,7 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
     {
         PyDict_SetItemString(data,"t",PyLong_FromLong(t0));        
         PyErr_Clear();
+        gl_verbose("updating controller");
         PyObject *ts = PyObject_CallOneArg(py_sync,data);
         if ( PyErr_Occurred() )
         {
@@ -798,12 +814,15 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
     static PyObject *result = NULL;
     if ( result == NULL || n_changes > 0 )
     {
+        n_changes = 0;
+
         // run pypower solver
         if ( result != data )
         {
             Py_XDECREF(result);
         }
         PyErr_Clear();
+        gl_verbose("running pypower solver");
         result = PyObject_CallOneArg(solver,data);
 
         // receive results (if new)
@@ -846,7 +865,6 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
             }
 
             // copy values back from solver
-            n_changes = 0;
             PyObject *busdata = PyDict_GetItemString(result,"bus");
             if ( nbus > 0 && busdata == NULL )
             {
@@ -854,23 +872,31 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
                 solver_status = SS_FAILED;
                 return TS_INVALID;
             }
+            gl_verbose("reading bus data");
             for ( size_t n = 0 ; n < nbus ; n++ )
             {
                 bus *obj = buslist[n];
                 PyObject *pyobj = PyList_GetItem(busdata,n);
-                RECV(Vm,7,Float,Double)
-                RECV(Va,8,Float,Double)
-
-                if ( enable_opf )
+                if ( ! isnan(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,7))) )
                 {
-                    RECV(lam_P,13,Float,Double)
-                    RECV(lam_Q,14,Float,Double)
-                    RECV(mu_Vmax,15,Float,Double)
-                    RECV(mu_Vmin,16,Float,Double)
+                    RECV(Vm,7,Float,Double,false)
+                }
+                if ( ! isnan(PyFloat_AsDouble(PyList_GET_ITEM(pyobj,8))) )
+                {
+                    RECV(Va,8,Float,Double,false)
+                }
+
+                if ( do_opf )
+                {
+                    RECV(lam_P,13,Float,Double,false)
+                    RECV(lam_Q,14,Float,Double,false)
+                    RECV(mu_Vmax,15,Float,Double,false)
+                    RECV(mu_Vmin,16,Float,Double,false)
                 }
                 obj->V.SetPolar(obj->get_Vm(),obj->get_Va());
             }
 
+            gl_verbose("reading branch data");
             for ( size_t n = 0 ; n < nbranch ; n++ )
             {
                 branch *line = branchlist[n];
@@ -898,6 +924,7 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
                 }
             }
 
+            gl_verbose("reading gencost data");
             PyObject *gendata = PyDict_GetItemString(result,"gen");
             if ( ngencost > 0 && gendata == NULL )
             {
@@ -906,19 +933,32 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
                 return TS_INVALID;
             }
             generation_shortfall = 0;
+            gl_verbose("reading gen data");
             for ( size_t n = 0 ; n < ngen ; n++ )
             {
                 gen *obj = genlist[n];
                 PyObject *pyobj = PyList_GetItem(gendata,n);
-                RECV(Pg,1,Float,Double)
-                RECV(Qg,2,Float,Double)
-                RECV(apf,20,Float,Double)
-                if ( enable_opf )
+
+                // if doing OPF and powerplant are connected to this generation object
+                if ( do_opf && obj->get_powerplant_count() > 0 )
                 {
-                    RECV(mu_Pmax,21,Float,Double)
-                    RECV(mu_Pmin,22,Float,Double)
-                    RECV(mu_Qmax,23,Float,Double)
-                    RECV(mu_Qmin,24,Float,Double)
+                    // only update generation setpoints (powerplant control active)
+                    RECV(Ps,1,Float,Double,true)
+                    RECV(Qs,2,Float,Double,true)
+                }
+                else
+                {   
+                    // update actual generation (not powerplant controls active)
+                    RECV(Pg,1,Float,Double,true)
+                    RECV(Qg,2,Float,Double,true)
+                }
+                RECV(apf,20,Float,Double,false)
+                if ( do_opf )
+                {
+                    RECV(mu_Pmax,21,Float,Double,false)
+                    RECV(mu_Pmin,22,Float,Double,false)
+                    RECV(mu_Qmax,23,Float,Double,false)
+                    RECV(mu_Qmin,24,Float,Double,false)
                 }
                 generation_shortfall += max(obj->get_Pg() - obj->get_Pmax(),0.0);
             }
@@ -946,133 +986,75 @@ EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
         }
         if ( n_changes > 0 )
         {
+            gl_debug("%d values changed, requesting resolve",n_changes);
             return t0;
         }
         TIMESTAMP t2 = maximum_timestep > 0 ? TIMESTAMP(t0+maximum_timestep) : TS_NEVER;
         return (TIMESTAMP)min((unsigned long long)t1,(unsigned long long)t2);
-
     }
+}
+
+EXPORT TIMESTAMP on_precommit(TIMESTAMP t0)
+{
+    gl_verbose("pypower::on_precommit(t0='%s')",gld_clock(t0).get_string().get_buffer());
+    // not a pypower model
+    if ( nbus == 0 || nbranch == 0 )
+    {
+        return TS_NEVER;
+    }
+
+    // run controller on_precommit, if any
+    TIMESTAMP t1 = py_precommit ? update_controller(t0,py_precommit,"precommit") : TS_NEVER;
+
+    // maximum update interval (if any)
+    if ( maximum_timestep > 0 )
+    {
+        t1 = (TIMESTAMP)min(TIMESTAMP(t0 + maximum_timestep),t1);
+    }
+
+    // apply OPF interval (if any)
+    if ( opf_update_interval > 0 )
+    {
+        t1 = (TIMESTAMP)min(t1,TIMESTAMP((floor(t0/opf_update_interval)+1)*opf_update_interval));
+    }
+
+    gl_verbose("pypower::on_precommit(t0='%s') -> '%s'",gld_clock(t0).get_string().get_buffer(),gld_clock(t1).get_string().get_buffer());    
+    return t1;
+}
+
+EXPORT TIMESTAMP on_sync(TIMESTAMP t0)
+{
+    gl_verbose("pypower::on_sync(t0='%s')",gld_clock(t0).get_string().get_buffer());
+    // not a pypower model
+    if ( nbus == 0 || nbranch == 0 )
+    {
+        return TS_NEVER;
+    }
+
+    TIMESTAMP t1 = update_solution(t0);
+    gl_verbose("pypower::on_sync(t0='%s') -> '%s'",gld_clock(t0).get_string().get_buffer(),gld_clock(t1).get_string().get_buffer());
+    return t1;
 }
 
 EXPORT int on_commit(TIMESTAMP t0)
 {
+    int result = 1;
+    gl_verbose("pypower::on_commit(t0='%s')",gld_clock(t0).get_string().get_buffer());
+
     // not a pypower model
     if ( nbus == 0 || nbranch == 0 )
     {
-        return 1;
-    }
-
-    // send values out to solver
-    for ( size_t n = 0 ; n < nbus ; n++ )
-    {
-        bus *obj = buslist[n];
-        PyObject *pyobj = PyList_GetItem(busdata,n);
-        SENDX(0,bus_i,Double,Float)
-        SENDX(1,type,Long,Long)
-        SENDX(2,Pd,Double,Float)
-        SENDX(3,Qd,Double,Float)
-        SENDX(4,Gs,Double,Float)
-        SENDX(5,Bs,Double,Float)
-        SENDX(6,area,Long,Long)
-        SENDX(7,Vm,Double,Float)
-        SENDX(8,Va,Double,Float)
-        SENDX(9,baseKV,Double,Float)
-        SENDX(10,zone,Long,Long)
-        SENDX(11,Vmax,Double,Float)
-        SENDX(12,Vmin,Double,Float)
-        if ( enable_opf )
-        {
-            SENDX(13,lam_P,Double,Float)
-            SENDX(14,lam_Q,Double,Float)
-            SENDX(15,mu_Vmax,Double,Float)
-            SENDX(16,mu_Vmin,Double,Float)
-        }
-    }
-    for ( size_t n = 0 ; n < nbranch ; n++ )
-    {
-        branch *obj = branchlist[n];
-        PyObject *pyobj = PyList_GetItem(branchdata,n);
-        SENDX(0,fbus,Long,Long)
-        SENDX(1,tbus,Long,Long)
-        SENDX(2,r,Double,Float)
-        SENDX(3,x,Double,Float)
-        SENDX(4,b,Double,Float)
-        SENDX(5,rateA,Double,Float)
-        SENDX(6,rateB,Double,Float)
-        SENDX(7,rateC,Double,Float)
-        SENDX(8,ratio,Double,Float)
-        SENDX(9,angle,Double,Float)
-        SENDX(10,status,Long,Long)
-        SENDX(11,angmin,Double,Float)
-        SENDX(12,angmax,Double,Float)
-
-    }
-    for ( size_t n = 0 ; n < ngen ; n++ )
-    {
-        gen *obj = genlist[n];
-        PyObject *pyobj = PyList_GetItem(gendata,n);
-        SENDX(0,bus,Long,Long)
-        SENDX(1,Pg,Double,Float)
-        SENDX(2,Qg,Double,Float)
-        SENDX(3,Qmax,Double,Float)
-        SENDX(4,Qmin,Double,Float)
-        SENDX(5,Vg,Double,Float)
-        SENDX(6,mBase,Double,Float)
-        SENDX(7,status,Long,Long)
-        SENDX(8,Pmax,Double,Float)
-        SENDX(9,Pmin,Double,Float)
-        SENDX(10,Pc1,Double,Float)
-        SENDX(11,Pc2,Double,Float)
-        SENDX(12,Qc1min,Double,Float)
-        SENDX(13,Qc1max,Double,Float)
-        SENDX(14,Qc2min,Double,Float)
-        SENDX(15,Qc2max,Double,Float)
-        SENDX(16,ramp_agc,Double,Float)
-        SENDX(17,ramp_10,Double,Float)
-        SENDX(18,ramp_30,Double,Float)
-        SENDX(19,ramp_q,Double,Float)
-        SENDX(20,apf,Double,Float)
-        if ( enable_opf )
-        {
-            SENDX(21,mu_Pmax,Double,Float)
-            SENDX(22,mu_Pmin,Double,Float)
-            SENDX(23,mu_Qmax,Double,Float)
-            SENDX(24,mu_Qmin,Double,Float)
-        }
-    }
-    if ( gencostdata )
-    {
-        for ( size_t n = 0 ; n < ngencost ; n++ )
-        {
-            gencost *obj = gencostlist[n];
-            PyObject *pyobj = PyList_GetItem(gencostdata,n);
-            SENDX(0,model,Long,Long)
-            SENDX(1,startup,Double,Float)
-            SENDX(2,shutdown,Double,Float)
-            PyObject *py = PyList_GetItem(pyobj,3);
-            if ( py == NULL || strcmp((const char*)PyUnicode_DATA(py),obj->get_costs())!=0 )
-            {
-                Py_XDECREF(py);
-                PyList_SET_ITEM(pyobj,3,PyUnicode_FromString(obj->get_costs()));
-            }
-        }
+        result = 1;
     }
 
     // run controller on_commit, if any
-    if ( py_commit )
+    else if ( py_commit && update_controller(t0,py_commit,"commit") <= t0 )
     {
-        PyDict_SetItemString(data,"t",PyLong_FromLong(t0));        
-        PyErr_Clear();
-        PyObject *ts = PyObject_CallOneArg(py_commit,data);
-        if ( PyErr_Occurred() )
-        {
-            PyErr_Print();
-            return 0;
-        }
-        Py_DECREF(ts);
+        result = 0;
     }
 
-    return 1;
+    gl_verbose("pypower::on_commit(t0='%s') -> 1",gld_clock(t0).get_string().get_buffer());
+    return result;
 }
 
 EXPORT void on_term(void)

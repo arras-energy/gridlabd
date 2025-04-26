@@ -1,53 +1,71 @@
+// This test verifies that OPF updates Ps and Qs and does not change Pg and Qg
+
 #define CASE=14
 #ifexists "../case.glm"
 #define DIR=..
 #endif
-#include "${DIR:-.}/case.glm"
 
 module pypower
 {
-	maximum_timestep 3600;
-#ifdef DIR
-    controllers_path "${DIR}";
-#endif
-    controllers "controllers";
+    enable_opf TRUE;
+    save_case TRUE;
+    save_format PY;
 }
 
-#for N in ${RANGE 1,14}
-object pypower.load
+#include "${DIR:-.}/case.glm"
+
+object powerplant
 {
-    parent pp_bus_${N};
-    Vn 12.5 kV;
-    status ONLINE;
-    controller "load_control";
+    parent pp_gen_1;
+    fixed_cost 0.0;
+    variable_cost 20.0;
+    scarcity_cost 0.0430293;
 }
+object powerplant
+{
+    parent pp_gen_2;
+    fixed_cost 0.0;
+    variable_cost 20.0;
+    scarcity_cost 0.25;
+}
+object powerplant
+{
+    parent pp_gen_3;
+    fixed_cost 0.0;
+    variable_cost 40.0;
+    scarcity_cost 0.01;
+}
+object powerplant
+{
+    parent pp_gen_4;
+    fixed_cost 0.0;
+    variable_cost 40.0;
+    scarcity_cost 0.01;
+}
+object powerplant
+{
+    parent pp_gen_5;
+    fixed_cost 0.0;
+    variable_cost 40.0;
+    scarcity_cost 0.01;
+}
+#for GEN in ${RANGE 1,5}
+modify pp_gen_${GEN}.Pg 0.0;
+modify pp_gen_${GEN}.Qg 0.0;
 #done
-
-module tape
-{
-	csv_header_type NAME;
-}
-
-#set suppress_repeat_messages=FALSE
-object multi_recorder
-{
-	file "test_case14_ts.csv";
-#for N in ${RANGE 1,14}
-	property "pp_bus_${N}:Pd,pp_bus_${N}:Qd";
-#done
-	interval -1;
-}
 
 module assert;
-#define MRES=0.05 // magnitude test resolution
-#define ARES=0.2 // angle test resolution
+#define MRES=0.001 // magnitude test resolution
+#define ARES=0.01 // angle test resolution
+#define PRES=0.1 // real power test resolution
+#define QRES=0.2 // reactive power test resolution
 
 object assert
-{
+{      
     parent pp_bus_1;
     target Vm;
     relation ==;
-    value 1.060;
+    value +1.195;
     within ${MRES};
 }
 object assert
@@ -60,11 +78,11 @@ object assert
 }
 
 object assert
-{
+{      
     parent pp_bus_2;
     target Vm;
     relation ==;
-    value 1.045;
+    value +1.204;
     within ${MRES};
 }
 object assert
@@ -72,16 +90,16 @@ object assert
     parent pp_bus_2;
     target Va;
     relation ==;
-    value -4.98;
+    value -0.33;
     within ${ARES};
 }
 
 object assert
-{
+{      
     parent pp_bus_3;
     target Vm;
     relation ==;
-    value 1.010;
+    value +1.217;
     within ${MRES};
 }
 object assert
@@ -89,16 +107,16 @@ object assert
     parent pp_bus_3;
     target Va;
     relation ==;
-    value -12.72;
+    value -3.41;
     within ${ARES};
 }
 
 object assert
-{
+{      
     parent pp_bus_4;
     target Vm;
     relation ==;
-    value 1.019;
+    value +1.233;
     within ${MRES};
 }
 object assert
@@ -106,16 +124,16 @@ object assert
     parent pp_bus_4;
     target Va;
     relation ==;
-    value -10.33;
+    value +1.21;
     within ${ARES};
 }
 
 object assert
-{
+{      
     parent pp_bus_5;
     target Vm;
     relation ==;
-    value 1.020;
+    value +1.217;
     within ${MRES};
 }
 object assert
@@ -123,16 +141,16 @@ object assert
     parent pp_bus_5;
     target Va;
     relation ==;
-    value -8.78;
+    value +0.22;
     within ${ARES};
 }
 
 object assert
-{
+{      
     parent pp_bus_6;
     target Vm;
     relation ==;
-    value 1.070;
+    value +1.350;
     within ${MRES};
 }
 object assert
@@ -140,16 +158,16 @@ object assert
     parent pp_bus_6;
     target Va;
     relation ==;
-    value -14.22;
+    value +0;
     within ${ARES};
 }
 
 object assert
-{
+{      
     parent pp_bus_7;
     target Vm;
     relation ==;
-    value 1.062;
+    value +1.285;
     within ${MRES};
 }
 object assert
@@ -157,16 +175,16 @@ object assert
     parent pp_bus_7;
     target Va;
     relation ==;
-    value -13.37;
+    value +1.51;
     within ${ARES};
 }
 
 object assert
-{
+{      
     parent pp_bus_8;
     target Vm;
     relation ==;
-    value 1.090;
+    value +1.308;
     within ${MRES};
 }
 object assert
@@ -174,16 +192,16 @@ object assert
     parent pp_bus_8;
     target Va;
     relation ==;
-    value -13.36;
+    value +1.51;
     within ${ARES};
 }
 
 object assert
-{
+{      
     parent pp_bus_9;
     target Vm;
     relation ==;
-    value 1.056;
+    value +1.285;
     within ${MRES};
 }
 object assert
@@ -191,16 +209,16 @@ object assert
     parent pp_bus_9;
     target Va;
     relation ==;
-    value -14.94;
+    value +1.67;
     within ${ARES};
 }
 
 object assert
-{
+{      
     parent pp_bus_10;
     target Vm;
     relation ==;
-    value 1.051;
+    value +1.306;
     within ${MRES};
 }
 object assert
@@ -208,16 +226,16 @@ object assert
     parent pp_bus_10;
     target Va;
     relation ==;
-    value -15.10;
+    value +3.53;
     within ${ARES};
 }
 
 object assert
-{
+{      
     parent pp_bus_11;
     target Vm;
     relation ==;
-    value 1.057;
+    value +1.342;
     within ${MRES};
 }
 object assert
@@ -225,16 +243,16 @@ object assert
     parent pp_bus_11;
     target Va;
     relation ==;
-    value -14.79;
+    value +2.81;
     within ${ARES};
 }
 
 object assert
-{
+{      
     parent pp_bus_12;
     target Vm;
     relation ==;
-    value 1.055;
+    value +1.35;
     within ${MRES};
 }
 object assert
@@ -242,16 +260,16 @@ object assert
     parent pp_bus_12;
     target Va;
     relation ==;
-    value -15.07;
+    value -0.62;
     within ${ARES};
 }
 
 object assert
-{
+{      
     parent pp_bus_13;
     target Vm;
     relation ==;
-    value 1.050;
+    value +1.31;
     within ${MRES};
 }
 object assert
@@ -259,16 +277,16 @@ object assert
     parent pp_bus_13;
     target Va;
     relation ==;
-    value -15.16;
+    value -1.89;
     within ${ARES};
 }
 
 object assert
-{
+{      
     parent pp_bus_14;
     target Vm;
     relation ==;
-    value 1.036;
+    value +1.266;
     within ${MRES};
 }
 object assert
@@ -276,7 +294,97 @@ object assert
     parent pp_bus_14;
     target Va;
     relation ==;
-    value -16.04;
+    value +0.22;
     within ${ARES};
+}
+
+object assert
+{
+    parent pp_gen_1;
+    target Pg;
+    relation ==;
+    value 0;
+    within ${PRES};
+}
+
+object assert
+{
+    parent pp_gen_1;
+    target Qg;
+    relation ==;
+    value 0;
+    within ${QRES};
+}
+
+object assert
+{
+    parent pp_gen_2;
+    target Pg;
+    relation ==;
+    value 0;
+    within ${PRES};
+}
+
+object assert
+{
+    parent pp_gen_2;
+    target Qg;
+    relation ==;
+    value 0;
+    within ${QRES};
+}
+
+object assert
+{
+    parent pp_gen_3;
+    target Pg;
+    relation ==;
+    value 0;
+    within ${PRES};
+}
+
+object assert
+{
+    parent pp_gen_3;
+    target Qg;
+    relation ==;
+    value 0;
+    within ${QRES};
+}
+
+object assert
+{
+    parent pp_gen_4;
+    target Pg;
+    relation ==;
+    value 0;
+    within ${PRES};
+}
+
+object assert
+{
+    parent pp_gen_4;
+    target Qg;
+    relation ==;
+    value 0;
+    within ${QRES};
+}
+
+object assert
+{
+    parent pp_gen_5;
+    target Pg;
+    relation ==;
+    value 0;
+    within ${PRES};
+}
+
+object assert
+{
+    parent pp_gen_5;
+    target Qg;
+    relation ==;
+    value 0;
+    within ${QRES};
 }
 
