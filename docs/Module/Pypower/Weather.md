@@ -11,7 +11,7 @@ class weather {
 	double Sh[W/m^2]; // Solar horizontal irradiance (W/m^2)
 	double Sg[W/m^2]; // Solar global irradiance (W/m^2)
 	double Wd[deg]; // Wind direction (deg)
-	double Ws[m/2]; // Wind speed (m/2)
+	double Ws[m/s]; // Wind speed (m/s)
 	double Td[degC]; // Dry-bulb air temperature (degC)
 	double Tw[degC]; // Wet-bulb air temperature (degC)
 	double RH[%]; // Relative humidity (%)
