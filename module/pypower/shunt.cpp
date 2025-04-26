@@ -117,7 +117,7 @@ shunt::shunt(MODULE *module)
             PT_double, "dwell_time[s]", get_dwell_time_offset(),
                 PT_DESCRIPTION, "control lockout",
 
-            PT_double, "control_gain[MW/V]", get_dwell_time_offset(),
+            PT_double, "control_gain[MVAr/pu.V]", get_control_gain_offset(),
                 PT_DESCRIPTION, "proportional feedback control gain",
 
             NULL)<1)
@@ -211,7 +211,7 @@ int shunt::init(OBJECT *parent)
 
     if ( control_mode == CM_CONTINUOUS_V && control_gain <= 0 )
     {
-        error("control_gain must be positive for control_mode == CONTINUOUS_V");
+        error("control_gain (%g) must be positive for control_mode == CONTINUOUS_V",control_gain);
         return 0;
     }
     else if ( control_mode == CM_DISCRETE_V && steps_1 <= 0 )
@@ -287,7 +287,7 @@ TIMESTAMP shunt::update_control(TIMESTAMP t0)
                 {
                     if ( Ahi )
                     {
-                        warning("shunt voltage control upper limit reached at %lg MVAr",admittance);
+                        warning("shunt voltage discrete control upper limit reached at %lg MVAr (V=%g)",admittance,V);
                     }
                     else
                     {
@@ -300,7 +300,7 @@ TIMESTAMP shunt::update_control(TIMESTAMP t0)
                 {
                     if ( Alo )
                     {
-                        warning("shunt voltage control lower limit reached at %lg MVAr",admittance);
+                        warning("shunt voltage discrete control lower limit reached at %lg MVAr (V=%g)",admittance,V);
                     }
                     else
                     {
@@ -314,7 +314,32 @@ TIMESTAMP shunt::update_control(TIMESTAMP t0)
             else if ( control_mode == CM_CONTINUOUS_V )
             {
                 // synchronous condensers
-                
+                double Vref = V;
+                if ( Vlow )
+                {
+                    Vref = Vlow;
+                }
+                else if ( Vhigh )
+                {
+                    Vref = Vhigh;
+                }
+                double err = Vref - V;
+                admittance += err * control_gain;
+                if ( admittance < -admittance_1 )
+                {
+                    admittance = -admittance_1;
+                    warning("shunt voltage continuous control lower limit reached at %lg MVAr (V=%g)",admittance,V);
+                }
+                else if ( admittance > admittance_1 )
+                {
+                    admittance = admittance_1;
+                    warning("shunt voltage continuous control upper limit reached at %lg MVAr (V=%g)",admittance,V);
+                }
+                else
+                {
+                    verbose("setting admittance to %lg",admittance);
+                }
+
                 t1 = TIMESTAMP(last_update + dwell_time);
             }
             else

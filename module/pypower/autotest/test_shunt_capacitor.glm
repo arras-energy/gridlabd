@@ -1,147 +1,1041 @@
-//#option verbose
-//#option debug
-#set output_message_context=NONE
+// JSON to GLM Converter Output
+// InputFile '/Users/david/GitHub/dchassin/gridlabd/module/pypower/autotest/test_shunt_capacitor.json'
+// CreateDate '2025-04-24 08:48:39 '
 
+
+// CLOCK
+clock {
+	timezone PST8PDT;
+	starttime "1999-12-31 16:00:00 PST";
+	stoptime "NEVER";
+}
+
+// MODULES
 module pypower
 {
-    message_flags VERBOSE|DEBUG;    
-    stop_on_failure FALSE;
-    default_reactive_power_fraction 0.1;
-    save_case TRUE;
-    baseMVA 100;
+	message_flags DEBUG|VERBOSE;
+	default_reactive_power_fraction +0.1 pu;
+	minimum_voltage_magnitude_deadband +0.002 pu.kV;
+	minimum_voltage_angle_deadband +0.01 deg;
+	version 2;
+	solver_method NR;
+	maximum_timestep +0 s;
+	baseMVA +100 MVA;
+	enable_opf FALSE;
+	opf_update_interval +0 s;
+	stop_on_failure FALSE;
+	save_case TRUE;
+	solver_update_resolution +1e-08;
+	maximum_iterations 0;
+	solution_tolerance +0;
+	solver_status SUCCESS;
+	enforce_q_limits FALSE;
+	use_dc_powerflow FALSE;
+	save_format CSV;
+	total_loss +5.24039 MW;
+	generation_shortfall +0 MW;
+	with_emissions FALSE;
+	maximum_iterations_opf 10;
+	opf_feasibility_tolerance +1.3;
+	opf_gradient_tolerance +3;
+	opf_condition_tolerance +1000;
+	opf_cost_tolerance +0.01;
 }
-module assert;
-
-//
-// Bus objects
-//
-object bus
+module assert
 {
-    name bus_1;
-    type REF;
-    baseKV 250 kV;
-    object gen 
-    {
-        name "gen_1";
-        Pg 40 MW;
-        Qg 10 MVAr;
-        Pmin 10 MW;
-        Pmax 500 MW;
-        Qmin -50 MVAr;
-        Qmax +50 MVAr;
-        status IN_SERVICE;
-        object gencost
-        {
-            name "cost_1";
-            startup 10 $;
-            shutdown 0 $;
-            model POLYNOMIAL;
-            costs 1,10;
-        };
-    };
-}
-object bus
-{
-    name bus_2;
-    type PQ;
-    baseKV 250 kV;
-}
-object bus
-{
-    name bus_3;
-    type PQ;
-    baseKV 250 kV;
-    object load
-    {
-        name "load_3";
-        Z 50 MVA;
-        I 20 MVA;
-        P 30+10j MVAr;
-        Vn 250 kV;
-        status ONLINE;
-    };
-    object shunt 
-    { 
-        name "caps_3";
-        control_mode DISCRETE_V;
-        status ONLINE;
-        voltage_high 1.05 pu;
-        voltage_low 0.95 pu;
-        admittance 0.0 MVAr;
-        steps_1 20;
-        admittance_1 5.0 MVAr;
-        dwell_time 60s;
-    };
-}
-object bus
-{
-    name bus_4;
-    type PQ;
-    baseKV 250 kV;
-    object load
-    {
-        name "load_4";
-        Z 50 MVAr;
-        I 20 MVAr;
-        P 30+10j MVAr;
-        Vn 250 kV;
-        status ONLINE;
-    };
-    object shunt 
-    { 
-        name "caps_4";
-        control_mode DISCRETE_V;
-        status ONLINE;
-        voltage_high 1.05 pu;
-        voltage_low 0.95 pu;
-        admittance 0.0 MVAr;
-        steps_1 20;
-        admittance_1 5.0 MVAr;
-        dwell_time 60s;
-    };
 }
 
-//
-// Branch objects
-//
-object branch 
+// GLOBALS
+// version.major is set to 4
+// version.minor is set to 3
+// version.patch is set to 14
+// version.build is set to 250423
+// version.branch is set to develop_fix_pypower_shunt
+// version is set to 4.3.14-250423-develop_fix_pypower_shunt
+// command_line is set to /usr/local/opt/gridlabd/4.3.14-250423-develop_fix_pypower_shunt-darwin_23-x86_64/bin/gridlabd.bin /Users/david/GitHub/dchassin/gridlabd/module/pypower/autotest/test_shunt_capacitor.glm
+#ifndef environment
+#define environment=batch
+#else
+#set environment=batch
+#endif //environment
+#ifndef quiet
+global bool quiet FALSE;
+#else
+#set quiet=FALSE
+#endif //quiet
+#ifndef warn
+global bool warn TRUE;
+#else
+#set warn=TRUE
+#endif //warn
+#ifndef debugger
+global bool debugger FALSE;
+#else
+#set debugger=FALSE
+#endif //debugger
+#ifndef gdb
+global bool gdb FALSE;
+#else
+#set gdb=FALSE
+#endif //gdb
+#ifndef debug
+global bool debug FALSE;
+#else
+#set debug=FALSE
+#endif //debug
+#ifndef test
+global bool test FALSE;
+#else
+#set test=FALSE
+#endif //test
+#ifndef verbose
+global bool verbose TRUE;
+#else
+#set verbose=TRUE
+#endif //verbose
+#ifndef iteration_limit
+global int32 iteration_limit 100;
+#else
+#set iteration_limit=100
+#endif //iteration_limit
+// workdir is set to /Users/david/GitHub/dchassin/gridlabd/module/pypower/autotest
+#ifndef dumpfile
+#define dumpfile=gridlabd.json
+#else
+#set dumpfile=gridlabd.json
+#endif //dumpfile
+#ifndef savefile
+#define savefile=/Users/david/GitHub/dchassin/gridlabd/module/pypower/autotest/test_shunt_capacitor.json
+#else
+#set savefile=/Users/david/GitHub/dchassin/gridlabd/module/pypower/autotest/test_shunt_capacitor.json
+#endif //savefile
+#ifndef dumpall
+global bool dumpall FALSE;
+#else
+#set dumpall=FALSE
+#endif //dumpall
+#ifndef runchecks
+global bool runchecks FALSE;
+#else
+#set runchecks=FALSE
+#endif //runchecks
+#ifndef threadcount
+global int32 threadcount 1;
+#else
+#set threadcount=1
+#endif //threadcount
+#ifndef profiler
+global bool profiler FALSE;
+#else
+#set profiler=FALSE
+#endif //profiler
+#ifndef pauseatexit
+global bool pauseatexit FALSE;
+#else
+#set pauseatexit=FALSE
+#endif //pauseatexit
+#ifndef testoutputfile
+#define testoutputfile=test.txt
+#else
+#set testoutputfile=test.txt
+#endif //testoutputfile
+#ifndef xml_encoding
+global int32 xml_encoding 8;
+#else
+#set xml_encoding=8
+#endif //xml_encoding
+#ifndef clock
+global timestamp clock "1999-12-31 16:04:00 PST";
+#else
+#set clock=1999-12-31 16:04:00 PST
+#endif //clock
+#ifndef starttime
+global timestamp starttime "1999-12-31 16:00:00 PST";
+#else
+#set starttime=1999-12-31 16:00:00 PST
+#endif //starttime
+#ifndef stoptime
+global timestamp stoptime "NEVER";
+#else
+#set stoptime=NEVER
+#endif //stoptime
+#ifndef double_format
+global char32 double_format "%+lg";
+#else
+#set double_format=%+lg
+#endif //double_format
+#ifndef complex_format
+global char256 complex_format "%+lg%+lg%c";
+#else
+#set complex_format=%+lg%+lg%c
+#endif //complex_format
+#ifndef complex_output_format
+global enumeration complex_output_format DEFAULT;
+#else
+#set complex_output_format=DEFAULT
+#endif //complex_output_format
+#ifndef object_format
+global char32 object_format "%s:%d";
+#else
+#set object_format=%s:%d
+#endif //object_format
+#ifndef object_scan
+global char32 object_scan "%[^:]:%d";
+#else
+#set object_scan=%[^:]:%d
+#endif //object_scan
+#ifndef object_tree_balance
+global bool object_tree_balance FALSE;
+#else
+#set object_tree_balance=FALSE
+#endif //object_tree_balance
+// kmlfile is set to 
+#ifndef kmlhost
+#define kmlhost=https://code.arras.energy/develop_fix_pypower_shunt/runtime
+#else
+#set kmlhost=https://code.arras.energy/develop_fix_pypower_shunt/runtime
+#endif //kmlhost
+// modelname is set to /Users/david/GitHub/dchassin/gridlabd/module/pypower/autotest/test_shunt_capacitor.glm
+// execdir is set to /usr/local/opt/gridlabd/4.3.14-250423-develop_fix_pypower_shunt-darwin_23-x86_64/bin
+#ifndef strictnames
+global bool strictnames TRUE;
+#else
+#set strictnames=TRUE
+#endif //strictnames
+#ifndef website
+#define website=http://www.gridlabd.org/
+#else
+#set website=http://www.gridlabd.org/
+#endif //website
+#ifndef urlbase
+#define urlbase=http://www.gridlabd.org/
+#else
+#set urlbase=http://www.gridlabd.org/
+#endif //urlbase
+#ifndef randomstate
+global int32 randomstate 123092179;
+#else
+#set randomstate=123092179
+#endif //randomstate
+#ifndef randomseed
+global int32 randomseed 123092179;
+#else
+#set randomseed=123092179
+#endif //randomseed
+// include is set to 
+// trace is set to 
+#ifndef gdb_window
+global bool gdb_window FALSE;
+#else
+#set gdb_window=FALSE
+#endif //gdb_window
+#ifndef tmp
+#define tmp=/Users/david/.gridlabd/tmp
+#else
+#set tmp=/Users/david/.gridlabd/tmp
+#endif //tmp
+#ifndef force_compile
+global int32 force_compile 0;
+#else
+#set force_compile=0
+#endif //force_compile
+#ifndef nolocks
+global bool nolocks FALSE;
+#else
+#set nolocks=FALSE
+#endif //nolocks
+#ifndef skipsafe
+global bool skipsafe FALSE;
+#else
+#set skipsafe=FALSE
+#endif //skipsafe
+#ifndef dateformat
+global enumeration dateformat ISO;
+#else
+#set dateformat=ISO
+#endif //dateformat
+#ifndef init_sequence
+global enumeration init_sequence DEFERRED;
+#else
+#set init_sequence=DEFERRED
+#endif //init_sequence
+#ifndef minimum_timestep
+global int32 minimum_timestep 1;
+#else
+#set minimum_timestep=1
+#endif //minimum_timestep
+// platform is set to MACOSX
+#ifndef suppress_repeat_messages
+global bool suppress_repeat_messages FALSE;
+#else
+#set suppress_repeat_messages=FALSE
+#endif //suppress_repeat_messages
+#ifndef maximum_synctime
+global int32 maximum_synctime 60;
+#else
+#set maximum_synctime=60
+#endif //maximum_synctime
+#ifndef run_realtime
+global bool run_realtime FALSE;
+#else
+#set run_realtime=FALSE
+#endif //run_realtime
+#ifndef enter_realtime
+global timestamp enter_realtime "NEVER";
+#else
+#set enter_realtime=NEVER
+#endif //enter_realtime
+// realtime_metric is set to +0
+#ifndef no_deprecate
+global bool no_deprecate FALSE;
+#else
+#set no_deprecate=FALSE
+#endif //no_deprecate
+// streaming_io is set to FALSE
+// compileonly is set to FALSE
+// initializeonly is set to FALSE
+#ifndef relax_naming_rules
+global bool relax_naming_rules FALSE;
+#else
+#set relax_naming_rules=FALSE
+#endif //relax_naming_rules
+#ifndef browser
+#define browser=safari
+#else
+#set browser=safari
+#endif //browser
+#ifndef server_portnum
+global int32 server_portnum 0;
+#else
+#set server_portnum=0
+#endif //server_portnum
+#ifndef server_quit_on_close
+global bool server_quit_on_close FALSE;
+#else
+#set server_quit_on_close=FALSE
+#endif //server_quit_on_close
+// client_allowed is set to 
+#ifndef autoclean
+global bool autoclean TRUE;
+#else
+#set autoclean=TRUE
+#endif //autoclean
+#ifndef technology_readiness_level
+global enumeration technology_readiness_level UNKNOWN;
+#else
+#set technology_readiness_level=UNKNOWN
+#endif //technology_readiness_level
+#ifndef show_progress
+global bool show_progress TRUE;
+#else
+#set show_progress=TRUE
+#endif //show_progress
+#ifndef checkpoint_type
+global enumeration checkpoint_type NONE;
+#else
+#set checkpoint_type=NONE
+#endif //checkpoint_type
+// checkpoint_file is set to 
+#ifndef checkpoint_seqnum
+global int32 checkpoint_seqnum 0;
+#else
+#set checkpoint_seqnum=0
+#endif //checkpoint_seqnum
+#ifndef checkpoint_interval
+global int32 checkpoint_interval 0;
+#else
+#set checkpoint_interval=0
+#endif //checkpoint_interval
+#ifndef checkpoint_keepall
+global bool checkpoint_keepall FALSE;
+#else
+#set checkpoint_keepall=FALSE
+#endif //checkpoint_keepall
+#ifndef check_version
+global bool check_version FALSE;
+#else
+#set check_version=FALSE
+#endif //check_version
+#ifndef random_number_generator
+global enumeration random_number_generator RNG3;
+#else
+#set random_number_generator=RNG3
+#endif //random_number_generator
+#ifndef mainloop_state
+global enumeration mainloop_state DONE;
+#else
+#set mainloop_state=DONE
+#endif //mainloop_state
+#ifndef pauseat
+global timestamp pauseat "NEVER";
+#else
+#set pauseat=NEVER
+#endif //pauseat
+// infourl is set to http://docs.arras.energy/index.html?owner=arras-energy&project=gridlabd&search=
+#ifndef hostname
+#define hostname=localhost
+#else
+#set hostname=localhost
+#endif //hostname
+#ifndef hostaddr
+global char32 hostaddr "127.0.0.1";
+#else
+#set hostaddr=127.0.0.1
+#endif //hostaddr
+#ifndef autostart_gui
+global bool autostart_gui TRUE;
+#else
+#set autostart_gui=TRUE
+#endif //autostart_gui
+// master is set to 
+#ifndef master_port
+global int64 master_port 0;
+#else
+#set master_port=0
+#endif //master_port
+#ifndef multirun_mode
+global enumeration multirun_mode STANDALONE;
+#else
+#set multirun_mode=STANDALONE
+#endif //multirun_mode
+#ifndef multirun_conn
+global enumeration multirun_conn NONE;
+#else
+#set multirun_conn=NONE
+#endif //multirun_conn
+#ifndef signal_timeout
+global int32 signal_timeout 5000;
+#else
+#set signal_timeout=5000
+#endif //signal_timeout
+#ifndef slave_port
+global int16 slave_port 6267;
+#else
+#set slave_port=6267
+#endif //slave_port
+#ifndef slave_id
+global int64 slave_id 0;
+#else
+#set slave_id=0
+#endif //slave_id
+// return_code is set to 0
+// exit_code is set to 0
+#ifndef module_compiler_flags
+global set module_compiler_flags NONE;
+#else
+#set module_compiler_flags=NONE
+#endif //module_compiler_flags
+// init_max_defer is set to 64
+#ifndef mt_analysis
+global bool mt_analysis FALSE;
+#else
+#set mt_analysis=FALSE
+#endif //mt_analysis
+#ifndef inline_block_size
+global int32 inline_block_size 1048576;
+#else
+#set inline_block_size=1048576
+#endif //inline_block_size
+#ifndef validate
+global set validate TSTD|RALL;
+#else
+#set validate=TSTD|RALL
+#endif //validate
+#ifndef sanitize
+global set sanitize NAMES|POSITIONS;
+#else
+#set sanitize=NAMES|POSITIONS
+#endif //sanitize
+#ifndef sanitize_prefix
+global char8 sanitize_prefix "GLD_";
+#else
+#set sanitize_prefix=GLD_
+#endif //sanitize_prefix
+#ifndef sanitize_index
+#define sanitize_index=.txt
+#else
+#set sanitize_index=.txt
+#endif //sanitize_index
+// sanitize_offset is set to 
+#ifndef simulation_mode
+global enumeration simulation_mode EVENT;
+#else
+#set simulation_mode=EVENT
+#endif //simulation_mode
+#ifndef deltamode_allowed
+global bool deltamode_allowed FALSE;
+#else
+#set deltamode_allowed=FALSE
+#endif //deltamode_allowed
+#ifndef deltamode_timestep
+global int32 deltamode_timestep 10000000;
+#else
+#set deltamode_timestep=10000000
+#endif //deltamode_timestep
+#ifndef deltamode_maximumtime
+global int64 deltamode_maximumtime 3600000000000;
+#else
+#set deltamode_maximumtime=3600000000000
+#endif //deltamode_maximumtime
+#ifndef deltaclock
+global int64 deltaclock 0;
+#else
+#set deltaclock=0
+#endif //deltaclock
+#ifndef delta_current_clock
+global double delta_current_clock +0;
+#else
+#set delta_current_clock=+0
+#endif //delta_current_clock
+// deltamode_updateorder is set to 
+#ifndef deltamode_iteration_limit
+global int32 deltamode_iteration_limit 10;
+#else
+#set deltamode_iteration_limit=10
+#endif //deltamode_iteration_limit
+#ifndef deltamode_forced_extra_timesteps
+global int32 deltamode_forced_extra_timesteps 0;
+#else
+#set deltamode_forced_extra_timesteps=0
+#endif //deltamode_forced_extra_timesteps
+#ifndef deltamode_forced_always
+global bool deltamode_forced_always FALSE;
+#else
+#set deltamode_forced_always=FALSE
+#endif //deltamode_forced_always
+#ifndef run_powerworld
+global bool run_powerworld FALSE;
+#else
+#set run_powerworld=FALSE
+#endif //run_powerworld
+#ifndef bigranks
+global bool bigranks TRUE;
+#else
+#set bigranks=TRUE
+#endif //bigranks
+// exename is set to /usr/local/opt/gridlabd/4.3.14-250423-develop_fix_pypower_shunt-darwin_23-x86_64/bin/gridlabd.bin
+#ifndef wget_options
+#define wget_options=maxsize:100MB;update:newer
+#else
+#set wget_options=maxsize:100MB;update:newer
+#endif //wget_options
+#ifndef curl_options
+#define curl_options=maxsize:100MB;update:newer
+#else
+#set curl_options=maxsize:100MB;update:newer
+#endif //curl_options
+#ifndef svnroot
+#define svnroot=https://github.com/arras-energy/gridlabd
+#else
+#set svnroot=https://github.com/arras-energy/gridlabd
+#endif //svnroot
+#ifndef github
+#define github=https://github.com/arras-energy/gridlabd
+#else
+#set github=https://github.com/arras-energy/gridlabd
+#endif //github
+#ifndef gitraw
+#define gitraw=https://raw.githubusercontent.com/arras-energy/gridlabd
+#else
+#set gitraw=https://raw.githubusercontent.com/arras-energy/gridlabd
+#endif //gitraw
+#ifndef allow_reinclude
+global bool allow_reinclude FALSE;
+#else
+#set allow_reinclude=FALSE
+#endif //allow_reinclude
+#ifndef output_message_context
+global set output_message_context NONE;
+#else
+#set output_message_context=NONE
+#endif //output_message_context
+#ifndef permissive_access
+global int32 permissive_access 0;
+#else
+#set permissive_access=0
+#endif //permissive_access
+#ifndef relax_undefined_if
+global bool relax_undefined_if FALSE;
+#else
+#set relax_undefined_if=FALSE
+#endif //relax_undefined_if
+#ifndef literal_if
+global bool literal_if TRUE;
+#else
+#set literal_if=TRUE
+#endif //literal_if
+#ifndef validto_context
+global enumeration validto_context 1414746112;
+#else
+#set validto_context=1414746112
+#endif //validto_context
+#ifndef daemon_configfile
+#define daemon_configfile=gridlabd.cnf
+#else
+#set daemon_configfile=gridlabd.cnf
+#endif //daemon_configfile
+// timezone_locale is set to PST8PDT
+#ifndef glm_save_options
+global set glm_save_options MINIMAL;
+#else
+#set glm_save_options=MINIMAL
+#endif //glm_save_options
+#ifndef filesave_options
+global set filesave_options ALL;
+#else
+#set filesave_options=ALL
+#endif //filesave_options
+#ifndef ignore_errors
+global bool ignore_errors FALSE;
+#else
+#set ignore_errors=FALSE
+#endif //ignore_errors
+#ifndef keep_progress
+global bool keep_progress FALSE;
+#else
+#set keep_progress=FALSE
+#endif //keep_progress
+#ifndef allow_variant_aggregates
+global bool allow_variant_aggregates FALSE;
+#else
+#set allow_variant_aggregates=FALSE
+#endif //allow_variant_aggregates
+// progress is set to +0
+#ifndef server_keepalive
+global bool server_keepalive FALSE;
+#else
+#set server_keepalive=FALSE
+#endif //server_keepalive
+#ifndef pythonpath
+#define pythonpath=.:/usr/local/opt/gridlabd/4.3.14-250423-develop_fix_pypower_shunt-darwin_23-x86_64/share:/usr/local/opt/gridlabd/4.3.14-250423-develop_fix_pypower_shunt-darwin_23-x86_64/lib/gridlabd/python3.10/site-packages
+#else
+#set pythonpath=.:/usr/local/opt/gridlabd/4.3.14-250423-develop_fix_pypower_shunt-darwin_23-x86_64/share:/usr/local/opt/gridlabd/4.3.14-250423-develop_fix_pypower_shunt-darwin_23-x86_64/lib/gridlabd/python3.10/site-packages
+#endif //pythonpath
+// pythonexec is set to /usr/local/opt/gridlabd/4.3.14-250423-develop_fix_pypower_shunt-darwin_23-x86_64/bin/python3
+// datadir is set to /usr/local/opt/gridlabd/4.3.14-250423-develop_fix_pypower_shunt-darwin_23-x86_64/share/gridlabd
+// bindir is set to /usr/local/opt/gridlabd/4.3.14-250423-develop_fix_pypower_shunt-darwin_23-x86_64/bin
+// vardir is set to /usr/local/opt/gridlabd/4.3.14-250423-develop_fix_pypower_shunt-darwin_23-x86_64/var/gridlabd
+// libdir is set to /usr/local/opt/gridlabd/4.3.14-250423-develop_fix_pypower_shunt-darwin_23-x86_64/lib/gridlabd
+// incdir is set to /usr/local/opt/gridlabd/4.3.14-250423-develop_fix_pypower_shunt-darwin_23-x86_64/include
+// logfile is set to /tmp/gridlabd-log
+// pidfile_dir is set to /tmp/gridlabd-pid
+// configpath is set to /usr/local/opt/gridlabd/4.3.14-250423-develop_fix_pypower_shunt-darwin_23-x86_64/share/gridlabd/solver_py.conf
+#ifndef json_complex_format
+global set json_complex_format STRING;
+#else
+#set json_complex_format=STRING
+#endif //json_complex_format
+#ifndef rusage_file
+#define rusage_file=gridlabd-rusage.csv
+#else
+#set rusage_file=gridlabd-rusage.csv
+#endif //rusage_file
+#ifndef rusage_rate
+global int64 rusage_rate 0;
+#else
+#set rusage_rate=0
+#endif //rusage_rate
+#ifndef rusage
+#define rusage={"utime" : 1.198201, "stime" : 0.303052, "maxrss" : 39841792, "ixrss" : 0, "idrss" : 0, "isrss" : 0, "minflt" : 11994, "majflt" : 7, "nswap" : 0, "inblock" : 0, "oublock" : 0, "msgsnd" : 0, "msgrcv" : 0, "nsignals" : 0, "nvcsw" : 7, "nivcsw" : 8164}
+#else
+#set rusage={"utime" : 1.198201, "stime" : 0.303052, "maxrss" : 39841792, "ixrss" : 0, "idrss" : 0, "isrss" : 0, "minflt" : 11994, "majflt" : 7, "nswap" : 0, "inblock" : 0, "oublock" : 0, "msgsnd" : 0, "msgrcv" : 0, "nsignals" : 0, "nvcsw" : 7, "nivcsw" : 8164}
+#endif //rusage
+#ifndef echo
+global bool echo FALSE;
+#else
+#set echo=FALSE
+#endif //echo
+// filename is set to /Users/david/GitHub/dchassin/gridlabd/module/pypower/autotest/test_shunt_capacitor.glm
+#ifndef country
+global char8 country "US";
+#else
+#set country=US
+#endif //country
+// region is set to 
+#ifndef organization
+global char32 organization "arras-energy";
+#else
+#set organization=arras-energy
+#endif //organization
+// profile_output_format is set to 
+#ifndef maximum_runtime
+global int64 maximum_runtime 0;
+#else
+#set maximum_runtime=0
+#endif //maximum_runtime
+#ifndef flush_output
+global int32 flush_output 0;
+#else
+#set flush_output=0
+#endif //flush_output
+// origin is set to dchassin/gridlabd
+// gitbranch is set to develop-fix-pypower-shunt
+// pypower::message_flags is set to DEBUG|VERBOSE
+// pypower::default_reactive_power_fraction is set to +0.1 pu
+// pypower::minimum_voltage_magnitude_deadband is set to +0.002 pu.kV
+// pypower::minimum_voltage_angle_deadband is set to +0.01 deg
+// pypower::timestamp_format is set to 
+// pypower::version is set to 2
+// pypower::solver_method is set to NR
+// pypower::maximum_timestep is set to +0 s
+// pypower::baseMVA is set to +100 MVA
+// pypower::enable_opf is set to FALSE
+// pypower::opf_update_interval is set to +0 s
+// pypower::stop_on_failure is set to FALSE
+// pypower::save_case is set to TRUE
+// pypower::controllers_path is set to 
+// pypower::controllers is set to 
+// pypower::solver_update_resolution is set to +1e-08
+// pypower::maximum_iterations is set to 0
+// pypower::solution_tolerance is set to +0
+// pypower::solver_status is set to SUCCESS
+// pypower::enforce_q_limits is set to FALSE
+// pypower::use_dc_powerflow is set to FALSE
+// pypower::save_format is set to CSV
+// pypower::total_loss is set to +5.24039 MW
+// pypower::generation_shortfall is set to +0 MW
+// pypower::with_emissions is set to FALSE
+// pypower::maximum_iterations_opf is set to 10
+// pypower::opf_feasibility_tolerance is set to +1.3
+// pypower::opf_gradient_tolerance is set to +3
+// pypower::opf_condition_tolerance is set to +1000
+// pypower::opf_cost_tolerance is set to +0.01
+// assert::message_flags is set to 
+
+// CLASSES// SCHEDULES
+
+
+
+// OBJECTS
+object bus
 {
-    name "branch_1_2";
-    from "bus_1";
-    to "bus_2";
-    r 0.01;
-    x 0.1;
-    b 0.1;
-    rateA 200 MVA;
-    rateB 220 MVA;
-    rateC 250 MVA;
-    status IN;
+	name "bus_1";
+	rng_state "16807";
+	guid "55A0DF05308CE3DF4295F00132A380A";
+	bus_i "1";
+	S "0+0j MVA";
+	type "REF";
+	Pd "0 MW";
+	Qd "0 MVAr";
+	Gs "0 MW";
+	Bs "0 MVAr";
+	area "0";
+	baseKV "250 kV";
+	Vm "1 pu.kV";
+	Va "0 deg";
+	zone "0";
+	Vmax "1.2 pu.kV";
+	Vmin "0.8 pu.kV";
+	weather_resolution "3600 s";
+	Sn "0 W/m^2";
+	Sh "0 W/m^2";
+	Sg "0 W/m^2";
+	Wd "0 deg";
+	Ws "0 m/2";
+	Td "0 degC";
+	Tw "0 degC";
+	RH "0 %";
+	PW "0 in";
+	HI "0 degF";
 }
-object branch 
+object gen
 {
-    name "branch_2_3";
-    from "bus_2";
-    to "bus_3";
-    r 0.01;
-    x 0.1;
-    b 0.1;
-    rateA 200 MVA;
-    rateB 220 MVA;
-    rateC 250 MVA;
-    status IN;
+	name "gen_1";
+	parent "bus_1";
+	rng_state "282475249";
+	guid "230B51E70513C4F7233BBA463E979708";
+	bus "1";
+	Pg "224.039 MW";
+	Qg "51.4317 MVAr";
+	Qmax "50 MVAr";
+	Qmin "-50 MVAr";
+	Vg "1 pu.kV";
+	mBase "100 MVA";
+	status "IN_SERVICE";
+	Pmax "500 MW";
+	Pmin "10 MW";
+	Pc1 "0 MW";
+	Pc2 "0 MW";
+	Qc1min "0 MVAr";
+	Qc1max "0 MVAr";
+	Qc2min "0 MVAr";
+	Qc2max "0 MVAr";
+	ramp_agc "0 MW/min";
+	ramp_10 "0 MW";
+	ramp_30 "0 MW";
+	ramp_q "0 MVAr/min";
+	apf "0";
+	mu_Pmax "0 pu./MW";
+	mu_Pmin "0 pu./MW";
+	mu_Qmax "0 pu./MVAr";
+	mu_Qmin "0 pu./MVAr";
+}
+object gencost
+{
+	name "cost_1";
+	parent "gen_1";
+	rng_state "1622650073";
+	guid "8CD667BACF77A1AB6D8297227F2BB6";
+	model "POLYNOMIAL";
+	startup "10 $";
+	shutdown "0 $";
+	costs "1,10";
+}
+object bus
+{
+	name "bus_2";
+	rng_state "984943658";
+	guid "57B5D6BFFB92257C493F6613C95A40CE";
+	bus_i "2";
+	S "0+0j MVA";
+	type "PQREF";
+	Pd "0 MW";
+	Qd "0 MVAr";
+	Gs "0 MW";
+	Bs "0 MVAr";
+	area "0";
+	baseKV "250 kV";
+	Vm "0.9467 pu.kV";
+	Va "-13.3378 deg";
+	zone "0";
+	Vmax "1.2 pu.kV";
+	Vmin "0.8 pu.kV";
+	weather_resolution "3600 s";
+	Sn "0 W/m^2";
+	Sh "0 W/m^2";
+	Sg "0 W/m^2";
+	Wd "0 deg";
+	Ws "0 m/2";
+	Td "0 degC";
+	Tw "0 degC";
+	RH "0 %";
+	PW "0 in";
+	HI "0 degF";
+}
+object bus
+{
+	name "bus_3";
+	rng_state "1144108930";
+	guid "2BD2D644C9E7D65558304424D8ABC35B";
+	bus_i "3";
+	S "120-10j MVA";
+	type "PQREF";
+	Pd "120 MW";
+	Qd "-10 MVAr";
+	Gs "0 MW";
+	Bs "0 MVAr";
+	area "0";
+	baseKV "250 kV";
+	Vm "0.937136 pu.kV";
+	Va "-20.9184 deg";
+	zone "0";
+	Vmax "1.2 pu.kV";
+	Vmin "0.8 pu.kV";
+	weather_resolution "3600 s";
+	Sn "0 W/m^2";
+	Sh "0 W/m^2";
+	Sg "0 W/m^2";
+	Wd "0 deg";
+	Ws "0 m/2";
+	Td "0 degC";
+	Tw "0 degC";
+	RH "0 %";
+	PW "0 in";
+	HI "0 degF";
+}
+object load
+{
+	name "load_3";
+	parent "bus_3";
+	rng_state "470211272";
+	guid "7ABFED22CD4292FF73F0AEFD52F04329";
+	S "100+10j MVA";
+	Z "50+0j MVA";
+	I "20+0j MVA";
+	P "30+10j MVA";
+	V "-111.926-205.819j pu.V";
+	Vn "250 kV";
+	status "ONLINE";
+	response "0 pu";
+}
+object shunt
+{
+	name "caps_3";
+	parent "bus_3";
+	rng_state "101027544";
+	guid "5BFA79D9FC8B0B544847FCE9850E3BCB";
+	control_mode "DISCRETE_V";
+	status "ONLINE";
+	input "MAGNITUDE";
+	output "REACTIVE";
+	voltage_high "1.05";
+	voltage_low "0.95";
+	remote_bus "bus_3";
+	admittance "20 MVAr";
+	steps_1 "20";
+	admittance_1 "1 MVAr";
+	steps_2 "0";
+	admittance_2 "0 MVAr";
+	steps_3 "0";
+	admittance_3 "0 MVAr";
+	steps_4 "0";
+	admittance_4 "0 MVAr";
+	steps_5 "0";
+	admittance_5 "0 MVAr";
+	steps_6 "0";
+	admittance_6 "0 MVAr";
+	steps_7 "0";
+	admittance_7 "0 MVAr";
+	steps_8 "0";
+	admittance_8 "0 MVAr";
+	dwell_time "60 s";
+	control_gain "0 MVAr/pu.V";
+}
+object bus
+{
+	name "bus_4";
+	rng_state "1457850878";
+	guid "96E636A78C3455E25D8FCE957B5FC2";
+	bus_i "4";
+	S "103.428+6.57177j MVA";
+	type "PQREF";
+	Pd "103.428 MW";
+	Qd "6.57177 MVAr";
+	Gs "0 MW";
+	Bs "0 MVAr";
+	area "0";
+	baseKV "250 kV";
+	Vm "0.931435 pu.kV";
+	Va "-16.5515 deg";
+	zone "0";
+	Vmax "1.2 pu.kV";
+	Vmin "0.8 pu.kV";
+	weather_resolution "3600 s";
+	Sn "0 W/m^2";
+	Sh "0 W/m^2";
+	Sg "0 W/m^2";
+	Wd "0 deg";
+	Ws "0 m/2";
+	Td "0 degC";
+	Tw "0 degC";
+	RH "0 %";
+	PW "0 in";
+	HI "0 degF";
+}
+object load
+{
+	name "load_4";
+	parent "bus_4";
+	rng_state "1458777923";
+	guid "613C12FAB9499B4B5CFFFEEAA80C2B9E";
+	S "100+10j MVA";
+	Z "50+0j MVA";
+	I "20+0j MVA";
+	P "30+10j MVA";
+	V "-154.809+173.946j pu.V";
+	Vn "250 kV";
+	status "ONLINE";
+	response "0 pu";
+}
+object shunt
+{
+	name "caps_4";
+	parent "bus_4";
+	rng_state "2007237709";
+	guid "44FD2A10A827EB394078E533A4A8C04C";
+	control_mode "CONTINUOUS_V";
+	status "ONLINE";
+	input "MAGNITUDE";
+	output "REACTIVE";
+	voltage_high "1.05";
+	voltage_low "0.95";
+	remote_bus "bus_4";
+	admittance "3.42823 MVAr";
+	steps_1 "0";
+	admittance_1 "20 MVAr";
+	steps_2 "0";
+	admittance_2 "0 MVAr";
+	steps_3 "0";
+	admittance_3 "0 MVAr";
+	steps_4 "0";
+	admittance_4 "0 MVAr";
+	steps_5 "0";
+	admittance_5 "0 MVAr";
+	steps_6 "0";
+	admittance_6 "0 MVAr";
+	steps_7 "0";
+	admittance_7 "0 MVAr";
+	steps_8 "0";
+	admittance_8 "0 MVAr";
+	dwell_time "60 s";
+	control_gain "10 MVAr/pu.V";
 }
 object branch
 {
-    name "branch_2_4";
-    from "bus_2";
-    to "bus_4";
-    r 0.01;
-    x 0.05;
-    b 0.1;
-    rateA 200 MVA;
-    rateB 220 MVA;
-    rateC 250 MVA;
-    status IN;
+	name "branch_1_2";
+	rng_state "823564440";
+	guid "4D8818DE67247ACC35AEBC946B4EC2A3";
+	from "bus_1";
+	to "bus_2";
+	fbus "1";
+	tbus "2";
+	r "0.01 pu.Ohm";
+	x "0.1 pu.Ohm";
+	b "0.1 pu.S";
+	rateA "200 MVA";
+	rateB "220 MVA";
+	rateC "250 MVA";
+	ratio "1 pu";
+	angle "0 deg";
+	status "IN";
+	angmin "-360 deg";
+	angmax "360 deg";
+	current "685.262-252.755j A";
+	loss "0.0536129 MW";
 }
-
-#set savefile=${modelname/.glm/.json}
+object branch
+{
+	name "branch_2_3";
+	rng_state "1115438165";
+	guid "2D6935C8A21DED0C7B1CE4409C22B060";
+	from "bus_2";
+	to "bus_3";
+	fbus "2";
+	tbus "3";
+	r "0.01 pu.Ohm";
+	x "0.1 pu.Ohm";
+	b "0.1 pu.S";
+	rateA "200 MVA";
+	rateB "220 MVA";
+	rateC "250 MVA";
+	ratio "1 pu";
+	angle "0 deg";
+	status "IN";
+	angmin "-360 deg";
+	angmax "360 deg";
+	current "273.2-1099.1j A";
+	loss "0.128907 MW";
+}
+object branch
+{
+	name "branch_2_4";
+	rng_state "1784484492";
+	guid "71CC5469EE18058413F365715EB6962";
+	from "bus_2";
+	to "bus_4";
+	fbus "2";
+	tbus "4";
+	r "0.01 pu.Ohm";
+	x "0.05 pu.Ohm";
+	b "0.1 pu.S";
+	rateA "200 MVA";
+	rateB "220 MVA";
+	rateC "250 MVA";
+	ratio "1 pu";
+	angle "0 deg";
+	status "IN";
+	angmin "-360 deg";
+	angmax "360 deg";
+	current "-2108.04-3017.52j A";
+	loss "0.690879 MW";
+}
