@@ -91,7 +91,7 @@ class bus {
     double HI[degF]; // Heat index (degF)
     char1024 weather_sensitivity; // Weather sensitivities {PROP: VAR[ REL VAL],SLOPE[; ...]}
     complex shunt[MVA]; // Base shunt values (to which `shunt` objects will be added)
-}}
+}
 ~~~
 
 Weather sensitivities are cumulative. The following relations may be used to
@@ -157,6 +157,8 @@ class gen {
 }
 ~~~
 
+Note that `gen` objects must have the bus they are connected to as the parent object.
+
 ## Generator Cost Objects
 
 ~~~
@@ -164,9 +166,11 @@ class gencost {
     enumeration {POLYNOMIAL=2, PIECEWISE=1, UNKNOWN=0} model; // cost model (1=piecewise linear, 2=polynomial)
     double startup[$]; // startup cost ($)
     double shutdown[$]; // shutdown cost($)
-    char1024 costs; // cost model (comma-separate values)
+    char1024 costs; // cost model (comma-separated values)
 }
 ~~~
+
+Note that `gencost` objects must have the generator they describe to as the parent object.
 
 # Integration Objects
 
@@ -189,7 +193,10 @@ the load is `OFFLINE`, the values of `S` is zero regardless of the value of
 ## Shunts
 
 A `shunt` object adds a load in parallel. Shunts can be either real or
-reactive. If reactive, the shunt can either 
+reactive. If reactive, the shunt can either discrete control (i.e., capacitor
+banks) or continuous control (i.e., condensers). Capacitors can only have
+positive admittances while condensers can have both positive and negative
+admittances.
 
 ## Powerplants
 

@@ -7,6 +7,7 @@ class geodata
 {
     char1024 file; // geodata file name
     char1024 target; // geodata target class and property, e.g., CLASS::PROPERTY or OBJECT.PROPERTY
+    double scale[pu]; // scale to apply to geodata values in file before writing to target
 }
 ~~~
 

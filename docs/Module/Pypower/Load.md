@@ -4,12 +4,12 @@
 
 ~~~
 class load {
-    complex S[VA]; // power demand (VA)
-    complex Z[Ohm]; // constant impedance load (Ohm)
-    complex I[A]; // constant current load (A)
-    complex P[VA]; // constant power load (VA)
-    complex V[V]; // bus voltage (V)
-    double Vn[V]; // nominal voltage (V)
+    complex S[MVA]; // power demand (MVA)
+    complex Z[MVA]; // constant impedance load (MVA)
+    complex I[MVA]; // constant current load (MVA)
+    complex P[MVA]; // constant power load (MVA)
+    complex V[kV]; // bus voltage (kV)
+    double Vn[kV]; // nominal voltage (kV)
     enumeration {CURTAILED=2, ONLINE=1, OFFLINE=0} status; // load status
     double response[pu]; // curtailment response as fractional load reduction
     char256 controller; // controller python function name

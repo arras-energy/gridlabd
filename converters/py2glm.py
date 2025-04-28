@@ -1,5 +1,6 @@
 import json 
 import os 
+import subprocess
 import sys, getopt
 import datetime
 import importlib, copy
@@ -12,9 +13,10 @@ def help():
     return """py2glm.py -i <inputfile> -o <outputfile> [options...]
     -c|--config              output converter configuration data
     -h|--help                output this help
-    -i|--ifile <filename>    [REQUIRED] PY input file
-    -o|--ofile <filename>    [OPTIONAL] GLM output file name
-    -t|--type                type of input file
+    -i|--ifile FILENAME.     [REQUIRED] PY input file
+    -o|--ofile FILENAME      GLM output file name
+    -t|--type TYPE           type of input file (default "pypower" with
+                             fallback to "python")
     -N|--name                do not autoname objects
 """
 
@@ -86,7 +88,7 @@ MODIFY = {
 def main():
     filename_py = None
     filename_glm = None
-    py_type = 'python'
+    py_type = 'pypower'
     autoname = True
     try : 
         opts, args = getopt.getopt(sys.argv[1:],
@@ -122,7 +124,7 @@ def main():
         sys.exit(1)
 
     try:
-        convert(
+        return convert(
             ifile = filename_py,
             ofile = filename_glm,
             options = dict(
@@ -147,17 +149,25 @@ def convert(ifile,ofile,options={}):
     return converters[py_type](ifile,ofile,options)
 
 def convert_python(ifile,ofile,options={}):
-    os.system(" ".join([repr(x) for x in [sys.executable,ifile,ofile,*[f"{x}={y}" for x,y in options.items()]]]))
+    """Run python script"""
+    result = subprocess.run([sys.executable,ifile,ofile]+[f"{x}={y}" for x,y in options.items()])
+    return result.returncode
+
 
 def convert_pypower(ifile,ofile,options={}):
     """Pypower case converter"""
-    py_type = options['py_type'] if 'py_type' in options else "python"
     autoname = options['autoname'] if 'autoname' in options else True
     modspec = util.spec_from_file_location("glm",ifile)
     modname = os.path.splitext(ifile)[0]
     mod = importlib.import_module(os.path.basename(modname))
     casedef = getattr(mod,os.path.basename(modname))
     data = casedef()
+
+    # check for required data
+    for req in ["version","baseMVA","bus","branch","gen"]:
+        if req not in data: # fails
+            # run as script instead
+            return convert_python(ifile,ofile,options)
 
     NL='\n'
     with open(ofile,"w") as glm:
@@ -203,6 +213,7 @@ module pypower
     costs "{','.join([str(x) for x in costs])}";
 }}
 """)
+    return 0
 
 converters = {
     "python": convert_python,
@@ -210,5 +221,5 @@ converters = {
 }
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
 

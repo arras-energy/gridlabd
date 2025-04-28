@@ -49,8 +49,8 @@ weather::weather(MODULE *module)
 			PT_double, "Wd[deg]", get_Wd_offset(),
 				PT_DESCRIPTION, "Wind direction (deg)",
 
-			PT_double, "Ws[m/2]", get_Ws_offset(),
-				PT_DESCRIPTION, "Wind speed (m/2)",
+			PT_double, "Ws[m/s]", get_Ws_offset(),
+				PT_DESCRIPTION, "Wind speed (m/s)",
 
 			PT_double, "Td[degC]", get_Td_offset(),
 				PT_DESCRIPTION, "Dry-bulb air temperature (degC)",
