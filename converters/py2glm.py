@@ -1,5 +1,6 @@
 import json 
 import os 
+import subprocess
 import sys, getopt
 import datetime
 import importlib, copy
@@ -12,9 +13,9 @@ def help():
     return """py2glm.py -i <inputfile> -o <outputfile> [options...]
     -c|--config              output converter configuration data
     -h|--help                output this help
-    -i|--ifile <filename>    [REQUIRED] PY input file
-    -o|--ofile <filename>    [OPTIONAL] GLM output file name
-    -t|--type                type of input file
+    -i|--ifile FILENAME.     [REQUIRED] PY input file
+    -o|--ofile FILENAME      GLM output file name
+    -t|--type TYPE           type of input file (default "python")
     -N|--name                do not autoname objects
 """
 
@@ -122,7 +123,7 @@ def main():
         sys.exit(1)
 
     try:
-        convert(
+        return convert(
             ifile = filename_py,
             ofile = filename_glm,
             options = dict(
@@ -147,7 +148,10 @@ def convert(ifile,ofile,options={}):
     return converters[py_type](ifile,ofile,options)
 
 def convert_python(ifile,ofile,options={}):
-    os.system(" ".join([repr(x) for x in [sys.executable,ifile,ofile,*[f"{x}={y}" for x,y in options.items()]]]))
+    """Run python script"""
+    result = subprocess.run([sys.executable,ifile,ofile]+[f"{x}={y}" for x,y in options.items()])
+    return result.returncode
+
 
 def convert_pypower(ifile,ofile,options={}):
     """Pypower case converter"""
@@ -203,6 +207,7 @@ module pypower
     costs "{','.join([str(x) for x in costs])}";
 }}
 """)
+    return 0
 
 converters = {
     "python": convert_python,
@@ -210,5 +215,5 @@ converters = {
 }
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
 
