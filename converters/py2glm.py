@@ -15,7 +15,8 @@ def help():
     -h|--help                output this help
     -i|--ifile FILENAME.     [REQUIRED] PY input file
     -o|--ofile FILENAME      GLM output file name
-    -t|--type TYPE           type of input file (default "python")
+    -t|--type TYPE           type of input file (default "pypower" with
+                             fallback to "python")
     -N|--name                do not autoname objects
 """
 
@@ -87,7 +88,7 @@ MODIFY = {
 def main():
     filename_py = None
     filename_glm = None
-    py_type = 'python'
+    py_type = 'pypower'
     autoname = True
     try : 
         opts, args = getopt.getopt(sys.argv[1:],
@@ -155,13 +156,18 @@ def convert_python(ifile,ofile,options={}):
 
 def convert_pypower(ifile,ofile,options={}):
     """Pypower case converter"""
-    py_type = options['py_type'] if 'py_type' in options else "python"
     autoname = options['autoname'] if 'autoname' in options else True
     modspec = util.spec_from_file_location("glm",ifile)
     modname = os.path.splitext(ifile)[0]
     mod = importlib.import_module(os.path.basename(modname))
     casedef = getattr(mod,os.path.basename(modname))
     data = casedef()
+
+    # check for required data
+    for req in ["version","baseMVA","bus","branch","gen"]:
+        if req not in data: # fails
+            # run as script instead
+            return convert_python(ifile,ofile,options)
 
     NL='\n'
     with open(ofile,"w") as glm:
