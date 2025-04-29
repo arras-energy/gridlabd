@@ -68,8 +68,8 @@ object bus
         voltage_high 1.05 pu;
         voltage_low 0.95 pu;
         admittance 0.0 MVAr;
-        steps_1 20;
-        admittance_1 5.0 MVAr;
+        steps_1 10;
+        admittance_1 1.0 MVAr;
         dwell_time 60s;
     };
 }
@@ -90,12 +90,12 @@ object bus
     object shunt 
     { 
         name "caps_4";
-        control_mode DISCRETE_V;
+        control_mode CONTINUOUS_V;
         status ONLINE;
         voltage_high 1.05 pu;
         voltage_low 0.95 pu;
         admittance 0.0 MVAr;
-        steps_1 20;
+        control_gain 2 MVAr/pu.V;
         admittance_1 5.0 MVAr;
         dwell_time 60s;
     };
