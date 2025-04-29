@@ -78,6 +78,7 @@ private:
     bus *input_bus;
     bus *output_bus;
     TIMESTAMP last_update;
+    double last_delta;
 
 private:
     TIMESTAMP update_control(TIMESTAMP t0,bool update_time=false);

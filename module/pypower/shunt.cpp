@@ -143,6 +143,7 @@ shunt::shunt(MODULE *module)
 int shunt::create(void) 
 {
     last_update = 0;
+    last_delta = 0;
     return 1; /* return 1 on success, 0 on failure */
 }
 
@@ -272,6 +273,7 @@ TIMESTAMP shunt::update_control(TIMESTAMP t0, bool update_time)
         if ( ! control_ok )
         {
             t1 = TIMESTAMP(last_update + dwell_time);
+            last_delta = 0;
             verbose("voltage control is LOCKED until %s",gld_clock(t1).get_string().get_buffer());
         }
         else
@@ -294,12 +296,18 @@ TIMESTAMP shunt::update_control(TIMESTAMP t0, bool update_time)
                     if ( Ahi )
                     {
                         warning("shunt voltage discrete control upper limit reached at %lg MVAr (V=%g)",admittance,V);
+                        last_delta = 0;
                     }
                     else
                     {
                         last_update = t0;
                         admittance += admittance_1;
                         verbose("stepping up to %lg MVAr",admittance);
+                        if ( last_delta < 0 )
+                        {
+                            warning("shunt voltage discrete control hunting at %lg MVAr (V=%g)",admittance,V);
+                        }
+                        last_delta = admittance_1;
                     }
                 }
                 else if ( Vhigh && ! update_time )
@@ -307,13 +315,23 @@ TIMESTAMP shunt::update_control(TIMESTAMP t0, bool update_time)
                     if ( Alo )
                     {
                         warning("shunt voltage discrete control lower limit reached at %lg MVAr (V=%g)",admittance,V);
+                        last_delta = 0;
                     }
                     else
                     {
                         admittance -= admittance_1;
                         last_update = t0;
                         verbose("stepping down to %lg MVAr",admittance);
+                        if ( last_delta > 0 )
+                        {
+                            warning("shunt voltage discrete control hunting at %lg MVAr (V=%g)",admittance,V);
+                        }
+                        last_delta = -admittance_1;
                     }
+                }
+                else
+                {
+                    last_delta = 0;
                 }
                 t1 = TIMESTAMP(last_update + dwell_time);
             }
@@ -332,7 +350,8 @@ TIMESTAMP shunt::update_control(TIMESTAMP t0, bool update_time)
                         Vref = Vhigh;
                     }
                     double err = Vref - V;
-                    admittance += err * control_gain;
+                    last_delta = err * control_gain;
+                    admittance += last_delta;
                     if ( admittance < -admittance_1 )
                     {
                         admittance = -admittance_1;
@@ -347,6 +366,10 @@ TIMESTAMP shunt::update_control(TIMESTAMP t0, bool update_time)
                     {
                         verbose("setting admittance to %lg",admittance);
                     }
+                }
+                else
+                {
+                    last_delta = 0;
                 }
                 t1 = TIMESTAMP(last_update + dwell_time);
             }
