@@ -38,6 +38,13 @@ object multi_recorder
 	interval -1;
 }
 
+clock
+{
+    timezone "PST+8PDT";
+    starttime "2020-01-01 00:00:00 PST";
+    stoptime "2020-01-02 00:00:00 PST";
+}
+
 module assert;
 #define MRES=0.05 // magnitude test resolution
 #define ARES=0.2 // angle test resolution
