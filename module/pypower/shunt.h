@@ -78,9 +78,10 @@ private:
     bus *input_bus;
     bus *output_bus;
     TIMESTAMP last_update;
+    double last_delta;
 
 private:
-    TIMESTAMP update_control(TIMESTAMP t0);
+    TIMESTAMP update_control(TIMESTAMP t0,bool update_time=false);
     void update_bus(void);
 
 public:
@@ -89,6 +90,7 @@ public:
     shunt(MODULE *module);
     int create(void);
     int init(OBJECT *parent);
+    TIMESTAMP precommit(TIMESTAMP t0);
     TIMESTAMP presync(TIMESTAMP t0);
     TIMESTAMP sync(TIMESTAMP t0);
     TIMESTAMP postsync(TIMESTAMP t0);

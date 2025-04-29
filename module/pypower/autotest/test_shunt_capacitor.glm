@@ -1,6 +1,9 @@
 //#option verbose
 //#option debug
+#set suppress_repeat_messages=FALSE
 #set output_message_context=NONE
+
+#set iteration_limit=1000
 
 module pypower
 {
@@ -56,7 +59,7 @@ object bus
         name "load_3";
         Z 50 MVA;
         I 20 MVA;
-        P 30+10j MVAr;
+        P 30+6j MVAr;
         Vn 250 kV;
         status ONLINE;
     };
@@ -69,8 +72,8 @@ object bus
         voltage_low 0.95 pu;
         admittance 0.0 MVAr;
         steps_1 20;
-        admittance_1 5.0 MVAr;
-        dwell_time 60s;
+        admittance_1 1.0 MVAr;
+        dwell_time 300s;
     };
 }
 object bus
@@ -83,20 +86,20 @@ object bus
         name "load_4";
         Z 50 MVAr;
         I 20 MVAr;
-        P 30+10j MVAr;
+        P 30+6j MVAr;
         Vn 250 kV;
         status ONLINE;
     };
     object shunt 
     { 
         name "caps_4";
-        control_mode DISCRETE_V;
+        control_mode CONTINUOUS_V;
         status ONLINE;
         voltage_high 1.05 pu;
         voltage_low 0.95 pu;
         admittance 0.0 MVAr;
-        steps_1 20;
-        admittance_1 5.0 MVAr;
+        control_gain 2.0 MVAr/pu.V;
+        admittance_1 15.0 MVAr;
         dwell_time 60s;
     };
 }
@@ -123,8 +126,8 @@ object branch
     from "bus_2";
     to "bus_3";
     r 0.01;
-    x 0.1;
-    b 0.1;
+    x 0.3;
+    b 0.3;
     rateA 200 MVA;
     rateB 220 MVA;
     rateC 250 MVA;
@@ -136,8 +139,8 @@ object branch
     from "bus_2";
     to "bus_4";
     r 0.01;
-    x 0.05;
-    b 0.1;
+    x 0.1;
+    b 0.3;
     rateA 200 MVA;
     rateB 220 MVA;
     rateC 250 MVA;

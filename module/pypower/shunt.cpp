@@ -5,6 +5,7 @@
 
 EXPORT_CREATE(shunt);
 EXPORT_INIT(shunt);
+EXPORT_PRECOMMIT(shunt);
 EXPORT_SYNC(shunt);
 
 CLASS *shunt::oclass = NULL;
@@ -18,7 +19,7 @@ shunt::shunt(MODULE *module)
     if (oclass==NULL)
     {
         // register to receive notice for first top down. bottom up, and second top down synchronizations
-        oclass = gld_class::create(module,"shunt",sizeof(shunt),PC_PRETOPDOWN|PC_BOTTOMUP|PC_AUTOLOCK|PC_OBSERVER);
+        oclass = gld_class::create(module,"shunt",sizeof(shunt),PC_BOTTOMUP|PC_AUTOLOCK|PC_OBSERVER);
         if (oclass==NULL)
             throw "unable to register class shunt";
         else
@@ -117,7 +118,7 @@ shunt::shunt(MODULE *module)
             PT_double, "dwell_time[s]", get_dwell_time_offset(),
                 PT_DESCRIPTION, "control lockout",
 
-            PT_double, "control_gain[MW/V]", get_dwell_time_offset(),
+            PT_double, "control_gain[MVAr/pu.V]", get_control_gain_offset(),
                 PT_DESCRIPTION, "proportional feedback control gain",
 
             NULL)<1)
@@ -142,6 +143,7 @@ shunt::shunt(MODULE *module)
 int shunt::create(void) 
 {
     last_update = 0;
+    last_delta = 0;
     return 1; /* return 1 on success, 0 on failure */
 }
 
@@ -211,7 +213,7 @@ int shunt::init(OBJECT *parent)
 
     if ( control_mode == CM_CONTINUOUS_V && control_gain <= 0 )
     {
-        error("control_gain must be positive for control_mode == CONTINUOUS_V");
+        error("control_gain (%g) must be positive for control_mode == CONTINUOUS_V",control_gain);
         return 0;
     }
     else if ( control_mode == CM_DISCRETE_V && steps_1 <= 0 )
@@ -223,6 +225,11 @@ int shunt::init(OBJECT *parent)
     return 1;
 }
 
+TIMESTAMP shunt::precommit(TIMESTAMP t0)
+{
+    return update_control(t0); // control update
+}
+
 TIMESTAMP shunt::presync(TIMESTAMP t0)
 {
     return TS_NEVER;
@@ -230,7 +237,7 @@ TIMESTAMP shunt::presync(TIMESTAMP t0)
 
 TIMESTAMP shunt::sync(TIMESTAMP t0)
 {
-    return update_control(t0); // control update
+    return update_control(t0,false); // time of next update
 }
 
 TIMESTAMP shunt::postsync(TIMESTAMP t0)
@@ -254,7 +261,7 @@ void shunt::update_bus(void)
     }
 }
 
-TIMESTAMP shunt::update_control(TIMESTAMP t0)
+TIMESTAMP shunt::update_control(TIMESTAMP t0, bool update_time)
 {
     TIMESTAMP t1 = TS_NEVER;
     verbose("update_control(t0=%s)",gld_clock(t0).get_string().get_buffer());
@@ -266,6 +273,7 @@ TIMESTAMP shunt::update_control(TIMESTAMP t0)
         if ( ! control_ok )
         {
             t1 = TIMESTAMP(last_update + dwell_time);
+            last_delta = 0;
             verbose("voltage control is LOCKED until %s",gld_clock(t1).get_string().get_buffer());
         }
         else
@@ -283,38 +291,86 @@ TIMESTAMP shunt::update_control(TIMESTAMP t0)
                 if ( Vhigh && Alo ) verbose("output is at minimum");
                 bool Ahi = admittance >= admittance_1 * steps_1;
                 if ( Vlow && Ahi ) verbose("output is at maximum");
-                if ( Vlow )
+                if ( Vlow && ! update_time )
                 {
                     if ( Ahi )
                     {
-                        warning("shunt voltage control upper limit reached at %lg MVAr",admittance);
+                        warning("shunt voltage discrete control upper limit reached at %lg MVAr (V=%g)",admittance,V);
+                        last_delta = 0;
                     }
                     else
                     {
-                        admittance += admittance_1;
                         last_update = t0;
+                        admittance += admittance_1;
                         verbose("stepping up to %lg MVAr",admittance);
+                        if ( last_delta < 0 )
+                        {
+                            warning("shunt voltage discrete control hunting at %lg MVAr (V=%g)",admittance,V);
+                        }
+                        last_delta = admittance_1;
                     }
                 }
-                else if ( Vhigh )
+                else if ( Vhigh && ! update_time )
                 {
                     if ( Alo )
                     {
-                        warning("shunt voltage control lower limit reached at %lg MVAr",admittance);
+                        warning("shunt voltage discrete control lower limit reached at %lg MVAr (V=%g)",admittance,V);
+                        last_delta = 0;
                     }
                     else
                     {
                         admittance -= admittance_1;
                         last_update = t0;
                         verbose("stepping down to %lg MVAr",admittance);
+                        if ( last_delta > 0 )
+                        {
+                            warning("shunt voltage discrete control hunting at %lg MVAr (V=%g)",admittance,V);
+                        }
+                        last_delta = -admittance_1;
                     }
+                }
+                else
+                {
+                    last_delta = 0;
                 }
                 t1 = TIMESTAMP(last_update + dwell_time);
             }
             else if ( control_mode == CM_CONTINUOUS_V )
             {
                 // synchronous condensers
-                
+                if ( ! update_time )
+                {
+                    double Vref = V;
+                    if ( Vlow )
+                    {
+                        Vref = Vlow;
+                    }
+                    else if ( Vhigh )
+                    {
+                        Vref = Vhigh;
+                    }
+                    double err = Vref - V;
+                    last_delta = err * control_gain;
+                    admittance += last_delta;
+                    if ( admittance < -admittance_1 )
+                    {
+                        admittance = -admittance_1;
+                        warning("shunt voltage continuous control lower limit reached at %lg MVAr (V=%g)",admittance,V);
+                    }
+                    else if ( admittance > admittance_1 )
+                    {
+                        admittance = admittance_1;
+                        warning("shunt voltage continuous control upper limit reached at %lg MVAr (V=%g)",admittance,V);
+                    }
+                    else
+                    {
+                        verbose("setting admittance to %lg",admittance);
+                    }
+                }
+                else
+                {
+                    last_delta = 0;
+                }
                 t1 = TIMESTAMP(last_update + dwell_time);
             }
             else

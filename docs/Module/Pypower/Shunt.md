@@ -44,21 +44,22 @@ The `minimum_voltage_deadband` specifies the minimum separation between the
 
 The following table is a guide to some typical shunt device properties
 
-| Device    | Property       | Value          | Remarks
-| ----------| -------------- | -------------- | -------
-| Capacitor | `control_mode` | `DISCRETE_V`   | control from `0` to `step_1 x admittance_1`
-|           | `input`        | `MAGNITUDE`    | measure voltage magnitude
-|           | `output`       | `REACTIVE`     | convert real power to reactive power
-|           | `voltage_low`  | e.g., `0.95`   | voltage below which to add reactive power
-|           | `voltage_high` | e.g., `1.05`   | voltage above which to reduce reactive power
-|           | `step_1`       | e.g., `10`     | number of discrete control steps
-|           | `admittance_1` | e.g., `0.1 MW` | susceptance change per control step
-| Condenser | `control_mode` | `CONTINUOUS_V` | control from `-admittance_1` to `+admittance_1`
-|           | `input`        | `MAGNITUDE`    | measure voltage magnitude
-|           | `output`       | `REACTIVE`     | convert real power to reactive power
-|           | `voltage_low`  | e.g., `0.95`   | voltage below which to add reactive power
-|           | `voltage_high` | e.g., `1.05`   | voltage above which to reduce reactive power
-|           | `admittance_1` | e.g., `1 MW`   | susceptance limit (positive or negative)
+| Device    | Property       | Value            | Remarks
+| ----------| -------------- | ---------------- | -------
+| Capacitor | `control_mode` | `DISCRETE_V`     | control from `0` to `step_1 x admittance_1`
+|           | `input`        | `MAGNITUDE`      | measure voltage magnitude
+|           | `output`       | `REACTIVE`       | convert real power to reactive power
+|           | `voltage_low`  | e.g., `0.95`     | voltage below which to add reactive power
+|           | `voltage_high` | e.g., `1.05`     | voltage above which to reduce reactive power
+|           | `step_1`       | e.g., `10`       | number of discrete control steps
+|           | `admittance_1` | e.g., `0.1 MW`   | susceptance change per control step
+| Condenser | `control_mode` | `CONTINUOUS_V`   | control from `-admittance_1` to `+admittance_1`
+|           | `input`        | `MAGNITUDE`      | measure voltage magnitude
+|           | `output`       | `REACTIVE`       | convert real power to reactive power
+|           | `voltage_low`  | e.g., `0.95`     | voltage below which to add reactive power
+|           | `voltage_high` | e.g., `1.05`     | voltage above which to reduce reactive power
+|           | `admittance_1` | e.g., `1 MW`     | output limit (positive value for both max and min)
+|           | `control_gain` | e.g., 10 MW/pu.V | control feedback gain
 
 # Properties
 
