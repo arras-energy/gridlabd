@@ -1,0 +1,281 @@
+#define CASE=14
+#ifexists "../case.glm"
+#define DIR=..
+#endif
+
+// #set debug=TRUE
+// #set suppress_repeat_messages=FALSE
+
+module pypower
+{
+    maximum_timestep 3600;
+}
+
+#include "${DIR:-.}/case.glm"
+
+// drop load on bus 2
+modify pp_bus_2.Pd 0;
+modify pp_bus_2.Qd 0;
+
+module assert;
+
+#define MRES=0.002 // magnitude test resolution
+#define ARES=0.02 // angle test resolution
+#define PRES=0.1 // real power test resolution
+#define QRES=0.1 // reactive power test resolution
+
+object assert
+{      
+    parent pp_bus_2;
+    target Pd;
+    relation ==;
+    value 0;
+    within ${PRES};
+}
+object assert
+{
+    parent pp_bus_2;
+    target Qd;
+    relation ==;
+    value 0;
+    within ${QRES};
+}
+
+object assert
+{      
+    parent pp_bus_1;
+    target Vm;
+    relation ==;
+    value 1.060;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_1;
+    target Va;
+    relation ==;
+    value 0.00;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_2;
+    target Vm;
+    relation ==;
+    value 1.045;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_2;
+    target Va;
+    relation ==;
+    value -4.351;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_3;
+    target Vm;
+    relation ==;
+    value 1.010;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_3;
+    target Va;
+    relation ==;
+    value -12.161;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_4;
+    target Vm;
+    relation ==;
+    value +1.014;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_4;
+    target Va;
+    relation ==;
+    value -9.755;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_5;
+    target Vm;
+    relation ==;
+    value +1.017;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_5;
+    target Va;
+    relation ==;
+    value -8.318;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_6;
+    target Vm;
+    relation ==;
+    value 1.070;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_6;
+    target Va;
+    relation ==;
+    value -13.947;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_7;
+    target Vm;
+    relation ==;
+    value +1.050;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_7;
+    target Va;
+    relation ==;
+    value -12.758;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_8;
+    target Vm;
+    relation ==;
+    value 1.090;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_8;
+    target Va;
+    relation ==;
+    value -12.758;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_9;
+    target Vm;
+    relation ==;
+    value +1.033;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_9;
+    target Va;
+    relation ==;
+    value -14.343;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_10;
+    target Vm;
+    relation ==;
+    value +1.032;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_10;
+    target Va;
+    relation ==;
+    value -14.555;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_11;
+    target Vm;
+    relation ==;
+    value +1.047;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_11;
+    target Va;
+    relation ==;
+    value -14.369;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_12;
+    target Vm;
+    relation ==;
+    value 1.055;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_12;
+    target Va;
+    relation ==;
+    value -14.797;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_13;
+    target Vm;
+    relation ==;
+    value +1.047;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_13;
+    target Va;
+    relation ==;
+    value -14.835;
+    within ${ARES};
+}
+
+object assert
+{      
+    parent pp_bus_14;
+    target Vm;
+    relation ==;
+    value +1.021;
+    within ${MRES};
+}
+object assert
+{
+    parent pp_bus_14;
+    target Va;
+    relation ==;
+    value -15.582;
+    within ${ARES};
+}
+

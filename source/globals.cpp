@@ -522,15 +522,17 @@ DEPRECATED static struct s_varmap {
 	{"rusage_file",PT_char1024,&global_rusage_file,PA_PUBLIC,"file in which resource usage data is collected"},
 	{"rusage_rate",PT_int64,&global_rusage_rate,PA_PUBLIC,"rate at which resource usage data is collected (in seconds)"},
 	{"rusage",PT_char1024,&global_rusage_data,PA_PUBLIC,"rusage data"},
-    {"echo", PT_bool, &global_echo, PA_PUBLIC, "echo subcommands"},
-    {"filename",PT_char1024, &global_loader_filename, PA_REFERENCE, "current filename processed by loader"},
-    // {"linenum",PT_int32, &global_loader_linenum, PA_REFERENCE,"current line number processed by loaded"},
-    {"country", PT_char8, &global_country,PA_PUBLIC,"country code"},
-    {"region", PT_char32, &global_region,PA_PUBLIC,"region code"},
-    {"organization",PT_char32, &global_organization,PA_PUBLIC,"organization name"},
-    {"profile_output_format",PT_set,&global_profile_output_format,PA_PUBLIC,"profiler output data format"},
-    {"maximum_runtime",PT_int64,&global_maximum_runtime,PA_PUBLIC,"maximum wall clock runtime allowed"},
-    {"flush_output",PT_int32,&global_flush_output,PA_PUBLIC,"flush output buffers continuously"},
+	{"echo", PT_bool, &global_echo, PA_PUBLIC, "echo subcommands"},
+	{"filename",PT_char1024, &global_loader_filename, PA_REFERENCE, "current filename processed by loader"},
+	// {"linenum",PT_int32, &global_loader_linenum, PA_REFERENCE,"current line number processed by loaded"},
+	{"country", PT_char8, &global_country,PA_PUBLIC,"country code"},
+	{"region", PT_char32, &global_region,PA_PUBLIC,"region code"},
+	{"organization",PT_char32, &global_organization,PA_PUBLIC,"organization name"},
+	{"profile_output_format",PT_set,&global_profile_output_format,PA_PUBLIC,"profiler output data format"},
+	{"maximum_runtime",PT_int64,&global_maximum_runtime,PA_PUBLIC,"maximum wall clock runtime allowed"},
+	{"flush_output",PT_int32,&global_flush_output,PA_PUBLIC,"flush output buffers continuously"},
+	{"origin",PT_char1024,&global_origin,PA_REFERENCE,"origin of source code"},
+	{"gitbranch",PT_char1024,&global_gitbranch,PA_REFERENCE,"branch of source code at origin"},
 	/* add new global variables here */
 };
 
@@ -1786,6 +1788,70 @@ DEPRECATED const char *global_pid(char *buffer, int size)
 	return buffer;
 }
 
+DEPRECATED const char * global_random(char *buffer, int size, const char *spec=NULL)
+{
+	static double last=0;
+	static enum {LK_NONE, LK_INTEGER, LK_DOUBLE} last_kind = LK_NONE;
+
+	// uniform unit random
+	if ( spec == NULL )
+	{
+		last = randunit(&global_randomstate);
+		last_kind = LK_DOUBLE;
+		snprintf(buffer,size,"%lg",last);
+		return buffer;
+	}
+
+	// last random
+	if ( strcmp(spec,"last") == 0 )
+	{
+		switch ( last_kind )
+		{
+		case LK_NONE:
+			snprintf(buffer,size,"%u",global_randomseed);
+			break;
+		case LK_INTEGER:
+			snprintf(buffer,size,"%llu",*(unsigned int64*)&last);
+			break;
+		case LK_DOUBLE:
+			snprintf(buffer,size,"%lg",last);
+			break;
+		default:
+			output_error("global_random(spec='%s'): internal state error (last_kind=%ld)",spec,(int)last_kind);
+			break;
+		}
+		return buffer;
+	}
+
+	// integer random
+	char *end=(char*)(void*)spec;
+	int bits = strtol(spec,&end,10); 
+	if ( end > spec && bits > 0 && bits <= 64 )
+	{
+		unsigned int64 mask = (bits<64) ? (((unsigned int64)1)<<bits) - 1 : (unsigned int64)(-1);
+		unsigned int64 rn = ((unsigned int64)randwarn(&global_randomstate))
+			+ (((unsigned int64)randwarn(&global_randomstate))<<16)
+			+ (((unsigned int64)randwarn(&global_randomstate))<<32)
+			+ (((unsigned int64)randwarn(&global_randomstate))<<48);
+		rn &= mask;
+		*(unsigned int64*)&last = rn;
+		last_kind = LK_INTEGER;
+		snprintf(buffer,size,"%llu",rn);
+		return buffer;
+	}
+
+	// random distribution
+	if ( random_from_string(spec,&last) )
+	{
+		snprintf(buffer,size,"%lg",last);
+		last_kind = LK_DOUBLE;
+		return buffer;
+	}
+
+	output_error("global_random(spec='%s'): spec is invalid",spec);
+	return NULL;
+}
+
 /** Get the value of a global variable in a safer fashion
 	@return a \e char * pointer to the buffer holding the buffer where we wrote the data,
 		\p NULL if insufficient buffer space or if the \p name was not found.
@@ -1903,13 +1969,24 @@ const char *GldGlobals::getvar(const char *name, char *buffer, size_t size)
 	}
 	if ( strncmp(name,"NOW",3) == 0 )
 	{
-		if ( strcmp(name,"NOW") == 0 )
+		if ( name[3] == '\0' )
 		{
 			return global_now(buffer,size);
 		}
-		else if ( strncmp(name,"NOW ",4) == 0 )
+		else if ( isspace(name[3]) )
 		{
 			return global_now(buffer,size,name+4);
+		}
+	}
+	if ( strncmp(name,"RANDOM",6) == 0 )
+	{
+		if ( name[6] == '\0' )
+		{
+			return global_random(buffer,size);
+		}
+		else if ( isspace(name[6]) )
+		{
+			return global_random(buffer,size,name+7);
 		}
 	}
 

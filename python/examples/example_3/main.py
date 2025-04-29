@@ -9,11 +9,11 @@ assert(sys.version_info.major>2)
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import gridlabd
+import gldcore
 import datetime as dt
 
-gridlabd.command('model.glm')
-gridlabd.start('wait')
+gldcore.command('model.glm')
+gldcore.start('wait')
 
 data = pd.read_csv("x.csv",names=["datetime","x"],index_col="datetime")
 index = np.array(list(map(lambda t:dt.datetime.strptime(t[0:-4],'%Y-%m-%d %H:%M:%S').timestamp(),data.index)))

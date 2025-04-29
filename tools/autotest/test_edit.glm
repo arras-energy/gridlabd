@@ -6,8 +6,8 @@
 
 import sys
 import json
-import edit
-import framework as app
+import gridlabd.edit as edit
+import gridlabd.framework as app
 
 fh = app.open_glm("ieee13.glm")[0]
 data = edit.Editor(json.load(fh))

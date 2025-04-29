@@ -282,7 +282,7 @@ GLOBAL unsigned char global_no_balance INIT(FALSE);
 GLOBAL char global_kmlfile[1024] INIT(""); /**< Specifies KML file to dump */
 
 /* Variable: global_kmlhost */
-GLOBAL char global_kmlhost[1024] INIT("https://code.gridlabd.us/" BRANCH "/runtime"); /**< Specifies the KML image library server */
+GLOBAL char global_kmlhost[1024] INIT("https://code.arras.energy/" BRANCH "/runtime"); /**< Specifies the KML image library server */
 
 /* Variable: global_modelname */
 GLOBAL char global_modelname[1024] INIT(""); /**< Name of the current model */
@@ -505,7 +505,7 @@ GLOBAL int global_mainloopstate INIT(MLS_INIT); /**< main loop processing state 
 GLOBAL TIMESTAMP global_mainlooppauseat INIT(TS_NEVER); /**< time at which to pause main loop */
 
 /* Variable: global_infourl */
-GLOBAL char global_infourl[1024] INIT("http://docs.gridlabd.us/index.html?owner=" GITHUB_ORG "&project=gridlabd&search="); /**< URL for info calls */
+GLOBAL char global_infourl[1024] INIT("http://docs.arras.energy/index.html?owner=" GITHUB_ORG "&project=gridlabd&search="); /**< URL for info calls */
 
 /* Variable: global_hostname */
 GLOBAL char global_hostname[1024] INIT("localhost"); /**< machine hostname */
@@ -532,7 +532,7 @@ typedef enum {
 /* Variable: global_simulation_mode */
 GLOBAL SIMULATIONMODE global_simulation_mode INIT(SM_INIT); /**< simulation mode */
 
-/* Variable: global_deltamode_allowed 
+/* Variable: global_deltamode_allowed
 
 	Flag to allow simulation in delta-mode
 */
@@ -650,13 +650,13 @@ GLOBAL bool global_run_powerworld INIT(false);
 GLOBAL bool global_bigranks INIT(true); /**< enable non-recursive set_rank function (good for very deep models) */
 
 /* Variable: global_svnroot */
-GLOBAL char1024 global_svnroot INIT("http://gridlab-d.svn.sourceforge.net/svnroot/gridlab-d");
+GLOBAL char1024 global_svnroot INIT("https://github.com/arras-energy/gridlabd");
 
 /* Variable: global_github */
-GLOBAL char1024 global_github INIT("https://github.com/gridlab-d");
+GLOBAL char1024 global_github INIT("https://github.com/arras-energy/gridlabd");
 
 /* Variable: global_gitraw */
-GLOBAL char1024 global_gitraw INIT("https://raw.githubusercontent.com/gridlab-d");
+GLOBAL char1024 global_gitraw INIT("https://raw.githubusercontent.com/arras-energy/gridlabd");
 
 /* Variable: global_wget_options */
 GLOBAL char1024 global_wget_options INIT("maxsize:100MB;update:newer"); /**< maximum size of wget request */
@@ -692,10 +692,22 @@ GLOBAL int32 global_loader_linenum INIT(0);
 GLOBAL char8 global_country INIT("US");
 
 /* Variable: global_region */
-GLOBAL char32 global_region INIT("CA");
+GLOBAL char32 global_region INIT("");
+
+/* Variable: global_locality */
+GLOBAL char32 global_locality INIT("");
+
+/* Variable: global_city */
+GLOBAL char32 global_city INIT("");
 
 /* Variable: global_organization */
-GLOBAL char1024 global_organization INIT("SLAC");
+GLOBAL char1024 global_organization INIT("arras-energy");
+
+/* Variable: global_origin */
+GLOBAL char1024 global_origin INIT(BUILD_ORIGIN);
+
+/* Variable: global_gitbranch */
+GLOBAL char1024 global_gitbranch INIT(BUILD_BRANCH);
 
 /* Variable: global_json_complex_format */
 #define JCF_STRING  0x0000

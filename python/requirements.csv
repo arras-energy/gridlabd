@@ -16,6 +16,7 @@ folium,,,0.12.1
 geocoder,,,1.38.1
 geopandas,,,0.12.2
 geopy,,,2.1.0
+geojson,,,3.2.0
 github,,,
 haversine,,,2.3.0
 imageio,,,2.31.5
@@ -25,8 +26,8 @@ ipyplot,,,1.1.1
 ipython,3,,8.10.0
 ipython,,,8.10.0
 kaleido,,,0.2.1
-marimo,,,0.10.7
-matplotlib,2,,3.3.3
+marimo,,,0.10.17
+matplotlib,2,,3.10.0
 matplotlib_inline,,,0.1.6
 metar,,,1.9.0
 networkx,,,2.8.8

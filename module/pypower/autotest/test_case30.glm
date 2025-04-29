@@ -8,3 +8,5 @@ module pypower
 {
 	solver_method FD_XB;
 }
+
+// NB: cannot be verified with reference model because of flat start

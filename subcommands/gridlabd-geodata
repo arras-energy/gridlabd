@@ -383,7 +383,7 @@ CONFIGDIR = {
     "local" : os.getenv("PWD"),
 }
 CONFIG = {
-    "geodata_url" : "http://geodata.gridlabd.us/",
+    "geodata_url" : "http://geodata.arras.energy/",
     "output_format" : "CSV",
     "path_join" : "outer",
     "column_names" : {
@@ -1126,7 +1126,7 @@ def load_dataset(args):
     verbose(f"dataset '{DATASET}' selected")
     modspec = util.spec_from_file_location(DATASET, location)
     global MODULE
-    MODULE = importlib.import_module(f"geodata_{DATASET}")
+    MODULE = importlib.import_module(f"gridlabd.geodata_{DATASET}")
     if not MODULE:
         error(f"unable to import module geodata_{DATASET} from {location}",E_NOTFOUND)
     if hasattr(MODULE,"set_context"):

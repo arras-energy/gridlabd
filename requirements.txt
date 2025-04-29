@@ -15,6 +15,7 @@ flask==3.0.3
 flask-restful-swagger==0.20.1
 folium==0.12.1
 geocoder==1.38.1
+geojson==3.2.0
 geopandas==0.12.2
 geopy==2.1.0
 haversine==2.3.0
@@ -24,7 +25,7 @@ ipykernel==5.5.5
 ipyplot==1.1.1
 ipython==8.10.0
 kaleido==0.2.1
-marimo==0.10.7
+marimo==0.10.17
 matplotlib_inline==0.1.6
 metar==1.9.0
 networkx==2.8.8

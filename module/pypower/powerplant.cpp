@@ -81,8 +81,8 @@ powerplant::powerplant(MODULE *module)
 				PT_DESCRIPTION, "Generator fuel type",
 
 			PT_enumeration, "status", get_status_offset(),
-				PT_KEYWORD, "OFFLINE", (enumeration)0x00,
-				PT_KEYWORD, "ONLINE", (enumeration)0x01,
+				PT_KEYWORD, "OFFLINE", (enumeration)GS_OFFLINE,
+				PT_KEYWORD, "ONLINE", (enumeration)GS_ONLINE,
 				PT_DESCRIPTION, "Generator status",
 
 			PT_double, "operating_capacity[MW]", get_operating_capacity_offset(),
@@ -117,7 +117,7 @@ powerplant::powerplant(MODULE *module)
 				PT_DESCRIPTION, "Energy storage state of charge (pu)",
 
 			PT_complex, "S[MVA]", get_S_offset(),
-				PT_DESCRIPTION, "power generation (MVA)",
+				PT_DESCRIPTION, "power generation setpoint (MVA)",
 
 			PT_char256, "controller", get_controller_offset(),
 				PT_DESCRIPTION, "controller python function name",
@@ -140,6 +140,9 @@ powerplant::powerplant(MODULE *module)
 			PT_double, "energy_rate[MWh/unit]", get_energy_rate_offset(),
 				PT_DESCRIPTION, "generator heat rate/fuel efficiency (MWh/unit)",
 
+			PT_double, "ramp_rate[MW/min]", get_ramp_rate_offset(),
+				PT_DESCRIPTION, "generator ramp rate (MWH/min)",
+
 			PT_double, "total_cost[$]", get_total_cost_offset(),
 				PT_DESCRIPTION, "generator total operating cost ($)",
 
@@ -148,6 +151,12 @@ powerplant::powerplant(MODULE *module)
 
 			PT_double, "total_emissions[tonne]", get_total_cost_offset(),
 				PT_DESCRIPTION, "generator total operating cost (tonne)",
+
+			PT_double, "Pg[MW]", get_Pg_offset(),
+				PT_DESCRIPTION, "generator actual real power output (MW)",
+
+			PT_double, "Qg[MW]", get_Qg_offset(),
+				PT_DESCRIPTION, "generator actual reactive power output (MW)",
 
 			NULL) < 1 )
 		{
@@ -163,6 +172,7 @@ int powerplant::create(void)
 	py_kwargs = PyDict_New();
 	last_t = 0;
 	last_Sm = 0;
+	gen_cf = 1.0;
 
 	return 1; // return 1 on success, 0 on failure
 }
@@ -175,6 +185,7 @@ int powerplant::init(OBJECT *parent_hdr)
 		if ( parent->isa("gen","pypower") )
 		{
 			is_dynamic = TRUE;
+			parent->add_powerplant(this);
 			if ( get_storage_capacity() > 0 )
 			{
 				warning("energy storage devices cannot be dynamically dispatchable (parent is a generator)");
@@ -206,6 +217,12 @@ int powerplant::init(OBJECT *parent_hdr)
 				}
 			}
 		}
+	}
+
+	if ( ramp_rate < 0 )
+	{
+		warning("negative ramp rate is fixed by making it positive");
+		ramp_rate = fabs(ramp_rate);
 	}
 
 	extern PyObject *py_globals;
@@ -288,34 +305,77 @@ int powerplant::init(OBJECT *parent_hdr)
 	return 1; // return 1 on success, 0 on failure, 2 on retry later
 }
 
+template <class T> double sign(T a) { return a<0 ? -1 : (a>0 ? 1 : 0);}
+
 TIMESTAMP powerplant::precommit(TIMESTAMP t0)
 {
-	if ( last_t > 0 && get_storage_capacity() > 0 )
+	if ( get_status() == GS_OFFLINE )
 	{
-		double Dt = double(t0-last_t)/3600.0;
-		
-		double DE = S.Re();
-		if ( DE > get_charging_capacity() )
+		return TS_NEVER;
+	}
+
+	delta_t = 0.0;
+	if ( last_t > 0)
+	{
+		// handle ramp rates
+		if ( is_dynamic ) // gen parent
 		{
-			DE = get_charging_capacity();
+			gen *parent = (gen*)get_parent();
+			gen_cf = operating_capacity / parent->get_Pmax();
+			extern bool enable_opf;
+			if  ( enable_opf )
+			{
+				S = complex(parent->get_Pg(),parent->get_Qg());
+			}
+			else
+			{
+				S = complex(parent->get_Ps(),parent->get_Qs());
+			}
 		}
-		else if ( DE < -get_charging_capacity() )
+		if ( ramp_rate > 0 && Pg != S.Re() )
 		{
-			DE = -get_charging_capacity();
+			debug("ramping from %.1lf%+.1lfj MVA to %.1lf%+.1lfj MVA",Pg,Qg,S.Re(),S.Im());
+			double DS = min(ramp_rate,S.Mag()-sqrt(Pg*Pg+Qg*Qg)); // available total power change
+			double DQ = min(DS,Qg-S.Im()); // available reactive power change
+			double DP = min(sqrt(DS*DS-DQ*DQ),Pg-S.Re()); // available real power change
+			Pg += sign(Pg-S.Re())*DP; // update real power
+			Qg += sign(Qg-S.Im())*DQ; // update reactive power
+			delta_t = DS / ramp_rate * 60;
+			debug("ramping delta-t is %.0lf seconds",delta_t);
+		}
+		else // no ramping implemented
+		{
+			Pg = S.Re();
+			Qg = S.Im();
 		}
 
-		double Et = get_storage_capacity()*get_state_of_charge() + DE*Dt*get_storage_efficiency();
-		if ( Et > get_storage_capacity() )
-		{
-			set_state_of_charge(1.0);
-		}
-		else if ( Et < 0 )
-		{
-			set_state_of_charge(0.0);
-		}
-		else
-		{
-			set_state_of_charge(Et/get_storage_capacity());
+		// handle storage rates
+		if ( get_storage_capacity() > 0 )
+		{	
+			double Dt = double(t0-last_t)/3600.0;		
+			double DE = S.Re();
+			if ( DE > get_charging_capacity() )
+			{
+				DE = get_charging_capacity();
+			}
+			else if ( DE < -get_charging_capacity() )
+			{
+				DE = -get_charging_capacity();
+			}
+
+			double Et = get_storage_capacity()*get_state_of_charge() + DE*Dt*get_storage_efficiency();
+			if ( Et > get_storage_capacity() )
+			{
+				set_state_of_charge(1.0);
+			}
+			else if ( Et < 0 )
+			{
+				set_state_of_charge(0.0);
+			}
+			else
+			{
+				set_state_of_charge(Et/get_storage_capacity());
+			}
 		}
 	}
 	last_t = t0;
@@ -323,6 +383,7 @@ TIMESTAMP powerplant::precommit(TIMESTAMP t0)
 	// post costs
 	if ( costobj != NULL )
 	{
+		costobj->set_model(gencost::CM_POLYNOMIAL);
 		costobj->set_startup(get_startup_cost());
 		costobj->set_shutdown(get_shutdown_cost());
 		char buffer[1025];
@@ -334,7 +395,7 @@ TIMESTAMP powerplant::precommit(TIMESTAMP t0)
 }
 TIMESTAMP powerplant::presync(TIMESTAMP t0)
 {
-	if ( get_status() == 0 )
+	if ( get_status() == GS_OFFLINE )
 	{
 		return TS_NEVER;
 	}
@@ -342,21 +403,16 @@ TIMESTAMP powerplant::presync(TIMESTAMP t0)
 	// copy data to parent
 	if ( is_dynamic ) // gen parent
 	{
-		if ( S.Re() != 0 || S.Im() != 0 )
-		{
-			gen *parent = (gen*)get_parent();
-			parent->set_Pg(parent->get_Pg()+S.Re());
-			parent->set_Qg(parent->get_Qg()+S.Im());
-		}
+		gen *parent = (gen*)get_parent();
+		parent->add_Pg(Pg);
+		parent->add_Qg(Qg);
+		parent->add_Pmax(operating_capacity);
 	}
 	else // bus parent
 	{
-		if ( S.Re() != 0 || S.Im() != 0 )
-		{
-			bus *parent = (bus*)get_parent();
-			parent->set_Pd(parent->get_Pd()-S.Re());
-			parent->set_Qd(parent->get_Qd()-S.Im());
-		}
+		bus *parent = (bus*)get_parent();
+		parent->set_Pd(parent->get_Pd()-Pg);
+		parent->set_Qd(parent->get_Qd()-Qg);
 	}
 	return TS_NEVER;
 }
@@ -369,6 +425,9 @@ TIMESTAMP powerplant::sync(TIMESTAMP t0)
 	{
 		Py_complex z = {get_S().Re(), get_S().Im()};
 		PyDict_SetItemString(py_kwargs,"S",PyComplex_FromCComplex(z));
+		PyDict_SetItemString(py_kwargs,"Pg",PyFloat_FromDouble(Pg));
+		PyDict_SetItemString(py_kwargs,"Qg",PyFloat_FromDouble(Qg));
+		PyDict_SetItemString(py_kwargs,"gen_cf",PyFloat_FromDouble(gen_cf));
 		if ( get_parent() && get_parent()->isa("bus","pypower") )
 		{
 			bus *parent = (bus*)get_parent();
@@ -437,6 +496,7 @@ TIMESTAMP powerplant::sync(TIMESTAMP t0)
 			Py_DECREF(result);
 		}
 	}
+
 	return t1;
 }
 
@@ -451,7 +511,7 @@ TIMESTAMP powerplant::commit(TIMESTAMP t0, TIMESTAMP t1)
 {
 	double dt = (t0 - last_t)/3600;
 
-	double Sm = S.Mag();
+	double Sm = sqrt(Pg*Pg+Qg*Qg);
 	if ( last_Sm == 0 && Sm != 0 )
 	{	// startup
 		total_cost += startup_cost * operating_capacity;

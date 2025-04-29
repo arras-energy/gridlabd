@@ -6,6 +6,8 @@ static wchar_t *program = NULL;
 static PyObject *main_module = NULL;
 PyObject *gridlabd_module = NULL;
 
+SET_MYCONTEXT(DMC_PYTHON)
+
 void python_embed_init(int argc, const char *argv[])
 {
     if ( gridlabd_module == NULL )
@@ -18,7 +20,7 @@ void python_embed_init(int argc, const char *argv[])
         {
             throw_exception("python_embed_init(argc=%d,argv=(%s,...)): unable to load module __main__ module",argc,argv?argv[0]:"NULL");
         }
-        gridlabd_module = PyInit_gridlabd();
+        gridlabd_module = PyInit_gldcore();
         Py_INCREF(gridlabd_module);
         Py_INCREF(main_module);
     }
@@ -70,7 +72,7 @@ PyObject *python_embed_import(const char *module, const char *path)
     {
         snprintf(tmp,sizeof(tmp)-1,"import io, sys\nsys.path.extend('%s'.split(':'))\n",path);
         int len = strlen(tmp);
-        output_debug("python_embed_import(const char *module='%s', const char *path='%s'): running [%s]",module,path,tmp);
+        IN_MYCONTEXT output_debug("python_embed_import(const char *module='%s', const char *path='%s'): running [%s]",module,path,tmp);
         if ( len > 0 && PyRun_SimpleString(tmp) )
         {
             PyObject *pType, *pValue, *pTraceback;
@@ -177,7 +179,7 @@ bool python_embed_call(PyObject *pModule, const char *name, const char *vargsfmt
     }
 
     PyObject *pGridlabd = PyDict_GetItemString(pModule,"gridlabd");
-    PyObject *pArgs = Py_BuildValue("(O)",pGridlabd?pGridlabd:PyInit_gridlabd());
+    PyObject *pArgs = Py_BuildValue("(O)",pGridlabd?pGridlabd:PyInit_gldcore());
     PyObject *pKwargs = vargsfmt ? Py_VaBuildValue(vargsfmt,varargs) : NULL;
     if ( last_result != NULL )
     {
@@ -328,7 +330,7 @@ bool python_embed_call(
     }
 
     PyObject *pGridlabd = PyDict_GetItemString(pModule,"gridlabd");
-    PyObject *pArgs = Py_BuildValue("(O)",pGridlabd?pGridlabd:PyInit_gridlabd());
+    PyObject *pArgs = Py_BuildValue("(O)",pGridlabd?pGridlabd:PyInit_gldcore());
     PyObject *pKwargs = vargsfmt ? Py_VaBuildValue(vargsfmt,varargs) : NULL;
     PyErr_Clear();
     PyObject *return_value = PyObject_Call(pFunc,pArgs,pKwargs);
@@ -410,7 +412,7 @@ std::string python_eval(const char *command)
 //   python_parser(<string>) to append <string> to input buffer
 //   python_parser(NULL) to parse input buffer
 // Returns true on success, false on failure
-static std::string input_buffer("from gridlabd import *\n");
+static std::string input_buffer("from gldcore import *\n");
 bool python_parser(const char *line, void *context)
 {
     // end input -> run code

@@ -65,7 +65,7 @@ import os
 import json
 import re
 import traceback
-import framework as app
+import gridlabd.framework as app
 import pandas as pd
 
 def to_csv(data,end="\n",sep=",",quote='"',na="",index="name"):
@@ -163,7 +163,7 @@ class Editor:
     """GLM Model Editor
     """
     def __init__(self,data:dict):
-        assert "application" in data, "data does not valid application data"
+        assert "application" in data, "data does not have valid application data"
         assert data["application"] == "gridlabd", "data is not a valid gridlabd model"
         self.data = data
 

@@ -3,61 +3,71 @@
 The `framework` module contains the infrastructure to support standardized
 implementation of tools in GridLAB-D.
 
+Standard options:
+
+The following options are processed by `read_stdargs()`:
+
+* `--debug`: enable debug traceback on exception
+
+* `--quiet`: suppress error messages
+
+* `--silent`: suppress all error messages
+
+* `--warning`: suppress warning messages
+
+* `--verbose`: enable verbose output, if any
+
 Example:
 
 ~~~
-import framework as app
+import gridlabd.framework as app
 
-def main(argv):
+def main(argv:list[str]) -> int:
 
+    # handle no options case -- typically a cry for help
     if len(argv) == 1:
 
-        print("
-".join([x for x in __doc__.split("
-") if x.startswith("Syntax: ")]))
+        app.syntax(__doc__)
         return app.E_SYNTAX
 
-    args = read_stdargs(argv)
+    # handle stardard app arguments --debug, --warning, --verbose, --quiet, --silent
+    args = app.read_stdargs(argv)
 
     for key,value in args:
 
         if key in ["-h","--help","help"]:
+            
             print(__doc__,file=sys.stdout)
+            return app.E_OK
+
+        # add your options here
+
         else:
-            error(f"'{key}={value}' is invalid")
+
+            app.error(f"'{key}={value}' is invalid")
             return app.E_INVALID
 
+    # implement your code here
+
+    # normal termination condition
     return app.E_OK
 
 if __name__ == "__main__":
 
-    try:
-
-        rc = main(sys.argv)
-        exit(rc)
-
-    except KeyboardInterrupt:
-
-        exit(app.E_INTERRUPT)
-
-    except Exception as exc:
-
-        if DEBUG:
-            raise exc
-
-        if not QUIET:
-            e_type,e_value,e_trace = sys.exc_info()
-            tb = traceback.TracebackException(e_type,e_value,e_trace).stack[1]
-            print(f"EXCEPTION [{app.EXEFILE}@{tb.lineno}]: ({e_type.__name__}) {e_value}",file=sys.stderr)
-
-        exit(app.E_EXCEPTION)
+    app.run(main)
 ~~~
 
 
 
+# Classes
+
+## ApplicationError
+
+Application exception
+
 # Functions
 
-## `complex_unit() -> None`
+## `complex_unit(x:str, form:str, prec:str, unit:str) -> None`
 
 Convert complex value with unit
 
@@ -83,7 +93,22 @@ Returns:
 
 ---
 
-## `double_unit() -> float`
+## `debug(msg:list) -> None`
+
+Debugging message output
+
+Arguments:
+
+* `msg`: message to output
+
+* `**kwargs`: print options
+
+Messages are enabled when the `--debug` option is used.
+
+
+---
+
+## `double_unit(x:str) -> float`
 
 Convert a string with unit to a float
 
@@ -96,7 +121,39 @@ Returns:
 
 ---
 
-## `gridlabd() -> Optional`
+## `error(msg:list) -> None`
+
+Error message output
+
+Arguments:
+
+* `msg`: message to output
+
+* `**kwargs`: print options
+
+Messages are suppressed when the `--quiet` option is used.
+
+If `--debug` is enabled, an exception is raised with a traceback.
+
+If the exit `code` is specified, exit is called with the code.
+
+
+---
+
+## `exception() -> None`
+
+Exception message output
+
+Arguments:
+
+* `exc`: exception to raise
+
+If `exc` is a string, an `ApplicationError` exception is raised.
+
+
+---
+
+## `gridlabd(args:list) -> Optional`
 
 Simple gridlabd runner
 
@@ -105,6 +162,8 @@ Arguments:
 * `args`: argument list
 
 * `bin`: enable direct call to gridlabd binary (bypasses shell and faster)
+
+* `output_to`: run postprocessor on output to stdout
 
 * `kwargs`: options to pass to `subpocess.run`
 
@@ -119,7 +178,7 @@ See also:
 
 ---
 
-## `integer() -> int`
+## `integer(x:str) -> int`
 
 Convert a string to an integer
 
@@ -132,7 +191,7 @@ Returns:
 
 ---
 
-## `open_glm() -> io.TextIOWrapper`
+## `open_glm(file:str, tmp:str, init:bool) -> io.TextIOWrapper`
 
 Open GLM file as JSON
 
@@ -155,7 +214,22 @@ Return:
 
 ---
 
-## `read_stdargs() -> list`
+## `output(msg:list) -> None`
+
+General message output
+
+Arguments:
+
+* `msg`: message to output
+
+* `**kwargs`: print options
+
+Messages are suppressed when the `--silent` option is used.
+
+
+---
+
+## `read_stdargs(argv:list) -> list`
 
 Read framework options
 
@@ -170,7 +244,73 @@ Returns:
 
 ---
 
-## `version() -> str`
+## `run(main:callable) -> None`
+
+Run a main function under this app framework
+
+Arguments:
+
+* `main`: the main function to run
+
+* `exit`: the exit function to call (default is `exit`)
+
+* `print`: the print funtion to call on exceptions (default is `print`)
+
+This function does not return. When the app is done it calls exit.
+
+
+---
+
+## `syntax(docs:str) -> None`
+
+Print syntax message
+
+Arguments:
+
+* `docs`: the application's __doc__ string
+
+* `print`: the print function to use (default is `print`)
+
+This function does not return. When the function is done it calls exit(E_SYNTAX)
+
+
+---
+
+## `test(test:callable, name:str) -> None`
+
+Run module test routine
+
+Arguments:
+
+* `test`: the test function to run
+
+* `name`: name of the app to test
+
+* `exit`: the exit function to call (default is `exit`)
+
+* `print`: the print funtion to call on exceptions (default is `print`)
+
+This function does not return. When the test is done it calls exit.
+
+
+---
+
+## `verbose(msg:list) -> None`
+
+Verbose message output
+
+Arguments:
+
+* `msg`: message to output
+
+* `**kwargs`: print options
+
+Messages are enabled when the `--verbose` option is used.
+
+
+---
+
+## `version(terms:str) -> str`
 
 Get gridlabd version
 
@@ -178,3 +318,48 @@ Returns:
 
 * GridLAB-D version info
 
+
+---
+
+## `warning(msg:list) -> None`
+
+Warning message output
+
+Arguments:
+
+* `msg`: message to output
+
+* `**kwargs`: print options
+
+Messages are suppress when the `--warning` option is used.
+
+
+# Constants
+
+* `DEBUG`
+* `E_BADVALUE`
+* `E_EXCEPTION`
+* `E_FAILED`
+* `E_INTERRUPT`
+* `E_INVALID`
+* `E_MISSING`
+* `E_NOTFOUND`
+* `E_OK`
+* `E_SYNTAX`
+* `QUIET`
+* `SILENT`
+* `VERBOSE`
+* `WARNING`
+
+# Modules
+
+* `geocoder`
+* `gridlabd.unitcalc`
+* `inspect`
+* `io`
+* `json`
+* `math`
+* `os`
+* `subprocess`
+* `sys`
+* `traceback`

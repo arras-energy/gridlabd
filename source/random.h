@@ -73,6 +73,7 @@ extern "C" {
 	RANDOMTYPE random_type(const char *name);
 	int random_nargs(const char *name);
 	double random_value(int type, ...);
+	bool random_from_string(const char *str, double *value);
 	double pseudorandom_value(RANDOMTYPE, unsigned int *state, ...);
 #ifdef __cplusplus
 }

@@ -5,9 +5,9 @@ class forecast
 	double wind_dir[deg];
 }
 module tape;
-#define NOAA_FORECAST_TIMEZONE=${SHELL gridlabd timezone local}
-#define NOAA_FORECAST_STARTTIME=2022-03-07T08:00:00-08:00
-#define NOAA_FORECAST_STOPTIME=2022-03-20T06:00:00-08:00
+#define NOAA_FORECAST_TIMEZONE=${SHELL gridlabd timezone 37.5,-122.3 -f=TZSPEC}
+#define NOAA_FORECAST_STARTTIME=2025-02-21T08:00:00-08:00
+#define NOAA_FORECAST_STOPTIME=2025-03-06T06:00:00-08:00
 object forecast
 {
 	name "test";

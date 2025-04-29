@@ -58,6 +58,12 @@ See also:
 
 # Classes
 
+## ApplicationError
+
+Application exception
+
+---
+
 ## Map
 
 Mapping class
@@ -178,7 +184,7 @@ Mapping exception
 
 # Functions
 
-## `complex_unit() -> None`
+## `complex_unit(x:str, form:str, prec:str, unit:str) -> None`
 
 Convert complex value with unit
 
@@ -204,7 +210,22 @@ Returns:
 
 ---
 
-## `double_unit() -> float`
+## `debug(msg:list) -> None`
+
+Debugging message output
+
+Arguments:
+
+* `msg`: message to output
+
+* `**kwargs`: print options
+
+Messages are enabled when the `--debug` option is used.
+
+
+---
+
+## `double_unit(x:str) -> float`
 
 Convert a string with unit to a float
 
@@ -217,7 +238,39 @@ Returns:
 
 ---
 
-## `get_options() -> dict`
+## `error(msg:list) -> None`
+
+Error message output
+
+Arguments:
+
+* `msg`: message to output
+
+* `**kwargs`: print options
+
+Messages are suppressed when the `--quiet` option is used.
+
+If `--debug` is enabled, an exception is raised with a traceback.
+
+If the exit `code` is specified, exit is called with the code.
+
+
+---
+
+## `exception() -> None`
+
+Exception message output
+
+Arguments:
+
+* `exc`: exception to raise
+
+If `exc` is a string, an `ApplicationError` exception is raised.
+
+
+---
+
+## `get_options(value:str, default:dict) -> dict`
 
 Extract save/show options from argument value
 
@@ -234,7 +287,7 @@ Returns:
 
 ---
 
-## `gridlabd() -> Optional`
+## `gridlabd(args:list) -> Optional`
 
 Simple gridlabd runner
 
@@ -243,6 +296,8 @@ Arguments:
 * `args`: argument list
 
 * `bin`: enable direct call to gridlabd binary (bypasses shell and faster)
+
+* `output_to`: run postprocessor on output to stdout
 
 * `kwargs`: options to pass to `subpocess.run`
 
@@ -257,7 +312,7 @@ See also:
 
 ---
 
-## `integer() -> int`
+## `integer(x:str) -> int`
 
 Convert a string to an integer
 
@@ -270,7 +325,7 @@ Returns:
 
 ---
 
-## `main() -> int`
+## `main(argv:list) -> int`
 
 Command line processing
 
@@ -285,7 +340,7 @@ Returns:
 
 ---
 
-## `open_glm() -> io.TextIOWrapper`
+## `open_glm(file:str, tmp:str, init:bool) -> io.TextIOWrapper`
 
 Open GLM file as JSON
 
@@ -308,7 +363,22 @@ Return:
 
 ---
 
-## `read_stdargs() -> list`
+## `output(msg:list) -> None`
+
+General message output
+
+Arguments:
+
+* `msg`: message to output
+
+* `**kwargs`: print options
+
+Messages are suppressed when the `--silent` option is used.
+
+
+---
+
+## `read_stdargs(argv:list) -> list`
 
 Read framework options
 
@@ -323,7 +393,73 @@ Returns:
 
 ---
 
-## `version() -> str`
+## `run(main:callable) -> None`
+
+Run a main function under this app framework
+
+Arguments:
+
+* `main`: the main function to run
+
+* `exit`: the exit function to call (default is `exit`)
+
+* `print`: the print funtion to call on exceptions (default is `print`)
+
+This function does not return. When the app is done it calls exit.
+
+
+---
+
+## `syntax(docs:str) -> None`
+
+Print syntax message
+
+Arguments:
+
+* `docs`: the application's __doc__ string
+
+* `print`: the print function to use (default is `print`)
+
+This function does not return. When the function is done it calls exit(E_SYNTAX)
+
+
+---
+
+## `test(test:callable, name:str) -> None`
+
+Run module test routine
+
+Arguments:
+
+* `test`: the test function to run
+
+* `name`: name of the app to test
+
+* `exit`: the exit function to call (default is `exit`)
+
+* `print`: the print funtion to call on exceptions (default is `print`)
+
+This function does not return. When the test is done it calls exit.
+
+
+---
+
+## `verbose(msg:list) -> None`
+
+Verbose message output
+
+Arguments:
+
+* `msg`: message to output
+
+* `**kwargs`: print options
+
+Messages are enabled when the `--verbose` option is used.
+
+
+---
+
+## `version(terms:str) -> str`
 
 Get gridlabd version
 
@@ -331,3 +467,50 @@ Returns:
 
 * GridLAB-D version info
 
+
+---
+
+## `warning(msg:list) -> None`
+
+Warning message output
+
+Arguments:
+
+* `msg`: message to output
+
+* `**kwargs`: print options
+
+Messages are suppress when the `--warning` option is used.
+
+
+# Constants
+
+* `DEBUG`
+* `E_BADVALUE`
+* `E_EXCEPTION`
+* `E_FAILED`
+* `E_INTERRUPT`
+* `E_INVALID`
+* `E_MISSING`
+* `E_NOTFOUND`
+* `E_OK`
+* `E_SYNTAX`
+* `QUIET`
+* `SILENT`
+* `VERBOSE`
+* `WARNING`
+
+# Modules
+
+* `geocoder`
+* `gridlabd.unitcalc`
+* `inspect`
+* `io`
+* `json`
+* `math`
+* `os`
+* `pandas`
+* `plotly.express`
+* `subprocess`
+* `sys`
+* `traceback`

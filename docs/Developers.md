@@ -1,22 +1,22 @@
-Software developers and engineers are welcome to contribute to Arras Energy. The source code to HiPAS is available to the public through the [GitHub SLAC Gismo GridLAB-D project](https://source.gridlabd.us/). 
+Software developers and engineers are welcome to contribute to Arras Energy. The source code to HiPAS GridLAB-D is available to the public through the [GitHub HiPAS GridLAB-D project](https://source.arras.energy/).
 
 ## Developer Resources
 
-  - [Source code](https://source.gridlabd.us/)
-  - [Issues](https://source.gridlabd.us/issues)
-  - [Pull requests](https://source.gridlabd.us/pulls)
-  - [Projects](https://source.gridlabd.us/projects)
-  - [Wiki](https://source.gridlabd.us/wiki)
-  - [Discussions](https://source.gridlabd.us/discussions)
+  - [Source code](https://source.arras.energy/)
+  - [Issues](https://source.arras.energy/issues)
+  - [Pull requests](https://source.arras.energy/pulls)
+  - [Projects](https://source.arras.energy/projects)
+  - [Wiki](https://source.arras.energy/wiki)
+  - [Discussions](https://source.arras.energy/discussions)
 
 Developers should consult the [[/Developer/README]] for information about modifying and contributing to Arras Energy.
 
 # Installing Arras Energy from source code
 
-You can set up your system to host development and build GridLAB-D from source code using the installation script. 
+You can set up your system to host development and build GridLAB-D from source code using the installation script.
 
 ~~~
-bash$ git clone https://source.gridlabd.us/ gridlabd
+bash$ git clone https://source.arras.energy/ gridlabd
 bash$ cd gridlabd
 bash$ ./install.sh
 ~~~

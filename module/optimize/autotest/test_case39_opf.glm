@@ -6,7 +6,7 @@ class bus
 {
     double gen[MW]; // total generation at bus
     double price[$/MWh]; // cost at bus
-    double Vdc[pu*V]; // DC bus voltage 
+    double Vdc[pu.V]; // DC bus voltage 
 }
 
 // This autotest does not work on LINUX systems for unknown reason

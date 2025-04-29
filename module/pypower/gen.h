@@ -10,6 +10,19 @@ class gen : public gld_object
 {
 
 public:
+
+	typedef enum {
+		GS_OUTOFSERVICE = 0,
+		GS_INSERVICE = 1,
+	} GENERATIONSTATUS;
+
+public:
+
+	// module globals
+	static double default_reactive_power_fraction;
+
+public:
+
 	// published properties
 	GL_ATOMIC(int32,bus);
 	GL_ATOMIC(double,Pg);
@@ -37,16 +50,31 @@ public:
 	GL_ATOMIC(double,mu_Qmax);
 	GL_ATOMIC(double,mu_Qmin);
 
+	// added for powerplant dispatch after OPF
+	GL_ATOMIC(double,Ps);
+	GL_ATOMIC(double,Qs);
+
+private:
+
+	unsigned int plant_count;
+
 public:
 
 	class gencost *cost; // pointer to gencost data (if any)
+	void add_powerplant(class powerplant *unit);
 	void add_cost(class gencost *add);
+	void add_Pg(double real_power_MW);
+	void add_Qg(double reactive_power_MVAr);
+	void add_Pmax(double capacity_MW);
+	unsigned int get_powerplant_count();
 
 public:
+
 	// event handlers
 	gen(MODULE *module);
 	int create(void);
 	int init(OBJECT *parent);
+	TIMESTAMP precommit(TIMESTAMP t0);
 
 public:
 	// internal properties

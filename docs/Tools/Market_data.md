@@ -4,20 +4,20 @@
 
 Shell:
 
-    bash$ gridlabd market_data [-m|--market=MARKETNAME] [-d|--node=NODE] [-s|--startdate=STARTDATE]
+    bash$ gridlabd gridlabd.market_data [-m|--market=MARKETNAME] [-d|--node=NODE] [-s|--startdate=STARTDATE]
     [-e|--enddate=ENDDATE] [-h|--help|help] [--credentials[=FILENAME.json]]
     [-n|--name=OBJNAME] [-c|--csv=CSVFILE] [-g|--glm=GLMFILE]
 
 GLM:
 
-    #python -m market_data [-m|--market=MARKETNAME] [-d|--node=NODE] [-s|--startdate=STARTDATE]
+    #python -m gridlabd.market_data [-m|--market=MARKETNAME] [-d|--node=NODE] [-s|--startdate=STARTDATE]
     [-e|--enddate=ENDDATE] [-h|--help|help] [--credentials[=FILENAME.json]]
     [-n|--name=OBJNAME] [-c|--csv=CSVFILE] [-g|--glm=GLMFILE]
 
 Python:
 
     bash$ gridlabd python
-    >>> import market_data as md
+    >>> import gridlabd.market_data as md
     >>> data = md.get_market_data(MARKETNAME,NODE,STARTDATE,ENDDATE[,CREDENTIALS])
     >>> md.write_csv(data,CSVNAME)
     >>> md.write_glm(data,GLMNAME,[NAME])
@@ -57,7 +57,7 @@ option.
 
 # Example
 
-    bash$ gridlabd market_data -m=CAISO -d=0096WD_7_N001 -s=20220222 -e=20220223
+    bash$ gridlabd gridlabd.market_data -m=CAISO -d=0096WD_7_N001 -s=20220222 -e=20220223
     START_TIME_PST,LMP,MW
     2022-02-22 00:00:00,50.0,21372.0
     2022-02-22 00:05:00,50.9,21372.0

@@ -1,22 +1,22 @@
 PYTHONVERSION=$(shell python$(PYVER) $(top_srcdir)/python/setup.py --version)
-PYPKG=$(PYENV)/lib/python$(PYVER)/site-packages/gridlabd
+PYPKG=$(PYENV)/lib/python$(PYVER)/site-packages/gldcore
 
-$(top_srcdir)/python/dist/gridlabd-$(PYTHONVERSION).tar.gz: $(top_srcdir)/source/build.h $(wildcard $(top_srcdir)/source/*.cpp) | $(PYENV)
-	@echo "building gridlabd-$(PYTHONVERSION)..."
+$(top_srcdir)/python/dist/gldcore-$(PYTHONVERSION).tar.gz: $(top_srcdir)/source/build.h $(wildcard $(top_srcdir)/source/*.cpp) | $(PYENV)
+	@echo "building gldcore-$(PYTHONVERSION)..."
 	@rm -f $(PYPKG)-$(PYTHONVERSION)*.{whl,tar.gz}
 	@$(ENVPYTHON) -m pip install build 
 	@export SRCDIR=$(realpath $(top_srcdir)) ; export BLDDIR=$(shell pwd); $(ENVPYTHON) -m build $(top_srcdir)/python
 
-$(PYPKG)-$(PYTHONVERSION).tar.gz: $(top_srcdir)/python/dist/gridlabd-$(PYTHONVERSION).tar.gz
+$(PYPKG)-$(PYTHONVERSION).tar.gz: $(top_srcdir)/python/dist/gldcore-$(PYTHONVERSION).tar.gz
 	@echo "copying $(top_srcdir)/python/dist to $(PYPKG)-$(PYTHONVERSION)..."
-	@cp $(top_srcdir)/python/dist/gridlabd-$(PYTHONVERSION)*.{tar.gz,whl} $(PYENV)/lib/python$(PYVER)/site-packages
+	@cp $(top_srcdir)/python/dist/gldcore-$(PYTHONVERSION)*.{tar.gz,whl} $(PYENV)/lib/python$(PYVER)/site-packages
 
 python-install: $(PYPKG)-$(PYTHONVERSION).dist-info
 	@mkdir -p $(datadir)/$(PACKAGE)/ 
 	@cp $(PYPKG)-$(PYTHONVERSION)-*.whl $(datadir)/$(PACKAGE)/ 
 
 $(PYPKG)-$(PYTHONVERSION).dist-info: $(PYPKG)-$(PYTHONVERSION).tar.gz
-	@echo "installing gridlabd-$(PYTHONVERSION)..."
+	@echo "installing gldcore-$(PYTHONVERSION)..."
 	$(ENVPYTHON) -m pip install --ignore-installed $(PYPKG)-$(PYTHONVERSION)-*.whl
 	touch $@
 

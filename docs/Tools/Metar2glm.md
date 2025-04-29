@@ -5,13 +5,13 @@
 Shell:
 
 ~~~
-    $ gridlabd python -m metar2glm -m metar2glm [--index|STATION ...] [-c|-class CLASSNAME]
+    $ gridlabd python -m gridlabd.metar2glm -m metar2glm [--index|STATION ...] [-c|-class CLASSNAME]
 ~~~
 
 GLM:
 
 ~~~
-    #python -m metar2glm -m metar2glm [--index|STATION ...] [-c|-class CLASSNAME]
+    #python -m metar2glm -m gridlabd.metar2glm [--index|STATION ...] [-c|-class CLASSNAME]
 ~~~
 
 Options:
@@ -31,7 +31,7 @@ The `metar2glm` tool creates an object that represents the realtime weather at t
 The following outputs the realtime weather for San Francisco airport.
 
 ~~~
-$ gridlabd python -m metar2glm KSFO
+$ gridlabd python -m gridlabd.metar2glm KSFO
 ~~~
 
 # See also

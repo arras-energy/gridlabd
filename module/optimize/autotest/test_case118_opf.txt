@@ -5,7 +5,7 @@ Problem dumps starting at t=946684800 (1999-12-31 16:00:00 PST)
 Data: {'D': [51.0, 20.0, 39.0, 39.0, 0.0, 52.0, 19.0, 28.0, 0.0, 0.0, 70.0, 47.0, 34.0, 14.0, 90.0, 25.0, 11.0, 60.0, 45.0, 18.0, 14.0, 10.0, 7.0, 13.0, 0.0, 0.0, 71.0, 17.0, 24.0, 0.0, 43.0, 59.0, 23.0, 59.0, 33.0, 31.0, 0.0, 0.0, 27.0, 66.0, 37.0, 96.0, 18.0, 16.0, 53.0, 28.0, 34.0, 20.0, 87.0, 17.0, 17.0, 18.0, 23.0, 113.0, 63.0, 84.0, 12.0, 12.0, 277.0, 78.0, 0.0, 77.0, 0.0, 0.0, 0.0, 39.0, 28.0, 0.0, 0.0, 66.0, 0.0, 12.0, 6.0, 68.0, 47.0, 68.0, 61.0, 71.0, 39.0, 130.0, 0.0, 54.0, 20.0, 11.0, 24.0, 21.0, 0.0, 48.0, 0.0, 163.0, 10.0, 65.0, 12.0, 30.0, 42.0, 38.0, 15.0, 34.0, 42.0, 37.0, 22.0, 5.0, 23.0, 38.0, 31.0, 43.0, 50.0, 2.0, 8.0, 39.0, 0.0, 68.0, 6.0, 8.0, 22.0, 184.0, 20.0, 33.0]}
 Objective: minimize [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] @ var1
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (118,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12c7dae90>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x1268c2fe0>
 dims: 119 equalities, 118 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].

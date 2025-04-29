@@ -1,0 +1,90 @@
+#define CASE=14
+#ifexists "../case.glm"
+#define DIR=..
+#endif
+
+//#set debug=TRUE
+#set output_message_context=NONE
+#set suppress_repeat_messages=FALSE
+
+module pypower
+{
+    maximum_timestep 1h;
+    message_flags DEBUG|VERBOSE;
+    enable_opf TRUE;
+    opf_update_interval 1h;
+}
+
+module tape
+{
+    csv_header_type NAME;
+}
+
+object pypower.load
+{
+    parent "pp_bus_2";
+    Vn 12.5 kV;
+    object player
+    {
+        file "${DIR:-.}/test_case14_powerplant_pp_bus_2.csv";
+    };
+    status ONLINE;
+}
+
+object pypower.powerplant
+{
+    name "pp_powerplant_2";
+    parent "pp_gen_2";
+    S 10.0;
+    status ONLINE;
+    startup_cost 1.0;
+    shutdown_cost 0.5;
+    fixed_cost 0.1;
+    variable_cost 0.3;
+    scarcity_cost 0.7;
+    ramp_rate 1 MW/min;
+}
+
+#include "${DIR:-.}/case.glm"
+
+//modify pp_gen_2.Pg 0;
+//modify pp_gen_2.Qg 0;
+//modify pp_gen_2.Ps 10;
+//modify pp_gen_2.Qs 1;
+//modify pp_gen_2.S 0+0j;
+
+clock
+{
+    timezone PST+8PDT;
+    starttime "2020-05-01 00:00:00 PDT";
+    stoptime "2020-05-02 00:00:00 PDT";
+}
+
+object recorder
+{
+    parent "pp_bus_2";
+    property S,Pd,Qd,Gs,Bs,Vm,Va;
+    interval -1;
+    file "test_case14_powerplant_pp_bus_2_record.csv";
+}
+
+object recorder
+{
+    parent "pp_gen_2";
+    property Vg,Pg,Qg;
+    interval -1;
+    file "test_case14_powerplant_pp_gen_2_record.csv";
+}
+
+object recorder
+{
+    parent "pp_powerplant_2";
+    property S,Pg,Qg;
+    interval -1;
+    file "test_case14_powerplant_pp_powerplant_2_record.csv";
+};
+
+#ifdef ../${modelname/.glm/}_pp_bus_2_record.csv
+#on_exit 0 diff ../test_case14_powerplant_pp_bus_2_record.csv ${modelname/.glm/}_pp_bus_2_record.csv > gridlabd.diff
+#endif
+

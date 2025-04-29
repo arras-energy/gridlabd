@@ -4,11 +4,11 @@
 SYNOPSIS
 
 Shell:
-    bash$ gridlabd noaa_forecast -p|-position=LAT,LON [-i|--interpolate=TIME|METHOD]
+    bash$ gridlabd gridlabd.noaa_forecast -p|-position=LAT,LON [-i|--interpolate=TIME|METHOD]
         [-g|--glm=GLMNAME] [-n|--name=OBJECTNAME] [-c|--csv=CSVNAME] [--test] [-h|--help|help]
 
 GLM:
-    #python -m noaa_forecast -p|-position=LAT,LON [-i|--interpolate=TIME|METHOD]
+    #python -m gridlabd.noaa_forecast -p|-position=LAT,LON [-i|--interpolate=TIME|METHOD]
         [-g|--glm=GLMNAME] [-n|--name=OBJECTNAME] [-c|--csv=CSVNAME] [--test] [-h|--help|help]
     #include "GLMNAME"
 
@@ -35,11 +35,11 @@ the command line or using call the python API.
 
 Interpolation is usually necessary because the data samples received from NOAA span several hours.
 The default interval is 60 minutes, but can be set to any integer value in minutes. The sampling
-method is by default quadratic.  Other interpolation methods supported include 
+method is by default quadratic.  Other interpolation methods supported include
 
   - linear
 
-    Ignore the index and treat the values as equally spaced. This is the only method 
+    Ignore the index and treat the values as equally spaced. This is the only method
     supported on MultiIndexes.
 
   - time
@@ -56,8 +56,8 @@ method is by default quadratic.  Other interpolation methods supported include
 
   - nearest, zero, slinear, quadratic, cubic, spline, barycentric, polynomial
 
-    Passed to scipy.interpolate.interp1d. These methods use the numerical values of the index. 
-    Both ‘polynomial’ and ‘spline’ require that you also specify an order (int), e.g. 
+    Passed to scipy.interpolate.interp1d. These methods use the numerical values of the index.
+    Both ‘polynomial’ and ‘spline’ require that you also specify an order (int), e.g.
     df.interpolate(method='polynomial', order=5).
 
   - krogh, piecewise_polynomial, spline, pchip, akima, cubicspline
@@ -66,23 +66,23 @@ method is by default quadratic.  Other interpolation methods supported include
 
   - from_derivatives
 
-    Refers to scipy.interpolate.BPoly.from_derivatives which replaces ‘piecewise_polynomial’ 
+    Refers to scipy.interpolate.BPoly.from_derivatives which replaces ‘piecewise_polynomial’
     interpolation method in scipy 0.18.
 
 PARAMETERS
 
-The module uses several parameters to control its behavior. 
+The module uses several parameters to control its behavior.
 
     server = "https://api.weather.gov/points/{latitude},{longitude}" # NOAA location server (provides forecast URL)
-    user_agent = "(gridlabd.us, gridlabd@gmail.com)" # default user agent to report to NOAA
+    user_agent = "(arras.energy, gridlabd@gmail.com)" # default user agent to report to NOAA
     date_format = "%Y-%m-%d %H:%M:%S"
-    float_format="%.1f" # float format to use 
+    float_format="%.1f" # float format to use
     interpolate_time = 60
     interpolate_method = 'quadratic'
 
 The parameters can be changed before obtained the forecast.
 
-    >>> import noaa_forecast as nf
+    >>> import gridlabd.noaa_forecast as nf
     >>> nf.interpolate = 5
     >>> nf.getforecast(37.5,-122.3)
 
@@ -90,11 +90,11 @@ EXAMPLE
 
 The following command downloads only the CSV data for a location:
 
-    bash$ gridlabd noaa_forecast -p=45.62,-122.70 -c=test.csv
+    bash$ gridlabd gridlabd.noaa_forecast -p=45.62,-122.70 -c=test.csv
 
 The following command downloads the CSV data and creates a GLM file with the data linked and weather object named:
 
-    bash$ gridlabd noaa_forecast -p=45.62,-122.70 -c=test.csv -n=test -g=test.glm
+    bash$ gridlabd gridlabd.noaa_forecast -p=45.62,-122.70 -c=test.csv -n=test -g=test.glm
 
 SEE ALSO
 
@@ -104,7 +104,7 @@ SEE ALSO
 import sys, os, json, requests, pandas, numpy, datetime, dateutil, time
 
 server = "https://api.weather.gov/points/{latitude},{longitude}"
-user_agent = "(gridlabd.us, gridlabd@gmail.com)"
+user_agent = "(arras.energy, gridlabd@gmail.com)"
 interpolate_time = 60
 interpolate_method = 'quadratic'
 float_format = "%.1f"
@@ -117,7 +117,7 @@ def getforecast(lat,lon):
     url = server.format(latitude=lat,longitude=lon)
     headers = {'User-agent' : user_agent}
     location = json.loads(requests.get(url,headers=headers).content.decode("utf-8"))
-
+    
     data = {}
     result = {
         "datetime" : [],
@@ -143,10 +143,12 @@ def getforecast(lat,lon):
         result["datetime"].append(dateutil.parser.parse(item["startTime"])+datetime.timedelta(hours=item["number"]))
         result["temperature[degF]"].append(float(item["temperature"]))
         result["wind_speed[m/s]"].append(float(item["windSpeed"].split()[0])*0.44704)
-        result["wind_dir[deg]"].append(dict(
-            N=0, NNE=22.5, NE=45, ENE=67.5, E=90, ESE=112.5, SE=135, SSE=157.5,
+        wind_dirs = dict(
+            N=0.0, NNE=22.5, NE=45, ENE=67.5, E=90, ESE=112.5, SE=135, SSE=157.5,
             S=180, SSW=202.5, SW=225, WSW=247.5, W=270, WNW=292.5, NW=315, NNW=337.5,
-            )[item["windDirection"]])
+            )
+        wind_dir = item["windDirection"]
+        result["wind_dir[deg]"].append(wind_dirs[wind_dir] if wind_dir in wind_dirs else float('nan'))
     df = pandas.DataFrame(result).set_index("datetime")
     if interpolate_time:
         starttime = df.index.min()

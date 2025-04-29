@@ -1,0 +1,11 @@
+#set suppress_repeat_messages=FALSE
+#define CASE=9
+#ifexists "../case.glm"
+#define DIR=..
+#endif
+#include "${DIR:-.}/case.glm"
+
+module pypower
+{
+	save_case TRUE;
+}

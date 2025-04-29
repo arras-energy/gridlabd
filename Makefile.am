@@ -1,11 +1,14 @@
 # File: Makefile.am
 #
 # GridLAB-D 4.0
-# Copyright (C) 2008 Battelle Memorial Institute
+# Copyright (C) 2008-2017 Battelle Memorial Institute
 # This file is distributed under the same terms as GridLAB-D.
 #
 # HiPAS GridLAB-D 4.2
-#   Copyright (C) 2020 Regents of the Leland Stanford Junior University
+# Copyright (C) 2018-2022 Regents of the Leland Stanford Junior University
+#
+# Arras Energy 4.3-
+# Copyright (C) 2023- LF Energy
 #
 # Authors:
 #   DP Chassin (dchassin@slac.stanford.edu)
@@ -307,6 +310,8 @@ $(prefix)/src:
 	@chmod -R 775 $(prefix)/src
 
 index: weather library template
+	@echo Updating file index...
+	@git ls-files | grep -v '^\.' | grep -v '/\.' > index
 
 html-local: module-html developer-html troubleshooting-html
 	@mkdir -p $(prefix)/share/doc/developer

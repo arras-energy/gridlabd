@@ -314,46 +314,46 @@ class Microdata(pandas.DataFrame):
                 "division" : cls.regions[region]["divisions"][division]["id"], 
                 "fips" : cls.regions[region]["divisions"][division]["states"][state]}
 
-import unittest
-
-class _test(unittest.TestCase):
-
-    def test_hc1_1_0(self):
-        hc = HousingCharacteristics(table="1.1")
-        self.assertEqual(hc.find('data'),[['total', 'fuel-used', 'electric-end-use', 'natural-gas-end-use', 'wood-end-use', 'fuel-oil-end-use'], ['total', 'unit-type']])
-
-    def test_hc1_1_1(self):
-        hc = HousingCharacteristics(table="1.1")
-        self.assertEqual(hc.find('data',['total'],['total']),118.2e6)
-
-    def test_hc1_1_2(self):
-        hc = HousingCharacteristics(table="1.1")
-        self.assertEqual(hc.find('data',['total'],['unit-type','single-family-detached']),73.9e6)
-
-    def test_hc1_1_3(self):
-        hc = HousingCharacteristics(table="1.1")
-        self.assertEqual(hc.find('data',['electric-end-use','space-heating'],['total']),[['total', 'main', 'secondary'], 'B'])
-
-    def test_hc1_1_4(self):
-        hc = HousingCharacteristics(table="1.1")
-        self.assertEqual(hc.find('data',['fuel-used','natural-gas'],['total']),68.6e6)
-
-    def test_microdata(self):
-        md = Microdata()
-        self.assertEqual(md["LPXBTU"][0],91.33)
-
-    def test_microdata_fips(self):
-        fips = Microdata.get_division("NY")
-        self.assertEqual(fips["region"],"northeast") 
-        self.assertEqual(fips["division"],"middle-atlantic") 
-        self.assertEqual(Microdata.regions[fips["region"]]["id"],1) 
-        self.assertEqual(Microdata.regions[fips["region"]]["divisions"][fips["division"]]["id"],2) 
-        self.assertEqual(Microdata.regions[fips["region"]]["divisions"][fips["division"]]["states"]["NY"],36) 
-
-    def test_microdata_codes(self):
-        self.assertEqual(Microdata.get_codes("northeast")["region"],1)
-        self.assertEqual(Microdata.get_codes("northeast","middle-atlantic")["division"],2)
-        self.assertEqual(Microdata.get_codes("northeast","middle-atlantic","NY")["fips"],36)
-
 if __name__ == "__main__":
+    import unittest
+
+    class _test(unittest.TestCase):
+
+        def test_hc1_1_0(self):
+            hc = HousingCharacteristics(table="1.1")
+            self.assertEqual(hc.find('data'),[['total', 'fuel-used', 'electric-end-use', 'natural-gas-end-use', 'wood-end-use', 'fuel-oil-end-use'], ['total', 'unit-type']])
+
+        def test_hc1_1_1(self):
+            hc = HousingCharacteristics(table="1.1")
+            self.assertEqual(hc.find('data',['total'],['total']),118.2e6)
+
+        def test_hc1_1_2(self):
+            hc = HousingCharacteristics(table="1.1")
+            self.assertEqual(hc.find('data',['total'],['unit-type','single-family-detached']),73.9e6)
+
+        def test_hc1_1_3(self):
+            hc = HousingCharacteristics(table="1.1")
+            self.assertEqual(hc.find('data',['electric-end-use','space-heating'],['total']),[['total', 'main', 'secondary'], 'B'])
+
+        def test_hc1_1_4(self):
+            hc = HousingCharacteristics(table="1.1")
+            self.assertEqual(hc.find('data',['fuel-used','natural-gas'],['total']),68.6e6)
+
+        def test_microdata(self):
+            md = Microdata()
+            self.assertEqual(md["LPXBTU"][0],91.33)
+
+        def test_microdata_fips(self):
+            fips = Microdata.get_division("NY")
+            self.assertEqual(fips["region"],"northeast") 
+            self.assertEqual(fips["division"],"middle-atlantic") 
+            self.assertEqual(Microdata.regions[fips["region"]]["id"],1) 
+            self.assertEqual(Microdata.regions[fips["region"]]["divisions"][fips["division"]]["id"],2) 
+            self.assertEqual(Microdata.regions[fips["region"]]["divisions"][fips["division"]]["states"]["NY"],36) 
+
+        def test_microdata_codes(self):
+            self.assertEqual(Microdata.get_codes("northeast")["region"],1)
+            self.assertEqual(Microdata.get_codes("northeast","middle-atlantic")["division"],2)
+            self.assertEqual(Microdata.get_codes("northeast","middle-atlantic","NY")["fips"],36)
+
     unittest.main()

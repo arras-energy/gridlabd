@@ -7,13 +7,13 @@ Syntax
 Shell:
 
 ~~~
-gridlabd isone [OPTIONS ...]
+gridlabd gridlabd.isone [OPTIONS ...]
 ~~~
 
 GLM:
 
 ~~~
-#python -m isone [OPTIONS ...]
+#python -m gridlabd.isone [OPTIONS ...]
 ~~~
 
 Options
@@ -51,7 +51,7 @@ Example
 The following generates the wholesale market data New Hampshire for May 2023:
 
 ~~~
-sh$ gridlabd isone -D=smd/NH -f -s=2023-05-01 -e=2023-06-01
+sh$ gridlabd gridlabd.isone -D=smd/NH -f -s=2023-05-01 -e=2023-06-01
 timestamp,DA_Demand,RT_Demand,DA_LMP,DA_EC,DA_CC,DA_MLC,RT_LMP,RT_EC,RT_CC,RT_MLC,Dry_Bulb,Dew_Point
 2023-05-01 00:00:00,801.30,924.94,24.63,24.64,-0.05,0.04,18.96,18.75,0.18,0.03,53,51
 2023-05-01 01:00:00,807.90,899.31,20.61,20.59,-0.03,0.05,18.88,18.70,0.18,0.00,54,53

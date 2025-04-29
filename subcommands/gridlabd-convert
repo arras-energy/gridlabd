@@ -2,7 +2,7 @@
 exec "$GLD_BIN/python3" "$0" "$@"
 :' '''
 # Syntax: convert [[-i|--input] INPUTS] [[-o|--output] OUTPUTS] [-v|--verbose] [-d|--debug] [-f|--from TYPE1] [-t|--to TYPE2] [OPTIONS]
-__doc__="""Syntax: onvert [[-i|--input] INPUTS] [[-o|--output] OUTPUTS] [-v|--verbose] [-d|--debug] [-f|--from TYPE1] [-t|--to TYPE2] [OPTIONS]
+__doc__="""Syntax: convert [[-i|--input] INPUTS] [[-o|--output] OUTPUTS] [-v|--verbose] [-d|--debug] [-f|--from TYPE1] [-t|--to TYPE2] [OPTIONS]
 
 The convert subcommand is the general GridLAB-D file format converter for command line and macro usage. It can be used as the shell command, e.g., `gridlabd convert ...` or as a GLM macro, e.g., `#convert ...`.
 
@@ -154,7 +154,7 @@ else:
 modname = f'{MODPATH}/{INPUTTYPE}2{OUTPUTTYPE}.py'
 if os.path.exists(modname):
 	verbose(f"loading '{modname}'")
-	mod = importlib.import_module(f'{INPUTTYPE}2{OUTPUTTYPE}')
+	mod = importlib.import_module(f'gridlabd.{INPUTTYPE}2{OUTPUTTYPE}')
 	verbose(f"calling {modname}.convert({INPUTFILE.__repr__()},{OUTPUTFILE.__repr__()},{OPTIONS.__repr__()})")
 	try:
 		mod.convert(INPUTFILE,OUTPUTFILE,OPTIONS)
