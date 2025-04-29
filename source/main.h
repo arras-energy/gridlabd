@@ -59,8 +59,9 @@ public:
 	};
 	inline int run(void)
 	{
+		SET_MYCONTEXT(DMC_MAIN)
 		int rc = system(command);
-		output_debug("onexitcommand(xc=%d,cmd='%s').run() --> exit code %d",exitcode,command,rc);
+		IN_MYCONTEXT output_debug("onexitcommand(xc=%d,cmd='%s').run() --> exit code %d",exitcode,command,rc);
 		return rc;
 	};
 };

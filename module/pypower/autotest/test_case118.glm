@@ -1,5 +1,20 @@
+#set suppress_repeat_messages=FALSE
 #define CASE=118
 #ifexists "../case.glm"
 #define DIR=..
 #endif
 #include "${DIR:-.}/case.glm"
+
+module assert;
+#define MRES=0.02 // magnitude test resolution
+#define ARES=0.5 // angle test resolution
+
+#begin python
+import sys
+sys.path.append("${DIR:-.}")
+import case${CASE}
+import verify
+verify.write_glm("case${CASE}_verify.glm",case${CASE}.case${CASE}())
+#end
+
+#include "case${CASE}_verify.glm"

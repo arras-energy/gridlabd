@@ -231,11 +231,11 @@ global bool object_tree_balance FALSE;
 #else
 #set object_tree_balance=FALSE
 #endif //object_tree_balance
-// kmlfile is set to 
+// kmlfile is set to
 #ifndef kmlhost
-#define kmlhost=https://code.gridlabd.us/develop_tkinter_gui/runtime
+#define kmlhost=https://code.arras.energy/develop_tkinter_gui/runtime
 #else
-#set kmlhost=https://code.gridlabd.us/develop_tkinter_gui/runtime
+#set kmlhost=https://code.arras.energy/develop_tkinter_gui/runtime
 #endif //kmlhost
 // modelname is set to /Users/david/GitHub/dchassin/gridlabd/tools/autotest/test_moutils.json
 // execdir is set to /usr/local/opt/gridlabd/4.3.11-241218-develop_tkinter_gui-darwin_23-x86_64/bin
@@ -264,8 +264,8 @@ global int32 randomseed -670363224;
 #else
 #set randomseed=-670363224
 #endif //randomseed
-// include is set to 
-// trace is set to 
+// include is set to
+// trace is set to
 #ifndef gdb_window
 global bool gdb_window FALSE;
 #else
@@ -356,7 +356,7 @@ global bool server_quit_on_close FALSE;
 #else
 #set server_quit_on_close=FALSE
 #endif //server_quit_on_close
-// client_allowed is set to 
+// client_allowed is set to
 #ifndef autoclean
 global bool autoclean TRUE;
 #else
@@ -377,7 +377,7 @@ global enumeration checkpoint_type NONE;
 #else
 #set checkpoint_type=NONE
 #endif //checkpoint_type
-// checkpoint_file is set to 
+// checkpoint_file is set to
 #ifndef checkpoint_seqnum
 global int32 checkpoint_seqnum 0;
 #else
@@ -413,7 +413,7 @@ global timestamp pauseat "NEVER";
 #else
 #set pauseat=NEVER
 #endif //pauseat
-// infourl is set to http://docs.gridlabd.us/index.html?owner=arras-energy&project=gridlabd&search=
+// infourl is set to http://docs.arras.energy/index.html?owner=arras-energy&project=gridlabd&search=
 #ifndef hostname
 #define hostname=localhost
 #else
@@ -429,7 +429,7 @@ global bool autostart_gui TRUE;
 #else
 #set autostart_gui=TRUE
 #endif //autostart_gui
-// master is set to 
+// master is set to
 #ifndef master_port
 global int64 master_port 0;
 #else
@@ -498,7 +498,7 @@ global char8 sanitize_prefix "GLD_";
 #else
 #set sanitize_index=.txt
 #endif //sanitize_index
-// sanitize_offset is set to 
+// sanitize_offset is set to
 #ifndef simulation_mode
 global enumeration simulation_mode EVENT;
 #else
@@ -703,7 +703,7 @@ global char32 organization "SLAC";
 #else
 #set organization=SLAC
 #endif //organization
-// profile_output_format is set to 
+// profile_output_format is set to
 #ifndef maximum_runtime
 global int64 maximum_runtime 0;
 #else
@@ -714,7 +714,7 @@ global int32 flush_output 0;
 #else
 #set flush_output=0
 #endif //flush_output
-// powerflow::message_flags is set to 
+// powerflow::message_flags is set to
 // powerflow::show_matrix_values is set to FALSE
 // powerflow::primary_voltage_ratio is set to +60 pu
 // powerflow::nominal_frequency is set to +60 Hz
@@ -729,14 +729,14 @@ global int32 flush_output 0;
 // powerflow::warning_voltageangle is set to +2
 // powerflow::maximum_voltage_error is set to +0.0001 V
 // powerflow::solver_method is set to NR
-// powerflow::NR_matrix_file is set to 
+// powerflow::NR_matrix_file is set to
 // powerflow::NR_matrix_output_interval is set to NEVER
 // powerflow::NR_matrix_output_references is set to FALSE
 // powerflow::NR_matrix_output_rhs is set to FALSE
 // powerflow::NR_island_failure_handled is set to FALSE
 // powerflow::line_capacitance is set to FALSE
 // powerflow::line_limits is set to FALSE
-// powerflow::lu_solver is set to 
+// powerflow::lu_solver is set to
 // powerflow::NR_iteration_limit is set to 500
 // powerflow::NR_deltamode_iteration_limit is set to 10
 // powerflow::NR_superLU_procs is set to 1
@@ -761,7 +761,7 @@ global int32 flush_output 0;
 // powerflow::solver_profile_csv is set to FALSE
 // powerflow::solver_py_config is set to /usr/local/opt/gridlabd/4.3.11-241218-develop_tkinter_gui-darwin_23-x86_64/share/gridlabd/solver_py.conf
 // powerflow::solver_dump_enable is set to FALSE
-// powerflow::violation_record is set to 
+// powerflow::violation_record is set to
 // powerflow::violation_count is set to 21
 // powerflow::violation_active is set to 21
 // powerflow::violation_watchset is set to ALL
@@ -25198,18 +25198,18 @@ object transformer_configuration
 	powerB_rating "50 kVA";
 	powerC_rating "50 kVA";
 	powerN_rating "0 kVA";
-	resistance "0.0127 pu*Ohm";
-	reactance "0.0272 pu*Ohm";
-	impedance "0.0127+0.0272j pu*Ohm";
-	resistance1 "0 pu*Ohm";
-	reactance1 "0 pu*Ohm";
-	impedance1 "0+0j pu*Ohm";
-	resistance2 "0 pu*Ohm";
-	reactance2 "0 pu*Ohm";
-	impedance2 "0+0j pu*Ohm";
-	shunt_resistance "1e+09 pu*Ohm";
-	shunt_reactance "1e+09 pu*Ohm";
-	shunt_impedance "1e+09+1e+09j pu*Ohm";
+	resistance "0.0127 pu.Ohm";
+	reactance "0.0272 pu.Ohm";
+	impedance "0.0127+0.0272j pu.Ohm";
+	resistance1 "0 pu.Ohm";
+	reactance1 "0 pu.Ohm";
+	impedance1 "0+0j pu.Ohm";
+	resistance2 "0 pu.Ohm";
+	reactance2 "0 pu.Ohm";
+	impedance2 "0+0j pu.Ohm";
+	shunt_resistance "1e+09 pu.Ohm";
+	shunt_reactance "1e+09 pu.Ohm";
+	shunt_impedance "1e+09+1e+09j pu.Ohm";
 	core_coil_weight "0 lb";
 	tank_fittings_weight "0 lb";
 	oil_volume "0 gal";
@@ -25244,18 +25244,18 @@ object transformer_configuration
 	powerB_rating "1666.67 kVA";
 	powerC_rating "1666.67 kVA";
 	powerN_rating "0 kVA";
-	resistance "0.01 pu*Ohm";
-	reactance "0.08 pu*Ohm";
-	impedance "0.01+0.08j pu*Ohm";
-	resistance1 "0 pu*Ohm";
-	reactance1 "0 pu*Ohm";
-	impedance1 "0+0j pu*Ohm";
-	resistance2 "0 pu*Ohm";
-	reactance2 "0 pu*Ohm";
-	impedance2 "0+0j pu*Ohm";
-	shunt_resistance "1e+09 pu*Ohm";
-	shunt_reactance "1e+09 pu*Ohm";
-	shunt_impedance "1e+09+1e+09j pu*Ohm";
+	resistance "0.01 pu.Ohm";
+	reactance "0.08 pu.Ohm";
+	impedance "0.01+0.08j pu.Ohm";
+	resistance1 "0 pu.Ohm";
+	reactance1 "0 pu.Ohm";
+	impedance1 "0+0j pu.Ohm";
+	resistance2 "0 pu.Ohm";
+	reactance2 "0 pu.Ohm";
+	impedance2 "0+0j pu.Ohm";
+	shunt_resistance "1e+09 pu.Ohm";
+	shunt_reactance "1e+09 pu.Ohm";
+	shunt_impedance "1e+09+1e+09j pu.Ohm";
 	core_coil_weight "0 lb";
 	tank_fittings_weight "0 lb";
 	oil_volume "0 gal";

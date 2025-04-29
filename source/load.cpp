@@ -1038,7 +1038,7 @@ STATUS GldLoader::resolve_list(UNRESOLVED *item, bool deferred)
 {
 	while ( item != NULL )
 	{
-		output_debug("GldLoader::resolve_list(UNRESOLVED *item=<0x%x> '%s', bool deferred=%s) starting",item,item->id,deferred?"true":"false");
+		IN_MYCONTEXT output_debug("GldLoader::resolve_list(UNRESOLVED *item=<0x%x> '%s', bool deferred=%s) starting",item,item->id,deferred?"true":"false");
 		bool resolved = false;
 
 		// handle different reference types
@@ -1059,19 +1059,19 @@ STATUS GldLoader::resolve_list(UNRESOLVED *item, bool deferred)
 		if ( resolved )
 		{
 			item = del_unresolved(item);
-			output_debug("resolved ok, next is item <0x%x>", item);
+			IN_MYCONTEXT output_debug("resolved ok, next is item <0x%x>", item);
 		}
 		else if ( ! deferred )
 		{
 			// unresolved with no deferred resolution
-			output_debug("unresolved");
+			IN_MYCONTEXT output_debug("unresolved");
 			return FAILED;
 		}
 		else
 		{
 			// unresolved with deferred resolution
 			item = item->next;
-			output_debug("resolution deferred, next is item <0x%x>",item);
+			IN_MYCONTEXT output_debug("resolution deferred, next is item <0x%x>",item);
 		}
 	}
 	return SUCCESS;
@@ -1280,7 +1280,7 @@ int GldLoader::unitspec(PARSER, UNIT **unit)
 	char result[1024];
 	size_t size = sizeof(result);
 	START;
-	while ( (size>1 && isalpha(*_p)) || isdigit(*_p) || *_p=='$' || *_p=='%' || *_p=='*' || *_p=='/' || *_p=='^') COPY(result);
+	while ( (size>1 && isalpha(*_p)) || isdigit(*_p) || *_p=='$' || *_p=='%' || *_p=='*' || *_p=='/' || *_p=='^' || *_p=='.' ) COPY(result);
 	result[_n]='\0';
 	try {
 		if ((*unit=unit_find(result))==NULL){
@@ -7150,7 +7150,7 @@ static int is_autodef(char *value)
 
 void GldLoader::wait_processes(void)
 {
-	output_debug("waiting for started tasks to terminate");
+	IN_MYCONTEXT output_debug("waiting for started tasks to terminate");
 	while ( threadlist != NULL )
 	{
 		struct s_threadlist *next = threadlist->next;
@@ -7166,7 +7166,7 @@ void GldLoader::wait_processes(void)
 		}
 		else
 		{
-			output_debug("thread %p completed ok", threadlist->data);
+			IN_MYCONTEXT output_debug("thread %p completed ok", threadlist->data);
 		}
 		threadlist = next;
 	}
@@ -8366,6 +8366,26 @@ int GldLoader::process_macro(char *line, int size, char *_filename, int linenum)
 		strcpy(line,"\n");
 		return TRUE;
 	}
+	else if ( strncmp(line, "#save", 5) == 0 )
+	{
+		char fname[1024];
+		if ( sscanf(line+5,"%s",fname) == 1 && fname[0] == '"' && fname[strlen(fname)-1] == '"')
+		{
+			fname[strlen(fname)-1] = '\0';
+			if ( saveall(fname+1) <= 0 )
+			{
+				syntax_error(filename,linenum,"save macro failed (fname='%s')",fname+1);
+				return FALSE;
+			}
+			strcpy(line,"\n");
+			return TRUE;
+		}
+		else
+		{
+			syntax_error(filename,linenum,"save macro syntax error");
+			return FALSE;
+		}
+	}
 	int rc = my_instance->subcommand("%s/" PACKAGE "-%s",getenv("GLD_BIN"),strchr(line,'#')+1);
 	if ( rc != 127 )
 	{
@@ -8410,7 +8430,15 @@ STATUS GldLoader::loadall_glm(const char *fname) /**< a pointer to the first cha
 	int move = 0;
 	errno = 0;
 
-	fp = fopen(file,"rt");
+	if ( strcmp(file,".glm") == 0 )
+	{
+		fp = stdin;
+		strcpy(file,"/dev/stdin");
+	}
+	else
+	{
+		fp = fopen(file,"rt");
+	}
 	if (fp==NULL)
 		goto Failed;
 	if (fstat(fileno(fp),&stat)==0)

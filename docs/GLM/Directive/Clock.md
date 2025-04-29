@@ -30,7 +30,7 @@ Note that runtime units of months and years are not supported because they are n
 
 ## `starttime`
 
-The `starttime` property specifies when the simulation start.  If no time zone is specified, the current time zone is used if it has been specified. Otherwise `UTC` is assumed. If no start time is specified, the current wall clock time is used. Note, `ISO8601` is supported.  
+The `starttime` property specifies when the simulation start.  If no time zone is specified, the current time zone is used if it has been specified. Otherwise `UTC` is assumed. If no start time is specified, the current wall clock time is used. Note, `ISO8601` is supported.
 
 Note that the parameter `timestamp` is a synonym for `starttime`.
 
@@ -65,5 +65,5 @@ Introducing more than one clock directive in a model is allowed. However, all el
 
 # See also
 
-* [share/tzinfo.txt](https://source.gridlabd.us/blob/master/runtime/tzinfo.txt)
+* [share/tzinfo.txt](https://source.arras.energy/blob/master/runtime/tzinfo.txt)
 * [[/Subcommand/Timezone]]

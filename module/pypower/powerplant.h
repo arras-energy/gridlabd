@@ -46,6 +46,11 @@ public:
 		FT_NATURALGAS 	= 0x00008000, 
 	} FUELTYPE;
 
+	typedef enum {
+		GS_OFFLINE = 0,
+		GS_ONLINE = 1,
+	} GENERATORSTATUS;
+
 public:
 	// published properties
 	GL_ATOMIC(char32,city);
@@ -76,9 +81,12 @@ public:
 	GL_ATOMIC(double,variable_cost);
 	GL_ATOMIC(double,scarcity_cost);
 	GL_ATOMIC(double,energy_rate);
+	GL_ATOMIC(double,ramp_rate);
 	GL_ATOMIC(double,total_cost);
 	GL_ATOMIC(double,emissions_rate);
 	GL_ATOMIC(double,total_emissions);
+	GL_ATOMIC(double,Pg);
+	GL_ATOMIC(double,Qg);
 
 private:
 	PyObject *py_controller;
@@ -90,6 +98,8 @@ private:
 	TIMESTAMP last_t;
 	gencost *costobj;
 	double last_Sm;
+	double delta_t;
+	double gen_cf; // gen contribution factor
 
 public:
 	// event handlers

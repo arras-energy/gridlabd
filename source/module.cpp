@@ -1256,6 +1256,11 @@ TIMESTAMP module_precommitall(TIMESTAMP t)
 		if ( mod->on_precommit ) 
 		{
 			TIMESTAMP next = mod->on_precommit(t);
+			char ts0[64],ts1[64];
+			output_debug("%s.on_precommit(t='%s') -> '%s'",
+				mod->name,
+				convert_from_timestamp(t,ts0,sizeof(ts0)) ? ts0 : "<invalid time>",
+				convert_from_timestamp(next,ts1,sizeof(ts1)) ? ts1 : "<invalid time>");
 			if ( absolute_timestamp(next) < absolute_timestamp(result) )
 				result = next;
 		}
@@ -1272,6 +1277,11 @@ TIMESTAMP module_presyncall(TIMESTAMP t)
 		if ( mod->on_presync ) 
 		{
 			TIMESTAMP next = mod->on_presync(t);
+			char ts0[64],ts1[64];
+			output_debug("%s.on_presync(t='%s') -> '%s'",
+				mod->name,
+				convert_from_timestamp(t,ts0,sizeof(ts0)) ? ts0 : "<invalid time>",
+				convert_from_timestamp(next,ts1,sizeof(ts1)) ? ts1 : "<invalid time>");
 			if ( absolute_timestamp(next) < absolute_timestamp(result) )
 				result = next;
 		}
@@ -1288,6 +1298,11 @@ TIMESTAMP module_syncall(TIMESTAMP t)
 		if ( mod->on_sync ) 
 		{
 			TIMESTAMP next = mod->on_sync(t);
+			char ts0[64],ts1[64];
+			output_debug("%s.on_sync(t='%s') -> '%s'",
+				mod->name,
+				convert_from_timestamp(t,ts0,sizeof(ts0)) ? ts0 : "<invalid time>",
+				convert_from_timestamp(next,ts1,sizeof(ts1)) ? ts1 : "<invalid time>");
 			if ( absolute_timestamp(next) < absolute_timestamp(result) )
 				result = next;
 		}
@@ -1304,6 +1319,11 @@ TIMESTAMP module_postsyncall(TIMESTAMP t)
 		if ( mod->on_postsync ) 
 		{
 			TIMESTAMP next = mod->on_postsync(t);
+			char ts0[64],ts1[64];
+			output_debug("%s.on_postsync(t='%s') -> '%s'",
+				mod->name,
+				convert_from_timestamp(t,ts0,sizeof(ts0)) ? ts0 : "<invalid time>",
+				convert_from_timestamp(next,ts1,sizeof(ts1)) ? ts1 : "<invalid time>");
 			if ( absolute_timestamp(next) < absolute_timestamp(result) )
 				result = next;
 		}
@@ -1321,7 +1341,11 @@ int module_commitall(TIMESTAMP t)
 		if ( mod->on_commit ) 
 		{
 			int ok = mod->on_commit(t);
-			result &= ok;
+			char ts0[64];
+			output_debug("%s.on_commit('t=%s') -> ok = %lld",
+				mod->name,convert_from_timestamp(t,ts0,sizeof(ts0)) ? ts0 : "<invalid time>",
+				ok);
+			result &= ok; 
 		}
 	}
 	return result;
@@ -2965,23 +2989,23 @@ void module_load_templates(MODULE *mod)
 	struct stat statbuf;
 	if ( (dp=opendir(loadpath)) != NULL )
 	{
-		output_debug("module_load_templates(MODULE *mod=<%s>): reading shared module templates folder '%s'",mod->name,loadpath);
+		IN_MYCONTEXT output_debug("module_load_templates(MODULE *mod=<%s>): reading shared module templates folder '%s'",mod->name,loadpath);
 		while ( (entry=readdir(dp)) )
 		{
 			char file[strlen(loadpath)+strlen(entry->d_name)+2];
 			snprintf(file,sizeof(file)-1,"%s/%s",loadpath,entry->d_name);
-			output_debug("module_load_templates(MODULE *mod=<%s>): loading '%s'",mod->name,file);
+			IN_MYCONTEXT output_debug("module_load_templates(MODULE *mod=<%s>): loading '%s'",mod->name,file);
 			if ( lstat(file,&statbuf) != 0 )
 			{
 				output_warning("module_load_templates(MODULE *mod=<%s>): unable to get status of '%s'",mod->name,file);
 			}
 			else if ( S_ISDIR(statbuf.st_mode) )
 			{
-				output_debug("module_load_templates(MODULE *mod=<%s>): '%s' is a directory -- ignoring",mod->name,file);
+				IN_MYCONTEXT output_debug("module_load_templates(MODULE *mod=<%s>): '%s' is a directory -- ignoring",mod->name,file);
 			}
 			else if ( isglm(file) )
 			{
-				output_debug("module_load_templates(MODULE *mod=<%s>): loading '%s'",mod->name,file);
+				IN_MYCONTEXT output_debug("module_load_templates(MODULE *mod=<%s>): loading '%s'",mod->name,file);
 				if ( my_instance->get_loader()->loadall_glm(file) != SUCCESS )
 				{
 					output_error("module template '%s' load failed",file);
@@ -2993,7 +3017,7 @@ void module_load_templates(MODULE *mod)
 	}
 	else
 	{
-		output_debug("module_load_templates(MODULE *mod=<%s>): shared module templates folder '%s' not found",mod->name,loadpath);
+		IN_MYCONTEXT output_debug("module_load_templates(MODULE *mod=<%s>): shared module templates folder '%s' not found",mod->name,loadpath);
 	}
 	return;
 }

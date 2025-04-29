@@ -1,0 +1,24 @@
+#ifexist ../wecc240.raw
+#system cp ../wecc240.raw wecc240.raw
+#endif
+
+#set compileonly=TRUE
+
+module pypower
+{
+    maximum_iterations 50;
+    maximum_timestep 3600;
+    stop_on_failure TRUE;
+}
+
+clock {
+    timezone PST+8PDT;
+    starttime '2024-01-01 00:00:00 PST';
+    stoptime '2024-02-01 00:00:00 PST';
+}
+
+#input "wecc240.raw" -X psse_owner,psse_area,psse_zone
+
+#ifexist ../wecc240.glm
+#on_exit 0 diff -I '^//' ../wecc240.glm wecc240.glm > gridlabd.diff
+#endif

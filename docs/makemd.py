@@ -37,6 +37,8 @@ try:
     NAME = sys.argv[1]
     PATH = sys.argv[2]
 
+    if "/usr/local/opt/current/gridlabd/share" not in sys.path:
+        sys.path.append("/usr/local/opt/current/gridlabd/share")
     module = importlib.import_module("gridlabd." + NAME)
 
     with open(os.path.join(PATH,NAME.title()+".md"),"w") as md:
@@ -83,13 +85,29 @@ try:
             else:
                 print("\n---",file=md)
             NL='\n'
-            args = [f"{x}:{t.__name__}" for x,t in item.__annotations__.items() if hasattr(t,__name__) and x != "return"]
+            args = [f"{x}:{t.__name__}" for x,t in item.__annotations__.items() if hasattr(t,'__name__') and x != "return"]
             returns = item.__annotations__['return'].__name__ if 'return' in item.__annotations__ and hasattr(item.__annotations__['return'],'__name__') else 'None'
             docs = NL.join([x.strip() for x in item.__doc__.split(NL)])
             print(f"\n## `{item.__name__}({', '.join(args)}) -> {returns}`{NL*2}{docs}",file=md)
 
-
         # output constants
+        first = True
+        for item in sorted([x for x in dir(module) if type(getattr(module,x)) in [bool,int,float,complex,list,dict,set]]):
+            if first:
+                print("\n# Constants\n",file=md)
+                first = False
+            if not item.startswith("_"):
+                print(f"* `{item}`",file=md)
+
+        # output modules
+        first = True
+        for item in sorted([getattr(module,x).__name__ for x in dir(module) if inspect.ismodule(getattr(module,x))]):
+            if first:
+                print("\n# Modules\n",file=md)
+                first = False
+            if not item.startswith("_"):
+                print(f"* `{item}`",file=md)
+
     
 except MakemdError as err:
 
@@ -104,5 +122,5 @@ except SystemExit:
 except:
 
     e_type,e_value,e_trace = sys.exc_info()
-    print(f"EXCEPTION [{EXEC}]: {e_type.__name__}({os.path.basename(e_trace.tb_frame.f_code.co_filename)}@{e_trace.tb_lineno}) {e_value}",file=sys.stderr)
+    print(f"EXCEPTION [{EXEC}]: {e_type.__name__}({os.path.basename(e_trace.tb_frame.f_code.co_filename)}@{e_trace.tb_lineno}) {e_value} while processing {PATH}/{NAME}",file=sys.stderr)
     exit(E_EXCEPTION)

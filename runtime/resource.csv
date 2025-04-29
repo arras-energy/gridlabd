@@ -1,40 +1,41 @@
 resource,protocol,port,hostname,index,content,mimetype,deprecation,comment
-localhost,http,6267-6279,127.0.0.1,,,,Server mode support (see https://docs.gridlabd.us/)
-buildings,http,80,buildings.gridlabd.us.s3-website-us-west-1.amazonaws.com,/index,/{index},,,Compiled AutoBEM4 building data
+localhost,http,6267-6279,127.0.0.1,,,,Server mode support (see https://docs.arras.energy/)
+buildings,https,443,s3-us-west-1.amazonaws.com,/buildings.arras.energy/index,/buildings.arras.energy/{index},,,Compiled AutoBEM4 building data
 code,https,443,raw.githubusercontent.com,/{origin}/refs/heads/{gitbranch}/index,/{origin}/refs/heads/{gitbranch}/{index},Github release code repository
 # code-dev,https,443,github.com,,/{organization}/gridlabd/tree/{gitbranch},,,Github development code repository
-# develop.code,https,443,develop.code.gridlabd.us
-# develop.source,https,443,develop.source.gridlabd.us
-# dmg,https,443,dmg.gridlabd.us
+# develop.code,https,443,develop.code.arras.energy
+# develop.source,https,443,develop.source.arras.energy
+# dmg,https,443,dmg.arras.energy
 # docker,https,443,hub.docker.com,/v2/repositories/lfenergy/arras/tags/?page_size=1000,/v2/repositories/lfenergy/arras/{index},*/*,,Dockerhub list of repositories
-# docs-dev,https,443,docs-dev.gridlabd.us
-# docs,https,443,docs.gridlabd.us
-elevation,https,443,s3.us-west-1.amazonaws.com,/elevation.gridlabd.us/index,/elevation.gridlabd.us/{index},image/tiff,,Ground elevation data
+# docs-dev,https,443,docs-dev.arras.energy
+# docs,https,443,docs.arras.energy
+elevation,https,443,s3.us-west-1.amazonaws.com,/elevation.arras.energy/index,/elevation.arras.energy/{index},image/tiff,,Ground elevation data
 examples,https,443,raw.githubusercontent.com,/{organization}/gridlabd-examples/master/index,/{organization}/gridlabd-examples/master/{index},,,GridLAB-D model examples with supporting files
-# geodata-dev,https,443,geodata.gridlabd.us
-geodata,https,443,s3.us-west-1.amazonaws.com,/geodata.gridlabd.us/index,/geodata.gridlabd.us/{index},*/*,,Geodata
-# gridchat,https,443,gridchat.gridlabd.us
-# gridlabd,https,443,gridlabd.us
-# help,https,443,help.gridlabd.us
-icons,https,443,s3.us-west-1.amazonaws.com,/icons.gridlabd.us/index,/icons.gridlabd.us/{index},image/png,,GridLAB-D object icon library
-# install-dev,https,443,install-dev.gridlabd.us
-# issues,https,443,issues.gridlabd.us
+# geodata-dev,https,443,geodata.arras.energy
+geodata,https,443,s3.us-west-1.amazonaws.com,/geodata.arras.energy/index,/geodata.arras.energy/{index},*/*,,Geodata
+infrastructure,https,443,s3.us-east-2.amazonaws.com,/infrastructure.arras.energy/index,/infrastructure.arras.energy/{country}/{index},*/*,,US electricity infrastructure data
+# gridchat,https,443,gridchat.arras.energy
+# gridlabd,https,443,arras.energy
+# help,https,443,help.arras.energy
+icons,https,443,s3.us-west-1.amazonaws.com,/icons.arras.energy/index,/icons.arras.energy/{index},image/png,,GridLAB-D object icon library
+# install-dev,https,443,install-dev.arras.energy
+# issues,https,443,issues.arras.energy
 library,https,443,raw.githubusercontent.com,/{organization}/gridlabd-library/master/index,/{organization}/gridlabd-library/master/{index},,,GridLAB-D object library
-# master.code,https,443,master.code.gridlabd.us
-# master.source,https,443,master.source.gridlabd.us
+# master.code,https,443,master.code.arras.energy
+# master.source,https,443,master.source.arras.energy
 models,https,443,raw.githubusercontent.com,/{organization}/gridlabd-models/master/index,/{organization}/gridlabd-models/master/{index},,,GridLAB-D model library
-# news,https,443,news.gridlabd.us
-# openfido,https,443,openfido.gridlabd.us
-# source,https,443,source.gridlabd.us
-# status-dev,https,443,status-dev.gridlabd.us
+# news,https,443,news.arras.energy
+# openfido,https,443,openfido.arras.energy
+# source,https,443,source.arras.energy
+# status-dev,https,443,status-dev.arras.energy
 # status,https,443,status.gridalbd.us
-tariff,https,443,s3.us-west-1.amazonaws.com,/tariff.gridlabd.us/index,/tariff.gridlabd.us/{index},image/png,,GridLAB-D tariff data library
+tariff,https,443,s3.us-west-1.amazonaws.com,/tariff.arras.energy/index,/tariff.arras.energy/{index},image/png,,GridLAB-D tariff data library
 template,https,443,raw.githubusercontent.com,/{organization}/gridlabd-template/master/index,/{organization}/gridlabd-template/master/{index},,,GridLAB-D analysis template library
-# test,https,443,test.gridlabd.us
-# training,https,443,training.gridlabd.us
-# tutorials-dev,https,443,tutorials-dev.gridlabd.us
-# tutorials,https,443,tutorials.gridlabd.us
+# test,https,443,test.arras.energy
+# training,https,443,training.arras.energy
+# tutorials-dev,https,443,tutorials-dev.arras.energy
+# tutorials,https,443,tutorials.arras.energy
 version,https,443,api.github.com,/repos/{organization}/gridlabd/releases@name,,,,Version information
 weather,https,443,raw.githubusercontent.com,/{organization}/gridlabd-weather/master/index,/{organization}/gridlabd-weather/master/{index},,,TMY3 weather data repository
-# www-dev,https,443,www-dev.gridlabd.us
-# www,https,443,www.gridlabd.us
+# www-dev,https,443,www-dev.arras.energy
+# www,https,443,www.arras.energy

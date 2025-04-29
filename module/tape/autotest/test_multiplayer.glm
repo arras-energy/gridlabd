@@ -4,7 +4,9 @@
 
 clock
 {
-	timezone PST+8PDT;
+	timezone PST+8PDT;	
+	starttime "2020-01-01 00:00:00 PST";
+	stoptime "2020-01-01 04:00:00 PST";
 }
 
 class test
@@ -33,7 +35,7 @@ object test
 	{
 		file test_multiplayer_record_1.csv;
 		property x,y,n;
-		interval 0;
+		interval -1;
 	};
 }
 
@@ -49,7 +51,7 @@ object test
 	{
 		file test_multiplayer_record_2.csv;
 		property x,y,n;
-		interval 0;
+		interval -1;
 	};
 }
 

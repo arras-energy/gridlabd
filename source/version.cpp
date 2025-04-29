@@ -21,6 +21,8 @@
 #error("gldcore/build.h was not updated properly (REV_YEAR is missing) - try deleting it and rebuilding again")
 #endif
 
+SET_MYCONTEXT(DMC_MAIN)
+
 const char *version_copyright(void)
 {
 	static char buffer[1024];
@@ -144,7 +146,7 @@ bool version_check(const char *expression)
 		}
 		bool test = ( result == criteria);
 		ok |= ( test ^ invert );
-		output_debug("version_check(expression='%s'): strcmp('%s','%s') %s %d -> %s, result is now %s",expression,value1,value2,invert?"!=":"==",criteria,test?"true":"false",ok?"true":"false");
+		IN_MYCONTEXT output_debug("version_check(expression='%s'): strcmp('%s','%s') %s %d -> %s, result is now %s",expression,value1,value2,invert?"!=":"==",criteria,test?"true":"false",ok?"true":"false");
 		done = true;
 	}
 	if ( ! done )

@@ -39,4 +39,13 @@ object pypower.scada
     point pp_bus_4.Va;
     record TRUE;
 }
+
 #include "${DIR:-.}/case.glm"
+
+clock
+{
+    timezone "PST+8PDT";
+    starttime "2020-01-01 00:00:00 PST";
+    stoptime "2020-01-02 00:00:00 PST";
+}
+

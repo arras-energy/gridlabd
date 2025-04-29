@@ -81,7 +81,7 @@ Stops one or more GridLAB-D AWS instances. See [`aws ec2 stop-instances help`](h
 
 Terminates one or more GridLAB-D AWS instances. See [`aws ec2 terminate-instances help`](https://docs.aws.amazon.com/cli/latest/reference/opsworks/terminate-instances.html) for details.
 
-## aws s3 
+## aws s3
 
 The following commands are used to manage and access data.
 
@@ -104,7 +104,7 @@ The following command connects to an EC2 instance and installs GridLAB-D:
 ~~~
 user@localhost$ ssh -i my-key.pem ec2-user@my-instance-ip
 ec2-user@my-instance-ip$ sudo yum install git -y
-ec2-user@my-instance-ip$ git clone https://source.gridlabd.us/ gridlabd
+ec2-user@my-instance-ip$ git clone https://source.arras.energy/ gridlabd
 ec2-user@my-instance-ip$ cd gridlabd
 ec2-user@my-instance-ip$ cd ./install.sh -v -p
 ~~~
@@ -112,7 +112,7 @@ ec2-user@my-instance-ip$ cd ./install.sh -v -p
 The following GLM includes a standard library file:
 
 ~~~
-#include [http://library.gridlabd.us/CA/SLAC/wood_pole.glm]
+#include [http://library.arras.energy/CA/SLAC/wood_pole.glm]
 ~~~
 
 # See also

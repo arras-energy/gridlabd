@@ -11,6 +11,13 @@ class gen : public gld_object
 
 public:
 
+	typedef enum {
+		GS_OUTOFSERVICE = 0,
+		GS_INSERVICE = 1,
+	} GENERATIONSTATUS;
+
+public:
+
 	// module globals
 	static double default_reactive_power_fraction;
 
@@ -43,7 +50,9 @@ public:
 	GL_ATOMIC(double,mu_Qmax);
 	GL_ATOMIC(double,mu_Qmin);
 
-
+	// added for powerplant dispatch after OPF
+	GL_ATOMIC(double,Ps);
+	GL_ATOMIC(double,Qs);
 
 private:
 
@@ -57,6 +66,7 @@ public:
 	void add_Pg(double real_power_MW);
 	void add_Qg(double reactive_power_MVAr);
 	void add_Pmax(double capacity_MW);
+	unsigned int get_powerplant_count();
 
 public:
 

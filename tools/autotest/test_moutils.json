@@ -3383,76 +3383,76 @@
 			"resistance" : {
 				"type" : "double",
 				"access" : "PUBLIC",
-				"unit" : "pu*Ohm",
+				"unit" : "pu.Ohm",
 				"description" : "Series impedance, pu, real"
 			},
 			"reactance" : {
 				"type" : "double",
 				"access" : "PUBLIC",
-				"unit" : "pu*Ohm",
+				"unit" : "pu.Ohm",
 				"description" : "Series impedance, pu, imag"
 			},
 			"impedance" : {
 				"type" : "complex",
 				"access" : "PUBLIC",
-				"unit" : "pu*Ohm",
+				"unit" : "pu.Ohm",
 				"description" : "Series impedance, pu"
 			},
 			"resistance1" : {
 				"type" : "double",
 				"access" : "PUBLIC",
-				"unit" : "pu*Ohm",
+				"unit" : "pu.Ohm",
 				"description" : "Secondary series impedance (only used when you want to define each individual winding seperately, pu, real"
 			},
 			"reactance1" : {
 				"type" : "double",
 				"access" : "PUBLIC",
-				"unit" : "pu*Ohm",
+				"unit" : "pu.Ohm",
 				"description" : "Secondary series impedance (only used when you want to define each individual winding seperately, pu, imag"
 			},
 			"impedance1" : {
 				"type" : "complex",
 				"access" : "PUBLIC",
-				"unit" : "pu*Ohm",
+				"unit" : "pu.Ohm",
 				"description" : "Secondary series impedance (only used when you want to define each individual winding seperately, pu"
 			},
 			"resistance2" : {
 				"type" : "double",
 				"access" : "PUBLIC",
-				"unit" : "pu*Ohm",
+				"unit" : "pu.Ohm",
 				"description" : "Secondary series impedance (only used when you want to define each individual winding seperately, pu, real"
 			},
 			"reactance2" : {
 				"type" : "double",
 				"access" : "PUBLIC",
-				"unit" : "pu*Ohm",
+				"unit" : "pu.Ohm",
 				"description" : "Secondary series impedance (only used when you want to define each individual winding seperately, pu, imag"
 			},
 			"impedance2" : {
 				"type" : "complex",
 				"access" : "PUBLIC",
-				"unit" : "pu*Ohm",
+				"unit" : "pu.Ohm",
 				"description" : "Secondary series impedance (only used when you want to define each individual winding seperately, pu"
 			},
 			"shunt_resistance" : {
 				"type" : "double",
 				"access" : "PUBLIC",
-				"unit" : "pu*Ohm",
-				"default" : "+1e+09 pu*Ohm",
+				"unit" : "pu.Ohm",
+				"default" : "+1e+09 pu.Ohm",
 				"description" : "Shunt impedance on primary side, pu, real"
 			},
 			"shunt_reactance" : {
 				"type" : "double",
 				"access" : "PUBLIC",
-				"unit" : "pu*Ohm",
-				"default" : "+1e+09 pu*Ohm",
+				"unit" : "pu.Ohm",
+				"default" : "+1e+09 pu.Ohm",
 				"description" : "Shunt impedance on primary side, pu, imag"
 			},
 			"shunt_impedance" : {
 				"type" : "complex",
 				"access" : "PUBLIC",
-				"unit" : "pu*Ohm",
-				"default" : "+1e+09+1e+09j pu*Ohm",
+				"unit" : "pu.Ohm",
+				"default" : "+1e+09+1e+09j pu.Ohm",
 				"description" : "Shunt impedance on primary side, pu"
 			},
 			"core_coil_weight" : {
@@ -6427,7 +6427,7 @@
 			"M" : {
 				"type" : "double",
 				"access" : "PUBLIC",
-				"unit" : "pu*s",
+				"unit" : "pu.s",
 				"description" : "Inertial constant of the system"
 			},
 			"D" : {
@@ -8391,7 +8391,7 @@
 				"type" : "double",
 				"access" : "PUBLIC",
 				"flags" : "OUTPUT",
-				"unit" : "pu*s/m",
+				"unit" : "pu.s/m",
 				"description" : "susceptibility of pole to wind stress (derivative of pole stress w.r.t wind speed)"
 			},
 			"total_moment" : {
@@ -11459,85 +11459,85 @@
 			"R_stator" : {
 				"type" : "double",
 				"access" : "PUBLIC",
-				"unit" : "pu*Ohm",
+				"unit" : "pu.Ohm",
 				"description" : "Induction generator primary stator resistance in p.u."
 			},
 			"X_stator" : {
 				"type" : "double",
 				"access" : "PUBLIC",
-				"unit" : "pu*Ohm",
+				"unit" : "pu.Ohm",
 				"description" : "Induction generator primary stator reactance in p.u."
 			},
 			"R_rotor" : {
 				"type" : "double",
 				"access" : "PUBLIC",
-				"unit" : "pu*Ohm",
+				"unit" : "pu.Ohm",
 				"description" : "Induction generator primary rotor resistance in p.u."
 			},
 			"X_rotor" : {
 				"type" : "double",
 				"access" : "PUBLIC",
-				"unit" : "pu*Ohm",
+				"unit" : "pu.Ohm",
 				"description" : "Induction generator primary rotor reactance in p.u."
 			},
 			"R_core" : {
 				"type" : "double",
 				"access" : "PUBLIC",
-				"unit" : "pu*Ohm",
+				"unit" : "pu.Ohm",
 				"description" : "Induction generator primary core resistance in p.u."
 			},
 			"X_magnetic" : {
 				"type" : "double",
 				"access" : "PUBLIC",
-				"unit" : "pu*Ohm",
+				"unit" : "pu.Ohm",
 				"description" : "Induction generator primary core reactance in p.u."
 			},
 			"Max_Vrotor" : {
 				"type" : "double",
 				"access" : "PUBLIC",
-				"unit" : "pu*V",
+				"unit" : "pu.V",
 				"description" : "Induction generator maximum induced rotor voltage in p.u., e.g. 1.2"
 			},
 			"Min_Vrotor" : {
 				"type" : "double",
 				"access" : "PUBLIC",
-				"unit" : "pu*V",
+				"unit" : "pu.V",
 				"description" : "Induction generator minimum induced rotor voltage in p.u., e.g. 0.8"
 			},
 			"Rs" : {
 				"type" : "double",
 				"access" : "PUBLIC",
-				"unit" : "pu*Ohm",
+				"unit" : "pu.Ohm",
 				"description" : "Synchronous generator primary stator resistance in p.u."
 			},
 			"Xs" : {
 				"type" : "double",
 				"access" : "PUBLIC",
-				"unit" : "pu*Ohm",
+				"unit" : "pu.Ohm",
 				"description" : "Synchronous generator primary stator reactance in p.u."
 			},
 			"Rg" : {
 				"type" : "double",
 				"access" : "PUBLIC",
-				"unit" : "pu*Ohm",
+				"unit" : "pu.Ohm",
 				"description" : "Synchronous generator grounding resistance in p.u."
 			},
 			"Xg" : {
 				"type" : "double",
 				"access" : "PUBLIC",
-				"unit" : "pu*Ohm",
+				"unit" : "pu.Ohm",
 				"description" : "Synchronous generator grounding reactance in p.u."
 			},
 			"Max_Ef" : {
 				"type" : "double",
 				"access" : "PUBLIC",
-				"unit" : "pu*V",
+				"unit" : "pu.V",
 				"description" : "Synchronous generator maximum induced rotor voltage in p.u., e.g. 0.8"
 			},
 			"Min_Ef" : {
 				"type" : "double",
 				"access" : "PUBLIC",
-				"unit" : "pu*V",
+				"unit" : "pu.V",
 				"description" : "Synchronous generator minimum induced rotor voltage in p.u., e.g. 0.8"
 			},
 			"pf" : {
@@ -20429,18 +20429,18 @@
 			"powerB_rating": "50 kVA",
 			"powerC_rating": "50 kVA",
 			"powerN_rating": "0 kVA",
-			"resistance": "0.0127 pu*Ohm",
-			"reactance": "0.0272 pu*Ohm",
-			"impedance": "0.0127+0.0272j pu*Ohm",
-			"resistance1": "0 pu*Ohm",
-			"reactance1": "0 pu*Ohm",
-			"impedance1": "0+0j pu*Ohm",
-			"resistance2": "0 pu*Ohm",
-			"reactance2": "0 pu*Ohm",
-			"impedance2": "0+0j pu*Ohm",
-			"shunt_resistance": "1e+09 pu*Ohm",
-			"shunt_reactance": "1e+09 pu*Ohm",
-			"shunt_impedance": "1e+09+1e+09j pu*Ohm",
+			"resistance": "0.0127 pu.Ohm",
+			"reactance": "0.0272 pu.Ohm",
+			"impedance": "0.0127+0.0272j pu.Ohm",
+			"resistance1": "0 pu.Ohm",
+			"reactance1": "0 pu.Ohm",
+			"impedance1": "0+0j pu.Ohm",
+			"resistance2": "0 pu.Ohm",
+			"reactance2": "0 pu.Ohm",
+			"impedance2": "0+0j pu.Ohm",
+			"shunt_resistance": "1e+09 pu.Ohm",
+			"shunt_reactance": "1e+09 pu.Ohm",
+			"shunt_impedance": "1e+09+1e+09j pu.Ohm",
 			"core_coil_weight": "0 lb",
 			"tank_fittings_weight": "0 lb",
 			"oil_volume": "0 gal",
@@ -20478,18 +20478,18 @@
 			"powerB_rating": "1666.67 kVA",
 			"powerC_rating": "1666.67 kVA",
 			"powerN_rating": "0 kVA",
-			"resistance": "0.01 pu*Ohm",
-			"reactance": "0.08 pu*Ohm",
-			"impedance": "0.01+0.08j pu*Ohm",
-			"resistance1": "0 pu*Ohm",
-			"reactance1": "0 pu*Ohm",
-			"impedance1": "0+0j pu*Ohm",
-			"resistance2": "0 pu*Ohm",
-			"reactance2": "0 pu*Ohm",
-			"impedance2": "0+0j pu*Ohm",
-			"shunt_resistance": "1e+09 pu*Ohm",
-			"shunt_reactance": "1e+09 pu*Ohm",
-			"shunt_impedance": "1e+09+1e+09j pu*Ohm",
+			"resistance": "0.01 pu.Ohm",
+			"reactance": "0.08 pu.Ohm",
+			"impedance": "0.01+0.08j pu.Ohm",
+			"resistance1": "0 pu.Ohm",
+			"reactance1": "0 pu.Ohm",
+			"impedance1": "0+0j pu.Ohm",
+			"resistance2": "0 pu.Ohm",
+			"reactance2": "0 pu.Ohm",
+			"impedance2": "0+0j pu.Ohm",
+			"shunt_resistance": "1e+09 pu.Ohm",
+			"shunt_reactance": "1e+09 pu.Ohm",
+			"shunt_impedance": "1e+09+1e+09j pu.Ohm",
 			"core_coil_weight": "0 lb",
 			"tank_fittings_weight": "0 lb",
 			"oil_volume": "0 gal",
@@ -46021,18 +46021,18 @@
 			"powerB_rating": "75 kVA",
 			"powerC_rating": "75 kVA",
 			"powerN_rating": "0 kVA",
-			"resistance": "0.006 pu*Ohm",
-			"reactance": "0.0136 pu*Ohm",
-			"impedance": "0.006+0.0136j pu*Ohm",
-			"resistance1": "0 pu*Ohm",
-			"reactance1": "0 pu*Ohm",
-			"impedance1": "0+0j pu*Ohm",
-			"resistance2": "0 pu*Ohm",
-			"reactance2": "0 pu*Ohm",
-			"impedance2": "0+0j pu*Ohm",
-			"shunt_resistance": "1e+09 pu*Ohm",
-			"shunt_reactance": "1e+09 pu*Ohm",
-			"shunt_impedance": "1e+09+1e+09j pu*Ohm",
+			"resistance": "0.006 pu.Ohm",
+			"reactance": "0.0136 pu.Ohm",
+			"impedance": "0.006+0.0136j pu.Ohm",
+			"resistance1": "0 pu.Ohm",
+			"reactance1": "0 pu.Ohm",
+			"impedance1": "0+0j pu.Ohm",
+			"resistance2": "0 pu.Ohm",
+			"reactance2": "0 pu.Ohm",
+			"impedance2": "0+0j pu.Ohm",
+			"shunt_resistance": "1e+09 pu.Ohm",
+			"shunt_reactance": "1e+09 pu.Ohm",
+			"shunt_impedance": "1e+09+1e+09j pu.Ohm",
 			"core_coil_weight": "0 lb",
 			"tank_fittings_weight": "0 lb",
 			"oil_volume": "0 gal",
