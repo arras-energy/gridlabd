@@ -247,6 +247,20 @@ size_t ngencost = 0;
 gencost *gencostlist[MAXENT];
 PyObject *gencostdata = NULL;
 
+static void PyMatrix_INIT(PyObject *a,size_t n,size_t m,double value=0)
+{
+    for ( size_t i = 0 ; i < n ; i++ )
+    {
+        PyObject *row = PyList_New(m);
+        for ( size_t j = 0 ; j < m ; j++ )
+        {
+            PyList_SET_ITEM(row,j,PyFloat_FromDouble(value));
+        }
+        PyList_SET_ITEM(a,i,row);
+    }
+
+}
+
 inline bool opf_needed(TIMESTAMP t)
 {
     return enable_opf && ( opf_update_interval == 0 || fmod(t,opf_update_interval) == 0 );
@@ -406,34 +420,22 @@ EXPORT bool on_init(void)
     PyDict_SetItemString(data,"baseMVA",PyFloat_FromDouble((double)base_MVA));
 
     busdata = PyList_New(nbus);
-    for ( size_t n = 0 ; n < nbus ; n++ )
-    {
-        PyList_SET_ITEM(busdata,n,PyList_New(enable_opf?17:13));
-    }
+    PyMatrix_INIT(busdata,nbus,enable_opf?17:13,0.0);
     PyDict_SetItemString(data,"bus",busdata);
 
     branchdata = PyList_New(nbranch);
+    PyMatrix_INIT(branchdata,nbranch,13,0.0);
     PyDict_SetItemString(data,"branch",branchdata);
-    for ( size_t n = 0 ; n < nbranch ; n++ )
-    {
-        PyList_SET_ITEM(branchdata,n,PyList_New(13));
-    }
 
     gendata = PyList_New(ngen);
+    PyMatrix_INIT(gendata,ngen,enable_opf?25:21,0.0);
     PyDict_SetItemString(data,"gen",gendata);
-    for ( size_t n = 0 ; n < ngen ; n++ )
-    {
-        PyList_SET_ITEM(gendata,n,PyList_New(enable_opf?25:21));
-    }
 
     if ( enable_opf )
     {
         gencostdata = PyList_New(ngencost); 
+        PyMatrix_INIT(gencostdata,ngencost,4,0.0);
         PyDict_SetItemString(data,"gencost",gencostdata);
-        for ( size_t n = 0; n < ngencost ; n++ )
-        {
-            PyList_SET_ITEM(gencostdata,n,PyList_New(4));
-        }
     }
 
     // set options
@@ -480,7 +482,7 @@ EXPORT bool on_init(void)
 }
 
 // conditional solver send/receive (only if value differs or is not set yet)
-#define SENDX(INDEX,NAME,FROM,TO) { PyObject *py = PyList_GetItem(pyobj,INDEX); \
+#define SENDX(INDEX,NAME,FROM,TO) { PyObject *py = PyList_GET_ITEM(pyobj,INDEX); \
     if ( py == NULL || fabs(obj->get_##NAME()-Py##TO##_As##FROM(py)) > solver_update_resolution ) { \
         PyObject *value = Py##TO##_From##FROM(obj->get_##NAME()); \
         if ( value == NULL ) { \
@@ -629,7 +631,7 @@ static TIMESTAMP update_controller(TIMESTAMP t0,PyObject *command,const char *na
     return t1;
 }
 
-#define SEND(INDEX,NAME,FROM,TO,CHANGE) { PyObject *py = PyList_GetItem(pyobj,INDEX); \
+#define SEND(INDEX,NAME,FROM,TO,CHANGE) { PyObject *py = PyList_GET_ITEM(pyobj,INDEX); \
     double a = obj->get_##NAME(); \
     double b = Py##TO##_As##FROM(py); \
     if ( py == NULL || fabs(a-b) > solver_update_resolution ) { \
@@ -674,6 +676,7 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
 
     // send values out to solver
     gl_verbose("updating bus data");
+    PyDict_SetItemString(data,"bus",busdata);
     for ( size_t n = 0 ; n < nbus ; n++ )
     {
         bus *obj = buslist[n];
@@ -699,7 +702,9 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
             SEND(16,mu_Vmin,Double,Float,false)
         }
     }
+
     gl_verbose("updating branch data");
+    PyDict_SetItemString(data,"branch",branchdata);
     for ( size_t n = 0 ; n < nbranch ; n++ )
     {
         branch *obj = branchlist[n];
@@ -719,7 +724,9 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
         SEND(12,angmax,Double,Float,true)
 
     }
+
     gl_verbose("updating gen data");
+    PyDict_SetItemString(data,"gen",gendata);
     for ( size_t n = 0 ; n < ngen ; n++ )
     {
         gen *obj = genlist[n];
@@ -753,9 +760,11 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
             SEND(24,mu_Qmin,Double,Float,false)
         }
     }
+
     if ( gencostdata )
     {
         gl_verbose("updating gencost data");
+        PyDict_SetItemString(data,"gencost",gencostdata);
         for ( size_t n = 0 ; n < ngencost ; n++ )
         {
             gencost *obj = gencostlist[n];
@@ -962,6 +971,7 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
                 }
                 generation_shortfall += max(obj->get_Pg() - obj->get_Pmax(),0.0);
             }
+            gl_verbose("%d changes detected",n_changes);
         }
     }
 

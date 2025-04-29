@@ -1,5 +1,6 @@
 //#option verbose
 //#option debug
+#set suppress_repeat_messages=FALSE
 #set output_message_context=NONE
 
 module pypower
@@ -70,7 +71,7 @@ object bus
         admittance 0.0 MVAr;
         steps_1 10;
         admittance_1 1.0 MVAr;
-        dwell_time 60s;
+        dwell_time 300s;
     };
 }
 object bus
@@ -95,8 +96,8 @@ object bus
         voltage_high 1.05 pu;
         voltage_low 0.95 pu;
         admittance 0.0 MVAr;
-        control_gain 2 MVAr/pu.V;
-        admittance_1 5.0 MVAr;
+        control_gain 2.5 MVAr/pu.V;
+        admittance_1 15.0 MVAr;
         dwell_time 60s;
     };
 }
