@@ -342,6 +342,7 @@ PY_OS="$(uname -s)"
 . $GLD_BIN/activate
 
 export PYTHON_VER=$(python3 --version | cut -f2 -d' ' | cut -f1-2 -d.)
+export PYTHON_LIB=$PREFIX/lib/python$PYTHON_VER/site-packages
 export PYTHON_CONFIG="python$PYTHON_VER-config"
 export PYCCFLAGS="$($PYTHON_CONFIG --cflags)"
 export INCLUDE="-I$GLD_ETC -I$GLD_VER/include -I/usr/include"
@@ -352,7 +353,7 @@ export CXXFLAGS="${INCLUDE} ${PYCCFLAGS} ${CXXFLAGS}"
 export PYLDFLAGS="$($PYTHON_CONFIG --ldflags)"
 export LIB="-L$GLD_LIB -L/usr/local/lib -L$GLD_VER/lib -L/usr/lib"
 export LDFLAGS="${LIB} ${PYLDFLAGS} ${LDFLAGS}"
-export PYTHONPATH=.:${GLD_ETC%/*}:${GLD_LIB}/python${PYTHON_VER}/site-packages${PYTHONPATH:+:}${PYTHONPATH}
+export PYTHONPATH=.:${GLD_ETC%/*}:${PYTHON_LIB}${PYTHONPATH:+:}${PYTHONPATH}
 
 if test "x$GLPATH" = x
 then :
