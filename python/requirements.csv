@@ -25,6 +25,7 @@ ipykernel,,,5.5.5
 ipyplot,,,1.1.1
 ipython,3,,8.10.0
 ipython,,,8.10.0
+ipython_genutils,,,0.2.0
 kaleido,,,0.2.1
 marimo,,,0.10.17
 matplotlib,2,,3.10.0
