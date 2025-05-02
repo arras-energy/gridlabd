@@ -182,9 +182,9 @@ jobs:
         export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
         chown -R root $PWD
         sh ./setup.sh --local
-        sh ./build.sh --system --parallel
+        sh ./build.sh --system --parallel --validateghactions
         gridlabd python -m pip install awscli
-        sh ./build.sh --validate --upload --release
+        sh ./build.sh --upload --release
 
   buildUbuntu24FastS3:
 
@@ -218,10 +218,9 @@ jobs:
         export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
         chown -R root $PWD
         sh ./setup.sh --local
-        sh ./build.sh --system --parallel
-        ln -sf /usr/bin/python3.10 /usr/local/opt/gridlabd/current/bin/python3.10
+        sh ./build.sh --system --parallel --validateghactions
         gridlabd python -m pip install awscli
-        sh ./build.sh --validate --upload --release
+        sh ./build.sh --upload --release
 
   buildUbuntuDockerhub:
 
