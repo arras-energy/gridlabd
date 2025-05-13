@@ -45,7 +45,6 @@ jobs:
   buildMacos15:
 
     runs-on: macos-15
-    environment: Integration
 
     steps:
     - uses: actions/checkout@v4
