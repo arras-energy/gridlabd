@@ -41,3 +41,46 @@ jobs:
         path: |
           validate.txt
           validate.tar.gz
+          
+  buildMacos15:
+
+    runs-on: macos-15
+    environment: Integration
+
+    steps:
+    - uses: actions/checkout@v4
+
+      # this is to fix GIT not liking owner of the checkout dir
+    - name: Set ownership
+      run: |
+        chown -R $(id -u):$(id -g) $PWD
+
+    - name: Symlink for libtool
+      run: |
+        ln -s /usr/local/bin/glibtoolize /usr/local/bin/libtoolize
+        ln -s /usr/local/bin/glibtool /usr/local/bin/libtool
+
+    - name: Add libraries to PATH
+      run: |
+        echo "LIBRARY_PATH=$(brew --prefix)/lib:$(brew --prefix)/opt:$(brew --prefix)/include" >> $GITHUB_ENV
+
+    - name: Build Arras
+      run: |
+        sudo mkdir -p /usr/local/opt/gridlabd
+        sudo chmod 2777 /usr/local/opt/gridlabd
+        sh ./setup.sh --local
+        brew install gdal
+        sh ./build.sh --system --parallel
+        
+    - name: Validate system
+      run: sudo gridlabd -D keep_progress=TRUE -T 0 --validate -D github_actions=yes || ( sudo utilities/save_validation_errors ; false )
+        
+    - name: Upload artifacts on failure
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: validate-result-macos-15
+        path: |
+          validate.txt
+          validate.tar.gz
+

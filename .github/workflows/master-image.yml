@@ -71,10 +71,14 @@ jobs:
       run: |
         echo "LIBRARY_PATH=$(brew --prefix)/lib:$(brew --prefix)/opt:$(brew --prefix)/include" >> $GITHUB_ENV
 
-    - name: Deploy to S3
+    - name: Build and Validate
       run: |
         sh ./setup.sh --local
-        sh ./build.sh --system --parallel --validate --upload --release
+        sh ./build.sh --system --parallel --validateghactions
+        
+    - name: Deploy to S3
+      run: |
+        sh ./build.sh --upload --release
 
   buildMacos14FastS3:
 
@@ -105,13 +109,17 @@ jobs:
       run: |
         echo "LIBRARY_PATH=$(brew --prefix)/lib:$(brew --prefix)/opt:$(brew --prefix)/include" >> $GITHUB_ENV
 
-    - name: Deploy to S3
+    - name: Build and Validate
       run: |
         sudo mkdir -p /usr/local/opt/gridlabd
         sudo chmod 2777 /usr/local/opt/gridlabd
         sh ./setup.sh --local
         brew install gdal
-        sh ./build.sh --system --parallel --validate --upload --release
+        sh ./build.sh --system --parallel --validateghactions
+        
+    - name: Deploy to S3
+      run: |
+        sh ./build.sh --upload --release
 
   buildMacos15FastS3:
 
@@ -142,13 +150,17 @@ jobs:
       run: |
         echo "LIBRARY_PATH=$(brew --prefix)/lib:$(brew --prefix)/opt:$(brew --prefix)/include" >> $GITHUB_ENV
 
-    - name: Deploy to S3
+    - name: Build and Validate
       run: |
         sudo mkdir -p /usr/local/opt/gridlabd
         sudo chmod 2777 /usr/local/opt/gridlabd
         sh ./setup.sh --local
         brew install gdal
-        sh ./build.sh --system --parallel --validate --upload --release
+        sh ./build.sh --system --parallel --validateghactions
+        
+    - name: Deploy to S3
+      run: |
+        sh ./build.sh --upload --release
 
   buildUbuntu22FastS3:
 
@@ -158,6 +170,13 @@ jobs:
       image: ubuntu:jammy
 
     steps:
+    # Clean out runner mysql to resolve install issues for ubuntu 22
+    - name: Remove old mysql
+      run: |
+        rm -rf /etc/mysql /var/lib/mysql /var/log/mysql
+        apt-get autoremove
+        apt-get autoclean
+        
       # this is to fix GIT not liking owner of the checkout dir
     - name: Set ownership and prep container
       run: |
@@ -177,13 +196,16 @@ jobs:
         role-session-name: developImagesUbuntu22Update
         aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Deploy to S3
+    - name: Build and Validate
       run: |
         export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
         chown -R root $PWD
         sh ./setup.sh --local
         sh ./build.sh --system --parallel --validateghactions
         gridlabd python -m pip install awscli
+        
+    - name: Deploy to S3
+      run: |
         sh ./build.sh --upload --release
 
   buildUbuntu24FastS3:
@@ -213,13 +235,16 @@ jobs:
         role-session-name: developImagesUbuntu24Update
         aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Deploy to S3
+    - name: Build and Validate
       run: |
         export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
         chown -R root $PWD
         sh ./setup.sh --local
         sh ./build.sh --system --parallel --validateghactions
         gridlabd python -m pip install awscli
+
+    - name: Deploy to S3
+      run: |
         sh ./build.sh --upload --release
 
   buildUbuntuDockerhub:
