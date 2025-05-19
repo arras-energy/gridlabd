@@ -2,4 +2,6 @@
 #define DIR=..
 #endif
 #setenv GITHUB_ACTIONS=${github_actions:-no}
+#if ${SHELL uname -s} != "Darwin"
 #system python ${DIR:-.}/../gldserver.py 1>python.out 2>python.err
+#endif
