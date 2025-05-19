@@ -8,6 +8,12 @@ if [ ${GLD_ETC:-none} == none ]; then
     export GLD_ETC=${gridlabd --version=install}/shared/gridlabd
 fi
 
+# check for github api token and set header if defined
+if [ -z $GH_TOKEN]; then
+    echo "inside! token defined! $GH_TOKEN"
+    GLD_GIT_HEADER='--header "Authorization: Bearer '$GH_TOKEN'"'
+fi
+
 # configurable parameters
 GITHUB="https://github.com"
 GITAPI="https://api.github.com"
@@ -149,7 +155,7 @@ function fetch_index()
     fi
     if [ ! -f "$INDEX" ]; then
         debug "downloading ${GITBRANCH} index of $ORGANIZATION template archive from ${GITPROJ} (curl -sL $GITFILE/$ORGANIZATION/.index)... "
-        curl -sL -f "$GITFILE/$ORGANIZATION/.index" >"$INDEX" || error 2 "index not found"
+        curl $GLD_GIT_HEADER -sL -f "$GITFILE/$ORGANIZATION/.index" >"$INDEX" || error 2 "index not found"
     fi
     if [ ! -f "$INDEX" ]; then
         error 1 "unable to fetch index"
@@ -278,14 +284,14 @@ function get()
         DSTDIR="$GLD_ETC/template/$ORGANIZATION/$TEMPLATE"
         mkdir -p $DSTDIR
         debug "looking for catalog in $SRCDIR/.catalog"
-        CATALOG=$(curl -sL -f "$SRCDIR/.catalog" "$DSTDIR" | grep -v '^#' | cut -f1 -d:) # || error 2 "missing template catalog")
+        CATALOG=$(curl $GLD_GIT_HEADER -sL -f "$SRCDIR/.catalog" "$DSTDIR" | grep -v '^#' | cut -f1 -d:) # || error 2 "missing template catalog")
         if [ -z "$CATALOG" ]; then
             verbose "no catalog found; extracting legacy template from $GITFILE/$ORGANIZATION/$TEMPLATE.zip"
-            (curl -sL "$GITFILE/$ORGANIZATION/$TEMPLATE.zip" > "/tmp/$$.zip" && unzip -q -o -d "$GLD_ETC/template" "/tmp/$$") || (rm -f "/tmp/$$"; error 1 "unable to download $f")
+            (curl $GLD_GIT_HEADER -sL "$GITFILE/$ORGANIZATION/$TEMPLATE.zip" > "/tmp/$$.zip" && unzip -q -o -d "$GLD_ETC/template" "/tmp/$$") || (rm -f "/tmp/$$"; error 1 "unable to download $f")
         else
             verbose "downloading template from $SRCDIR/.catalog: $(echo $CATALOG | tr -c 'A-Za-z_.' ' ')"
             for FILE in $CATALOG; do
-                curl -sL -f "$SRCDIR/$FILE" > "$DSTDIR/$FILE" || error 2 "unable to download '$FILE'"
+                curl $GLD_GIT_HEADER -sL -f "$SRCDIR/$FILE" > "$DSTDIR/$FILE" || error 2 "unable to download '$FILE'"
                 debug "catalog file $FILE ok"
             done
             test -f "$DSTDIR/$TEMPLATE.md" || warning "no documentation found"
@@ -489,7 +495,7 @@ done
 CACHEDIR="$DATADIR/.gridlabd-template"
 GITPROJ="$GITHUB/$GITUSER/$GITREPO"
 GITFILE="$GITHUBUSERCONTENT/$GITUSER/$GITREPO/$GITBRANCH"
-COMMIT_INFO=$(curl -sL "$GITAPI/repos/$GITUSER/$GITREPO/branches/$GITBRANCH")
+COMMIT_INFO=$(curl $GLD_GIT_HEADER -sL "$GITAPI/repos/$GITUSER/$GITREPO/branches/$GITBRANCH")
 COMMIT_ID=$(echo $COMMIT_INFO | gridlabd json-get commit sha 2>/dev/null || error 1 $(echo $COMMIT_INFO | gridlabd json-get message 2>/dev/null))
 INDEX=$CACHEDIR/$COMMIT_ID
 
