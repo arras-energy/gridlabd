@@ -78,8 +78,8 @@ jobs:
         
     - name: Validate system
       run: |
-        sudo gridlabd template config set GITHUB_TOKEN $GITHUB_TOKEN
-        sudo gridlabd -D keep_progress=TRUE -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes || ( sudo utilities/save_validation_errors ; false )
+        gridlabd template config set GITHUB_TOKEN $GITHUB_TOKEN
+        gridlabd -D keep_progress=TRUE -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes || ( utilities/save_validation_errors ; false )
         
     - name: Upload artifacts on failure
       uses: actions/upload-artifact@v4
@@ -124,8 +124,8 @@ jobs:
         
     - name: Validate system
       run: |
-        sudo gridlabd template config set GITHUB_TOKEN $GITHUB_TOKEN
-        sudo gridlabd -D keep_progress=TRUE -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes || ( sudo utilities/save_validation_errors ; false )
+        gridlabd template config set GITHUB_TOKEN $GITHUB_TOKEN
+        gridlabd -D keep_progress=TRUE -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes || ( utilities/save_validation_errors ; false )
         
     - name: Upload artifacts on failure
       uses: actions/upload-artifact@v4
@@ -170,8 +170,8 @@ jobs:
         
     - name: Validate system
       run: |
-        sudo gridlabd template config set GITHUB_TOKEN $GITHUB_TOKEN
-        sudo gridlabd -D keep_progress=TRUE -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes || ( sudo utilities/save_validation_errors ; false )
+        gridlabd template config set GITHUB_TOKEN $GITHUB_TOKEN
+        gridlabd -D keep_progress=TRUE -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes || ( utilities/save_validation_errors ; false )
         
     - name: Upload artifacts on failure
       uses: actions/upload-artifact@v4
