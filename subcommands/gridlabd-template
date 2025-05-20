@@ -10,6 +10,18 @@ fi
 
 echo "Here: '${GITHUB_TOKEN}'"
 export GITHUB_TOKEN=$(gridlabd-git token $GITHUB_TOKEN)
+
+# check for github api token and set header if defined
+if [ ${GITHUB_TOKEN:-none} != none ]; then
+    echo "Token defined from GITHUB_TOKEN set in config."
+    echo "To change your token, run: gridlabd template config set GITHUB_TOKEN <your-value>"
+    export GLD_GIT_HEADER='--header "Authorization: Bearer '$GITHUB_TOKEN'"'
+else
+    echo "API token not provided."
+    echo "Set your token using: gridlabd template config set GITHUB_TOKEN <your-value>"
+    echo "Default github rate limits will apply."
+fi
+
 printenv
 
 # configurable parameters
@@ -143,24 +155,6 @@ function config()
         error 1 "'$1' is an invalid config option"
     fi
 }
-
-# load the configuration (if any) after config function creates file
-CONFIGFILE="$GLD_ETC/gridlabd-template.conf"
-if [ -f $CONFIGFILE ]; then
-    source $CONFIGFILE
-fi
-
-# check for github api token and set header if defined
-# placed after config so we don't get confusing, incorrect echo call...
-if [ ${GITHUB_TOKEN:-none} != none ]; then
-    echo "Token defined from GITHUB_TOKEN set in config."
-    echo "To change your token, run: gridlabd template config set GITHUB_TOKEN <your-value>"
-    export GLD_GIT_HEADER='--header "Authorization: Bearer '$GITHUB_TOKEN'"'
-else
-    echo "API token not provided."
-    echo "Set your token using: gridlabd template config set GITHUB_TOKEN <your-value>"
-    echo "Default github rate limits will apply."
-fi
 
 function fetch_index()
 {
