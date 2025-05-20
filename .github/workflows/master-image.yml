@@ -81,7 +81,7 @@ jobs:
         
     - name: Validate system
       run: |
-        sudo gridlabd template config set GITHUB_TOKEN $GITHUB_TOKEN
+        sudo gridlabd template config reset
         sudo gridlabd -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes
         sudo gridlabd template config reset
         
@@ -128,7 +128,7 @@ jobs:
         
     - name: Validate system
       run: |
-        sudo gridlabd template config set GITHUB_TOKEN $GITHUB_TOKEN
+        sudo gridlabd template config reset
         sudo gridlabd -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes
         sudo gridlabd template config reset
         
@@ -175,7 +175,7 @@ jobs:
         
     - name: Validate system
       run: |
-        sudo gridlabd template config set GITHUB_TOKEN $GITHUB_TOKEN
+        sudo gridlabd template config reset
         sudo gridlabd -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes
         sudo gridlabd template config reset
         
@@ -227,7 +227,7 @@ jobs:
 
     - name: Validate system
       run: |
-        gridlabd template config set GITHUB_TOKEN $GITHUB_TOKEN
+        gridlabd template config reset
         gridlabd -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes
         gridlabd template config reset
         
@@ -272,7 +272,7 @@ jobs:
 
     - name: Validate system
       run: |
-        gridlabd template config set GITHUB_TOKEN $GITHUB_TOKEN
+        gridlabd template config reset
         gridlabd -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes
         gridlabd template config reset
         

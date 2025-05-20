@@ -27,6 +27,17 @@ Commands:
 END
 }
 
+function token ()
+{
+    if [ ! -z "$1" ]; then
+        echo "$1"
+    elif [ ! -z "$GITHUB_TOKEN" ]; then
+        echo "$GITHUB_TOKEN"
+    elif [ -s "$HOME/.github/access-token" ]; then
+        cat "$HOME/.github/access-token"
+    fi
+}
+
 function commit ()
 {
     if [ "$1" == "help" ]; then

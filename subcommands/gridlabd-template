@@ -8,9 +8,11 @@ if [ ${GLD_ETC:-none} == none ]; then
     export GLD_ETC=${gridlabd --version=install}/shared/gridlabd
 fi
 
-# configurable parameters
-printenv
 echo "Here: '${GITHUB_TOKEN}'"
+export GITHUB_TOKEN=$(gridlabd-git token $GITHUB_TOKEN)
+printenv
+
+# configurable parameters
 GITHUB="https://github.com"
 GITAPI="https://api.github.com"
 GITHUBUSERCONTENT="https://raw.githubusercontent.com"
