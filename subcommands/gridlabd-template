@@ -121,10 +121,20 @@ function config()
         debug "resetting config"        
         rm -rf "$CONFIGFILE" || error 1 "unable to delete '$CONFIGFILE'"
         rm -rf "${INDEX}" || error 1 "unable to delete template '${INDEX}'"
+        # this function now updates source when config reset
+        CONFIGFILE="$GLD_ETC/gridlabd-template.conf"
+        if [ -f $CONFIGFILE ]; then
+            source $CONFIGFILE
+        fi
     elif [ "$1" == "set" -a $# == 3 ]; then
         debug "updating config: $2 = '$3'"
         echo "$2=\"$3\"" >> "$CONFIGFILE"
         rm -rf "${INDEX}" || error 1 "unable to delete template '${INDEX}'"
+        # this function now updates source when config set
+        CONFIGFILE="$GLD_ETC/gridlabd-template.conf"
+        if [ -f $CONFIGFILE ]; then
+            source $CONFIGFILE
+        fi
     elif [ "$1" == "get" -a $# == 2 ]; then
         if [ ! -r $CONFIGFILE ]; then
             value=$(config show | grep $2)
