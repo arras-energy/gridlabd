@@ -8,13 +8,8 @@ if [ ${GLD_ETC:-none} == none ]; then
     export GLD_ETC=${gridlabd --version=install}/shared/gridlabd
 fi
 
-# check for github api token and set header if defined
-if [ -z $GH_TOKEN]; then
-    echo "inside! token defined! $GH_TOKEN"
-    GLD_GIT_HEADER='--header "Authorization: Bearer '$GH_TOKEN'"'
-fi
-
 # configurable parameters
+GITHUB_TOKEN=
 GITHUB="https://github.com"
 GITAPI="https://api.github.com"
 GITHUBUSERCONTENT="https://raw.githubusercontent.com"
@@ -39,6 +34,17 @@ EXECNAME="$(basename $0)"
 QUIET="no"
 VERBOSE="no"
 DEBUG="no"
+
+# check for github api token and set header if defined
+if [ ${GITHUB_TOKEN:-none} != none ]; then
+    echo "Token defined from GITHUB_TOKEN set in config."
+    echo "To change your token, run: gridlabd template config set GITHUB_TOKEN <your-value>"
+    export GLD_GIT_HEADER='--header "Authorization: Bearer '$GITHUB_TOKEN'"'
+else
+    echo "API token not provided."
+    echo "Set your token using: gridlabd template config set GITHUB_TOKEN <your-value>"
+    echo "Default github rate limits will apply."
+fi
 
 function error()
 {

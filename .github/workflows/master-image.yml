@@ -8,6 +8,9 @@ permissions:
   id-token: write # This is required for requesting the JWT
   contents: read  # This is required for actions/checkout
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
 jobs:
 
   updateS3websites:
@@ -71,10 +74,16 @@ jobs:
       run: |
         echo "LIBRARY_PATH=$(brew --prefix)/lib:$(brew --prefix)/opt:$(brew --prefix)/include" >> $GITHUB_ENV
 
-    - name: Build and Validate
+    - name: Build
       run: |
         sh ./setup.sh --local
-        sh ./build.sh --system --parallel --validateghactions
+        sh ./build.sh --system --parallel
+        
+    - name: Validate system
+      run: |
+        sudo gridlabd template config set GITHUB_TOKEN $GITHUB_TOKEN
+        sudo gridlabd -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes -D GITHUB_TOKEN=$GITHUB_TOKEN
+        sudo gridlabd template config reset
         
     - name: Deploy to S3
       run: |
@@ -109,13 +118,19 @@ jobs:
       run: |
         echo "LIBRARY_PATH=$(brew --prefix)/lib:$(brew --prefix)/opt:$(brew --prefix)/include" >> $GITHUB_ENV
 
-    - name: Build and Validate
+    - name: Build
       run: |
         sudo mkdir -p /usr/local/opt/gridlabd
         sudo chmod 2777 /usr/local/opt/gridlabd
         sh ./setup.sh --local
         brew install gdal
-        sh ./build.sh --system --parallel --validateghactions
+        sh ./build.sh --system --parallel
+        
+    - name: Validate system
+      run: |
+        sudo gridlabd template config set GITHUB_TOKEN $GITHUB_TOKEN
+        sudo gridlabd -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes -D GITHUB_TOKEN=$GITHUB_TOKEN
+        sudo gridlabd template config reset
         
     - name: Deploy to S3
       run: |
@@ -150,13 +165,19 @@ jobs:
       run: |
         echo "LIBRARY_PATH=$(brew --prefix)/lib:$(brew --prefix)/opt:$(brew --prefix)/include" >> $GITHUB_ENV
 
-    - name: Build and Validate
+    - name: Build
       run: |
         sudo mkdir -p /usr/local/opt/gridlabd
         sudo chmod 2777 /usr/local/opt/gridlabd
         sh ./setup.sh --local
         brew install gdal
-        sh ./build.sh --system --parallel --validateghactions
+        sh ./build.sh --system --parallel
+        
+    - name: Validate system
+      run: |
+        sudo gridlabd template config set GITHUB_TOKEN $GITHUB_TOKEN
+        sudo gridlabd -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes -D GITHUB_TOKEN=$GITHUB_TOKEN
+        sudo gridlabd template config reset
         
     - name: Deploy to S3
       run: |
@@ -196,13 +217,19 @@ jobs:
         role-session-name: developImagesUbuntu22Update
         aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Build and Validate
+    - name: Build
       run: |
         export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
         chown -R root $PWD
         sh ./setup.sh --local
-        sh ./build.sh --system --parallel --validateghactions
+        sh ./build.sh --system --parallel
         gridlabd python -m pip install awscli
+
+    - name: Validate system
+      run: |
+        gridlabd template config set GITHUB_TOKEN $GITHUB_TOKEN
+        gridlabd -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes -D GITHUB_TOKEN=$GITHUB_TOKEN
+        gridlabd template config reset
         
     - name: Deploy to S3
       run: |
@@ -235,14 +262,20 @@ jobs:
         role-session-name: developImagesUbuntu24Update
         aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Build and Validate
+    - name: Build
       run: |
         export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
         chown -R root $PWD
         sh ./setup.sh --local
-        sh ./build.sh --system --parallel --validateghactions
+        sh ./build.sh --system --parallel
         gridlabd python -m pip install awscli
 
+    - name: Validate system
+      run: |
+        gridlabd template config set GITHUB_TOKEN $GITHUB_TOKEN
+        gridlabd -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes -D GITHUB_TOKEN=$GITHUB_TOKEN
+        gridlabd template config reset
+        
     - name: Deploy to S3
       run: |
         sh ./build.sh --upload --release

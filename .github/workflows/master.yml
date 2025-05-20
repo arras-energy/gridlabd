@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
 jobs:
   build:
 
@@ -29,7 +32,9 @@ jobs:
         curl -sL https://raw.githubusercontent.com/openfido/cli/main/install.sh | sudo sh
       
     - name: Validate system
-      run: sudo gridlabd -D keep_progress=TRUE -T 0 --validate -D github_actions=yes || ( sudo utilities/save_validation_errors ; false )
+      run: |
+        sudo gridlabd template config set GITHUB_TOKEN $GITHUB_TOKEN
+        sudo gridlabd -D keep_progress=TRUE -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes -D GITHUB_TOKEN=$GITHUB_TOKEN || ( sudo utilities/save_validation_errors ; false )
         
     - name: Upload artifacts on failure
       uses: actions/upload-artifact@v4
@@ -74,7 +79,9 @@ jobs:
         sh ./build.sh --system --parallel
         
     - name: Validate system
-      run: sudo gridlabd -D keep_progress=TRUE -T 0 --validate -D github_actions=yes -D GH_TOKEN=$GH_TOKEN || ( sudo utilities/save_validation_errors ; false )
+      run: |
+        sudo gridlabd template config set GITHUB_TOKEN $GITHUB_TOKEN
+        sudo gridlabd -D keep_progress=TRUE -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes -D GITHUB_TOKEN=$GITHUB_TOKEN || ( sudo utilities/save_validation_errors ; false )
         
     - name: Upload artifacts on failure
       uses: actions/upload-artifact@v4
@@ -118,7 +125,9 @@ jobs:
         sh ./build.sh --system --parallel
         
     - name: Validate system
-      run: sudo gridlabd -D keep_progress=TRUE -D maximum_runtime=1800 -T 1 --validate -D github_actions=yes -D GH_TOKEN=$GH_TOKEN || ( sudo utilities/save_validation_errors ; false )
+      run: |
+        sudo gridlabd template config set GITHUB_TOKEN $GITHUB_TOKEN
+        sudo gridlabd -D keep_progress=TRUE -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes -D GITHUB_TOKEN=$GITHUB_TOKEN || ( sudo utilities/save_validation_errors ; false )
         
     - name: Upload artifacts on failure
       uses: actions/upload-artifact@v4
@@ -162,11 +171,9 @@ jobs:
         sh ./build.sh --system --parallel
         
     - name: Validate system
-      run: | 
-        if [ -z $GH_TOKEN]; then
-          echo "GH Token: $GH_TOKEN"
-        fi
-        sudo gridlabd -D keep_progress=TRUE -D maximum_runtime=1800 -T 1 --validate -D github_actions=yes -D GH_TOKEN=$GH_TOKEN || ( sudo utilities/save_validation_errors ; false )
+      run: |
+        sudo gridlabd template config set GITHUB_TOKEN $GITHUB_TOKEN
+        sudo gridlabd -D keep_progress=TRUE -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes -D GITHUB_TOKEN=$GITHUB_TOKEN || ( sudo utilities/save_validation_errors ; false )
         
     - name: Upload artifacts on failure
       uses: actions/upload-artifact@v4
