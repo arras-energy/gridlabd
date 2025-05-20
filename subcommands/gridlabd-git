@@ -15,7 +15,7 @@ if [ -f "$GITAUTH" ]; then
     TOKEN="$(gridlabd-json-get token < $GITAUTH)"
     AUTH="-u $GITUSER:$TOKEN"
 fi
-
+# command line, then environment, then file
 function help ()
 {
     cat <<END
