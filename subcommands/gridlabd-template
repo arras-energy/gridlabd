@@ -35,17 +35,6 @@ QUIET="no"
 VERBOSE="no"
 DEBUG="no"
 
-# check for github api token and set header if defined
-if [ ${GITHUB_TOKEN:-none} != none ]; then
-    echo "Token defined from GITHUB_TOKEN set in config."
-    echo "To change your token, run: gridlabd template config set GITHUB_TOKEN <your-value>"
-    export GLD_GIT_HEADER='--header "Authorization: Bearer '$GITHUB_TOKEN'"'
-else
-    echo "API token not provided."
-    echo "Set your token using: gridlabd template config set GITHUB_TOKEN <your-value>"
-    echo "Default github rate limits will apply."
-fi
-
 function error()
 {
     RC=$1
@@ -91,6 +80,7 @@ function config()
             echo "    \"GITBRANCH\" : \"$GITBRANCH\","
             echo "    \"CACHEDIR\" : \"$CACHEDIR\","
             echo "    \"DATADIR\" : \"$DATADIR\","
+            echo "    \"GITHUB_TOKEN\" : \"$GITHUB_TOKEN\","
             echo "}"
         elif [ "$FORMAT" == "glm" ]; then
             debug "showing config in glm format"
@@ -102,6 +92,7 @@ function config()
             echo "#define TEMPLATE_GITBRANCH=$GITBRANCH"
             echo "#define TEMPLATE_CACHEDIR=$CACHEDIR"
             echo "#define TEMPLATE_DATADIR=$DATADIR"
+            echo "#define TEMPLATE_GITHUB_TOKEN=$GITHUB_TOKEN"
         elif [ "$FORMAT" == "csv" ]; then
             debug "showing config in csv format"
             echo "name,value"
@@ -113,6 +104,7 @@ function config()
             echo "GITBRANCH,\"$GITBRANCH\""
             echo "CACHEDIR,\"$CACHEDIR\""
             echo "DATADIR,\"$DATADIR\""
+            echo "GITHUB_TOKEN,\"$GITHUB_TOKEN\""
         else
             debug "showing config in raw format"
             echo "GITHUB=\"$GITHUB\""
@@ -123,6 +115,7 @@ function config()
             echo "GITBRANCH=\"$GITBRANCH\""
             echo "CACHEDIR=\"$CACHEDIR\""
             echo "DATADIR=\"$DATADIR\""
+            echo "GITHUB_TOKEN=\"$GITHUB_TOKEN\""
         fi
     elif [ "$1" == "reset" ]; then
         debug "resetting config"        
@@ -147,6 +140,18 @@ function config()
         error 1 "'$1' is an invalid config option"
     fi
 }
+
+# check for github api token and set header if defined
+# placed after config so we don't get confusing, incorrect echo call...
+if [ ${GITHUB_TOKEN:-none} != none ]; then
+    echo "Token defined from GITHUB_TOKEN set in config."
+    echo "To change your token, run: gridlabd template config set GITHUB_TOKEN <your-value>"
+    export GLD_GIT_HEADER='--header "Authorization: Bearer '$GITHUB_TOKEN'"'
+else
+    echo "API token not provided."
+    echo "Set your token using: gridlabd template config set GITHUB_TOKEN <your-value>"
+    echo "Default github rate limits will apply."
+fi
 
 function fetch_index()
 {
