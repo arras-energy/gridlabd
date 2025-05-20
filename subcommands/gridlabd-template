@@ -15,7 +15,7 @@ export GITHUB_TOKEN=$(gridlabd-git token $GITHUB_TOKEN)
 if [ ${GITHUB_TOKEN:-none} != none ]; then
     echo "Token defined from GITHUB_TOKEN set in config."
     echo "To change your token, run: gridlabd template config set GITHUB_TOKEN <your-value>"
-    export GLD_GIT_HEADER='--header "Authorization: Bearer '$GITHUB_TOKEN'"'
+    export GLD_GIT_HEADER='--header "Authorization: token '$GITHUB_TOKEN'"'
 else
     echo "API token not provided."
     echo "Set your token using: gridlabd template config set GITHUB_TOKEN <your-value>"
