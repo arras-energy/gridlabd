@@ -65,14 +65,12 @@ jobs:
     - name: Add libraries to PATH
       run: |
         echo "LIBRARY_PATH=$(brew --prefix)/lib:$(brew --prefix)/opt:$(brew --prefix)/include" >> $GITHUB_ENV
-        echo "$GH_TOKEN"
 
     - name: Run Setup
       run: |
         sudo mkdir -p /usr/local/opt/gridlabd
         sudo chmod 2777 /usr/local/opt/gridlabd
         sh ./setup.sh --local
-        brew install gdal
         
     - name: Build Gridlabd
       run: |
