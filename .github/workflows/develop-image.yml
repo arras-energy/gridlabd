@@ -156,7 +156,9 @@ jobs:
     environment: Integration
     container:
       image: ubuntu:jammy
-
+    env:
+      GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
+      
     steps:
       # this is to fix GIT not liking owner of the checkout dir
     - name: Set ownership and prep container
@@ -179,7 +181,6 @@ jobs:
 
     - name: Deploy to S3
       run: |
-        export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
         chown -R root $PWD
         sh ./setup.sh --local
         sh ./build.sh --system --parallel
@@ -192,7 +193,9 @@ jobs:
     environment: Integration
     container:
       image: ubuntu:noble
-
+    env:
+      GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
+      
     steps:
       # this is to fix GIT not liking owner of the checkout dir
     - name: Set ownership and prep container
@@ -215,7 +218,6 @@ jobs:
 
     - name: Deploy to S3
       run: |
-        export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
         chown -R root $PWD
         sh ./setup.sh --local
         sh ./build.sh --system --parallel
