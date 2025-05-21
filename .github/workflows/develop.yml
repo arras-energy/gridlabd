@@ -7,7 +7,7 @@ on:
     branches: [develop]
 
 env:
-  GITHUB_TOKEN: ${{ secrets.READ_RATELIMIT_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
 jobs:
   build:
