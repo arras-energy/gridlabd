@@ -62,7 +62,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
-        role-session-name: developImagesMacos13Update
+        role-session-name: masterImagesMacos13Update
         aws-region: ${{ secrets.AWS_REGION }}
 
     - name: Symlink for libtool
@@ -74,9 +74,14 @@ jobs:
       run: |
         echo "LIBRARY_PATH=$(brew --prefix)/lib:$(brew --prefix)/opt:$(brew --prefix)/include" >> $GITHUB_ENV
 
-    - name: Build
+    - name: Run Setup
       run: |
+        sudo mkdir -p /usr/local/opt/gridlabd
+        sudo chmod 2777 /usr/local/opt/gridlabd
         sh ./setup.sh --local
+        
+    - name: Build Gridlabd
+      run: |
         sh ./build.sh --system --parallel
         
     - name: Validate system
@@ -104,7 +109,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
-        role-session-name: developImagesMacos14Update
+        role-session-name: masterImagesMacos14Update
         aws-region: ${{ secrets.AWS_REGION }}
 
     - name: Symlink for libtool
@@ -116,12 +121,15 @@ jobs:
       run: |
         echo "LIBRARY_PATH=$(brew --prefix)/lib:$(brew --prefix)/opt:$(brew --prefix)/include" >> $GITHUB_ENV
 
-    - name: Build
+    - name: Run Setup
       run: |
         sudo mkdir -p /usr/local/opt/gridlabd
         sudo chmod 2777 /usr/local/opt/gridlabd
         sh ./setup.sh --local
         brew install gdal
+        
+    - name: Build Gridlabd
+      run: |
         sh ./build.sh --system --parallel
         
     - name: Validate system
@@ -149,7 +157,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
-        role-session-name: developImagesMacos15Update
+        role-session-name: masterImagesMacos15Update
         aws-region: ${{ secrets.AWS_REGION }}
 
     - name: Symlink for libtool
@@ -161,12 +169,15 @@ jobs:
       run: |
         echo "LIBRARY_PATH=$(brew --prefix)/lib:$(brew --prefix)/opt:$(brew --prefix)/include" >> $GITHUB_ENV
 
-    - name: Build
+    - name: Run Setup
       run: |
         sudo mkdir -p /usr/local/opt/gridlabd
         sudo chmod 2777 /usr/local/opt/gridlabd
         sh ./setup.sh --local
         brew install gdal
+        
+    - name: Build Gridlabd
+      run: |
         sh ./build.sh --system --parallel
         
     - name: Validate system
@@ -200,6 +211,7 @@ jobs:
         mkdir -p /usr/local/var
         apt-get update && apt-get install -y apt-transport-https
         apt-get install -y git curl nano sudo zip
+        chown -R root $PWD
         curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
         unzip awscliv2.zip
         ./aws/install
@@ -210,13 +222,15 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
-        role-session-name: developImagesUbuntu22Update
+        role-session-name: masterImagesUbuntu22Update
         aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Build
+    - name: Setup system
       run: |
-        chown -R root $PWD
         sh ./setup.sh --local
+
+    - name: Build gridlabd
+      run: |
         sh ./build.sh --system --parallel
         gridlabd python -m pip install awscli
 
@@ -244,6 +258,7 @@ jobs:
         mkdir -p /usr/local/var
         apt-get update && apt-get install -y apt-transport-https
         apt-get install -y git curl nano sudo zip
+        chown -R root $PWD
         curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
         unzip awscliv2.zip
         ./aws/install
@@ -254,13 +269,15 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
-        role-session-name: developImagesUbuntu24Update
+        role-session-name: masterImagesUbuntu24Update
         aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Build
+    - name: Setup system
       run: |
-        chown -R root $PWD
         sh ./setup.sh --local
+
+    - name: Build gridlabd
+      run: |
         sh ./build.sh --system --parallel
         gridlabd python -m pip install awscli
 
