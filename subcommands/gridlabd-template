@@ -166,7 +166,7 @@ function fetch_index()
     fi
     if [ ! -f "$INDEX" ]; then
         debug "downloading ${GITBRANCH} index of $ORGANIZATION template archive from ${GITPROJ} (curl -sL $GITFILE/$ORGANIZATION/.index)... "
-        curl --header "authorization: Bearer $GITHUB_TOKEN" -sL -f "$GITFILE/$ORGANIZATION/.index" >"$INDEX" || error 2 "index not found"
+        curl ${GITHUB_TOKEN:+ --header "authorization: Bearer $GITHUB_TOKEN"} -sL -f "$GITFILE/$ORGANIZATION/.index" >"$INDEX" || error 2 "index not found"
     fi
     if [ ! -f "$INDEX" ]; then
         error 1 "unable to fetch index"
@@ -295,14 +295,14 @@ function get()
         DSTDIR="$GLD_ETC/template/$ORGANIZATION/$TEMPLATE"
         mkdir -p $DSTDIR
         debug "looking for catalog in $SRCDIR/.catalog"
-        CATALOG=$(curl --header "authorization: Bearer $GITHUB_TOKEN" -sL -f "$SRCDIR/.catalog" "$DSTDIR" | grep -v '^#' | cut -f1 -d:) # || error 2 "missing template catalog")
+        CATALOG=$(curl ${GITHUB_TOKEN:+ --header "authorization: Bearer $GITHUB_TOKEN"} -sL -f "$SRCDIR/.catalog" "$DSTDIR" | grep -v '^#' | cut -f1 -d:) # || error 2 "missing template catalog")
         if [ -z "$CATALOG" ]; then
             verbose "no catalog found; extracting legacy template from $GITFILE/$ORGANIZATION/$TEMPLATE.zip"
-            (curl --header "authorization: Bearer $GITHUB_TOKEN" -sL "$GITFILE/$ORGANIZATION/$TEMPLATE.zip" > "/tmp/$$.zip" && unzip -q -o -d "$GLD_ETC/template" "/tmp/$$") || (rm -f "/tmp/$$"; error 1 "unable to download $f")
+            (curl ${GITHUB_TOKEN:+ --header "authorization: Bearer $GITHUB_TOKEN"} -sL "$GITFILE/$ORGANIZATION/$TEMPLATE.zip" > "/tmp/$$.zip" && unzip -q -o -d "$GLD_ETC/template" "/tmp/$$") || (rm -f "/tmp/$$"; error 1 "unable to download $f")
         else
             verbose "downloading template from $SRCDIR/.catalog: $(echo $CATALOG | tr -c 'A-Za-z_.' ' ')"
             for FILE in $CATALOG; do
-                curl --header "authorization: Bearer $GITHUB_TOKEN" -sL -f "$SRCDIR/$FILE" > "$DSTDIR/$FILE" || error 2 "unable to download '$FILE'"
+                curl ${GITHUB_TOKEN:+ --header "authorization: Bearer $GITHUB_TOKEN"} -sL -f "$SRCDIR/$FILE" > "$DSTDIR/$FILE" || error 2 "unable to download '$FILE'"
                 debug "catalog file $FILE ok"
             done
             test -f "$DSTDIR/$TEMPLATE.md" || warning "no documentation found"
@@ -506,7 +506,7 @@ done
 CACHEDIR="$DATADIR/.gridlabd-template"
 GITPROJ="$GITHUB/$GITUSER/$GITREPO"
 GITFILE="$GITHUBUSERCONTENT/$GITUSER/$GITREPO/$GITBRANCH"
-COMMIT_INFO=$(curl --header "authorization: Bearer $GITHUB_TOKEN" -sL "$GITAPI/repos/$GITUSER/$GITREPO/branches/$GITBRANCH")
+COMMIT_INFO=$(curl ${GITHUB_TOKEN:+ --header "authorization: Bearer $GITHUB_TOKEN"} -sL "$GITAPI/repos/$GITUSER/$GITREPO/branches/$GITBRANCH")
 COMMIT_ID=$(echo $COMMIT_INFO | gridlabd json-get commit sha 2>/dev/null || error 1 $(echo $COMMIT_INFO | gridlabd json-get message 2>/dev/null))
 INDEX=$CACHEDIR/$COMMIT_ID
 
