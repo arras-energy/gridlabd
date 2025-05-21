@@ -81,9 +81,7 @@ jobs:
         
     - name: Validate system
       run: |
-        sudo gridlabd template config reset
-        sudo gridlabd -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes
-        sudo gridlabd template config reset
+        gridlabd -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes
         
     - name: Deploy to S3
       run: |
@@ -128,9 +126,7 @@ jobs:
         
     - name: Validate system
       run: |
-        sudo gridlabd template config reset
-        sudo gridlabd -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes
-        sudo gridlabd template config reset
+        gridlabd -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes
         
     - name: Deploy to S3
       run: |
@@ -175,9 +171,7 @@ jobs:
         
     - name: Validate system
       run: |
-        sudo gridlabd template config reset
-        sudo gridlabd -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes
-        sudo gridlabd template config reset
+        gridlabd -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes
         
     - name: Deploy to S3
       run: |
@@ -227,9 +221,7 @@ jobs:
 
     - name: Validate system
       run: |
-        gridlabd template config reset
         gridlabd -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes
-        gridlabd template config reset
         
     - name: Deploy to S3
       run: |
@@ -272,9 +264,7 @@ jobs:
 
     - name: Validate system
       run: |
-        gridlabd template config reset
         gridlabd -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes
-        gridlabd template config reset
         
     - name: Deploy to S3
       run: |

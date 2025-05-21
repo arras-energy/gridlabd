@@ -17,24 +17,22 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Prep container
+      run: |
+        mkdir -p /usr/local/var
+        apt-get update && apt-get install -y apt-transport-https
+        apt-get install -y git curl nano sudo zip
+        
     - name: Setup system
-      run: sudo ./setup.sh --local
+      run: ./setup.sh --local
 
     - name: Build gridlabd
-      run: sudo ./build.sh --system --parallel
-
-    - name: Install openfido
-      run: |
-        test -x /usr/local/bin/python3 || sudo ln -sf $(which python3) /usr/local/bin/python3
-        sudo /usr/local/bin/python3 -m venv /usr/local/opt/openfido
-        source /usr/local/opt/openfido/bin/activate
-        sudo /usr/local/bin/python3 -m pip install requests pandas docker
-        curl -sL https://raw.githubusercontent.com/openfido/cli/main/install.sh | sudo sh
+      run: ./build.sh --system --parallel
       
     - name: Validate system
       run: |
-        sudo gridlabd template config reset
-        sudo gridlabd -D keep_progress=TRUE -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes || ( sudo utilities/save_validation_errors ; false )
+        gridlabd template config reset
+        gridlabd -D keep_progress=TRUE -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes || ( utilities/save_validation_errors ; false )
         
     - name: Upload artifacts on failure
       uses: actions/upload-artifact@v4
@@ -78,7 +76,6 @@ jobs:
         
     - name: Validate system
       run: |
-        gridlabd template config reset
         gridlabd -D keep_progress=TRUE -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes || ( utilities/save_validation_errors ; false )
         
     - name: Upload artifacts on failure
@@ -124,7 +121,6 @@ jobs:
         
     - name: Validate system
       run: |
-        gridlabd template config reset
         gridlabd -D keep_progress=TRUE -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes || ( utilities/save_validation_errors ; false )
         
     - name: Upload artifacts on failure
@@ -170,7 +166,6 @@ jobs:
         
     - name: Validate system
       run: |
-        gridlabd template config reset
         gridlabd -D keep_progress=TRUE -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes || ( utilities/save_validation_errors ; false )
         
     - name: Upload artifacts on failure
