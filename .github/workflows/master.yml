@@ -80,7 +80,6 @@ jobs:
         
     - name: Validate system
       run: |
-        gridlabd template config reset
         gridlabd -D keep_progress=TRUE -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes || ( utilities/save_validation_errors ; false )
         
     - name: Upload artifacts on failure
@@ -126,7 +125,6 @@ jobs:
         
     - name: Validate system
       run: |
-        gridlabd template config reset
         gridlabd -D keep_progress=TRUE -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes || ( utilities/save_validation_errors ; false )
         
     - name: Upload artifacts on failure
@@ -172,7 +170,6 @@ jobs:
         
     - name: Validate system
       run: |
-        gridlabd template config reset
         gridlabd -D keep_progress=TRUE -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes || ( utilities/save_validation_errors ; false )
         
     - name: Upload artifacts on failure
