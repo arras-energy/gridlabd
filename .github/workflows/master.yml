@@ -24,6 +24,8 @@ jobs:
         mkdir -p /usr/local/var
         apt-get update && apt-get install -y apt-transport-https
         apt-get install -y git curl nano sudo zip
+        export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
+        chown -R root $PWD
         
     - name: Setup system
       run: ./setup.sh --local
