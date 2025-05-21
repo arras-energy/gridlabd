@@ -19,14 +19,14 @@ jobs:
       GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
       
     steps:
-    - uses: actions/checkout@v4
-
     - name: Prep container
       run: |
         mkdir -p /usr/local/var
         apt-get update && apt-get install -y apt-transport-https
         apt-get install -y git curl nano sudo zip
         chown -R root $PWD
+      
+    - uses: actions/checkout@v4
         
     - name: Setup system
       run: ./setup.sh --local
