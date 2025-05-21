@@ -12,7 +12,9 @@ env:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    container:
+      image: ubuntu:noble
 
     steps:
     - uses: actions/checkout@v4
