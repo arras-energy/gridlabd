@@ -15,7 +15,7 @@ if [ -f "$GITAUTH" ]; then
     TOKEN="$(gridlabd-json-get token < $GITAUTH)"
     AUTH="-u $GITUSER:$TOKEN"
 fi
-
+# command line, then environment, then file
 function help ()
 {
     cat <<END
@@ -25,6 +25,17 @@ Commands:
   commit <id> <keys>    obtain information on commit <id>
   rate <keys>           obtain information on rate limits
 END
+}
+
+function token ()
+{
+    if [ ! -z "$1" ]; then
+        echo "$1"
+    elif [ ! -z "$GITHUB_TOKEN" ]; then
+        echo "$GITHUB_TOKEN"
+    elif [ -s "$HOME/.github/access-token" ]; then
+        cat "$HOME/.github/access-token"
+    fi
 }
 
 function commit ()

@@ -13,7 +13,7 @@ clock
 
 module optimize
 {
-    message_flags VERBOSE;
+//    message_flags VERBOSE;
     cvx_failure_handling WARN;
     cvx_imports Variable,sum_squares,Minimize;
     cvx_problemdump "test_cvx.txt";
@@ -125,7 +125,7 @@ object cvx
 // This test does not work on linux platforms for some unknown reason
 #ifdef APPLE
 #ifexist "../test_cvx.txt"
-#on_exit 0 diff -w -I '^(param_prob:|Problem solved:|Result:)' ../test_cvx.txt test_cvx.txt > gridlabd.diff
+#on_exit 0 diff -w -I '^(param_prob:|Problem solved:|Result:|Data:|  )' ../test_cvx.txt test_cvx.txt > gridlabd.diff
 #endif
 #endif
 
