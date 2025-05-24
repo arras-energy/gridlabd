@@ -15,6 +15,8 @@
 ##   -q|--quiet)     Disable output to stdout
 ## 
 ##   --validate)     Enable validation of build (requires --install)
+##
+##   --validateghactions)     Enable validation of build, enables adjustments to account for github runner differences (requires --install)
 ## 
 ##   --install)      Install build to target folder
 ## 
@@ -89,6 +91,12 @@ while [ $# -gt 0 ]; do
 				error "cannot validate unless you install"
 			fi
 			VERIFY="-T 0 --validate"
+			;;
+   		--validateghactions )
+			if [ -z "$VERIFY" ]; then
+				error "cannot validate unless you install"
+			fi
+			VERIFY="-T 0 --validate -D github_actions=yes"
 			;;
 		--ignore )
 			export MAKEFLAGS="$MAKEFLAGS -i"

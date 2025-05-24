@@ -13,11 +13,13 @@
 
 #ifmissing ami_data.mdb.zip
 
+#if ${github_actions:-no} == no
 #ifdef GITHUB_TOKEN
 #system curl -sL -o ami_data.mdb.zip --header "Authorization: token ${GITHUB_TOKEN}" 'https://raw.githubusercontent.com/dchassin/camden_model/master/AMI_KWH.mdb.zip'
 #else
 #warning unable to download AMI data from secure repo without GITHUB_TOKEN environment variable defined
 #endif // GITHUB_TOKEN
+#endif // github_actions
 
 #endif // missing zip
 
