@@ -33,13 +33,11 @@ jobs:
       with:
         python-version: '3.10' 
 
-    - name: Setup system
-      run: |
-        sh ./setup.sh --local
-
+    # ln is needed as ubuntu 24 does not have python3.10 available natively with apt, while gh actions runner provides a binary
     - name: Build gridlabd
       run: |
         sh ./build.sh --system --parallel
+        ln -sf /usr/bin/python3.10 /usr/local/opt/gridlabd/current/bin/python3.10
       
     - name: Validate system
       run: |
