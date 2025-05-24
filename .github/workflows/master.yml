@@ -27,7 +27,12 @@ jobs:
         chown -R root $PWD
       
     - uses: actions/checkout@v4
-        
+
+    # Ubuntu 24 does not support 3.10 via apt, therefore it needs to be manually installed
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.10' 
+
     - name: Setup system
       run: ./setup.sh --local
 
