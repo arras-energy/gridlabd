@@ -20,6 +20,10 @@ EXPOSE 6266-6299/tcp
 # Run the install.sh script with the desired arguments
 RUN curl -sL https://install-dev.arras.energy/install.sh | sh
 
+RUN ln -sf /usr/bin/python3.10 /usr/local/opt/gridlabd/*.*/bin/python3
+RUN ln -sf /usr/bin/python3.10 /usr/local/opt/gridlabd/*.*/bin/python3.10
+RUN ln -sf /usr/bin/python3.10 /usr/local/opt/gridlabd/*.*/bin/python3
+
 RUN gridlabd --version=all
 
 WORKDIR /app
