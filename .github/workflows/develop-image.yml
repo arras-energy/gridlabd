@@ -71,10 +71,19 @@ jobs:
       run: |
         echo "LIBRARY_PATH=$(brew --prefix)/lib:$(brew --prefix)/opt:$(brew --prefix)/include" >> $GITHUB_ENV
 
+    - name: Run Setup
+      run: |
+        sudo mkdir -p /usr/local/opt/gridlabd
+        sudo chmod 2777 /usr/local/opt/gridlabd
+        sh ./setup.sh --local
+        
+    - name: Build Gridlabd
+      run: |
+        sh ./build.sh --system --parallel
+        
     - name: Deploy to S3
       run: |
-        sh ./setup.sh --local
-        sh ./build.sh --system --parallel --upload --release
+        sh ./build.sh --upload --release
 
   buildMacos14FastS3:
 
@@ -105,13 +114,20 @@ jobs:
       run: |
         echo "LIBRARY_PATH=$(brew --prefix)/lib:$(brew --prefix)/opt:$(brew --prefix)/include" >> $GITHUB_ENV
 
-    - name: Deploy to S3
+    - name: Run Setup
       run: |
         sudo mkdir -p /usr/local/opt/gridlabd
         sudo chmod 2777 /usr/local/opt/gridlabd
-        brew install gdal
         sh ./setup.sh --local
-        sh ./build.sh --system --parallel --upload --release
+        brew install gdal
+        
+    - name: Build Gridlabd
+      run: |
+        sh ./build.sh --system --parallel
+        
+    - name: Deploy to S3
+      run: |
+        sh ./build.sh --upload --release
 
   buildMacos15FastS3:
 
@@ -142,13 +158,20 @@ jobs:
       run: |
         echo "LIBRARY_PATH=$(brew --prefix)/lib:$(brew --prefix)/opt:$(brew --prefix)/include" >> $GITHUB_ENV
 
-    - name: Deploy to S3
+    - name: Run Setup
       run: |
         sudo mkdir -p /usr/local/opt/gridlabd
         sudo chmod 2777 /usr/local/opt/gridlabd
-        brew install gdal
         sh ./setup.sh --local
-        sh ./build.sh --system --parallel --upload --release
+        brew install gdal
+        
+    - name: Build Gridlabd
+      run: |
+        sh ./build.sh --system --parallel
+        
+    - name: Deploy to S3
+      run: |
+        sh ./build.sh --upload --release
 
   buildUbuntu22FastS3:
 
@@ -156,7 +179,9 @@ jobs:
     environment: Integration
     container:
       image: ubuntu:jammy
-
+    env:
+      GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
+      
     steps:
       # this is to fix GIT not liking owner of the checkout dir
     - name: Set ownership and prep container
@@ -164,6 +189,7 @@ jobs:
         mkdir -p /usr/local/var
         apt-get update && apt-get install -y apt-transport-https
         apt-get install -y git curl nano sudo zip
+        chown -R root $PWD
         curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
         unzip awscliv2.zip
         ./aws/install
@@ -177,13 +203,17 @@ jobs:
         role-session-name: developImagesUbuntu22Update
         aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Deploy to S3
+    - name: Setup system
       run: |
-        export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
-        chown -R root $PWD
         sh ./setup.sh --local
+
+    - name: Build gridlabd
+      run: |
         sh ./build.sh --system --parallel
         gridlabd python -m pip install awscli
+        
+    - name: Deploy to S3
+      run: |
         sh ./build.sh --upload --release
 
   buildUbuntu24FastS3:
@@ -192,7 +222,9 @@ jobs:
     environment: Integration
     container:
       image: ubuntu:noble
-
+    env:
+      GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
+      
     steps:
       # this is to fix GIT not liking owner of the checkout dir
     - name: Set ownership and prep container
@@ -200,6 +232,7 @@ jobs:
         mkdir -p /usr/local/var
         apt-get update && apt-get install -y apt-transport-https
         apt-get install -y git curl nano sudo zip
+        chown -R root $PWD
         curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
         unzip awscliv2.zip
         ./aws/install
@@ -213,14 +246,17 @@ jobs:
         role-session-name: developImagesUbuntu24Update
         aws-region: ${{ secrets.AWS_REGION }}
 
+    - name: Setup system
+      run: |
+        sh ./setup.sh --local
+
+    - name: Build gridlabd
+      run: |
+        sh ./build.sh --system --parallel
+        gridlabd python -m pip install awscli
+        
     - name: Deploy to S3
       run: |
-        export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
-        chown -R root $PWD
-        sh ./setup.sh --local
-        sh ./build.sh --system --parallel
-        ln -sf /usr/bin/python3.10 /usr/local/opt/gridlabd/current/bin/python3.10
-        gridlabd python -m pip install awscli
         sh ./build.sh --upload --release
 
   buildUbuntuDockerhub:

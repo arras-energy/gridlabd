@@ -48,7 +48,7 @@ fi
 INSTALL "$PYTHON_EXEC" -m pip install --upgrade pip || error "pip update failed"
 
 # install required libraries
-INSTALL brew install autoconf libffi zlib pkg-config xz gdbm tcl-tk
+INSTALL brew install autoconf libffi zlib pkg-config xz gdbm tcl-tk mdbtools
 
 # install required tools
 INSTALL brew install automake libtool gnu-sed gawk

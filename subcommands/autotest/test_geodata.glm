@@ -45,4 +45,4 @@
 #ifexist "../test_geodata.txt"
 #on_exit 0 diff -I '^#' ../test_geodata.txt test_geodata.txt > gridlabd.diff
 #endif
-#endif
+#endif // github actions
