@@ -3177,6 +3177,7 @@ python/extras/validate_json.py
 python/extras/volt_dump/meter_record.py
 python/extras/volt_dump/voltdump.py
 python/gridlabd_python.py
+python/precompile.py
 python/pstatus.py
 python/pyproject.toml
 python/python.cpp
