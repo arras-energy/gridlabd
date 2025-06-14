@@ -22,6 +22,7 @@ bin_SCRIPTS += subcommands/gridlabd-model
 bin_SCRIPTS += subcommands/gridlabd-openfido
 bin_SCRIPTS += subcommands/gridlabd-pandas
 bin_SCRIPTS += subcommands/gridlabd-plot
+bin_SCRIPTS += subcommands/gridlabd-project
 bin_SCRIPTS += subcommands/gridlabd-python
 bin_SCRIPTS += subcommands/gridlabd-require
 bin_SCRIPTS += subcommands/gridlabd-requirements
