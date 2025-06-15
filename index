@@ -3690,6 +3690,7 @@ subcommands/gridlabd-model
 subcommands/gridlabd-openfido
 subcommands/gridlabd-pandas
 subcommands/gridlabd-plot
+subcommands/gridlabd-project
 subcommands/gridlabd-python
 subcommands/gridlabd-require
 subcommands/gridlabd-requirements
