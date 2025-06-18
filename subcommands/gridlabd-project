@@ -34,7 +34,7 @@ COMMANDS
     config
       show           Show the current configuration
       save           Save options are default configuration
-    open PROJECT     Open an existing project
+    edit PROJECT     Open an existing project
     save MESSAGE     Save project to github
 
 EXAMPLE
@@ -52,22 +52,54 @@ E_MISSING = 4
 E_EXISTS = 5
 E_EXCEPTION = 9
 
+_COMMANDS = ["create","edit","config","save","list"]
+
+def list():
+
+    workdir = settings["workdir"]
+    print(f"{workdir=}")
+    for folder in os.listdir(workdir):
+        ok = True
+        for required in [".git","notebook.py"]:
+            if not os.path.exists(os.path.join(workdir,folder,required)):
+                ok = False
+        if ok: 
+            print(folder)
+
 def create(project):
 
     # create work folder in workdir
+    workdir = settings["workdir"]
+    project_path = os.path.join(workdir,project)
+    if os.path.exists(os.path.join(project_path)):
+        error(f"{project=} exists in {workdir=}",E_EXISTS)
+    verbose(f"creating {project=} in {workdir=}...")
+    os.makedirs(project_path)
+    os.chdir(project_path)
+    verbose(f"...ok")
 
     # git init the folder
+    if os.system("git init"):
+        raise RuntimeError("git init failed")
 
     # copy template files from GitHub
+    if settings["template"]:
+        warning(f"unable to copy template files from {settings['template']}")
 
-    # open the project
-    verbose(f"TODO create({project=})")
+    # edit the project
+    return edit(project)
 
-def open(project):
+def edit(project):
 
-    # open the project in Marimo notebook
-
-    verbose(f"TODO open({project=})")
+    # edit the project in Marimo notebook
+    workdir = settings["workdir"]
+    project_path = os.path.join(workdir,project)
+    if not os.path.exists(os.path.join(project_path)):
+        error(f"{project=} does not exist in {workdir=}",E_NOTFOUND)
+    verbose(f"opening {project=} in {workdir=} with marimo...")
+    os.chdir(project_path)
+    os.system(f"marimo edit notebook.py")
+    verbose(f"...ok")
 
 def config(command,*args,**kwargs):
 
@@ -98,7 +130,7 @@ def config(command,*args,**kwargs):
                 settings = json.load(fh)
         except:
             settings = dict(
-                workdir = os.getcwd(),
+                workdir = os.path.join(os.environ["HOME"],"github"),
                 show = False,
                 quiet = False,
                 warning = True,
@@ -195,15 +227,22 @@ def warning(msg):
 def verbose(msg):
     """Print verbose message
 
-    Verbose messages are printed only if the configuration parameter `verbose` is true.
-    Otherwise the verbose message is suppressed. Use the '-v|--verbose' option to toggle this setting.
+    Verbose messages are printed only if the configuration parameter `verbose`
+    is true. Otherwise the verbose message is suppressed. Use
+    the '-v|--verbose' option to toggle this setting.
+
+    If msg ends with ... then the final carriage return is not output. If the
+    msg starts with ... then the initial heading is not output and the
+    leading ... is suppressed.
 
     PARAMETERS
 
         msg (str)   Verbose message
     """
     if settings["verbose"]:
-        print(f"VERBOSE [gridlabd-project]: {msg}",file=sys.stderr)
+        heading = "VERBOSE [gridlabd-project]: " if not msg.startswith("...") else ""
+
+        print(f"{heading}{msg[(0 if heading else 3):]}",end="..." if msg.endswith("...") else "\n",file=sys.stderr)
 
 def debug(msg,level=0):
     """Print debug message
@@ -253,7 +292,7 @@ def main(argv):
 
     for arg in argv[1:]:
         
-        if arg in ["create","open","config"]:
+        if arg in _COMMANDS:
 
             command = globals()[arg]
             continue
