@@ -54,17 +54,20 @@ E_EXCEPTION = 9
 
 _COMMANDS = ["create","edit","config","save","list"]
 
-def list():
+def list(workdir=None):
 
-    workdir = settings["workdir"]
-    print(f"{workdir=}")
-    for folder in os.listdir(workdir):
+    if workdir is None:
+        workdir = settings["workdir"]
+    for item in os.listdir(workdir):
+        itempath = os.path.join(workdir,item)
+        if not item.startswith(".") and os.path.isdir(itempath):
+            list(itempath)
         ok = True
         for required in [".git","notebook.py"]:
-            if not os.path.exists(os.path.join(workdir,folder,required)):
+            if not os.path.exists(os.path.join(itempath,required)):
                 ok = False
         if ok: 
-            print(folder)
+            print(itempath)
 
 def create(project):
 
