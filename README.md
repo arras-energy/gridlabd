@@ -19,7 +19,7 @@ Development release: [![develop](https://github.com/arras-energy/gridlabd/action
 <!-- (Badges) -->
 </div>
 
-Arras Energy is a multi-purpose electric power system infrastructure modeling and simulation environment derived from DOE's [GridLAB-D](https://github.com/gridlab-d/) simulator and the California Energy Commission's [HiPAS GridLAB-D](https://github.com/arras-energy/gridlabd-old) infrastructure analysis system
+Arras Energy is a multi-purpose electric power system infrastructure modeling and simulation environment derived from DOE's [GridLAB-D](https://github.com/gridlab-d/) simulator and the California Energy Commission's [HiPAS GridLAB-D](https://github.com/arras-energy/gridlabd-old) infrastructure analysis system. For more information on DOE's GridLAB-D see https://www.gridlabd.org/. For more information on CEC's HiPAS GridLAB-D see https://github.com/slacgismo/hipas-gridlabd.
 
 ## System Architecture
 
