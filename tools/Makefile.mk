@@ -19,6 +19,7 @@ dist_pkgdata_DATA += tools/find_location.py
 dist_pkgdata_DATA += tools/fire_danger.py
 dist_pkgdata_DATA += tools/fire_report.py
 dist_pkgdata_DATA += tools/fit_filter.py
+dist_pkgdata_DATA += tools/forecast.py
 dist_pkgdata_DATA += tools/framework.py
 dist_pkgdata_DATA += tools/gldserver.py
 dist_pkgdata_DATA += tools/gridlabd-editor.png
