@@ -51,7 +51,7 @@ else
 		else
 			if [ ! -e "$GRIDLABD_FOLDER/bin/python3" ] ; then
 				basepython=$(find "$GRIDLABD_FOLDER/bin" -name "python3.*" )
-					if ! [ -x "$(command -v $basepython)" ]; then
+					if ! [ -x $(which $basepython) ]; then
 						echo "Error: $basepython is not installed." >${INSTALL_STDERR:-$DEFAULT_STDERR}
 						echo "You will need to install the correct python version an update the symlinks for gridlabd to work correctly." >${INSTALL_STDERR:-$DEFAULT_STDERR}
 					else
