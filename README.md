@@ -1,3 +1,81 @@
+<div align="center">
+<!-- Badges -->
+  
+# Arras Energy
+
+(Previously known as HiPAS GridLAB-D)
+
+Latest release: [![master](https://github.com/arras-energy/gridlabd/actions/workflows/master.yml/badge.svg)](https://github.com/arras-energy/gridlabd/actions/workflows/master.yml)
+[![master-images](https://github.com/arras-energy/gridlabd/actions/workflows/master-image.yml/badge.svg)](https://github.com/arras-energy/gridlabd/actions/workflows/master-image.yml)
+[![pages-build-deployment](https://github.com/arras-energy/gridlabd/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/arras-energy/gridlabd/actions/workflows/pages/pages-build-deployment)
+
+Development release: [![develop](https://github.com/arras-energy/gridlabd/actions/workflows/develop.yml/badge.svg)](https://github.com/arras-energy/gridlabd/actions/workflows/develop.yml)
+[![develop-images](https://github.com/arras-energy/gridlabd/actions/workflows/develop-image.yml/badge.svg)](https://github.com/arras-energy/gridlabd/actions/workflows/develop-image.yml)
+[![develop-push-dockerhub](https://github.com/arras-energy/gridlabd/actions/workflows/develop-dockerhub.yml/badge.svg)](https://github.com/arras-energy/gridlabd/actions/workflows/develop-dockerhub.yml)
+[![develop-website-sync](https://github.com/arras-energy/gridlabd/actions/workflows/develop-website-sync.yml/badge.svg)](https://github.com/arras-energy/gridlabd/actions/workflows/develop-website-sync.yml)
+  
+## [📘 Documentation](https://docs.arras.energy/) | [💬 Discussions](https://github.com/arras-energy/gridlabd/discussions) | [❔ Ask For Help](https://github.com/orgs/arras-energy/discussions/categories/q-a)
+  
+<!-- (Badges) -->
+</div>
+
+Arras Energy is a multi-purpose electric power system infrastructure modeling and simulation environment derived from DOE's [GridLAB-D](https://github.com/gridlab-d/) simulator and the California Energy Commission's [HiPAS GridLAB-D](https://github.com/arras-energy/gridlabd-old) infrastructure analysis system. For more information on DOE's GridLAB-D see https://www.gridlabd.org/. For more information on CEC's HiPAS GridLAB-D see https://github.com/slacgismo/hipas-gridlabd.
+
+## System Architecture
+
+```mermaid
+  graph LR
+    subgraph Inputs
+      direction LR
+      GLM
+      input(JSON)
+      Converters
+      Geodata
+    end
+    Inputs --> gridlabd
+    subgraph gridlabd
+      engine <--> python
+      engine <--> modules
+      modules <--> python
+      engine <--> shell
+      python <--> shell
+      subgraph modules
+        climate
+        loads
+        generators
+        solvers
+        optimizers
+        revenue
+        reliability
+      end
+    end
+    gridlabd --> Outputs
+    subgraph Outputs
+      output(JSON)
+      CSV
+      KML
+      MySQL
+      InfluxDB
+    end
+    gridlabd --> Subcommands
+    subgraph Subcommands
+      library
+      template
+      timezone
+      marimo
+      server
+    end
+    subgraph Tools
+      loads
+      assets
+      schedules
+      fire
+      mapping
+      markets
+    end
+    gridlabd <--> Tools
+```
+
 # Quick start using Docker
 
 The preferred method for running Arras Energy is to download the master image from docker hub (see https://hub.docker.com/repository/docker/lfenergy/arras/general).  You must install the docker daemon to use docker images.  See https://www.docker.com/get-started for details.
