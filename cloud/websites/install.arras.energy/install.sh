@@ -58,9 +58,8 @@ else
 					echo "You will need to install the correct python version an update the symlinks for gridlabd to work correctly." >${INSTALL_STDERR:-$DEFAULT_STDERR}
 				else
 					echo "Attempting to link to correct base python install...">${INSTALL_STDERR:-$DEFAULT_STDERR}
-					alias basepython=$(which $basepython)
-					rm -rf "$GRIDLABD_FOLDER/bin/python*"
-					basepython -m venv $GRIDLABD_FOLDER
+					rm -rf "./$GRIDLABD_FOLDER/bin/python*"
+					eval $basepython -m venv $GRIDLABD_FOLDER
 				fi
 			fi
 			if [ ! -e "$GRIDLABD_FOLDER/bin/python3" ] ; then
