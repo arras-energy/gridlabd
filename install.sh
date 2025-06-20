@@ -57,9 +57,10 @@ else
 					echo "Error: $basepython is not installed." >${INSTALL_STDERR:-$DEFAULT_STDERR}
 					echo "You will need to install the correct python version an update the symlinks for gridlabd to work correctly." >${INSTALL_STDERR:-$DEFAULT_STDERR}
 				else
-					echo "Attempting to link to correct base python install...">${INSTALL_STDERR:-$DEFAULT_STDERR}
-					rm -rf "./$GRIDLABD_FOLDER/bin/python*"
-					eval $basepython -m venv $GRIDLABD_FOLDER
+					echo "Attempting to link gridlabd to $basepython..." >${INSTALL_STDERR:-$DEFAULT_STDERR}
+					basepython=$(which $basepython)
+					rm -rf ${INSTALL_TARGET:-$DEFAULT_TARGET}/gridlabd/$GRIDLABD_FOLDER/bin/python*
+					$basepython -m venv "${INSTALL_TARGET:-$DEFAULT_TARGET}/gridlabd/$GRIDLABD_FOLDER"
 				fi
 			fi
 			if [ ! -e "$GRIDLABD_FOLDER/bin/python3" ] ; then
