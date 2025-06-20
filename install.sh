@@ -50,15 +50,21 @@ else
 			echo "ERROR [install.sh]: setup script not found for $GRIDLABD_FOLDER" >${INSTALL_STDERR:-$DEFAULT_STDERR}
 		else
 			if [ ! -e "$GRIDLABD_FOLDER/bin/python3" ] ; then
+				echo "Identifying correct base python install for gridlabd distro...">${INSTALL_STDERR:-$DEFAULT_STDERR}
 				basepython=$(find "$GRIDLABD_FOLDER/bin" -name "python3.*" )
 				basepython=$(basename $basepython )
-					if ! [ -x $(which $basepython) ]; then
-						echo "Error: $basepython is not installed." >${INSTALL_STDERR:-$DEFAULT_STDERR}
-						echo "You will need to install the correct python version an update the symlinks for gridlabd to work correctly." >${INSTALL_STDERR:-$DEFAULT_STDERR}
-					else
-						rm -rf "$GRIDLABD_FOLDER/bin/python*"
-						eval $basepython -m venv $GRIDLABD_FOLDER
-					fi
+				if ! [ -x $(which $basepython) ]; then
+					echo "Error: $basepython is not installed." >${INSTALL_STDERR:-$DEFAULT_STDERR}
+					echo "You will need to install the correct python version an update the symlinks for gridlabd to work correctly." >${INSTALL_STDERR:-$DEFAULT_STDERR}
+				else
+					echo "Attempting to link to correct base python install...">${INSTALL_STDERR:-$DEFAULT_STDERR}
+					alias basepython=$(which $basepython)
+					rm -rf "$GRIDLABD_FOLDER/bin/python*"
+					basepython -m venv $GRIDLABD_FOLDER
+				fi
+			fi
+			if [ ! -e "$GRIDLABD_FOLDER/bin/python3" ] ; then
+				echo "Link repair to $GRIDLABD_FOLDER/bin/python3 failed.">${INSTALL_STDERR:-$DEFAULT_STDERR}
 			fi
 			ln -sf "$GRIDLABD_FOLDER" "current" 1>${INSTALL_STDOUT:-$DEFAULT_STDOUT} 2>${INSTALL_STDERR:-$DEFAULT_STDERR}
 			ln -sf "${INSTALL_TARGET:-$DEFAULT_TARGET}/gridlabd/current/bin/gridlabd" "/usr/local/bin/gridlabd" 1>${INSTALL_STDOUT:-$DEFAULT_STDOUT} 2>${INSTALL_STDERR:-$DEFAULT_STDERR}
