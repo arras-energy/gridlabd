@@ -7,13 +7,13 @@ class market_data
 }
 module tape;
 #ifdef MARKET_DATA
-#set MARKET_DATA=$MARKET_DATA market_data@caiso_0096WD_7_N001_20220222-20220223
+#set MARKET_DATA=$MARKET_DATA market_data@caiso_0096WD_7_N001_20250222-20250223
 #else
-#define MARKET_DATA=market_data@caiso_0096WD_7_N001_20220222-20220223
+#define MARKET_DATA=market_data@caiso_0096WD_7_N001_20250222-20250223
 #endif
 object market_data
 {
-	name "market_data@caiso_0096WD_7_N001_20220222-20220223";
+	name "market_data@caiso_0096WD_7_N001_20250222-20250223";
 	market caiso;
 	node 0096WD_7_N001;
 	object player

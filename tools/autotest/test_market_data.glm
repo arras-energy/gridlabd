@@ -4,13 +4,14 @@
 #define DIR=..
 #endif
 
-#python -m gridlabd.market_data -m=CAISO -d=0096WD_7_N001 -s=20220222 -e=20220223 -c=test_market_data.csv -g=test_market_data_opt.glm
+// OASIS data retention is 39 months. After 39 months, running the below command manually will return a "No data returned" error, so just update the dates and test file.
+#python -m gridlabd.market_data -m=CAISO -d=0096WD_7_N001 -s=20250222 -e=20250223 -c=test_market_data.csv -g=test_market_data_opt.glm
 
 clock 
 {
 	timezone "PST+8PDT";
-	starttime "2022-02-22 00:00:00 PST";
-	stoptime "2022-02-23 00:00:00 PST";
+	starttime "2025-02-22 00:00:00 PST";
+	stoptime "2025-02-23 00:00:00 PST";
 }
 
 module tape
