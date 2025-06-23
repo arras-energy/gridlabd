@@ -401,6 +401,8 @@ Arguments:
 
 * `main`: the main function to run
 
+* `args`: the main call arguments (defaults to sys.argv)
+
 * `exit`: the exit function to call (default is `exit`)
 
 * `print`: the print funtion to call on exceptions (default is `print`)

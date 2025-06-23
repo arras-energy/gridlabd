@@ -458,12 +458,14 @@ def test(test:callable,name:str,exit=exit,print=print):
         exit(E_FAILED)
     exit(E_OK)
 
-def run(main:callable,exit=exit,print=print):
+def run(main:callable,args=sys.argv,exit=exit,print=print):
     """Run a main function under this app framework
 
     Arguments:
 
     * `main`: the main function to run
+
+    * `args`: the main call arguments (defaults to sys.argv)
 
     * `exit`: the exit function to call (default is `exit`)
 
@@ -473,7 +475,7 @@ def run(main:callable,exit=exit,print=print):
     """
     try:
 
-        rc = main(sys.argv)
+        rc = main(args)
         exit(rc)
 
     except KeyboardInterrupt:
