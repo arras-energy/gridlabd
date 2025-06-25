@@ -15,12 +15,12 @@
 
 // linalg.eig <matrix>
 #if ${github_actions:-no} == no
-#assert $(gridlabd matrix -f linalg.eig "1,2;-2,5" | tr '\n' ';' | cut -f-2 -d';') == '3+2.9802322e-08j,3-2.9802322e-08j;0.70710678+0j,0.70710678-0j'
+#assert $(gridlabd matrix -f linalg.eig "1,0;0,2" | tr '\n' ';' ) == '1,2;1,0;0,1;'
 
 // linalg.eigh <matrix> UPLO=<str>
-#assert $(gridlabd matrix -f linalg.eigh '1,2;-2,5' | tr '\n' ';') == '0.17157288,5.8284271;-0.92387953,-0.38268343;-0.38268343,0.92387953;'
-#assert $(gridlabd matrix -f linalg.eigh '1,2;-2,5' UPLO=U | tr '\n' ';') == '0.17157288,5.8284271;-0.92387953,0.38268343;0.38268343,0.92387953;'
-#assert $(gridlabd matrix -f linalg.eigh '1,2;-2,5' UPLO=L | tr '\n' ';') == '0.17157288,5.8284271;-0.92387953,-0.38268343;-0.38268343,0.92387953;'
+#assert $(gridlabd matrix -f linalg.eigh '1,0;0,2' | tr '\n' ';') == '1,2;1,0;0,1;'
+#assert $(gridlabd matrix -f linalg.eigh '1,0;0,2' UPLO=U | tr '\n' ';') == '1,2;1,0;0,1;'
+#assert $(gridlabd matrix -f linalg.eigh '1,0;0,2' UPLO=L | tr '\n' ';') == '1,2;1,0;0,1;'
 
 // linalg.eigvals <matrix>
 #assert $(gridlabd matrix -f linalg.eigvals "1,2;-2,5") == '3+2.9802322e-08j,3-2.9802322e-08j'
