@@ -57,13 +57,13 @@ will result in the following matrices
         [test_M.b]
     ]
 
-If the data name has a `~` prefix, then it will be instantiated as a parameter.
-When one of more parameters are use, the problem will be constructed as a
-parametric problem instead of a standard problem. Parametric problems are
-compiled only once and subsequent solves are faster. There are some additional
-rules that apply to DPP problems that do not apply to DCP problems. See CVXPY
-documentation for [Disciplined Parameterized Programming](https://www.cvxpy.org/tutorial/dpp/index.html)
-for details 
+If one or more data name has a `~` prefix, then they will be instantiated as a
+parameter. When one of more parameters are used, the problem will be
+constructed as a parametric problem instead of a standard problem. Parametric
+problems are compiled only once and subsequent solves are faster. There are
+some additional rules that apply to DPP problems that do not apply to DCP
+problems. See CVXPY documentation for [Disciplined Parameterized Programming]
+(https://www.cvxpy.org/tutorial/dpp/index.html) for details .
 
 One or more `variables` may be specified in the same manner as `data`
 definitions. If the dual is specified, it uses the same aggregation as the
