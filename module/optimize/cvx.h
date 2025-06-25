@@ -90,6 +90,7 @@ private: // private properties
         char *spec;
         char *name;
         REFERENCE *data;
+        bool is_parameter;
         PyObject *list;
         struct s_data *next;
     } DATA;
@@ -107,6 +108,7 @@ private: // private properties
     } CONSTRAINT;
     struct s_problem {
         char *objective;
+        bool enable_dpp;
         DATA *data;
         VARIABLE *variables;
         CONSTRAINT *constraints;

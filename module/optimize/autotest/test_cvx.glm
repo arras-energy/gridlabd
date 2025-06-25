@@ -1,9 +1,8 @@
 // test_cvx.glm
 
 #set suppress_repeat_messages=FALSE
-//#option verbose
-//#option debug
 #set randomseed=1
+
 clock
 {
     timezone America/Seattle;
@@ -13,9 +12,7 @@ clock
 
 module optimize
 {
-//    message_flags VERBOSE;
     cvx_failure_handling WARN;
-    cvx_imports Variable,sum_squares,Minimize;
     cvx_problemdump "test_cvx.txt";
 }
 
@@ -112,9 +109,9 @@ object cvx
 object cvx 
 {
     parent "problem-x";
-    name "problem-y";
+    name "problem-y-dpp";
     event SYNC;
-    data "A=test:A1";
+    data "~A=test:A1";
     variables "y=test:y";
     objective "Minimize(sum_squares(A@y))";
     constraints "y >= 1";

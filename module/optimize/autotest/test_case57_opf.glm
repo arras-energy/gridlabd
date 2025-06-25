@@ -35,7 +35,7 @@ object cvx
         np.set_printoptions(precision=1,sign=' ',floatmode='fixed',linewidth=None)
         print(G.names,file=__dump__)
         print(f'V = {v.value.round(1)}',file=__dump__)
-        print(f'g = {g.value} = {sum(g.value):6.1f} MW',file=__dump__)
+        print(f'g = {g.value} = {g.value.sum():6.1f} MW',file=__dump__)
         print(f'D = {np.array(D)} = {sum(D):6.1f} MW',file=__dump__)
     """;
 }
