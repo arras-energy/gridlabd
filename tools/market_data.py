@@ -31,7 +31,7 @@ MARKETNAME parameter. Currently supported markets are "CAISO" and "ISONE".
 
 In addition, the NODE must be specified when obtaining locational price data.
 Lists of node names may be obtained from the market websites.  For CAISO see
-http://www.caiso.com/TodaysOutlook/Pages/prices.html for a map of available
+https://www.caiso.com/TodaysOutlook/Pages/prices.html for a map of available
 price nodes.  For ISONE see https://www.iso-ne.com/markets-operations/settlements/pricing-node-tables/
 
 The STARTDATE and ENDDATE value must be specified in the form "YYYYMMDD".
@@ -68,7 +68,7 @@ EXAMPLES
 
 SEE ALSO
 
-* [CAISO](https://caiso.com/)
+* [CAISO](https://www.caiso.com/)
 * [ISONO](https://isone.com/)
 """
 
@@ -394,8 +394,8 @@ def clean_market_data(market, lmp_df, demand_df):
             if not xml:
                 error(f"error data not formatted as expected ({data}",code=3)
             else:
-                err_desc = [x for x in xml.iter('{http://www.caiso.com/soa/OASISReport_v1.xsd}ERR_DESC')]
-                err_code = [x for x in xml.iter('{http://www.caiso.com/soa/OASISReport_v1.xsd}ERR_CODE')]
+                err_desc = [x for x in xml.iter('{https://www.caiso.com/soa/OASISReport_v1.xsd}ERR_DESC')]
+                err_code = [x for x in xml.iter('{https://www.caiso.com/soa/OASISReport_v1.xsd}ERR_CODE')]
                 error(f"OASIS report '{err_desc[0].text}' (code {err_code[0].text})",code=3)
 
         lmp_df = lmp_df[lmp_df["XML_DATA_ITEM"] == "LMP_PRC"].reset_index(drop=True)
@@ -467,7 +467,7 @@ def get_caiso_data(node, start_date, end_date):
     verbose(f"Pulling CAISO data from {start_date} to {end_date}")
 
     # Formulate components of the URL request
-    base_url = "http://oasis.caiso.com/oasisapi/SingleZip"
+    base_url = "https://oasis.caiso.com/oasisapi/SingleZip"
     result_format = "6"
 
     # If start and end date are >31 days apart, break them up (CAISO API requirement)
