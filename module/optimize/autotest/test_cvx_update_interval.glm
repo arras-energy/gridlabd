@@ -2,8 +2,6 @@
 
 #set suppress_repeat_messages=FALSE
 #set randomseed=1
-#option verbose
-#option debug
 clock
 {
     timezone America/Seattle;
@@ -14,7 +12,7 @@ clock
 module optimize
 {
     cvx_failure_handling WARN;
-    cvx_problemdump "test_cvx.txt";
+    cvx_problemdump "test_cvx_update_interval.txt";
 }
 
 class test
@@ -72,7 +70,7 @@ object cvx
 
 // This test does not work on linux platforms for some unknown reason
 #ifdef APPLE
-#ifexist "../test_cvx.txt"
+#ifexist "../test_cvx_update_interval.txt"
 #on_exit 0 diff -w -I '^(param_prob:|Problem solved:|Result:|Data:|  )' ../test_cvx.txt test_cvx.txt > gridlabd.diff
 #endif
 #endif

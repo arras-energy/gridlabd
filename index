@@ -1808,6 +1808,7 @@ module/optimize/autotest/test_case57_opf.txt
 module/optimize/autotest/test_case57_opt.py
 module/optimize/autotest/test_cvx.glm
 module/optimize/autotest/test_cvx.txt
+module/optimize/autotest/test_cvx_update_interval.glm
 module/optimize/autotest/test_extremum_opt.glm
 module/optimize/autotest/test_maximum_err.glm
 module/optimize/autotest/test_minimum.glm

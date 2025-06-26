@@ -512,7 +512,7 @@ TIMESTAMP cvx::commit(TIMESTAMP t0,TIMESTAMP t1)
 
 int cvx::finalize(void)
 {
-    if ( fabs(update_interval) < 1 && gl_globalclock%TIMESTAMP(update_interval) == 0 )
+    if ( fabs(update_interval) < 1 || gl_globalclock%TIMESTAMP(update_interval) == 0 )
     {
         current_event = "FINALIZE";
 
