@@ -75,6 +75,8 @@ public: // public properties
     GL_METHOD(cvx,constraints);
     GL_METHOD(cvx,postsolve);
 
+    GL_ATOMIC(double,update_interval);
+
 private: // private properties
     
     static PyObject *main_module;
