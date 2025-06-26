@@ -115,7 +115,6 @@ object cvx
     variables "y=test:y";
     objective "Minimize(sum_squares(A@y))";
     constraints "y >= 1";
-    solver_options "verbose=1";
 }
 
 #set savefile=${modelname/.glm/.json}
