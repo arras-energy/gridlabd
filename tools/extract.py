@@ -100,7 +100,7 @@ import warnings
 # version issues with numpy and pypower
 if not hasattr(np,"Inf"):
     np.Inf = np.inf
-else:
+elif not hasattr(np,"inf"):
     np.inf = np.Inf
 
 np.set_printoptions(linewidth=np.inf,precision=4,floatmode='maxprec',suppress=True,threshold=sys.maxsize)
