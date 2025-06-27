@@ -97,6 +97,12 @@ import numpy as np
 import scipy as sp
 import warnings
 
+# version issues with numpy and pypower
+if not hasattr(np,"Inf"):
+    np.Inf = np.inf
+else:
+    np.inf = np.Inf
+
 np.set_printoptions(linewidth=np.inf,precision=4,floatmode='maxprec',suppress=True,threshold=sys.maxsize)
 
 EXEPATH = sys.argv[0]
