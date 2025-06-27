@@ -2,12 +2,17 @@
 # Copyright (C) 2024 Regents of the Leland Stanford Junior University
 
 import os, sys
-from numpy import array, set_printoptions
+
+# fix version issues with numpy and pypower
+import numpy
 try:
     from numpy import Inf
+    inf = numpy.inf = Inf
 except:
-    import numpy
-    numpy.Inf = numpy.inf # version issues with numpy and pypower
+    from numpy import inf
+    numpy.Inf = inf 
+
+from numpy import array, set_printoptions
 from pypower.api import ppoption, runpf, runopf
 from math import sqrt
 import json, csv
