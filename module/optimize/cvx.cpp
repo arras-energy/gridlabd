@@ -49,12 +49,12 @@ int cvx::PyRun_FormatString(const char *format, ...)
     va_start(ptr,format);
     char *buffer;
     vasprintf(&buffer,format,ptr);
-    gl_verbose("Running python script '%s'",buffer);
+    gl_verbose("Python call: %s",buffer);
     PyObject *result = PyRun_String(buffer,Py_file_input,globals,locals);
     int rc = 0;
     if ( result == NULL )
     {
-        gl_verbose("Python command failed!");
+        gl_verbose("Python call failed!");
         PyErr_Print();
         PyErr_Clear();
         rc = -1;
@@ -144,6 +144,9 @@ cvx::cvx(MODULE *module)
             PT_char1024, "solver_options", get_solver_options_offset(),
                 PT_DESCRIPTION, "solver options to add to problem.solve() arguments",
 
+            PT_double, "update_interval[s]", get_update_interval_offset(),
+                PT_DESCRIPTION, "minimum optimization update interval in seconds",
+
             NULL)<1)
         {
             exception("unable to publish optimize/cvx properties");
@@ -220,6 +223,7 @@ int cvx::create(void)
 
     // setup problem data
     problem.objective = strdup("");
+    problem.enable_dpp = false;
     problem.data = NULL;
     problem.variables = NULL;
     problem.constraints = NULL;
@@ -250,7 +254,7 @@ int cvx::create(void)
         }
 
         // import requested definitions from cvxpy, if any
-        if ( strcmp(imports,"") != 0 && PyRun_FormatString("from cvxpy import %s", (const char*)imports) != 0 )
+        if ( PyRun_FormatString("from cvxpy import %s", strcmp(imports,"") != 0 ? (const char*)imports : "*") != 0 )
         {
             exception("unable to import cvxpy symbols");
         }
@@ -354,7 +358,7 @@ int cvx::init(OBJECT *parent)
         {
             PyRun_FormatString("global __dump__; __dump__ = open(os.devnull,'w')");
         }
-        else if ( PyRun_FormatString("global __dump__; __dump__ = open('%s','w'); print('Problem dumps starting at t=%lld (%s)\\n',file=__dump__,flush=True);",(const char*)problemdump,gl_globalclock,now.get_string().get_buffer()) < 0 )
+        else if ( PyRun_FormatString("global __dump__; __dump__ = open('%s','w'); print('Problem dumps starting at t=%lld (%s)',file=__dump__,flush=True);",(const char*)problemdump,gl_globalclock,now.get_string().get_buffer()) < 0 )
         {
             exception("unable to open dumpfile '%s'",(const char*)problemdump);
         }
@@ -398,114 +402,132 @@ int cvx::init(OBJECT *parent)
 
 int cvx::precommit(TIMESTAMP t0)
 {
-    current_event = "PRECOMMIT";
+    if ( fabs(update_interval) < 1 || t0%TIMESTAMP(update_interval) == 0 )
+    {        
+        current_event = "PRECOMMIT";
 
-    if ( get_event(OE_PRECOMMIT) && ! update_solution() )
-    {
-        if ( failure_handling == OF_RETRY )
+        if ( get_event(OE_PRECOMMIT) && ! update_solution() )
         {
-            return t0;
+            if ( failure_handling == OF_RETRY )
+            {
+                return t0;
+            }
+            if ( failure_handling == OF_WARN )
+            {
+                warning("optimization failed during precommit event");
+            }
+            return failure_handling != OF_HALT ? 1 : 0;
         }
-        if ( failure_handling == OF_WARN )
-        {
-            warning("optimization failed during precommit event");
-        }
-        return failure_handling != OF_HALT ? 1 : 0;
     }
     return 1;
 }
 
 TIMESTAMP cvx::presync(TIMESTAMP t0)
 {
-    current_event = "PRESYNC";
-
-    if ( get_event(OE_PRESYNC) && ! update_solution() )
+    if ( fabs(update_interval) < 1 || t0%TIMESTAMP(update_interval) == 0 )
     {
-        if ( failure_handling == OF_RETRY )
+        current_event = "PRESYNC";
+
+        if ( get_event(OE_PRESYNC) && ! update_solution() )
         {
-            return t0;
+            if ( failure_handling == OF_RETRY )
+            {
+                return t0;
+            }
+            if ( failure_handling == OF_WARN )
+            {
+                warning("optimization failed during presync event");
+            }
+            return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
         }
-        if ( failure_handling == OF_WARN )
-        {
-            warning("optimization failed during presync event");
-        }
-        return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
     }
-    return TS_NEVER;
+    return fabs(update_interval) < 1 ? TS_NEVER : (TIMESTAMP)((TIMESTAMP(t0/update_interval)+1)*update_interval);
 }
 
 TIMESTAMP cvx::sync(TIMESTAMP t0)
 {
-    current_event = "SYNC";
-
-    if ( get_event(OE_SYNC) && ! update_solution() )
+    if ( fabs(update_interval) < 1 || t0%TIMESTAMP(update_interval) == 0 )
     {
-        if ( failure_handling == OF_RETRY )
+        current_event = "SYNC";
+
+        if ( get_event(OE_SYNC) && ! update_solution() )
         {
-            return t0;
+            if ( failure_handling == OF_RETRY )
+            {
+                return t0;
+            }
+            if ( failure_handling == OF_WARN )
+            {
+                warning("optimization failed during sync event");
+            }
+            return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
         }
-        if ( failure_handling == OF_WARN )
-        {
-            warning("optimization failed during sync event");
-        }
-        return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
     }
-    return TS_NEVER;
+    return fabs(update_interval) < 1 ? TS_NEVER : (TIMESTAMP)((TIMESTAMP(t0/update_interval)+1)*update_interval);
 }
 
 TIMESTAMP cvx::postsync(TIMESTAMP t0)
 {
-    current_event = "POSTSYNC";
-
-    if ( get_event(OE_POSTSYNC) && ! update_solution() )
+    if ( fabs(update_interval) < 1 || t0%TIMESTAMP(update_interval) == 0 )
     {
-        if ( failure_handling == OF_RETRY )
+        current_event = "POSTSYNC";
+
+        if ( get_event(OE_POSTSYNC) && ! update_solution() )
         {
-            return t0;
+            if ( failure_handling == OF_RETRY )
+            {
+                return t0;
+            }
+            if ( failure_handling == OF_WARN )
+            {
+                warning("optimization failed during postsync event");
+            }
+            return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
         }
-        if ( failure_handling == OF_WARN )
-        {
-            warning("optimization failed during postsync event");
-        }
-        return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
     }
-    return TS_NEVER;
+    return fabs(update_interval) < 1 ? TS_NEVER : (TIMESTAMP)((TIMESTAMP(t0/update_interval)+1)*update_interval);
 }
 
 TIMESTAMP cvx::commit(TIMESTAMP t0,TIMESTAMP t1)
 {
-    current_event = "COMMIT";
-
-    if ( get_event(OE_COMMIT) && ! update_solution() )
+    if ( fabs(update_interval) < 1 || t0%TIMESTAMP(update_interval) == 0 )
     {
-        if ( failure_handling == OF_RETRY )
+        current_event = "COMMIT";
+
+        if ( get_event(OE_COMMIT) && ! update_solution() )
         {
-            return t0;
+            if ( failure_handling == OF_RETRY )
+            {
+                return t0;
+            }
+            if ( failure_handling == OF_WARN )
+            {
+                warning("optimization failed during commit event");
+            }
+            return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
         }
-        if ( failure_handling == OF_WARN )
-        {
-            warning("optimization failed during commit event");
-        }
-        return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
     }
-    return TS_NEVER;
+    return fabs(update_interval) < 1 ? TS_NEVER : (TIMESTAMP)((TIMESTAMP(t0/update_interval)+1)*update_interval);
 }
 
 int cvx::finalize(void)
 {
-    current_event = "FINALIZE";
-
-    if ( get_event(OE_FINALIZE) && ! update_solution() )
+    if ( fabs(update_interval) < 1 || gl_globalclock%TIMESTAMP(update_interval) == 0 )
     {
-        if ( failure_handling == OF_RETRY )
+        current_event = "FINALIZE";
+
+        if ( get_event(OE_FINALIZE) && ! update_solution() )
         {
-            exception("unable to retry solution on finalize event");
+            if ( failure_handling == OF_RETRY )
+            {
+                exception("unable to retry solution on finalize event");
+            }
+            if ( failure_handling == OF_WARN )
+            {
+                warning("optimization failed during finalize event");
+            }
+            return failure_handling != OF_HALT ? 1 : 0;
         }
-        if ( failure_handling == OF_WARN )
-        {
-            warning("optimization failed during finalize event");
-        }
-        return failure_handling != OF_HALT ? 1 : 0;
     }
     return 1;
 }
@@ -825,6 +847,12 @@ bool cvx::add_data(struct s_problem &problem, const char *spec)
         {
             exception("variable specification '%s' missing expected '='", buffer);
         }
+        if ( item->name[0] == '~' ) // prefix for parameters
+        {
+            item->name++;
+            item->is_parameter = true;
+            problem.enable_dpp = true;
+        }
         item->data = NULL;
         item->list = PyList_New(0);
         if ( item->list == NULL )
@@ -839,7 +867,7 @@ bool cvx::add_data(struct s_problem &problem, const char *spec)
             {
                 exception("variable '%s' already specified, ignoring duplicate definition",item->name);
             }
-        }
+        }   
 
         // link properties
         char *varspec;
@@ -905,7 +933,7 @@ void cvx::add_data_class(DATA *item, const char *classname, const char *propname
             ref->ptr = (double*)data.get_addr();
             ref->next = item->data;
             item->data = ref;
-            PyList_Insert(item->list,0,PyFloat_FromDouble(*(ref->ptr)));
+            PyList_Append(item->list,PyFloat_FromDouble(*(ref->ptr)));
             count++;
         }
     }
@@ -940,7 +968,7 @@ void cvx::add_data_group(DATA *item, const char *groupname, const char *propname
             ref->ptr = (double*)data.get_addr();
             ref->next = item->data;
             item->data = ref;
-            PyList_Insert(item->list,0,PyFloat_FromDouble(*(ref->ptr)));
+            PyList_Append(item->list,PyFloat_FromDouble(*(ref->ptr)));
             count++;
         }
     }
@@ -970,7 +998,7 @@ void cvx::add_data_object(DATA *item, const char *objectname, const char *propna
     ref->ptr = (double*)data.get_addr();
     ref->next = item->data;
     item->data = ref;
-    PyList_Insert(item->list,0,PyFloat_FromDouble(*(ref->ptr)));
+    PyList_Append(item->list,PyFloat_FromDouble(*(ref->ptr)));
 }
 
 void cvx::add_data_global(DATA *item, const char *propname)
@@ -1238,14 +1266,18 @@ bool cvx::update_solution(void)
     const char *optname = (const char *)get_name();
     bool rc = true;
 
-    verbose("updating problem");
+    verbose("updating solution");
     PyObject *cvx = PyDict_GetItemString(globals,"__cvx__");
     PyObject *objprob = PyDict_GetItemString(cvx,optname);
     PyObject *probdata = PyDict_GetItemString(objprob,"data");
+
+    bool newprob = ( get_event() == OE_INIT );
     if ( probdata == NULL )
     {
+        verbose("no existing problem data found for '%s', creating that dict now",optname);
         probdata = PyDict_New();
         PyDict_SetItemString(objprob,"data",probdata);
+        newprob = true;
     }
 
     if ( PyRun_FormatString("__cvx__['%s']['event'] = '%s'",optname,current_event) == -1 )
@@ -1256,37 +1288,131 @@ bool cvx::update_solution(void)
 
     // copy data from objects
     Py_ssize_t pos = 0;
+    unsigned int n_changed = 0;
     for ( DATA *item = problem.data ; item != NULL ; item = item->next, pos++ )
     {
         bool changed = false;
-        Py_ssize_t ndx = PyList_Size(item->list)-1;
-        for ( REFERENCE *ref = item->data ; ref != NULL ; ref=ref->next, ndx-- )
+        Py_ssize_t ndx = 0;
+        for ( REFERENCE *ref = item->data ; ref != NULL ; ref=ref->next, ndx++ )
         {
             double value = *(ref->ptr);
             if ( value != PyFloat_AsDouble(PyList_GET_ITEM(item->list,ndx)) )
             {
                 changed = true;
-                PyList_SetItem(item->list,ndx,PyFloat_FromDouble(value));
+                n_changed++;
+                if ( newprob || item->is_parameter || ! problem.enable_dpp )
+                {
+                    PyList_SetItem(item->list,ndx,PyFloat_FromDouble(value));
+                }
             }
-        }        
+        }
+        if ( ndx != PyList_Size(item->list) )
+        {
+            status = SS_ERROR;
+            exception("%s size mismatch (%d found, %d required)",item->name,ndx,PyList_Size(item->list));
+        }
+
+        PyDict_SetItemString(globals,item->name,item->list);
+        char dataref[1024];
+        snprintf(dataref,sizeof(dataref)-1,"__cvx__['%s']['data']['%s']",optname,item->name);
         if ( changed )
         {
-            PyDict_SetItemString(probdata,item->name,item->list);
-            PyDict_SetItemString(globals,item->name,item->list);
+            verbose("data '%s' has changed",item->name);
+            if ( problem.enable_dpp )
+            {
+                verbose("DPP problem (problem.enable_dpp=true for item->name %s --> %s)",item->name,dataref);
+                if ( newprob )
+                {
+                    verbose("new problem requires creation of CVX objects");
+                    if ( PyRun_FormatString("%s=np.array(%s)",item->name,item->name) == -1 )
+                    {
+                        status = SS_ERROR;
+                        exception("unable to convert %s to a numpy array",item->name);
+                    }    
+                    PyDict_SetItemString(probdata,item->name,item->list);
+                    if ( item->is_parameter )
+                    {
+                        verbose("%s is a parameter",item->name);
+                        if ( PyRun_FormatString(
+                            "%s = %s = Parameter(%s.shape,value=%s,name='%s');"
+                            "# DPP parameter creation",
+                            dataref, item->name, item->name, item->name, item->name) == -1 )
+                        {
+                            status = SS_ERROR;
+                            exception("unable to define parameter '%s'",item->name);
+                        }
+                    }
+                    else
+                    {
+                        verbose("%s is a constant",item->name);
+                        if ( PyRun_FormatString(
+                            "%s = %s = Constant(%s,name='%s');"
+                            "# DPP constant constant",
+                            dataref, item->name, item->name, item->name) == -1 )
+                        {
+                            status = SS_ERROR;
+                            exception("unable to define constant '%s'",item->name);
+                        }
+                    }
+                }
+                else if ( item->is_parameter )
+                {
+                    verbose("DPP parameter '%s' update",item->name);
+                    if ( PyRun_FormatString(
+                        "global %s; "
+                        "%s.value = %s = np.array(%s);"
+                        "# DPP parameter update",
+                        item->name,
+                        dataref, item->name, item->name) == -1 )
+                    {
+                        status = SS_ERROR;
+                        exception("unable to update parameter '%s'",item->name);
+                    }
+                }
+                else
+                {
+                    warning("constant '%s' has changed while DPP is enabled",item->name);
+                }
+            }
+            else
+            {
+                verbose("DCP problem data changed (problem.enable_dpp=false for item->name %s --> %s)\n",item->name,dataref);
+                PyDict_SetItemString(probdata,item->name,item->list);
+            }
         }
-    }
-
-    // set up variables
-    for ( VARIABLE *item = problem.variables ; item != NULL ; item = item->next )
-    {
-        if ( PyRun_FormatString("%s = cvx.Variable(%ld)",item->name,item->count) == -1 )
+        else if ( ! problem.enable_dpp )
         {
-            status = SS_INVALID;
-            exception("unable to create CVX variable '%s'",item->name);
+            verbose("DCP problem data created (problem.enable_dpp=false for item->name %s --> %s)\n",item->name,dataref);
+            PyDict_SetItemString(probdata,item->name,item->list);
         }
         else
         {
-            verbose("variable '%s' created with length %ld",item->name,item->count);
+            verbose("'%s' is unchanged",item->name);
+        }
+    }
+    if ( ! newprob && n_changed == 0 )
+    {
+        verbose("no data has changed, skipping problem solve and reusing last solution");
+        return true;
+    }
+
+    if ( newprob || ! problem.enable_dpp )
+    {
+        // set up variables
+        for ( VARIABLE *item = problem.variables ; item != NULL ; item = item->next )
+        {
+            if ( PyRun_FormatString(
+                "%s = Variable(%ld,name='%s')",
+                item->name,item->count,item->name
+                ) == -1 )
+            {
+                status = SS_INVALID;
+                exception("unable to create CVX variable '%s'",item->name);
+            }
+            else
+            {
+                verbose("variable '%s' created with length %ld",item->name,item->count);
+            }
         }
     }
 
@@ -1297,40 +1423,49 @@ bool cvx::update_solution(void)
         exception("presolve script failed");
     }
 
-    // set objective
-    if ( PyRun_FormatString("__cvx__['%s']['objective'] = %s",optname,problem.objective) == -1 )
+    if ( newprob || ! problem.enable_dpp )
     {
-        status = SS_INVALID;
-        exception("objective specification '%s' is invalid",problem.objective);
-    }
-
-    // update constraints
-    char buffer[1024];
-    if ( PyRun_FormatString("__cvx__['%s']['constraints'] = [%s]",optname,constraints(buffer,sizeof(buffer)-1)>0?buffer:"") == -1 )
-    {
-        status = SS_INVALID;
-        exception("constraints specification '[%s]' is invalid",buffer);
-    }
-
-    // create problem
-    if ( PyRun_FormatString("__cvx__['%s']['problem'] = cvx.Problem(__cvx__['%s']['objective'],__cvx__['%s']['constraints'])",optname,optname,optname) == -1 )
-    {
-        if ( strcmp(on_failure,"") != 0 )
+        verbose("Constructing objective, constraints, and problem");
+        
+        // set objective
+        if ( PyRun_FormatString("__cvx__['%s']['objective'] = %s",optname,problem.objective) == -1 )
         {
-            PyRun_FormatString(on_failure);
+            status = SS_INVALID;
+            exception("objective specification '%s' is invalid",problem.objective);
         }
-        status = SS_INVALID;
-        exception("problem construction failed");
+
+        // update constraints
+        char buffer[1024];
+        if ( PyRun_FormatString("__cvx__['%s']['constraints'] = [%s]",optname,constraints(buffer,sizeof(buffer)-1)>0?buffer:"") == -1 )
+        {
+            status = SS_INVALID;
+            exception("constraints specification '[%s]' is invalid",buffer);
+        }
+
+        // create problem
+        if ( PyRun_FormatString("__cvx__['%s']['problem'] = Problem(__cvx__['%s']['objective'],__cvx__['%s']['constraints'])",optname,optname,optname) == -1 )
+        {
+            if ( strcmp(on_failure,"") != 0 )
+            {
+                PyRun_FormatString(on_failure);
+            }
+            status = SS_INVALID;
+            exception("problem construction failed");
+        }
     }
 
     // dump problem if requested
     if ( strcmp(problemdump,"") != 0 )
     {
         gld_clock now;
-        PyRun_FormatString("print('*** Problem \\'%s\\' at t=%lld (%s) ***\\n',file=__dump__)",optname,gl_globalclock,now.get_string().get_buffer());
-        PyRun_FormatString("print('Data:',__cvx__['%s']['data'],file=__dump__)",optname);
-        PyRun_FormatString("print('Objective:',__cvx__['%s']['objective'],file=__dump__)",optname);
-        PyRun_FormatString("print('Contraints:',__cvx__['%s']['constraints'],file=__dump__)",optname);
+        if ( PyRun_FormatString("print('*** Problem \\'%s\\' at t=%lld (%s) ***\\n',file=__dump__)",optname,gl_globalclock,now.get_string().get_buffer()) == -1
+            || PyRun_FormatString("print('Data:',{n:(m.value.tolist() if hasattr(m,'value') else m) for n,m in __cvx__['%s']['data'].items()},file=__dump__)",optname) == -1
+            || PyRun_FormatString("print('Objective:',__cvx__['%s']['objective'],file=__dump__)",optname) == -1
+            || PyRun_FormatString("print('Contraints:',__cvx__['%s']['constraints'],file=__dump__)",optname) == -1 )
+        {
+            exception("problem dump preamble failed");
+        }
+
     }
 
     // solve problem
@@ -1338,7 +1473,6 @@ bool cvx::update_solution(void)
     {
         if ( strcmp(problemdump,"") != 0 )
         {
-            // PyRun_FormatString("print('\\n'.join([f'{x}: {y}' for x,y in __problem__.get_problem_data(__problem__.solver_stats.solver_name)[0].items()]),file=__dump__,flush=True)");
             PyRun_FormatString("print('Problem rejected',file=__dump__,flush=True)");
         }
         if ( strcmp(on_exception,"") != 0 )
@@ -1351,7 +1485,7 @@ bool cvx::update_solution(void)
 
     // dump results
     if ( strcmp(problemdump,"") != 0 && 
-        PyRun_FormatString("print('\\n'.join([f'{x}: {y}' for x,y in __cvx__['%s']['problem'].get_problem_data(__cvx__['%s']['problem'].solver_stats.solver_name)[0].items()]),file=__dump__)",optname,optname) == -1 )
+        PyRun_FormatString("print('\\n'.join([f'{x}: {y}' for x,y in __cvx__['%s']['problem'].get_problem_data(None)[0].items()]),file=__dump__)",optname,optname) == -1 )
     {
         status = SS_ERROR;
         exception("problem dump failed");
