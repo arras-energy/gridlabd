@@ -2,8 +2,13 @@
 # Copyright (C) 2024 Regents of the Leland Stanford Junior University
 
 import os, sys
+from numpy import array, set_printoptions
+try:
+    from numpy import Inf
+except:
+    import numpy
+    numpy.Inf = numpy.inf # version issues with numpy and pypower
 from pypower.api import ppoption, runpf, runopf
-from numpy import array, set_printoptions, inf
 from math import sqrt
 import json, csv
 
