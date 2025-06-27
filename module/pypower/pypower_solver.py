@@ -6,11 +6,11 @@ import os, sys
 # fix version issues with numpy and pypower
 import numpy
 try:
-    from numpy import Inf
-    inf = numpy.inf = Inf
-except:
     from numpy import inf
     numpy.Inf = inf 
+except:
+    from numpy import Inf
+    inf = numpy.inf = Inf
 
 from numpy import array, set_printoptions
 from pypower.api import ppoption, runpf, runopf
