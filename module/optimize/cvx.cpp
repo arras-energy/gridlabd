@@ -441,7 +441,7 @@ TIMESTAMP cvx::presync(TIMESTAMP t0)
             return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
         }
     }
-    return fabs(update_interval) < 1 ? TS_NEVER : (TIMESTAMP(t0/update_interval)+1)*update_interval;
+    return fabs(update_interval) < 1 ? TS_NEVER : (TIMESTAMP)((TIMESTAMP(t0/update_interval)+1)*update_interval);
 }
 
 TIMESTAMP cvx::sync(TIMESTAMP t0)
@@ -463,7 +463,7 @@ TIMESTAMP cvx::sync(TIMESTAMP t0)
             return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
         }
     }
-    return fabs(update_interval) < 1 ? TS_NEVER : (TIMESTAMP(t0/update_interval)+1)*update_interval;
+    return fabs(update_interval) < 1 ? TS_NEVER : (TIMESTAMP)((TIMESTAMP(t0/update_interval)+1)*update_interval);
 }
 
 TIMESTAMP cvx::postsync(TIMESTAMP t0)
@@ -485,7 +485,7 @@ TIMESTAMP cvx::postsync(TIMESTAMP t0)
             return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
         }
     }
-    return update_interval == 0 ? TS_NEVER : (TIMESTAMP(t0/update_interval)+1)*update_interval;
+    return fabs(update_interval) < 1 ? TS_NEVER : (TIMESTAMP)((TIMESTAMP(t0/update_interval)+1)*update_interval);
 }
 
 TIMESTAMP cvx::commit(TIMESTAMP t0,TIMESTAMP t1)
@@ -507,7 +507,7 @@ TIMESTAMP cvx::commit(TIMESTAMP t0,TIMESTAMP t1)
             return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
         }
     }
-    return fabs(update_interval) < 1 ? TS_NEVER : (TIMESTAMP(t0/update_interval)+1)*update_interval;
+    return fabs(update_interval) < 1 ? TS_NEVER : (TIMESTAMP)((TIMESTAMP(t0/update_interval)+1)*update_interval);
 }
 
 int cvx::finalize(void)
