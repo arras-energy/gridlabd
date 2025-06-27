@@ -144,6 +144,9 @@ cvx::cvx(MODULE *module)
             PT_char1024, "solver_options", get_solver_options_offset(),
                 PT_DESCRIPTION, "solver options to add to problem.solve() arguments",
 
+            PT_double, "update_interval[s]", get_update_interval_offset(),
+                PT_DESCRIPTION, "minimum optimization update interval in seconds",
+
             NULL)<1)
         {
             exception("unable to publish optimize/cvx properties");
@@ -399,114 +402,132 @@ int cvx::init(OBJECT *parent)
 
 int cvx::precommit(TIMESTAMP t0)
 {
-    current_event = "PRECOMMIT";
+    if ( fabs(update_interval) < 1 || t0%TIMESTAMP(update_interval) == 0 )
+    {        
+        current_event = "PRECOMMIT";
 
-    if ( get_event(OE_PRECOMMIT) && ! update_solution() )
-    {
-        if ( failure_handling == OF_RETRY )
+        if ( get_event(OE_PRECOMMIT) && ! update_solution() )
         {
-            return t0;
+            if ( failure_handling == OF_RETRY )
+            {
+                return t0;
+            }
+            if ( failure_handling == OF_WARN )
+            {
+                warning("optimization failed during precommit event");
+            }
+            return failure_handling != OF_HALT ? 1 : 0;
         }
-        if ( failure_handling == OF_WARN )
-        {
-            warning("optimization failed during precommit event");
-        }
-        return failure_handling != OF_HALT ? 1 : 0;
     }
     return 1;
 }
 
 TIMESTAMP cvx::presync(TIMESTAMP t0)
 {
-    current_event = "PRESYNC";
-
-    if ( get_event(OE_PRESYNC) && ! update_solution() )
+    if ( fabs(update_interval) < 1 || t0%TIMESTAMP(update_interval) == 0 )
     {
-        if ( failure_handling == OF_RETRY )
+        current_event = "PRESYNC";
+
+        if ( get_event(OE_PRESYNC) && ! update_solution() )
         {
-            return t0;
+            if ( failure_handling == OF_RETRY )
+            {
+                return t0;
+            }
+            if ( failure_handling == OF_WARN )
+            {
+                warning("optimization failed during presync event");
+            }
+            return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
         }
-        if ( failure_handling == OF_WARN )
-        {
-            warning("optimization failed during presync event");
-        }
-        return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
     }
-    return TS_NEVER;
+    return fabs(update_interval) < 1 ? TS_NEVER : (TIMESTAMP)((TIMESTAMP(t0/update_interval)+1)*update_interval);
 }
 
 TIMESTAMP cvx::sync(TIMESTAMP t0)
 {
-    current_event = "SYNC";
-
-    if ( get_event(OE_SYNC) && ! update_solution() )
+    if ( fabs(update_interval) < 1 || t0%TIMESTAMP(update_interval) == 0 )
     {
-        if ( failure_handling == OF_RETRY )
+        current_event = "SYNC";
+
+        if ( get_event(OE_SYNC) && ! update_solution() )
         {
-            return t0;
+            if ( failure_handling == OF_RETRY )
+            {
+                return t0;
+            }
+            if ( failure_handling == OF_WARN )
+            {
+                warning("optimization failed during sync event");
+            }
+            return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
         }
-        if ( failure_handling == OF_WARN )
-        {
-            warning("optimization failed during sync event");
-        }
-        return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
     }
-    return TS_NEVER;
+    return fabs(update_interval) < 1 ? TS_NEVER : (TIMESTAMP)((TIMESTAMP(t0/update_interval)+1)*update_interval);
 }
 
 TIMESTAMP cvx::postsync(TIMESTAMP t0)
 {
-    current_event = "POSTSYNC";
-
-    if ( get_event(OE_POSTSYNC) && ! update_solution() )
+    if ( fabs(update_interval) < 1 || t0%TIMESTAMP(update_interval) == 0 )
     {
-        if ( failure_handling == OF_RETRY )
+        current_event = "POSTSYNC";
+
+        if ( get_event(OE_POSTSYNC) && ! update_solution() )
         {
-            return t0;
+            if ( failure_handling == OF_RETRY )
+            {
+                return t0;
+            }
+            if ( failure_handling == OF_WARN )
+            {
+                warning("optimization failed during postsync event");
+            }
+            return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
         }
-        if ( failure_handling == OF_WARN )
-        {
-            warning("optimization failed during postsync event");
-        }
-        return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
     }
-    return TS_NEVER;
+    return fabs(update_interval) < 1 ? TS_NEVER : (TIMESTAMP)((TIMESTAMP(t0/update_interval)+1)*update_interval);
 }
 
 TIMESTAMP cvx::commit(TIMESTAMP t0,TIMESTAMP t1)
 {
-    current_event = "COMMIT";
-
-    if ( get_event(OE_COMMIT) && ! update_solution() )
+    if ( fabs(update_interval) < 1 || t0%TIMESTAMP(update_interval) == 0 )
     {
-        if ( failure_handling == OF_RETRY )
+        current_event = "COMMIT";
+
+        if ( get_event(OE_COMMIT) && ! update_solution() )
         {
-            return t0;
+            if ( failure_handling == OF_RETRY )
+            {
+                return t0;
+            }
+            if ( failure_handling == OF_WARN )
+            {
+                warning("optimization failed during commit event");
+            }
+            return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
         }
-        if ( failure_handling == OF_WARN )
-        {
-            warning("optimization failed during commit event");
-        }
-        return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
     }
-    return TS_NEVER;
+    return fabs(update_interval) < 1 ? TS_NEVER : (TIMESTAMP)((TIMESTAMP(t0/update_interval)+1)*update_interval);
 }
 
 int cvx::finalize(void)
 {
-    current_event = "FINALIZE";
-
-    if ( get_event(OE_FINALIZE) && ! update_solution() )
+    if ( fabs(update_interval) < 1 || gl_globalclock%TIMESTAMP(update_interval) == 0 )
     {
-        if ( failure_handling == OF_RETRY )
+        current_event = "FINALIZE";
+
+        if ( get_event(OE_FINALIZE) && ! update_solution() )
         {
-            exception("unable to retry solution on finalize event");
+            if ( failure_handling == OF_RETRY )
+            {
+                exception("unable to retry solution on finalize event");
+            }
+            if ( failure_handling == OF_WARN )
+            {
+                warning("optimization failed during finalize event");
+            }
+            return failure_handling != OF_HALT ? 1 : 0;
         }
-        if ( failure_handling == OF_WARN )
-        {
-            warning("optimization failed during finalize event");
-        }
-        return failure_handling != OF_HALT ? 1 : 0;
     }
     return 1;
 }

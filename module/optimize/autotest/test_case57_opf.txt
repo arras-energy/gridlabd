@@ -4,7 +4,7 @@ Problem dumps starting at t=946684800 (1999-12-31 16:00:00 PST)
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 'D': [6.7, 7.6, 6.8, 4.1, 20.0, 4.9, 18.0, 21.0, 18.0, 0.0, 29.7, 0.0, 0.0, 12.0, 2.0, 7.1, 6.3, 0.0, 0.0, 14.0, 0.0, 0.0, 6.0, 0.0, 3.8, 1.6, 5.8, 3.6, 17.0, 4.6, 9.3, 0.0, 6.3, 0.0, 6.3, 0.0, 0.0, 2.3, 3.3, 27.2, 42.0, 43.0, 22.0, 10.5, 18.0, 377.0, 0.0, 5.0, 121.0, 150.0, 0.0, 75.0, 13.0, 0.0, 41.0, 3.0, 55.0]}
 Objective: minimize [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (57,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131c724a0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x1283524a0>
 dims: 58 equalities, 57 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
