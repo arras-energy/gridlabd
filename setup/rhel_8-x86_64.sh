@@ -1,18 +1,36 @@
 # Run the following commands
 #
-#   docker run -it -v $PWD:/usr/local/src/gridlabd redhat/ubi8 bash
-#   cd /usr/local/src/gridlabd
-#   ./setup.sh
+#   docker run -it redhat/ubi8 bash
+#   git clone https://github.com/arras-energy/gridlabd
+#   gridlabd/setup.sh
 #
-#set -x
-PYTHONVER=3.10.18
-PYTHONBIN=python${PYTHONVER%.*}
-LOGFILE=$PWD/setup.log
 
+# set -x # enable command echo
+
+# required versions
+PYTHONVER=3.10.18 
+M4VER=1.4.20
+AUTOCONFVER=2.72
+AUTOMAKEVER=1.18
+LIBTOOLVER=2.5.4
+OPENSSLVER=1.1.1w
+MBDTOOLSVER=1.0.1
+
+#
+# Setup variables
+#
+LOGFILE=$PWD/gridlabd-setup.log
+cd $(dirname $0)
+GRIDLABDIR=$(dirname $PWD)
+PYTHONBIN=python${PYTHONVER%.*}
+
+#
+# Setup functions
+#
 function log ()
 {
     if [ $# -eq 0 ]; then
-        cat >> $LOGFILE
+        cat | tee -a $LOGFILE | tr '\n' '\r' >/dev/stderr
     else
         echo "$(date): $*"
     fi
@@ -37,82 +55,107 @@ function warning ()
     echo "WARNING: $*" > /dev/stderr
 }
 
+function run ()
+{
+    echo "" 1>>$LOGFILE 2>&1
+    echo "RUN [$PWD]: $1" 1>>$LOGFILE 2>&1
+    $1 1>>$LOGFILE 2>&1
+    test $? -ne 0 -a ! -z "$2" && error 1 $2
+}
+
 rm -rf $LOGFILE
-log "Running $0 $*"
+log "Running $PWD/$(basename $0) $*"
 
 #
-# Check RedHat registration
+# Update yum
 #
-if ( yum update 1>>$LOGFILE 2>&1 ); then
-    notify "RedHat registration ok"
-else
-    notify "Attempting to register this RedHat system"
-    if [ ! -z "$REDHAT_USERNAME" -a ! -z "$REDHAT_PASSWORD" ]; then
-        ( subscription-manager register --username $REDHAT_USERNAME --password $REDHAT_PASSWORD 1>>$LOGFILE 2>&1 ) || error 1 "non-tty subscription-manager register failed"
-    elif [ -t 0 ] ; then
-        ( subscription-manager register ) || error 1 "tty subscription-manager register failed"
-    else
-        error 1 "you need to register this system (see https://www.redhat.com/wapps/ugc/register.html)"
-    fi
-fi    
+notify "Updating yum"
+run "yum update" "unable to update yum"
 
 #
 # Check C/C++ compiler
 #
-if ( c++ --version 1>>$LOGFILE 2>&1 ); then
+if ( c++ --version 1>/dev/null 2>&1 ); then
     notify "C/++ compilers ok"
 else
     notify "Installing gcc-c++"
-    yum install gcc gcc-c++ -y 1>>$LOGFILE 2>&1 || error 1 "gcc-c++ install failed"
+    run "yum install -y gcc gcc-c++" "gcc-c++ install failed"
 fi
 
 #
 # Check make
 #
-if ( make --version 1>>$LOGFILE 2>&1 ); then
+if ( make --version 1>/dev/null 2>&1 ); then
     notify "Build tool make ok"
 else
     notify "Installing make"
-    yum install make -y 1>>$LOGFILE 2>&1 || error 1 "make install failed"
+    run "yum install -y make" "make install failed"
 fi
 
 #
 # Install developer tools
 #
 notify "Updating developer tools"
-yum groupinstall 'Development Tools' -y 1>>$LOGFILE 2>&1
-yum install git perl -y 1>>$LOGFILE 2>&1
+run "yum groupinstall -y 'Development Tools'" 
+run "yum install -y git wget perl subversion xz cmake diffutils" "developer tools install failed"
+run "dnf install -y procps" "procps install failed"
 
 #
 # Install libraries
 #
 notify "Updating developer libraries"
-yum install zlib-devel -y 1>>$LOGFILE 2>&1 || error 1 "developer libraries install failed"
+run "yum install -y openssl-devel openssl-libs ncurses-devel libcurl-devel" "developer libraries install failed"
+run "dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm" "unable to install extra packages"
+run "yum install -y bzip2-devel libffi-devel zlib-devel sqlite-devel gdbm-devel" "developer libraries install failed"
+run "dnf install -y https://pkgs.sysadmins.ws/el8/base/x86_64/mdbtools-libs-0.9.3-3.el8.x86_64.rpm" "mdbtools install failed"
+
+#
+# OpenSSL
+#
+if [ ! -f /usr/local/lib64/libssl.so ]; then
+    notify "Installing OpenSSL $OPENSSLVER"
+    cd /usr/local/src
+    run "wget https://github.com/openssl/openssl/releases/download/OpenSSL_${OPENSSLVER//./_}/openssl-$OPENSSLVER.tar.gz" "unable to download openssl-$OPENSSLVER.tar.gz"
+    run "tar xvf openssl-$OPENSSLVER.tar.gz" "unable to extract openssl-$OPENSSLVER.tar.gz"
+    rm -rf openssl-$OPENSSLVER.tar.gz
+    cd openssl-$OPENSSLVER
+    run "./config" "unable to configure openssl-$OPENSSLVER"
+    run "make" "unable to make openssl-$OPENSSLVER"
+    run "make test" "test openssl-$OPENSSLVER failed"
+    run "make install" "unable to install openssl-$OPENSSLVER"
+    test -f /usr/local/lib64/libssl.so || error 1 "openssl install failed (/usr/local/lib64/libssl.so not found)"
+fi
+notify "OpenSSL $OPENSSLVER ok"
 
 #
 # Check Python version
 #
-cd /usr/local/src
-if ( $PYTHONBIN --version 1>>$LOGFILE 2>&1 ); then
+if ( $PYTHONBIN --version 1>/dev/null 2>&1 ); then
     notify "Python $PYTHONVER ok"
 else
     notify "Python $PYTHONVER is required"
-    if [ ! -d /usr/local/src/Python-$PYTHONVER ]; then
+    cd /usr/local/src
+    if [ ! -d Python-$PYTHONVER ]; then
         notify "Downloading Python $PYTHONVER source code"
-        (curl -s https://www.python.org/ftp/python/$PYTHONVER/Python-$PYTHONVER.tgz | tar xz) || error 1 "$PYTHONVER download failed"
+        (curl -s https://www.python.org/ftp/python/$PYTHONVER/Python-$PYTHONVER.tgz 2>$LOGFILE | tar xz) || error 1 "$PYTHONVER download failed"
     fi
     cd Python-$PYTHONVER
     if [ ! -f Makefile ]; then
         notify "Configuring Python $PYTHONVER build"
-        (./configure --with-system-ffi --with-computed-gotos --enable-loadable-sqlite-extensions --enable-optimizations --enable-shared 1>>$LOGFILE 2>&1 ) || error 1 "$PYTHONVER configure failed"
+        OPTIONS="--with-system-ffi --with-computed-gotos --enable-loadable-sqlite-extensions --enable-optimizations --enable-shared --with-openssl=/usr/include/openssl"
+        run "./configure $PYTHON_OPTIONS" "$PYTHONVER configure failed"
     fi
     if [ ! -x python -o ! -x python-config ]; then
         notify "Building Python $PYTHONVER system"
-        (make -j $(nproc) 1>>$LOGFILE 2>&1) || error 1 "$PYTHONVER make failed"
+        export CFLAGS="-I/usr/include/openssl -fPIC"
+        export LDFLAGS="-L/usr/local/lib64"
+        run "make -j $(nproc)" "$PYTHONVER make failed"
+        unset CFLAGS
+        unset LDFLAGS
     fi
     if [ ! -x /usr/local/bin/$PYTHONBIN ]; then
         notify "Installing Python $PYTHONVER"
-        (make altinstall 1>>$LOGFILE 2>&1) || error 1 "$PYTHONVER make altinstall failed"
+        run "make altinstall" "$PYTHONVER make altinstall failed"
     fi
     cd /usr/local/bin
     notify "Updating python links"
@@ -130,13 +173,13 @@ fi
 #
 # Check library path
 #
-if [ ! -d /etc/ld.so.conf.d ]; then
-    mkdir -p /etc/ld.so.conf.d
+if [ ! -d "/etc/ld.so.conf.d" ]; then
+    mkdir -p "/etc/ld.so.conf.d"
 fi
-if [ ! -f /etc/ld.so.conf.d/local.conf ]; then
+if [ ! -f "/etc/ld.so.conf.d/local.conf" ]; then
     notify "Updating system library paths"
-    echo /usr/local/lib > /etc/ld.so.conf.d/local.conf
-    ldconfig 1>>$LOGFILE 2>&1 || error 1 "ldconfig failed"
+    echo "/usr/local/lib" > "/etc/ld.so.conf.d/local.conf"
+    run "ldconfig" "ldconfig failed"
 fi
 
 #
@@ -144,7 +187,7 @@ fi
 #
 function checkver ()
 {
-    test "$($1 --version)" == "$($2 --version)" || warning "$1 is not linked to the correct version of $2"
+    test "$($1 --version 1>/dev/null 2>&1)" == "$($2 --version 1>/dev/null 2>&1)" || warning "$1 is not linked to the correct version of $2"
 }
 cd /usr/local/bin
 checkver python3 python3.10
@@ -153,69 +196,38 @@ checkver pip3 pip3.10
 checkver pip pip3
 
 #
-# Install m4
+# GNU autotools
 #
-M4VER=1.4.20
-if [ "$(m4 --version 2>/dev/null | sed -n '1p' | cut -f4 -d' ')" != "$M4VER" ]; then
-    notify "Upgrading m4 to $M4VER"
-    cd /usr/local/src
-    curl -s https://ftp.gnu.org/gnu/m4/m4-$M4VER.tar.gz | tar xz || error 1 "unable to download m4-$M4VER"
-    cd m4-$M4VER
-    ./configure 1>>$LOGFILE 2>&1 || error 1 "unable to configure m4-$M4VER"
-    make install 1>>$LOGFILE 2>&1 || error 1 "unable to make install m4-$M4VER"
-    notify "m4 upgraded to $M4VER"
-else
-    notify "m4-$M4VER ok"
+function gnubuild ()
+{
+    if [ "$($1 --version 2>/dev/null | sed -n '1p' | cut -f4 -d' ')" != "$2" ]; then
+        notify "Upgrading $1 to $2"
+        cd /usr/local/src
+        (curl -s https://ftp.gnu.org/gnu/$1/$1-$2.tar.gz 2>$LOGFILE | tar xz) || error 1 "unable to download $1-$2"
+        cd $1-$2
+        run "./configure" "unable to configure $1-$2"
+        run "make install" "unable to make install $1-$2"
+    fi    
+    notify "$1-$2 ok"
+}
+gnubuild m4 $M4VER
+gnubuild autoconf $AUTOCONFVER
+gnubuild automake $AUTOMAKEVER
+gnubuild libtool $LIBTOOLVER
+
+#
+# MDB tools
+#
+if [ "$(mdb-export --version 2>&1)" != "mdbtools v$MBDTOOLSVER" ]; then
+    notify "Installing mdbtools"
+    run "wget https://github.com/mdbtools/mdbtools/releases/download/v1.0.1/mdbtools-$MBDTOOLSVER.tar.gz" "unable to download mdbtools from github"
+    run "ta xzf mdbtools-$MBDTOOLSVER.tar.gz" "unable to extract mdbtools-$MDBTOOLSVER"
+    cd mdbtools-$MBDTOOLSVER
+    run "./configure" "mdbtools configure failed"
+    run "make" "mdbtools make failed"
+    run "make install" "mdbtool install failed"
 fi
-
-
-#
-# Install autoconf
-#
-AUTOCONFVER=2.72
-if [ "$(autoconf --version 2>/dev/null | sed -n '1p' | cut -f4 -d' ')" != "$AUTOCONFVER" ]; then
-    notify "Upgrading autoconf to $AUTOCONFVER"
-    cd /usr/local/src
-    curl -s https://ftp.gnu.org/gnu/autoconf/autoconf-$AUTOCONFVER.tar.gz | tar xz || error 1 "unable to download autoconf-$AUTOCONFVER source"
-    cd autoconf-$AUTOCONFVER
-    ./configure  1>>$LOGFILE 2>&1 || error 1 "unable to configure autoconf-$AUTOCONFVER"
-    make install 1>>$LOGFILE 2>&1 || error 1 "unable to make install autoconf-$AUTOCONFVER"
-    notify "autoconf upgraded to $AUTOCONFVER"
-else
-    notify "autoconf-$AUTOCONFVER ok"
-fi    
-
-#
-# Install automake
-#
-AUTOMAKEVER=1.18
-if [ "$(automake --version 2>/dev/null | sed -n '1p' | cut -f4 -d' ')" != "$AUTOMAKEVER" ]; then
-    notify "Upgrading automake to $AUTOMAKEVER"
-    cd /usr/local/src
-    curl -s https://ftp.gnu.org/gnu/automake/automake-$AUTOMAKEVER.tar.gz | tar xz || error 1 "unable to download automake-$AUTOMAKEVER source"
-    cd automake-$AUTOMAKEVER
-    ./configure  1>>$LOGFILE 2>&1 || error 1 "unable to configure automake-$AUTOMAKEVER"
-    make install 1>>$LOGFILE 2>&1 || error 1 "unable to make install automake-$AUTOMAKEVER"
-    notify "automake upgraded to $AUTOMAKEVER"
-else
-    notify "automake-$AUTOMAKEVER ok"
-fi    
-
-#
-# Install libtool
-#
-LIBTOOLVER=2.5.4
-if [ "$(libtool --version 2>/dev/null | sed -n '1p' | cut -f4 -d' ')" != "$LIBTOOLVER" ]; then
-    notify "Upgrading libtool to $LIBTOOLVER"
-    cd /usr/local/src
-    curl -s https://ftp.gnu.org/gnu/libtool/libtool-$LIBTOOLVER.tar.gz | tar xz || error 1 "unable to download libtool-$LIBTOOLVER source"
-    cd libtool-$LIBTOOLVER
-    ./configure  1>>$LOGFILE 2>&1 || error 1 "unable to configure libtool-$LIBTOOLVER"
-    make install 1>>$LOGFILE 2>&1 || error 1 "unable to make install libtool-$LIBTOOLVER"
-    notify "libtool upgraded to $LIBTOOLVER"
-else
-    notify "libtool-$LIBTOOLVER ok"
-fi    
+notify "$(mdb-export --version) ok"
 
 #
 # Set up gridlabd's venv
@@ -228,6 +240,6 @@ fi
 #
 # Done
 #
-notify "System ready to build gridlabd. Run './build.sh --system --parallel' next."
+notify "System ready to build gridlabd. Run 'cd $GRIDLABDIR; ./build.sh --system --parallel' next."
 
 exit 0

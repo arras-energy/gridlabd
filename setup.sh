@@ -2,7 +2,7 @@
 # 
 # Note: double hash comments indicates help documentation
 #
-## Syntax: setup.sh [-v|--verbose] [--local] [ORG/REPO/BRANCH]
+## Syntax: setup.sh [-v|--verbose] [--local|--remote|ORG/REPO/BRANCH]
 ## 
 ## Setup the local system so you can run the `build.sh` script. When run
 ## standalone (non-local) this will download the setup procedure from the
@@ -11,6 +11,8 @@
 ## Options:
 ## 
 ##   --local        Use the local files only (no downloads)
+##
+##   --remote       Use default origin (download from array-energy/gridlabd/master)
 ## 
 ##   -v|--verbose   Enable verbose command echo output
 ## 
@@ -22,10 +24,10 @@
 ## 
 ##   GRIDLABD_ORIGIN   Specifies the ORG/USER/BRANCH from which the downloads
 ##                     should obtained. Default is `arras-energy/gridlabd/master`
-## 
+##
 STDOUT=/dev/stdout
 STDERR=/dev/stderr
-DEFAULT_ORIGIN="https://github.com/arras-energy/gridlabd/master"
+DEFAULT_ORIGIN="https://raw.githubusercontent.com/arras-energy/gridlabd/master"
 error () { echo "ERROR [setup.sh]: $*" > $STDERR ; exit 1; }
 if [ -d $(dirname $0)/.git ]; then
 	export GRIDLABD_ORIGIN="."
@@ -61,7 +63,8 @@ while [ $# -gt 0 ]; do
 done
 export SYSTEMNAME=$(uname -s)
 if [ "$GRIDLABD_ORIGIN" = "." ]; then
-	sh $(dirname $0)/setup/$SYSTEMNAME.sh 1>$STDOUT 2>$STDERR || error "setup failed"
+	cd $(dirname $0) 
+	sh setup/$SYSTEMNAME.sh 1>$STDOUT 2>$STDERR || error "setup failed"
 else
 	curl --version 1>/dev/null 2>&1 || error "you must install curl first"
 	test "$(echo $GRIDLABD_ORIGIN | cut -c-8)" != "https://" && GRIDLABD_ORIGIN=https://raw.githubusercontent.com/$GRIDLABD_ORIGIN
