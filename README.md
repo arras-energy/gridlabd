@@ -147,7 +147,7 @@ On most systems, the process is as follows:
 git clone https://github.com/arras-energy/gridlabd
 cd gridlabd
 ./setup.sh --local
-./build.sh --system --paraelle --validate
+./build.sh --system --parallel --validate
 ~~~
 
 If you want to clone an alternate repository, use the following `git` command instead:
