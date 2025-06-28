@@ -110,24 +110,6 @@ run "yum install -y bzip2-devel libffi-devel zlib-devel sqlite-devel gdbm-devel"
 run "dnf install -y https://pkgs.sysadmins.ws/el8/base/x86_64/mdbtools-libs-0.9.3-3.el8.x86_64.rpm" "mdbtools install failed"
 
 #
-# OpenSSL
-#
-# if [ ! -f /usr/local/lib64/libssl.so ]; then
-#     notify "Installing OpenSSL $OPENSSLVER"
-#     cd /usr/local/src
-#     run "wget https://github.com/openssl/openssl/releases/download/OpenSSL_${OPENSSLVER//./_}/openssl-$OPENSSLVER.tar.gz" "unable to download openssl-$OPENSSLVER.tar.gz"
-#     run "tar xvf openssl-$OPENSSLVER.tar.gz" "unable to extract openssl-$OPENSSLVER.tar.gz"
-#     rm -rf openssl-$OPENSSLVER.tar.gz
-#     cd openssl-$OPENSSLVER
-#     run "./config" "unable to configure openssl-$OPENSSLVER"
-#     run "make" "unable to make openssl-$OPENSSLVER"
-#     # run "make test" "test openssl-$OPENSSLVER failed"
-#     run "make install" "unable to install openssl-$OPENSSLVER"
-#     test -f /usr/local/lib64/libssl.so || error 1 "openssl install failed (/usr/local/lib64/libssl.so not found)"
-# fi
-# notify "OpenSSL $OPENSSLVER ok"
-
-#
 # Check Python version
 #
 if ( $PYTHONBIN --version 1>/dev/null 2>&1 ); then
@@ -148,7 +130,6 @@ else
     if [ ! -x python -o ! -x python-config ]; then
         notify "Building Python $PYTHONVER system"
         export CFLAGS="-I/usr/include/openssl -fPIC"
-        export LDFLAGS="-L/usr/local/lib64"
         run "make -j $(nproc)" "$PYTHONVER make failed"
         unset CFLAGS
         unset LDFLAGS
