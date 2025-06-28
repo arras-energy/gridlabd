@@ -14,7 +14,7 @@ AUTOCONFVER=2.72
 AUTOMAKEVER=1.18
 LIBTOOLVER=2.5.4
 OPENSSLVER=1.1.1w
-MBDTOOLSVER=1.0.1
+MDBTOOLSVER=1.0.1
 
 #
 # Setup variables
@@ -30,15 +30,15 @@ PYTHONBIN=python${PYTHONVER%.*}
 function log ()
 {
     if [ $# -eq 0 ]; then
-        cat | tee -a $LOGFILE | tr '\n' '\r' >/dev/stderr
+        cat >> $LOGFILE
     else
-        echo "$(date): $*"
+        echo "$(date): $*" >>$LOGFILE
     fi
 }
 
 function notify ()
 {
-    echo "$(date): $*" | tee -a $LOGFILE > /dev/stdout
+    echo "$(date): $*" | tee -a $LOGFILE > /dev/stderr
 }
 
 function error ()
@@ -52,7 +52,7 @@ function error ()
 
 function warning ()
 {
-    echo "WARNING: $*" > /dev/stderr
+    echo "WARNING: $*" | tee -a $LOGFILE > /dev/stderr
 }
 
 function run ()
@@ -64,13 +64,13 @@ function run ()
 }
 
 rm -rf $LOGFILE
-log "Running $PWD/$(basename $0) $*"
+notify "Running $PWD/$(basename $0) $*"
 
 #
 # Update yum
 #
 notify "Updating yum"
-run "yum update" "unable to update yum"
+run "yum update -y" "unable to update yum"
 
 #
 # Check C/C++ compiler
@@ -112,20 +112,20 @@ run "dnf install -y https://pkgs.sysadmins.ws/el8/base/x86_64/mdbtools-libs-0.9.
 #
 # OpenSSL
 #
-if [ ! -f /usr/local/lib64/libssl.so ]; then
-    notify "Installing OpenSSL $OPENSSLVER"
-    cd /usr/local/src
-    run "wget https://github.com/openssl/openssl/releases/download/OpenSSL_${OPENSSLVER//./_}/openssl-$OPENSSLVER.tar.gz" "unable to download openssl-$OPENSSLVER.tar.gz"
-    run "tar xvf openssl-$OPENSSLVER.tar.gz" "unable to extract openssl-$OPENSSLVER.tar.gz"
-    rm -rf openssl-$OPENSSLVER.tar.gz
-    cd openssl-$OPENSSLVER
-    run "./config" "unable to configure openssl-$OPENSSLVER"
-    run "make" "unable to make openssl-$OPENSSLVER"
-    run "make test" "test openssl-$OPENSSLVER failed"
-    run "make install" "unable to install openssl-$OPENSSLVER"
-    test -f /usr/local/lib64/libssl.so || error 1 "openssl install failed (/usr/local/lib64/libssl.so not found)"
-fi
-notify "OpenSSL $OPENSSLVER ok"
+# if [ ! -f /usr/local/lib64/libssl.so ]; then
+#     notify "Installing OpenSSL $OPENSSLVER"
+#     cd /usr/local/src
+#     run "wget https://github.com/openssl/openssl/releases/download/OpenSSL_${OPENSSLVER//./_}/openssl-$OPENSSLVER.tar.gz" "unable to download openssl-$OPENSSLVER.tar.gz"
+#     run "tar xvf openssl-$OPENSSLVER.tar.gz" "unable to extract openssl-$OPENSSLVER.tar.gz"
+#     rm -rf openssl-$OPENSSLVER.tar.gz
+#     cd openssl-$OPENSSLVER
+#     run "./config" "unable to configure openssl-$OPENSSLVER"
+#     run "make" "unable to make openssl-$OPENSSLVER"
+#     # run "make test" "test openssl-$OPENSSLVER failed"
+#     run "make install" "unable to install openssl-$OPENSSLVER"
+#     test -f /usr/local/lib64/libssl.so || error 1 "openssl install failed (/usr/local/lib64/libssl.so not found)"
+# fi
+# notify "OpenSSL $OPENSSLVER ok"
 
 #
 # Check Python version
@@ -137,7 +137,7 @@ else
     cd /usr/local/src
     if [ ! -d Python-$PYTHONVER ]; then
         notify "Downloading Python $PYTHONVER source code"
-        (curl -s https://www.python.org/ftp/python/$PYTHONVER/Python-$PYTHONVER.tgz 2>$LOGFILE | tar xz) || error 1 "$PYTHONVER download failed"
+        (curl -s https://www.python.org/ftp/python/$PYTHONVER/Python-$PYTHONVER.tgz | tar xz) 2>>$LOGFILE || error 1 "$PYTHONVER download failed"
     fi
     cd Python-$PYTHONVER
     if [ ! -f Makefile ]; then
@@ -178,7 +178,7 @@ if [ ! -d "/etc/ld.so.conf.d" ]; then
 fi
 if [ ! -f "/etc/ld.so.conf.d/local.conf" ]; then
     notify "Updating system library paths"
-    echo "/usr/local/lib" > "/etc/ld.so.conf.d/local.conf"
+    echo "/usr/local/lib64" > "/etc/ld.so.conf.d/local.conf"
     run "ldconfig" "ldconfig failed"
 fi
 
@@ -203,7 +203,7 @@ function gnubuild ()
     if [ "$($1 --version 2>/dev/null | sed -n '1p' | cut -f4 -d' ')" != "$2" ]; then
         notify "Upgrading $1 to $2"
         cd /usr/local/src
-        (curl -s https://ftp.gnu.org/gnu/$1/$1-$2.tar.gz 2>$LOGFILE | tar xz) || error 1 "unable to download $1-$2"
+        (curl -s https://ftp.gnu.org/gnu/$1/$1-$2.tar.gz | tar xz) 2>>$LOGFILE || error 1 "unable to download $1-$2"
         cd $1-$2
         run "./configure" "unable to configure $1-$2"
         run "make install" "unable to make install $1-$2"
@@ -218,11 +218,11 @@ gnubuild libtool $LIBTOOLVER
 #
 # MDB tools
 #
-if [ "$(mdb-export --version 2>&1)" != "mdbtools v$MBDTOOLSVER" ]; then
+if [ "$(mdb-export --version 2>&1)" != "mdbtools v$MDBTOOLSVER" ]; then
     notify "Installing mdbtools"
-    run "wget https://github.com/mdbtools/mdbtools/releases/download/v1.0.1/mdbtools-$MBDTOOLSVER.tar.gz" "unable to download mdbtools from github"
-    run "ta xzf mdbtools-$MBDTOOLSVER.tar.gz" "unable to extract mdbtools-$MDBTOOLSVER"
-    cd mdbtools-$MBDTOOLSVER
+    run "wget https://github.com/mdbtools/mdbtools/releases/download/v1.0.1/mdbtools-$MDBTOOLSVER.tar.gz" "unable to download mdbtools from github"
+    run "tar xzf mdbtools-$MDBTOOLSVER.tar.gz" "unable to extract mdbtools-$MDBTOOLSVER"
+    cd mdbtools-$MDBTOOLSVER
     run "./configure" "mdbtools configure failed"
     run "make" "mdbtools make failed"
     run "make install" "mdbtool install failed"
