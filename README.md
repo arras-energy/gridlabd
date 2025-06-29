@@ -144,16 +144,16 @@ The prerequesites for building Arras Energy from source include `git` and `curl`
 On most systems, the process is as follows:
 
 ~~~
-git clone https://code.arras.energy/ [-b BRANCH] gridlabd
+git clone https://github.com/arras-energy/gridlabd
 cd gridlabd
 ./setup.sh --local
-./build.sh --system --validate
+./build.sh --system --parallel --validate
 ~~~
 
 If you want to clone an alternate repository, use the following `git` command instead:
 
 ~~~
-git clone https://github.com/ORG/REPO [-b BRANCH] gridlabd
+git clone https://github.com/ORG/REPO gridlabd
 ~~~
 
 If you do not specify the `--local` then by default the `setup.sh` source will match the `git` repository origin and branch if any. Otherwise the default source will be `arras-energy/gridlabd/master`. If you want to setup from a different origin, use the command `export GRIDLABD_ORIGIN=ORG/REPO/BRANCH` to specify an alternate source for `setup.sh`.  The `build.sh` will also match the current `git` repository.
