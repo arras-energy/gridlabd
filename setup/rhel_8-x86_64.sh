@@ -108,13 +108,12 @@ run "yum install -y openssl-devel openssl-libs ncurses-devel libcurl-devel" "dev
 run "dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm" "unable to install extra packages"
 run "yum install -y bzip2-devel libffi-devel zlib-devel sqlite-devel gdbm-devel" "developer libraries install failed"
 run "dnf install -y https://pkgs.sysadmins.ws/el8/base/x86_64/mdbtools-libs-0.9.3-3.el8.x86_64.rpm" "mdbtools install failed"
+# export CFLAGS="$CFLAGS -I/usr/include/openssl"
 
 #
 # Check Python version
 #
-if ( $PYTHONBIN --version 1>/dev/null 2>&1 ); then
-    notify "Python $PYTHONVER ok"
-else
+if [ ! $($PYTHONBIN --version 2>/dev/null) != "Python $PYTHONVER" ]; then
     notify "Python $PYTHONVER is required"
     cd /usr/local/src
     if [ ! -d Python-$PYTHONVER ]; then
@@ -129,10 +128,8 @@ else
     fi
     if [ ! -x python -o ! -x python-config ]; then
         notify "Building Python $PYTHONVER system"
-        export CFLAGS="-I/usr/include/openssl -fPIC"
+        export CFLAGS="$CFLAGS -fPIC"
         run "make -j $(nproc)" "$PYTHONVER make failed"
-        unset CFLAGS
-        unset LDFLAGS
     fi
     if [ ! -x /usr/local/bin/$PYTHONBIN ]; then
         notify "Installing Python $PYTHONVER"
@@ -148,8 +145,8 @@ else
     test -x python || ln -s python3 python
     test -x python-config || ln -s python3-config python-config
     test -x pydoc || ln -sf pydoc3 pydoc
-    notify "Python $PYTHONVER installed ok"
 fi
+notify "Python $PYTHONVER ok"
 
 #
 # Check library path
