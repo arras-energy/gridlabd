@@ -1003,7 +1003,24 @@ void cvx::add_data_object(DATA *item, const char *objectname, const char *propna
 
 void cvx::add_data_global(DATA *item, const char *propname)
 {
-    gl_warning("TODO: data item for global '%s'",propname);
+    gld_global data(propname);
+    if ( ! data.is_valid() )
+    {
+        exception("data item '%s' is not a known global variable",propname);
+    }
+    if ( data.get_property()->ptype != PT_double )
+    {
+        exception("global variable '%s' is not a real number",propname);
+    }
+    REFERENCE *ref = new REFERENCE;
+    if ( ref == NULL )
+    {
+        exception("memory allocation error");
+    }
+    ref->ptr = (double*)(data.get_property()->addr);
+    ref->next = item->data;
+    item->data = ref;
+    PyList_Append(item->list,PyFloat_FromDouble(*(ref->ptr)));
 }
 
 //
