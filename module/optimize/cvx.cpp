@@ -1130,61 +1130,76 @@ bool cvx::add_variables(struct s_problem &problem, const char *spec)
     }
 }
 
+void cvx::add_primal(VARIABLE *item, gld_property &data)
+{
+    REFERENCE *ref = new REFERENCE;
+    if ( ref == NULL )
+    {
+        exception("memory allocation error");
+    }
+    ref->ptr = (double*)data.get_addr();
+    ref->next = item->primal;
+    item->primal = ref;
+}
+
+void cvx::add_dual(VARIABLE *item, gld_property &data)
+{
+    REFERENCE *ref = new REFERENCE;
+    if ( ref == NULL )
+    {
+        exception("memory allocation error");
+    }
+    ref->ptr = (double*)data.get_addr();
+    ref->next = item->dual;
+    item->dual = ref;
+}
+
+void cvx::add_variable(VARIABLE *item, OBJECT *obj, const char *primalname,const char *dualname, const char *refname)
+{
+    gld_property data(obj,primalname);
+    if ( ! data.is_valid() )
+    {
+        exception("primal variable '%s' is not a known property of '%s'",primalname,refname);
+    }
+    if ( ! data.is_double() )
+    {
+        exception("primal variable '%s.%s' is not a real number",refname,primalname);
+    }
+    add_primal(item,data);
+    
+    if ( strcmp(dualname,"") != 0 )
+    {
+        gld_property data(obj,dualname);
+        if ( ! data.is_valid() )
+        {
+            exception("dual variable '%s' is not a known property of '%s'",dualname,refname);
+        }
+        if ( ! data.is_double() )
+        {
+            exception("dual variable '%s.%s' is not a real number",refname,dualname);
+        }
+        add_dual(item,data);
+    }
+    else
+    {
+        item->dual = NULL;
+    }
+    item->count++;
+}
+
 void cvx::add_variable_class(VARIABLE *item, const char *classname, const char *primalname, const char *dualname)
 {
+    unsigned int count = 0;
     CLASS *oclass = gl_class_get_by_name(classname,NULL);
-    for ( gld_object *obj = gld_object::get_first() ; obj != NULL ; obj = obj->get_next() )
+    for ( OBJECT *obj = gl_object_get_first() ; obj != NULL ; obj = obj->next )
     {
-        if ( (CLASS*)(obj->get_oclass()) == oclass )
+        if ( obj->oclass == oclass )
         {
-            gld_property primal_data(obj,primalname);
-            if ( ! primal_data.is_valid() )
-            {
-                exception("primal variable '%s' is not a known property of class '%s'",primalname,classname);
-            }
-            if ( ! primal_data.is_double() )
-            {
-                exception("primal variable '%s.%s' is not a real number",classname,primalname);
-            }
-            
-            REFERENCE *primal = new REFERENCE;
-            if ( primal == NULL )
-            {
-                exception("memory allocation error");
-            }
-            primal->ptr = (double*)primal_data.get_addr();
-            primal->next = item->primal;
-            item->primal = primal;
-
-            if ( strcmp(dualname,"") != 0 )
-            {
-                gld_property dual_data(obj,dualname);
-                if ( ! dual_data.is_valid() )
-                {
-                    exception("dual variable '%s' is not a known property of class '%s'",dualname,classname);
-                }
-                if ( ! dual_data.is_double() )
-                {
-                    exception("dual variable '%s.%s' is not a real number",classname,dualname);
-                }
-
-                REFERENCE *dual = new REFERENCE;
-                if ( dual == NULL )
-                {
-                    exception("memory allocation error");
-                }
-                dual->ptr = (double*)dual_data.get_addr();
-                dual->next = item->dual;
-                item->dual = dual;
-            }
-            else
-            {
-                item->dual = NULL;
-            }
-            item->count++;
+            add_variable(item,obj,primalname,dualname,classname);
+            count++;
         }
     }
-    if ( item->count == 0 )
+    if ( count == 0 )
     {
         warning("class '%s' has no objects",classname);
     }
@@ -1197,8 +1212,7 @@ void cvx::add_variable_group(VARIABLE *item, const char *groupname, const char *
     {
         if ( strcmp(obj->groupid,groupname) == 0 )
         {
-            // TODO: link property to list
-            gl_warning("TODO: item %d group '%s' object '%s' primal '%s' dual '%s'",count,groupname,get_object(obj)->get_name(),primalname,dualname);
+            add_variable(item,obj,primalname,dualname,groupname);
             count++;
         }
     }
@@ -1210,11 +1224,13 @@ void cvx::add_variable_group(VARIABLE *item, const char *groupname, const char *
 
 void cvx::add_variable_object(VARIABLE *item, const char *objectname, const char *primalname, const char *dualname)
 {
-    gl_warning("TODO: object '%s' primal '%s' dual '%s'",objectname,primalname,dualname);
+    OBJECT *obj = (OBJECT*)get_object(objectname);
+    add_variable(item,obj,primalname,dualname,objectname);
 }
 
 void cvx::add_variable_global(VARIABLE *item, const char *primalname, const char *dualname)
 {
+    add_variable(item,NULL,primalname,dualname,"global");
     gl_warning("TODO: global primal '%s' dual '%s'",primalname,dualname);
 }
 
