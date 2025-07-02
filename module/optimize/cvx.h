@@ -148,6 +148,9 @@ private: // private methods
     void add_variable_group(VARIABLE *item, const char *groupname, const char *primalname, const char *dualname);
     void add_variable_object(VARIABLE *item, const char *objectname, const char *primalname, const char *dualname);
     void add_variable_global(VARIABLE *item, const char *primalname, const char *dualname);
+    void add_variable(VARIABLE *item, OBJECT *obj,const char *primalname,const char *dualname, const char *refname);
+    void add_primal(VARIABLE *item, gld_property &data);
+    void add_dual(VARIABLE *item, gld_property &data);
     bool add_constraints(struct s_problem &problem, const char *value);
     bool set_objective(struct s_problem &problem, const char *value);
     bool update_status(void);
