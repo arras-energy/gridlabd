@@ -113,7 +113,7 @@ run "dnf install -y https://pkgs.sysadmins.ws/el8/base/x86_64/mdbtools-libs-0.9.
 #
 # Check Python version
 #
-if [ ! $($PYTHONBIN --version 2>/dev/null) != "Python $PYTHONVER" ]; then
+if [ "$($PYTHONBIN --version 2>/dev/null)" != "Python $PYTHONVER" ]; then
     notify "Python $PYTHONVER is required"
     cd /usr/local/src
     if [ ! -d Python-$PYTHONVER ]; then
