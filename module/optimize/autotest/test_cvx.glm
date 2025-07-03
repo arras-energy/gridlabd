@@ -7,12 +7,12 @@ clock
 {
     timezone America/Seattle;
     starttime "2020-01-01 00:00:00 PST";
-    stoptime "2020-01-02 00:00:00 PST";
+    stoptime "2020-03-01 00:00:00 PST";
 }
 
 module optimize
 {
-    cvx_failure_handling WARN;
+    cvx_failure_handling IGNORE;
     cvx_problemdump "test_cvx.txt";
 }
 
@@ -26,7 +26,6 @@ class test
     double lambda;
 }
 
-module pypower;
 module tape
 {
     csv_header_type NAME;
@@ -107,6 +106,8 @@ object cvx
     variables "y=test:y";
     objective "Minimize(sum_squares(A@y-b))";
     constraints "y >= 1";
+    // check that optimal solution values match objective
+    postsolve "assert __cvx__['problem-y-dpp']['result']['status'] != 'OPTIMAL' or np.abs(sum_squares(A@y-b).value-__cvx__['problem-y-dpp']['value']) <= 1e-6, 'incorrect result'";
 }
 
 #set savefile=${modelname/.glm/.json}
