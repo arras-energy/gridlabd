@@ -26,7 +26,6 @@ class test
     double lambda;
 }
 
-module pypower;
 module tape
 {
     csv_header_type NAME;
