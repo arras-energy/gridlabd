@@ -1512,8 +1512,23 @@ bool cvx::update_solution(void)
         {
             PyRun_FormatString(on_exception);
         }
-        status = SS_INVALID;
-        exception("problem solve failed");
+        status = SS_FAILED;
+        switch (failure_handling)
+        {
+        case OF_HALT:
+            error("problem failed");
+            break;
+        case OF_WARN:
+            warning("problem failed");
+            break;
+        case OF_IGNORE:
+            verbose("problem failed");
+            break;
+        default:
+            status = SS_ERROR;
+            exception("invalid handling (failure_handling=%ld) for %s problem",failure_handling,this->value>0?"infeasible":"unbounded");
+            break;
+        }
     }
 
     // dump results
@@ -1580,7 +1595,18 @@ bool cvx::update_solution(void)
 
         // TODO: replace this with a direct call to value.tolist()
         char buffer[65536];
-        int len = snprintf(buffer,sizeof(buffer)-1,"__cvx__['%s']['result'] = {",optname);
+        char *status_string[] = {
+            "INIT",
+            "READY",
+            "OPTIMAL",
+            "INACCURATE",
+            "INFEASIBLE",
+            "UNBOUNDED",
+            "INVALID",
+            "ERROR",
+            "FAILED",
+        };
+        int len = snprintf(buffer,sizeof(buffer)-1,"__cvx__['%s']['result'] = {'status':'%s',",optname,status_string[status]);
         for ( VARIABLE *item = problem.variables ; item != NULL ; item = item->next )
         {
             len += snprintf(buffer+len,sizeof(buffer)-len-1,"'%s':%s.value.tolist() if not %s.value is None else [],",
