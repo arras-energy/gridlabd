@@ -7,7 +7,7 @@ clock
 {
   timezone America/Seattle;
   starttime "2020-01-01 00:00:00 PST";
-  stoptime "2020-01-02 00:00:00 PST";
+  stoptime "2021-01-01 00:00:00 PST";
 }
 
 module optimize
@@ -64,17 +64,18 @@ object cvx
   variables "x=output:x";
   
   presolve """
-    s0 = np.random.randn(A.shape[0]) # make the problem non-trival
-    lamb0 = np.maximum(-s0,0)
-    s0 = np.maximum(s0,0)
-    x0 = np.random.randn(A.shape[1])
+    if not 'x0' in dir(): # make the problem non-trival
+      s0 = np.random.randn(A.shape[0]) 
+      lamb0 = np.maximum(-s0,0)
+      s0 = np.maximum(s0,0)
+      x0 = np.random.randn(A.shape[1])
     b = A @ x0 + s0
     c = -A.T @ lamb0
   """;
   objective "Minimize(c.T@x)";
   constraints "A@x<=b";
   postsolve """
-    print((c.T@x).value,__cvx__['linear-program']['value'],file=sys.stderr)
+    assert np.abs(((c.T@x).value-__cvx__['linear-program']['value']))<1e-6, 'result is incorrect'
   """;
 }
 

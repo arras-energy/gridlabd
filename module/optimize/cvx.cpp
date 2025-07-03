@@ -1413,12 +1413,32 @@ bool cvx::update_solution(void)
             {
                 verbose("DCP problem data changed (problem.enable_dpp=false for item->name %s --> %s)\n",item->name,dataref);
                 PyDict_SetItemString(probdata,item->name,item->list);
+                if ( PyRun_FormatString(
+                    "global %s; "
+                    "%s = np.reshape(np.array(%s),(-1,%d));"
+                    "# DCP data update",
+                    item->name,
+                    item->name, item->name, item->count) == -1 )
+                {
+                    status = SS_ERROR;
+                    exception("unable to update data '%s'",item->name);
+                }
             }
         }
         else if ( ! problem.enable_dpp )
         {
             verbose("DCP problem data created (problem.enable_dpp=false for item->name %s --> %s)\n",item->name,dataref);
             PyDict_SetItemString(probdata,item->name,item->list);
+            if ( PyRun_FormatString(
+                "global %s; "
+                "%s = np.reshape(np.array(%s),(-1,%d));"
+                "# DCP data create",
+                item->name,
+                item->name, item->name, item->count) == -1 )
+            {
+                status = SS_ERROR;
+                exception("unable to create data '%s'",item->name);
+            }
         }
         else
         {
@@ -1437,7 +1457,7 @@ bool cvx::update_solution(void)
         for ( VARIABLE *item = problem.variables ; item != NULL ; item = item->next )
         {
             if ( PyRun_FormatString(
-                "%s = Variable(%ld,name='%s')",
+                "%s = Variable((%ld,1),name='%s')",
                 item->name,item->count,item->name
                 ) == -1 )
             {
@@ -1597,7 +1617,7 @@ bool cvx::update_solution(void)
 
         // TODO: replace this with a direct call to value.tolist()
         char buffer[65536];
-        char *status_string[] = {
+        const char *status_string[] = {
             "INIT",
             "READY",
             "OPTIMAL",
