@@ -855,6 +855,7 @@ bool cvx::add_data(struct s_problem &problem, const char *spec)
         }
         item->data = NULL;
         item->list = PyList_New(0);
+        item->count = 0;
         if ( item->list == NULL )
         {
             exception("memory allocation error");
@@ -894,6 +895,7 @@ bool cvx::add_data(struct s_problem &problem, const char *spec)
             {
                 exception("invalid data spec '%s'",varspec);
             }
+            item->count++;
         }
 
         // publish to globals
@@ -1357,7 +1359,7 @@ bool cvx::update_solution(void)
                 if ( newprob )
                 {
                     verbose("new problem requires creation of CVX objects");
-                    if ( PyRun_FormatString("%s=np.array(%s)",item->name,item->name) == -1 )
+                    if ( PyRun_FormatString("%s=np.reshape(np.array(%s),(-1,%d))",item->name,item->name,item->count) == -1 )
                     {
                         status = SS_ERROR;
                         exception("unable to convert %s to a numpy array",item->name);
@@ -1393,10 +1395,10 @@ bool cvx::update_solution(void)
                     verbose("DPP parameter '%s' update",item->name);
                     if ( PyRun_FormatString(
                         "global %s; "
-                        "%s.value = %s = np.array(%s);"
+                        "%s.value = %s = np.reshape(np.array(%s),(-1,%d));"
                         "# DPP parameter update",
                         item->name,
-                        dataref, item->name, item->name) == -1 )
+                        dataref, item->name, item->name, item->count) == -1 )
                     {
                         status = SS_ERROR;
                         exception("unable to update parameter '%s'",item->name);

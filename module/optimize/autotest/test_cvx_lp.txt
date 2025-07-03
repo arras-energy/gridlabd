@@ -1,0 +1,501 @@
+Problem dumps starting at t=1577865600 (2020-01-01 00:00:00 PST)
+*** Problem 'linear-program' at t=1577865600 (2020-01-01 00:00:00 PST) ***
+
+Data: {'A': [[-1.6388916215967362, 0.6705015359086123], [0.9587841339041279, -0.7725777305164613], [-0.3403199899051256, 0.14162185789405543]]}
+Objective: minimize -A.T @ [0.         1.91977107 0.12558353] @ x
+Contraints: [Inequality(Expression(AFFINE, UNKNOWN, (3,)))]
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x1329dda50>
+dims: 0 equalities, 3 inequalities, 0 exponential cones, 
+SOC constraints: [], PSD constraints: [],
+ 3d power cones [].
+c: [-1.79790746  1.46538701]
+A:   (0, 0)	-1.6388916215967362
+  (1, 0)	0.9587841339041279
+  (2, 0)	-0.3403199899051256
+  (0, 1)	0.6705015359086123
+  (1, 1)	-0.7725777305164613
+  (2, 1)	0.14162185789405543
+b: [-0.77850029  1.77721548 -0.40694726]
+Problem solved: objective value is -3.36074
+Result: {'x': [0.4932077103333708, -1.688290649671487]} 
+
+*** Problem 'linear-program' at t=1577869200 (2020-01-01 01:00:00 PST) ***
+
+Data: {'A': [[0.9676201928841065, 1.790568688193986], [0.3755637349465033, -0.06711014644258459], [-1.239135749254168, 0.7250081594342902]]}
+Objective: minimize -A.T @ [0.         1.91977107 0.12558353] @ x
+Contraints: [Inequality(Expression(AFFINE, UNKNOWN, (3,)))]
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x1329dda50>
+dims: 0 equalities, 3 inequalities, 0 exponential cones, 
+SOC constraints: [], PSD constraints: [],
+ 3d power cones [].
+c: [-0.56538136  0.03778704]
+A:   (0, 0)	0.9676201928841065
+  (1, 0)	0.3755637349465033
+  (2, 0)	-1.239135749254168
+  (0, 1)	1.790568688193986
+  (1, 1)	-0.06711014644258459
+  (2, 1)	0.7250081594342902
+b: [-1.38394848  0.29853229 -1.83517571]
+Problem solved: objective value is -0.342646
+Result: {'x': [0.4932074564208109, -1.688290963525569]} 
+
+*** Problem 'linear-program' at t=1577872800 (2020-01-01 02:00:00 PST) ***
+
+Data: {'A': [[-0.7822568572306774, 0.027511741388538947], [0.0323239806755329, -0.10572358538612542], [0.8531616726654365, 1.3154590860903705]]}
+Objective: minimize -A.T @ [0.         1.91977107 0.12558353] @ x
+Contraints: [Inequality(Expression(AFFINE, UNKNOWN, (3,)))]
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x1329dda50>
+dims: 0 equalities, 3 inequalities, 0 exponential cones, 
+SOC constraints: [], PSD constraints: [],
+ 3d power cones [].
+c: [-0.16919769  0.03776509]
+A:   (0, 0)	-0.7822568572306774
+  (1, 0)	0.0323239806755329
+  (2, 0)	0.8531616726654365
+  (0, 1)	0.027511741388538947
+  (1, 1)	-0.10572358538612542
+  (2, 1)	1.3154590860903705
+b: [ 0.72955222  0.1944346  -1.80009199]
+Problem solved: objective value is -0.147208
+Result: {'x': [0.49320745658645243, -1.688290961965808]} 
+
+*** Problem 'linear-program' at t=1577876400 (2020-01-01 03:00:00 PST) ***
+
+Data: {'A': [[0.2891041190381088, 0.8286399938960864], [-1.978898457823486, 0.8827466399787914], [0.3462657716600124, 0.17714105124203514]]}
+Objective: minimize -A.T @ [0.         1.91977107 0.12558353] @ x
+Contraints: [Inequality(Expression(AFFINE, UNKNOWN, (3,)))]
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x1329dda50>
+dims: 0 equalities, 3 inequalities, 0 exponential cones, 
+SOC constraints: [], PSD constraints: [],
+ 3d power cones [].
+c: [ 3.75554674 -1.71691746]
+A:   (0, 0)	0.2891041190381088
+  (1, 0)	-1.978898457823486
+  (2, 0)	0.3462657716600124
+  (0, 1)	0.8286399938960864
+  (1, 1)	0.8827466399787914
+  (2, 1)	0.17714105124203514
+b: [-0.09458215 -2.46634065 -0.12828478]
+Problem solved: objective value is 4.75092
+Result: {'x': [0.49320739120501694, -1.6882911039589965]} 
+
+*** Problem 'linear-program' at t=1577880000 (2020-01-01 04:00:00 PST) ***
+
+Data: {'A': [[1.815478873243927, -0.9756736511790098], [1.964228317397261, 1.3663606364824854], [1.515097383550104, -0.8113241068128179]]}
+Objective: minimize -A.T @ [0.         1.91977107 0.12558353] @ x
+Contraints: [Inequality(Expression(AFFINE, UNKNOWN, (3,)))]
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x1329dda50>
+dims: 0 equalities, 3 inequalities, 0 exponential cones, 
+SOC constraints: [], PSD constraints: [],
+ 3d power cones [].
+c: [-3.96113997 -2.52121068]
+A:   (0, 0)	1.815478873243927
+  (1, 0)	1.964228317397261
+  (2, 0)	1.515097383550104
+  (0, 1)	-0.9756736511790098
+  (1, 1)	1.3663606364824854
+  (2, 1)	-0.8113241068128179
+b: [ 3.70444368 -1.33804226  2.11700848]
+Problem solved: objective value is 2.30287
+Result: {'x': [0.49320745581199965, -1.6882909596176885]} 
+
+*** Problem 'linear-program' at t=1577883600 (2020-01-01 05:00:00 PST) ***
+
+Data: {'A': [[-1.0882835703871163, -0.547149836079574], [-0.06620903519385761, -2.4842305804186955], [2.272256549898567, 1.4903315282604865]]}
+Objective: minimize -A.T @ [0.         1.91977107 0.12558353] @ x
+Contraints: [Inequality(Expression(AFFINE, UNKNOWN, (3,)))]
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x1329dda50>
+dims: 0 equalities, 3 inequalities, 0 exponential cones, 
+SOC constraints: [], PSD constraints: [],
+ 3d power cones [].
+c: [-0.1582518   4.58199292]
+A:   (0, 0)	-1.0882835703871163
+  (1, 0)	-0.06620903519385761
+  (2, 0)	2.272256549898567
+  (0, 1)	-0.547149836079574
+  (1, 1)	-2.4842305804186955
+  (2, 1)	1.4903315282604865
+b: [ 1.54881351  4.16144925 -1.39541938]
+Problem solved: objective value is -7.81379
+Result: {'x': [0.4932074505324461, -1.6882909622653233]} 
+
+*** Problem 'linear-program' at t=1577887200 (2020-01-01 06:00:00 PST) ***
+
+Data: {'A': [[1.822500654532573, -0.5530663360088235], [0.04132318528255078, -0.9467966334087465], [-0.1442158276871721, 0.9288906392477259]]}
+Objective: minimize -A.T @ [0.         1.91977107 0.12558353] @ x
+Contraints: [Inequality(Expression(AFFINE, UNKNOWN, (3,)))]
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x1329dda50>
+dims: 0 equalities, 3 inequalities, 0 exponential cones, 
+SOC constraints: [], PSD constraints: [],
+ 3d power cones [].
+c: [-0.06121992  1.70097943]
+A:   (0, 0)	1.822500654532573
+  (1, 0)	0.04132318528255078
+  (2, 0)	-0.1442158276871721
+  (0, 1)	-0.5530663360088235
+  (1, 1)	-0.9467966334087465
+  (2, 1)	0.9288906392477259
+b: [ 2.99442277  1.6188491  -1.63936599]
+Problem solved: objective value is -2.90194
+Result: {'x': [0.4932074576261459, -1.6882909619388369]} 
+
+*** Problem 'linear-program' at t=1577890800 (2020-01-01 07:00:00 PST) ***
+
+Data: {'A': [[0.9807849123835413, 0.8815032593910332], [-0.9413045869130773, 0.9147703736035881], [-0.5795634272301047, 1.353345587422194]]}
+Objective: minimize -A.T @ [0.         1.91977107 0.12558353] @ x
+Contraints: [Inequality(Expression(AFFINE, UNKNOWN, (3,)))]
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x1329dda50>
+dims: 0 equalities, 3 inequalities, 0 exponential cones, 
+SOC constraints: [], PSD constraints: [],
+ 3d power cones [].
+c: [ 1.87987293 -1.92610761]
+A:   (0, 0)	0.9807849123835413
+  (1, 0)	-0.9413045869130773
+  (2, 0)	-0.5795634272301047
+  (0, 1)	0.8815032593910332
+  (1, 1)	0.9147703736035881
+  (2, 1)	1.353345587422194
+b: [ 0.1573114  -2.008657   -2.57068613]
+Problem solved: objective value is 4.179
+Result: {'x': [0.49320745373296476, -1.6882909647654598]} 
+
+*** Problem 'linear-program' at t=1577894400 (2020-01-01 08:00:00 PST) ***
+
+Data: {'A': [[0.8711997371310035, 0.6685363531141696], [-0.6371647453999609, -1.5053031106582928], [1.119009918315478, -1.2330503402763966]]}
+Objective: minimize -A.T @ [0.         1.91977107 0.12558353] @ x
+Contraints: [Inequality(Expression(AFFINE, UNKNOWN, (3,)))]
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x1329dda50>
+dims: 0 equalities, 3 inequalities, 0 exponential cones, 
+SOC constraints: [], PSD constraints: [],
+ 3d power cones [].
+c: [1.08268124 3.04468818]
+A:   (0, 0)	0.8711997371310035
+  (1, 0)	-0.6371647453999609
+  (2, 0)	1.119009918315478
+  (0, 1)	0.6685363531141696
+  (1, 1)	-1.5053031106582928
+  (2, 1)	-1.2330503402763966
+b: [0.46281328 2.22713523 2.63365178]
+Problem solved: objective value is -4.60633
+Result: {'x': [0.49320745552964934, -1.6882909614727153]} 
+
+*** Problem 'linear-program' at t=1577898000 (2020-01-01 09:00:00 PST) ***
+
+Data: {'A': [[0.747280526103087, 2.1450075140032276], [0.5533334921322972, 0.3050425739720075], [0.24526115255026967, -0.30352085687065683]]}
+Objective: minimize -A.T @ [0.         1.91977107 0.12558353] @ x
+Contraints: [Inequality(Expression(AFFINE, UNKNOWN, (3,)))]
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x1329dda50>
+dims: 0 equalities, 3 inequalities, 0 exponential cones, 
+SOC constraints: [], PSD constraints: [],
+ 3d power cones [].
+c: [-1.09307439 -0.54749469]
+A:   (0, 0)	0.747280526103087
+  (1, 0)	0.5533334921322972
+  (2, 0)	0.24526115255026967
+  (0, 1)	2.1450075140032276
+  (1, 1)	0.3050425739720075
+  (2, 1)	-0.30352085687065683
+b: [-2.09101751 -0.24209242  0.63339615]
+Problem solved: objective value is 0.385218
+Result: {'x': [0.4932074560751141, -1.6882909593081918]} 
+
+*** Problem 'linear-program' at t=1577901600 (2020-01-01 10:00:00 PST) ***
+
+Data: {'A': [[-1.6073037381354345, 0.8399426438743204], [-0.5492671019561681, 0.5130057288696677], [0.9647131988186727, -1.0978987352378022]]}
+Objective: minimize -A.T @ [0.         1.91977107 0.12558353] @ x
+Contraints: [Inequality(Expression(AFFINE, UNKNOWN, (3,)))]
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x1329dda50>
+dims: 0 equalities, 3 inequalities, 0 exponential cones, 
+SOC constraints: [], PSD constraints: [],
+ 3d power cones [].
+c: [ 0.93331501 -0.84697556]
+A:   (0, 0)	-1.6073037381354345
+  (1, 0)	-0.5492671019561681
+  (2, 0)	0.9647131988186727
+  (0, 1)	0.8399426438743204
+  (1, 1)	0.5130057288696677
+  (2, 1)	-1.0978987352378022
+b: [-1.0489868  -1.13700557  2.32937626]
+Problem solved: objective value is 1.89026
+Result: {'x': [0.49320791744403436, -1.6882904674873407]} 
+
+*** Problem 'linear-program' at t=1577905200 (2020-01-01 11:00:00 PST) ***
+
+Data: {'A': [[0.3898188293933057, 0.3257632341676358], [-0.48683802513740015, 1.0893819787778982], [-0.6785271340786891, -0.1679400521595561]]}
+Objective: minimize -A.T @ [0.         1.91977107 0.12558353] @ x
+Contraints: [Inequality(Expression(AFFINE, UNKNOWN, (3,)))]
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x1329dda50>
+dims: 0 equalities, 3 inequalities, 0 exponential cones, 
+SOC constraints: [], PSD constraints: [],
+ 3d power cones [].
+c: [ 1.01982939 -2.07027351]
+A:   (0, 0)	0.3898188293933057
+  (1, 0)	-0.48683802513740015
+  (2, 0)	-0.6785271340786891
+  (0, 1)	0.3257632341676358
+  (1, 1)	1.0893819787778982
+  (2, 1)	-0.1679400521595561
+b: [ 0.80409339 -2.07930589 -0.05112297]
+Problem solved: objective value is 3.99821
+Result: {'x': [0.4932074621730315, -1.6882909591724482]} 
+
+*** Problem 'linear-program' at t=1577908800 (2020-01-01 12:00:00 PST) ***
+
+Data: {'A': [[-0.09375869157645172, -0.8485966110652536], [1.3598957700589072, -0.9986223479187843], [-0.6897782992624065, -0.247699006606282]]}
+Objective: minimize -A.T @ [0.         1.91977107 0.12558353] @ x
+Contraints: [Inequality(Expression(AFFINE, UNKNOWN, (3,)))]
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x1329dda50>
+dims: 0 equalities, 3 inequalities, 0 exponential cones, 
+SOC constraints: [], PSD constraints: [],
+ 3d power cones [].
+c: [-2.52406377  1.94823321]
+A:   (0, 0)	-0.09375869157645172
+  (1, 0)	1.3598957700589072
+  (2, 0)	-0.6897782992624065
+  (0, 1)	-0.8485966110652536
+  (1, 1)	-0.9986223479187843
+  (2, 1)	-0.247699006606282
+b: [2.54825046 2.35667582 0.07798419]
+Problem solved: objective value is -4.53407
+Result: {'x': [0.49320750955628057, -1.6882908952212965]} 
+
+*** Problem 'linear-program' at t=1577912400 (2020-01-01 13:00:00 PST) ***
+
+Data: {'A': [[0.121790379355675, -0.389137470299956], [-1.0578278265528662, 0.5077016139141475], [-0.7371255365998709, 0.6023563850256766]]}
+Objective: minimize -A.T @ [0.         1.91977107 0.12558353] @ x
+Contraints: [Inequality(Expression(AFFINE, UNKNOWN, (3,)))]
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x1329dda50>
+dims: 0 equalities, 3 inequalities, 0 exponential cones, 
+SOC constraints: [], PSD constraints: [],
+ 3d power cones [].
+c: [ 2.12335808 -1.05031691]
+A:   (0, 0)	0.121790379355675
+  (1, 0)	-1.0578278265528662
+  (2, 0)	-0.7371255365998709
+  (0, 1)	-0.389137470299956
+  (1, 1)	0.5077016139141475
+  (2, 1)	0.6023563850256766
+b: [ 1.87886016 -1.37887662 -1.38050865]
+Problem solved: objective value is 2.8205
+Result: {'x': [0.4932074413902319, -1.688290986837625]} 
+
+*** Problem 'linear-program' at t=1577916000 (2020-01-01 14:00:00 PST) ***
+
+Data: {'A': [[1.1247854984226442, 0.7346443339062935], [0.2819938517823837, -1.0009356556206457], [1.2197903747372882, 0.7931173068270112]]}
+Objective: minimize -A.T @ [0.         1.91977107 0.12558353] @ x
+Contraints: [Inequality(Expression(AFFINE, UNKNOWN, (3,)))]
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x1329dda50>
+dims: 0 equalities, 3 inequalities, 0 exponential cones, 
+SOC constraints: [], PSD constraints: [],
+ 3d power cones [].
+c: [-0.69454922  1.82196485]
+A:   (0, 0)	1.1247854984226442
+  (1, 0)	0.2819938517823837
+  (2, 0)	1.2197903747372882
+  (0, 1)	0.7346443339062935
+  (1, 1)	-1.0009356556206457
+  (2, 1)	0.7931173068270112
+b: [ 0.47627416  1.82895209 -0.73740307]
+Problem solved: objective value is -3.41856
+Result: {'x': [0.4932074548462473, -1.6882909628762]} 
+
+*** Problem 'linear-program' at t=1577919600 (2020-01-01 15:00:00 PST) ***
+
+Data: {'A': [[0.29202883922292877, 1.32481348051843], [2.0535369800949628, -0.3962240258911212], [-0.5671780683384189, -2.76113820634539]]}
+Objective: minimize -A.T @ [0.         1.91977107 0.12558353] @ x
+Contraints: [Inequality(Expression(AFFINE, UNKNOWN, (3,)))]
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x1329dda50>
+dims: 0 equalities, 3 inequalities, 0 exponential cones, 
+SOC constraints: [], PSD constraints: [],
+ 3d power cones [].
+c: [-3.87109267  1.10741289]
+A:   (0, 0)	0.29202883922292877
+  (1, 0)	2.0535369800949628
+  (2, 0)	-0.5671780683384189
+  (0, 1)	1.32481348051843
+  (1, 1)	-0.3962240258911212
+  (2, 1)	-2.76113820634539
+b: [-0.93082487  1.68176119  4.38186823]
+Problem solved: objective value is -3.77889
+Result: {'x': [0.4932074695524326, -1.6882909109430266]} 
+
+*** Problem 'linear-program' at t=1577923200 (2020-01-01 16:00:00 PST) ***
+
+Data: {'A': [[1.4956495643784424, 0.30617069563040744], [0.21641070159046125, -0.9555269043683815], [-0.6432987052832627, 0.19073559415542188]]}
+Objective: minimize -A.T @ [0.         1.91977107 0.12558353] @ x
+Contraints: [Inequality(Expression(AFFINE, UNKNOWN, (3,)))]
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x1329dda50>
+dims: 0 equalities, 3 inequalities, 0 exponential cones, 
+SOC constraints: [], PSD constraints: [],
+ 3d power cones [].
+c: [-0.33467128  1.81043966]
+A:   (0, 0)	1.4956495643784424
+  (1, 0)	0.21641070159046125
+  (2, 0)	-0.6432987052832627
+  (0, 1)	0.30617069563040744
+  (1, 1)	-0.9555269043683815
+  (2, 1)	0.19073559415542188
+b: [ 1.38257526  1.71994281 -0.6392969 ]
+Problem solved: objective value is -3.22161
+Result: {'x': [0.49320745900831836, -1.688290961484216]} 
+
+*** Problem 'linear-program' at t=1577926800 (2020-01-01 17:00:00 PST) ***
+
+Data: {'A': [[0.7271256677096166, 0.28859085537967], [0.5159557261235742, -0.8875208243076625], [0.2744463818824658, 0.4423480346084709]]}
+Objective: minimize -A.T @ [0.         1.91977107 0.12558353] @ x
+Contraints: [Inequality(Expression(AFFINE, UNKNOWN, (3,)))]
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x1329dda50>
+dims: 0 equalities, 3 inequalities, 0 exponential cones, 
+SOC constraints: [], PSD constraints: [],
+ 3d power cones [].
+c: [-1.02498282  1.64828518]
+A:   (0, 0)	0.7271256677096166
+  (1, 0)	0.5159557261235742
+  (2, 0)	0.2744463818824658
+  (0, 1)	0.28859085537967
+  (1, 1)	-0.8875208243076625
+  (2, 1)	0.4423480346084709
+b: [ 1.03321343  1.7528666  -0.61145319]
+Problem solved: objective value is -3.28831
+Result: {'x': [0.49320733058492044, -1.6882910407253786]} 
+
+*** Problem 'linear-program' at t=1577930400 (2020-01-01 18:00:00 PST) ***
+
+Data: {'A': [[0.6223626777869724, 0.019348755504515796], [-0.4189327357906939, -0.03871400582721577], [-1.930654112440225, 0.2174604234175043]]}
+Objective: minimize -A.T @ [0.         1.91977107 0.12558353] @ x
+Contraints: [Inequality(Expression(AFFINE, UNKNOWN, (3,)))]
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x1329dda50>
+dims: 0 equalities, 3 inequalities, 0 exponential cones, 
+SOC constraints: [], PSD constraints: [],
+ 3d power cones [].
+c: [1.0467133  0.04701258]
+A:   (0, 0)	0.6223626777869724
+  (1, 0)	-0.4189327357906939
+  (2, 0)	-1.930654112440225
+  (0, 1)	0.019348755504515796
+  (1, 1)	-0.03871400582721577
+  (2, 1)	0.2174604234175043
+b: [ 1.43610254 -0.14126024 -1.31934947]
+Problem solved: objective value is 0.436876
+Result: {'x': [0.49320745692092716, -1.6882909641889838]} 
+
+*** Problem 'linear-program' at t=1577934000 (2020-01-01 19:00:00 PST) ***
+
+Data: {'A': [[-0.5905261577157707, 0.42688352889859316], [-0.04174374932300751, -0.3431986531571313], [0.15280976451568967, -1.5442563834588092]]}
+Objective: minimize -A.T @ [0.         1.91977107 0.12558353] @ x
+Contraints: [Inequality(Expression(AFFINE, UNKNOWN, (3,)))]
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x1329dda50>
+dims: 0 equalities, 3 inequalities, 0 exponential cones, 
+SOC constraints: [], PSD constraints: [],
+ 3d power cones [].
+c: [0.06094805 0.85279601]
+A:   (0, 0)	-0.5905261577157707
+  (1, 0)	-0.04174374932300751
+  (2, 0)	0.15280976451568967
+  (0, 1)	0.42688352889859316
+  (1, 1)	-0.3431986531571313
+  (2, 1)	-1.5442563834588092
+b: [0.14985945 0.55883086 2.68252101]
+Problem solved: objective value is -1.40971
+Result: {'x': [0.4932074677350129, -1.6882909609801109]} 
+
+*** Problem 'linear-program' at t=1577937600 (2020-01-01 20:00:00 PST) ***
+
+Data: {'A': [[0.40167278681467095, 0.4454433951722006], [-0.8398193700437371, -0.9465016939778967], [-0.9648312528049454, 0.35443494838479794]]}
+Objective: minimize -A.T @ [0.         1.91977107 0.12558353] @ x
+Contraints: [Inequality(Expression(AFFINE, UNKNOWN, (3,)))]
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x1329dda50>
+dims: 0 equalities, 3 inequalities, 0 exponential cones, 
+SOC constraints: [], PSD constraints: [],
+ 3d power cones [].
+c: [1.73342784 1.77255538]
+A:   (0, 0)	0.40167278681467095
+  (1, 0)	-0.8398193700437371
+  (2, 0)	-0.9648312528049454
+  (0, 1)	0.4454433951722006
+  (1, 1)	-0.9465016939778967
+  (2, 1)	0.35443494838479794
+b: [ 0.60788491  1.18376508 -1.07425129]
+Problem solved: objective value is -2.13765
+Result: {'x': [0.49320762767230814, -1.6882911147779247]} 
+
+*** Problem 'linear-program' at t=1577941200 (2020-01-01 21:00:00 PST) ***
+
+Data: {'A': [[0.6212565265959684, 0.5948798455924709], [-0.4308112003318823, -2.362882057625471], [-0.8558051604199967, 0.7428590424916733]]}
+Objective: minimize -A.T @ [0.         1.91977107 0.12558353] @ x
+Contraints: [Inequality(Expression(AFFINE, UNKNOWN, (3,)))]
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x1329dda50>
+dims: 0 equalities, 3 inequalities, 0 exponential cones, 
+SOC constraints: [], PSD constraints: [],
+ 3d power cones [].
+c: [0.93453391 4.44290176]
+A:   (0, 0)	0.6212565265959684
+  (1, 0)	-0.4308112003318823
+  (2, 0)	-0.8558051604199967
+  (0, 1)	0.5948798455924709
+  (1, 1)	-2.362882057625471
+  (2, 1)	0.7428590424916733
+b: [ 0.46389304  3.77675313 -1.67625169]
+Problem solved: objective value is -7.03999
+Result: {'x': [0.49320752043509514, -1.6882909738551228]} 
+
+*** Problem 'linear-program' at t=1577944800 (2020-01-01 22:00:00 PST) ***
+
+Data: {'A': [[-1.507779601326426, -1.485983846350729], [-2.3228194650895597, 0.0501137316011291], [0.5500712926723826, 0.2682303485637595]]}
+Objective: minimize -A.T @ [0.         1.91977107 0.12558353] @ x
+Contraints: [Inequality(Expression(AFFINE, UNKNOWN, (3,)))]
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x1329dda50>
+dims: 0 equalities, 3 inequalities, 0 exponential cones, 
+SOC constraints: [], PSD constraints: [],
+ 3d power cones [].
+c: [ 4.39020172 -0.12989221]
+A:   (0, 0)	-1.507779601326426
+  (1, 0)	-2.3228194650895597
+  (2, 0)	0.5500712926723826
+  (0, 1)	-1.485983846350729
+  (1, 1)	0.0501137316011291
+  (2, 1)	0.2682303485637595
+b: [ 2.92693991 -1.23023844 -0.18155161]
+Problem solved: objective value is 2.38458
+Result: {'x': [0.49320745648400494, -1.6882909656711271]} 
+
+*** Problem 'linear-program' at t=1577948400 (2020-01-01 23:00:00 PST) ***
+
+Data: {'A': [[-0.06480904072003976, 1.9484133082249364], [-0.35829952652936076, 0.12649117772995128], [0.0026128726238008547, 0.6102732635855063]]}
+Objective: minimize -A.T @ [0.         1.91977107 0.12558353] @ x
+Contraints: [Inequality(Expression(AFFINE, UNKNOWN, (3,)))]
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x1329dda50>
+dims: 0 equalities, 3 inequalities, 0 exponential cones, 
+SOC constraints: [], PSD constraints: [],
+ 3d power cones [].
+c: [ 0.68752493 -0.31947437]
+A:   (0, 0)	-0.06480904072003976
+  (1, 0)	-0.35829952652936076
+  (2, 0)	0.0026128726238008547
+  (0, 1)	1.9484133082249364
+  (1, 1)	0.12649117772995128
+  (2, 1)	0.6102732635855063
+b: [-2.15963792 -0.39026991 -1.02903015]
+Problem solved: objective value is 0.878458
+Result: {'x': [0.49320745629033935, -1.68829096285111]} 
+
+*** Problem 'linear-program' at t=1577952000 (2020-01-02 00:00:00 PST) ***
+
+Data: {'A': [[-3.6392679795100107, 0.2728324247589471], [-0.3494084984791352, 0.7292209485655705], [1.7957690675407678, 0.813444403871135]]}
+Objective: minimize -A.T @ [0.         1.91977107 0.12558353] @ x
+Contraints: [Inequality(Expression(AFFINE, UNKNOWN, (3,)))]
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x1329dda50>
+dims: 0 equalities, 3 inequalities, 0 exponential cones, 
+SOC constraints: [], PSD constraints: [],
+ 3d power cones [].
+c: [ 0.44526532 -1.5020925 ]
+A:   (0, 0)	-3.6392679795100107
+  (1, 0)	-0.3494084984791352
+  (2, 0)	1.7957690675407678
+  (0, 1)	0.2728324247589471
+  (1, 1)	0.7292209485655705
+  (2, 1)	0.813444403871135
+b: [-1.09371966 -1.40346801 -0.48764414]
+Problem solved: objective value is 2.75558
+Result: {'x': [0.4932074558273096, -1.6882909619566415]} 
+

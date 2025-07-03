@@ -92,6 +92,7 @@ private: // private properties
         char *spec;
         char *name;
         REFERENCE *data;
+        unsigned int count;
         bool is_parameter;
         PyObject *list;
         struct s_data *next;
