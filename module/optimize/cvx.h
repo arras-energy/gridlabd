@@ -65,6 +65,7 @@ public: // public properties
         SS_UNBOUNDED = 5,
         SS_INVALID = 6,
         SS_ERROR = 7,
+        SS_FAILED = 8,
     } SOLVERSTATUS;
     GL_ATOMIC(enumeration,status);
 

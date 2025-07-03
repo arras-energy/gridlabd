@@ -25,7 +25,7 @@ object cvx
     presolve "PYTHON_SCRIPT";
     postsolve "PYTHON_SCRIPT";
     solver_options "OPTION=VALUE[,...]";
-    status {INIT|READY|OPTIMAL|INACCURATE|INFEASIBLE|UNBOUNDED|INVALID},
+    status {INIT|READY|OPTIMAL|INACCURATE|INFEASIBLE|UNBOUNDED|INVALID|FAILED},
 }
 ~~~
 
@@ -95,6 +95,44 @@ Python.
 The `solver_options` must conform to the syntax for Python arguments as
 specified for [Problem.solve()]
 (https://www.cvxpy.org/_modules/cvxpy/problems/problem.html#Problem.solve).
+
+## Problem Status
+
+The `status` property indicates the result of the most recent attempt to 
+solve the problem. Depending on the value of the global `cvx_failure_handling`
+, the main solver will halt, warn, or ignore the result if it can.
+
+### `INIT`
+
+The solver object has been constructed, but it is not yet ready to accept problems because the object initialization event handler has not yet completed successfully.
+
+### `READY`
+
+The solver object has been successfully initialized and is ready to accept problems.
+
+### `OPTIMAL`
+
+The problem was solved successfully.
+
+### `INACCURATE`
+
+The problem was solved but the solution may be inaccurate.
+
+### `INFEASIBLE`
+
+The problem is infeasible and was not solved successfully. Failure handling according the value of `cvx_failure_handling` will be applied.
+
+### `UNBOUNDED`
+
+The problem is unbounded and was not solved successfully. Failure handling according the value of `cvx_failure_handling` will be applied.
+
+### `INVALID`
+
+The problem is not defined properly and could not be compiled. This is always a fatal error.
+
+### `FAILED`
+
+The problem could not be solved for some reason (e.g., it is poorly conditioned) and was not solved successfully. Failure handling according the value of `cvx_failure_handling` will be applied.
 
 ## Convenience Objects
 
