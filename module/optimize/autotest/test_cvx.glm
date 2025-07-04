@@ -12,7 +12,7 @@ clock
 
 module optimize
 {
-    cvx_failure_handling IGNORE;
+    cvx_failure_handling WARN;
     cvx_problemdump "test_cvx.txt";
 }
 
@@ -35,8 +35,6 @@ object test:..3
     parent problem-x;
     name `test_{id}`;
     groupid "test_group";
-    latitude 37.5;
-    longitude -122.5;
     A "type:normal(0,1);refresh:1h";
     b "type:normal(0,1);refresh:1h";
     x 0.0;
@@ -93,7 +91,7 @@ object cvx
     event INIT;
     variables "x=test:x";
     data "A=test:A";
-    objective "Minimize(sum_squares(A@x))";
+    objective "Minimize(sum_squares(A.T@x))";
     constraints "x >= 1";
 }
 
@@ -104,10 +102,12 @@ object cvx
     event SYNC;
     data "~A=test:A;~b=test:b"; // parameter syntax
     variables "y=test:y";
-    objective "Minimize(sum_squares(A@y-b))";
+    objective "Minimize(sum_squares(A.T@y-b))";
     constraints "y >= 1";
     // check that optimal solution values match objective
-    postsolve "assert __cvx__['problem-y-dpp']['result']['status'] != 'OPTIMAL' or np.abs(sum_squares(A@y-b).value-__cvx__['problem-y-dpp']['value']) <= 1e-6, 'incorrect result'";
+    postsolve """
+        assert __cvx__['problem-y-dpp']['result']['status'] != 'OPTIMAL' or np.abs(sum_squares(A.T@y-b).value-__cvx__['problem-y-dpp']['value']) <= 1e-6, 'incorrect result'
+        """;
 }
 
 #set savefile=${modelname/.glm/.json}

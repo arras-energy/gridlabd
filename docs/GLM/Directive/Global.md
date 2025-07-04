@@ -5,7 +5,7 @@
 GLM:
 
 ~~~
-global TYPE NAME[[UNIT]] VALUE [UNIT]; 
+global TYPE NAME[UNIT] VALUE [UNIT]; 
 ~~~
 
 # Description

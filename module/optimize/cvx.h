@@ -93,6 +93,8 @@ private: // private properties
         char *spec;
         char *name;
         REFERENCE *data;
+        unsigned int columns;
+        unsigned int rows;
         bool is_parameter;
         PyObject *list;
         struct s_data *next;
@@ -102,7 +104,8 @@ private: // private properties
         char *name;
         REFERENCE *primal;
         REFERENCE *dual;
-        size_t count;
+        unsigned int columns;
+        unsigned int rows;
         struct s_variable *next;
     } VARIABLE;
     typedef struct s_constraint {
