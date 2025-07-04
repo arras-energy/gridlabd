@@ -6,8 +6,8 @@
 clock
 {
   timezone America/Seattle;
-  starttime "2020-01-01 00:00:00 PST";
-  stoptime "2021-01-01 00:00:00 PST";
+  starttime "2020-08-01 00:00:00 PST";
+  stoptime "2020-09-01 00:00:00 PST";
 }
 
 module optimize
@@ -65,6 +65,7 @@ object cvx
   
   presolve """
     if not 'x0' in dir(): # make the problem non-trival
+      np.random.seed(1)
       s0 = np.random.randn(A.shape[0]) 
       lamb0 = np.maximum(-s0,0)
       s0 = np.maximum(s0,0)
@@ -75,7 +76,7 @@ object cvx
   objective "Minimize(c.T@x)";
   constraints "A@x<=b";
   postsolve """
-    assert np.abs(((c.T@x).value-__cvx__['linear-program']['value']))<1e-6, 'result is incorrect'
+    assert np.abs(((c.T@x).value.sum()-__cvx__['linear-program']['value']))<1e-6, 'result is incorrect'
   """;
 }
 
