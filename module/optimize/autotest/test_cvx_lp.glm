@@ -85,7 +85,7 @@ object cvx
 // This test does not work on linux platforms for some unknown reason
 #ifdef APPLE
 #ifexist "../${modelname/.glm/.txt}"
-#on_exit 0 diff -w -I '^(param_prob:|Problem solved:|Result:|Data:|  )' ../${modelname/.glm/.txt} ${modelname/.glm/.txt} > gridlabd.diff
+#on_exit 0 diff -w -I '^(param_prob:|Problem solved:|Result:|Data:|A:  )' ../${modelname/.glm/.txt} ${modelname/.glm/.txt} > gridlabd.diff
 #endif
 #endif
 
