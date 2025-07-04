@@ -1625,7 +1625,11 @@ bool cvx::update_solution(void)
     }
 
     // solve problem
-    if ( PyRun_FormatString("__cvx__['%s']['value'] = __cvx__['%s']['problem'].solve(%s)",optname,optname,(const char*)solver_options) == -1 )
+    if ( PyRun_FormatString(
+        "try: __cvx__['%s']['value'],__cvx__['%s']['result'] = __cvx__['%s']['problem'].solve(%s),None\n"
+        "except Exception as err: __cvx__['%s']['value'],__cvx__['%s']['result'] = None,{'status':'FAILED','error':err}",
+        optname,optname,optname,(const char*)solver_options,
+        optname,optname) == -1 )
     {
         if ( strcmp(problemdump,"") != 0 )
         {
@@ -1654,7 +1658,7 @@ bool cvx::update_solution(void)
         }
     }
 
-    // dump results
+    // dump problem
     if ( strcmp(problemdump,"") != 0 && 
         PyRun_FormatString("print('\\n'.join([f'{x}: {y}' for x,y in __cvx__['%s']['problem'].get_problem_data(None)[0].items()]),file=__dump__)",optname,optname) == -1 )
     {
@@ -1664,12 +1668,23 @@ bool cvx::update_solution(void)
 
     // extract value, if any
     PyObject *value = PyDict_GetItemString(objprob,"value");
-    this->value = PyFloat_AsDouble(value);
+    PyObject *result = PyDict_GetItemString(objprob,"result");
+
+    if ( result == Py_None )
+    {
+        this->value = PyFloat_AS_DOUBLE(value);
+    }
+    else
+    {
+        this->value = QNAN;
+    }
     if ( ! isfinite(this->value) )
     {
+        const char *statusmsg = "unknown status";
         if ( this->value < 0 )
-        {            
+        {
             status = SS_UNBOUNDED;
+            statusmsg = "unbounded";
             if ( strcmp(problemdump,"") != 0 )
             {
                 PyRun_FormatString("print('Problem is unbounded\\n',file=__dump__,flush=True)");
@@ -1679,9 +1694,10 @@ bool cvx::update_solution(void)
                 PyRun_FormatString(on_unbounded);
             }
         }
-        else
+        else if ( this->value > 0 )
         {
             status = SS_INFEASIBLE;
+            statusmsg = "infeasible";
             if ( strcmp(problemdump,"") != 0 )
             {
                 PyRun_FormatString("print('Problem is infeasible\\n',file=__dump__,flush=True)");
@@ -1691,20 +1707,33 @@ bool cvx::update_solution(void)
                 PyRun_FormatString(on_infeasible);
             }
         }
+        else
+        {
+            status = SS_FAILED;
+            statusmsg = "failed";
+            if ( strcmp(problemdump,"") != 0 )
+            {
+                PyRun_FormatString("print('Problem solution failed (\\n',__cvx__['%s']['result'],'\\n',file=__dump__,flush=True)",optname);
+            }
+            if ( strcmp(on_failure,"") != 0 )
+            {
+                PyRun_FormatString(on_failure);
+            }            
+        }    
         switch (failure_handling)
         {
         case OF_HALT:
-            error("problem is %s",this->value>0?"infeasible":"unbounded");
+            error("problem %s",statusmsg);
             break;
         case OF_WARN:
-            warning("problem is %s",this->value>0?"infeasible":"unbounded");
+            warning("problem %s",statusmsg);
             break;
         case OF_IGNORE:
-            verbose("ignoring %s problem",this->value>0?"infeasible":"unbounded");
+            verbose("ignoring %s problem",statusmsg);
             break;
         default:
             status = SS_ERROR;
-            exception("invalid handling (failure_handling=%ld) for %s problem",failure_handling,this->value>0?"infeasible":"unbounded");
+            exception("invalid handling (failure_handling=%ld) for %s problem",failure_handling,statusmsg);
             break;
         }
         rc = false;
@@ -1716,7 +1745,6 @@ bool cvx::update_solution(void)
             PyRun_FormatString("print('Problem solved: objective value is',__cvx__['%s']['problem'].value,file=__dump__,flush=True)",optname);
         }
 
-        // TODO: replace this with a direct call to value.tolist()
         char buffer[65536];
         const char *status_string[] = {
             "INIT",
@@ -1729,6 +1757,7 @@ bool cvx::update_solution(void)
             "ERROR",
             "FAILED",
         };
+        // TODO: replace this with a direct call to value.tolist()
         int len = snprintf(buffer,sizeof(buffer)-1,"__cvx__['%s']['result'] = {'status':'%s',",optname,status_string[status]);
         for ( VARIABLE *item = problem.variables ; item != NULL ; item = item->next )
         {

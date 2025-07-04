@@ -105,7 +105,9 @@ object cvx
     objective "Minimize(sum_squares(A.T@y-b))";
     constraints "y >= 1";
     // check that optimal solution values match objective
-    postsolve "assert __cvx__['problem-y-dpp']['result']['status'] != 'OPTIMAL' or np.abs(sum_squares(A.T@y-b).value-__cvx__['problem-y-dpp']['value']) <= 1e-6, 'incorrect result'";
+    postsolve """
+        assert __cvx__['problem-y-dpp']['result']['status'] != 'OPTIMAL' or np.abs(sum_squares(A.T@y-b).value-__cvx__['problem-y-dpp']['value']) <= 1e-6, 'incorrect result'
+        """;
 }
 
 #set savefile=${modelname/.glm/.json}
