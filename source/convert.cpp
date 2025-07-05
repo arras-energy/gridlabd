@@ -729,11 +729,11 @@ int convert_from_char8(char *buffer, /**< pointer to the string buffer */
 	char temp[1025] = "";
 	const char *format = "%s";
 	int count = 0;
-	if ( strchr((char*)data,' ') != NULL || strchr((char*)data,';') != NULL || ((char*)data)[0] == '\0' )
-	{
-		// TODO: get rid of this when GLM is made strictly quoted properties
-		format = "\"%s\"";
-	}
+	// if ( strchr((char*)data,' ') != NULL || strchr((char*)data,';') != NULL || ((char*)data)[0] == '\0' )
+	// {
+	// 	// TODO: get rid of this when GLM is made strictly quoted properties
+	// 	format = "\"%s\"";
+	// }
 	snprintf(temp,sizeof(temp)-1,format,(char*)data);
 	count = strlen(temp);
 	if ( count > size - 1 )
@@ -779,11 +779,11 @@ int convert_from_char32(char *buffer, /**< pointer to the string buffer */
 	char temp[1025] = "";
 	const char *format = "%s";
 	int count = 0;
-	if ( strchr((char*)data,' ') != NULL || strchr((char*)data,';') != NULL || ((char*)data)[0] == '\0' )
-	{ 
-		// TODO: get rid of this when GLM is made strictly quoted properties
-		format = "\"%s\""; 
-	}
+	// if ( strchr((char*)data,' ') != NULL || strchr((char*)data,';') != NULL || ((char*)data)[0] == '\0' )
+	// { 
+	// 	// TODO: get rid of this when GLM is made strictly quoted properties
+	// 	format = "\"%s\""; 
+	// }
 	snprintf(temp,sizeof(temp)-1,format,(char*)data);
 	count = strlen(temp);
 	if ( count > size - 1 )
@@ -829,11 +829,11 @@ int convert_from_char256(char *buffer, /**< pointer to the string buffer */
 	char temp[1025] = "";
 	const char *format = "%s";
 	int count = 0;
-	if  ( strchr((char*)data,' ') != NULL || strchr((char*)data,';') != NULL || ((char*)data)[0] == '\0')
-	{
-		// TODO: get rid of this when GLM is made strictly quoted properties
-		format = "\"%s\"";
-	}
+	// if  ( strchr((char*)data,' ') != NULL || strchr((char*)data,';') != NULL || ((char*)data)[0] == '\0')
+	// {
+	// 	// TODO: get rid of this when GLM is made strictly quoted properties
+	// 	format = "\"%s\"";
+	// }
 	snprintf(temp,sizeof(temp)-1,format,(char*)data);
 	count = strlen(temp);
 	if ( count > size - 1 )
@@ -879,8 +879,8 @@ int convert_from_char1024(char *buffer, /**< pointer to the string buffer */
 	char temp[4097] = "";
 	const char *format = "%s";
 	int count = 0;
-	if (strchr((char*)data,' ')!=NULL || strchr((char*)data,';')!=NULL || ((char*)data)[0]=='\0')
-		format = "\"%s\"";
+	// if (strchr((char*)data,' ')!=NULL || strchr((char*)data,';')!=NULL || ((char*)data)[0]=='\0')
+	// 	format = "\"%s\"";
 	snprintf(temp,sizeof(temp)-1,format,(char*)data);
 	count = strlen(temp);
 	if(count > size - 1){
