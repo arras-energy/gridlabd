@@ -16,11 +16,18 @@ module optimize
   cvx_problemdump "${modelname/.glm/.txt}";
 }
 
+#define M=2
+#define N=2
+#define P=1
+
 class input
 {
-  double p0;
-  double p1;
-  randomvar q;
+#for m in ${RANGE $M}
+  randomvar p${m};
+#done
+#for n in ${RANGE $N}
+  randomvar q${n};
+#done
 }
 
 class output
@@ -32,21 +39,29 @@ module tape
 {
   csv_header_type NAME;
 }
-object input:..2
+
+#define m=${RANGE $M}
+#define n=${RANGE $N}
+#define PROPERTIES=p=p${m/ /,p},q${n/ /,q}
+
+object input:..${N}
 {
   parent "quadratic-program";
-  p0 0.5;
-  p1 -0.25;
-  q "type:normal(0,1);refresh:1h";
+#for m in ${RANGE $M}
+  p${m} "type:normal(0,1);refresh:1h";
+#done
+#for n in ${RANGE $N}
+  q${n} "type:normal(0,1);refresh:1h";
+#done
   object recorder
   {
     file `${modelname/.glm/.txt}_input_{id}.csv`;
-    property "p0,p1,q";
+    property ${PROPERTIES};
     interval -1;
   };
 }
 
-object output:..2
+object output:..${M}
 {
   parent "quadratic-program";
   x 0.0;
@@ -58,22 +73,28 @@ object output:..2
   };
 }
 
+#define m=${RANGE $M}
+#define n=${RANGE $N}
+
 object cvx
 {
   name "quadratic-program";
   event SYNC;
-  data "p=input:p0,input:p1";
-  data "~q=input:q";
+  data "~p=input:p0,input:p1";
+  data "~q=input:q0,input:q1";
   variables "x=output:x";
   presolve """
     if not 'P' in dir(): # initial solve
       np.random.seed(1)
+      G = np.random.randn(1,2)
+      h = np.random.randn(1)
       A = np.random.randn(1,2)
       b = np.random.randn(1)
-      P = (p.T @ p).value
+    P = (p.T @ p).value
   """;
   objective "Minimize((1/2)*quad_form(x,P) + q.T @ x)";
   constraints """
+    G @ x <= h,
     A @ x == b
     """;
 }
