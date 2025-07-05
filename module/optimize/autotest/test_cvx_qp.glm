@@ -18,8 +18,8 @@ module optimize
 
 class input
 {
-  randomvar p0;
-  randomvar p1;
+  double p0;
+  double p1;
   randomvar q;
 }
 
@@ -35,8 +35,8 @@ module tape
 object input:..2
 {
   parent "quadratic-program";
-  p0 "type:normal(0,1);refresh:1h";
-  p1 "type:normal(0,1);refresh:1h";
+  p0 0.5;
+  p1 -0.25;
   q "type:normal(0,1);refresh:1h";
   object recorder
   {
@@ -63,20 +63,17 @@ object cvx
   name "quadratic-program";
   event SYNC;
   data "p=input:p0,input:p1";
-  data "q=input:q";
+  data "~q=input:q";
   variables "x=output:x";
   presolve """
-    if not 'b' in dir(): # make the problem non-trival
+    if not 'P' in dir(): # initial solve
       np.random.seed(1)
-      G = np.random.rand(2,2)
-      h = G @ np.random.randn(2)
       A = np.random.randn(1,2)
       b = np.random.randn(1)
-    P = p.T @ p
+      P = (p.T @ p).value
   """;
   objective "Minimize((1/2)*quad_form(x,P) + q.T @ x)";
   constraints """
-    G @ x <= h,
     A @ x == b
     """;
 }
