@@ -556,15 +556,16 @@ int64 GldExec::clock(void)
 	
 	static struct timeval t0 = {0,0};
 	struct timeval t1 = {0,0};
-	if ( t0.tv_sec == 0 )
+	if ( t0.tv_usec + t0.tv_sec*1000000 == 0 )
 	{
 		gettimeofday(&t0,NULL);
+		return 0;
 	}
 	else
 	{
 		gettimeofday(&t1,NULL);
+		return (((int64)(t1.tv_sec-t0.tv_sec)*1000000 + (int64)(t1.tv_usec-t0.tv_usec))*CLOCKS_PER_SEC)/1000000;
 	}
-	return (t1.tv_sec-t0.tv_sec)*CLOCKS_PER_SEC + (t1.tv_usec-t0.tv_usec)*CLOCKS_PER_SEC/1000000;
 }
 
 /** The main system initialization sequence
