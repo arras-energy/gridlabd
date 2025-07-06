@@ -25,7 +25,7 @@ object cvx
     data "D=bus:Pd";
     data "P=bus:price";
     variables "v=bus:Vdc;g=bus:gen";
-    objective "cvx.Minimize(P@g)";
+    objective "cvx.Minimize(P.T@g)";
     constraints "L@v-g+D==0";
     constraints "v[0]==0.0";
     constraints "g>=0";
@@ -33,9 +33,9 @@ object cvx
     postsolve """
         np.set_printoptions(precision=1,sign=' ',floatmode='fixed',linewidth=None)
         print(G.names,file=__dump__)
-        print(f'V = {v.value.round(1)}',file=__dump__)
-        print(f'g = {g.value} = {g.value.sum():6.1f} MW',file=__dump__)
-        print(f'D = {D} MW',file=__dump__)
+        print(f'v = {v.value.round(1)}',file=__dump__)
+        print(f'g = {g.value.round(1)} = {g.value.sum():6.1f} MW',file=__dump__)
+        print(f'D = {D.T.round(1)} = {D.sum():6.1f} MW',file=__dump__)
     """;
 }
 

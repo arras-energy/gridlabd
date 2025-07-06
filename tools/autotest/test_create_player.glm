@@ -34,8 +34,8 @@ object test
 clock
 {
     timezone "PST+8PDT";
-    starttime ${test_create_player_startdate};
-    stoptime ${test_create_player_stopdate};
+    starttime "${test_create_player_startdate}";
+    stoptime "${test_create_player_stopdate}";
 }
 
 #ifexist ../test_create_player_out.csv

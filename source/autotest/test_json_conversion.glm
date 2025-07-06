@@ -22,9 +22,9 @@
 #define STOPTIME="2020-01-02 00:00:00 EST"
 
 clock {
-	timezone EST+5EDT;
-	starttime ${STARTTIME};
-	stoptime ${STOPTIME};
+	timezone "EST+5EDT";
+	starttime "${STARTTIME}";
+	stoptime "${STOPTIME}";
 }
 
 module powerflow;
