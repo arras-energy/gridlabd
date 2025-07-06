@@ -12,9 +12,9 @@ object recorder
     interval 1h;
 }
 clock {
-    timezone ${ISONE_TIMEZONE};
-    starttime ${ISONE_STARTDATE};
-    stoptime ${ISONE_STOPDATE};
+    timezone "${ISONE_TIMEZONE}";
+    starttime "${ISONE_STARTDATE}";
+    stoptime "${ISONE_STOPDATE}";
 }
 #ifexists "../test_isone_record.csv"
 #on_exit 0 diff ../test_isone_record.csv test_isone_record.csv > gridlabd.diff
