@@ -63,7 +63,12 @@ constructed as a parametric problem instead of a standard problem. Parametric
 problems are compiled only once and subsequent solves are faster. There are
 some additional rules that apply to DPP problems that do not apply to DCP
 problems. See CVXPY documentation for [Disciplined Parameterized Programming]
-(https://www.cvxpy.org/tutorial/dpp/index.html) for details .
+(https://www.cvxpy.org/tutorial/dpp/index.html) for details . In addition,
+the type of parametric values is `cvx.Parameter` instead of `np.array`. This
+can result is different methods and syntax. Consequently, using CVX parameters
+is not always exactly equivalent to using standard Numpy arrays. One common
+issue is the need to use `x.value` when using parameters instead of `x` when
+Numpy arrays.
 
 One or more `variables` may be specified in the same manner as `data`
 definitions. If the dual is specified, it uses the same aggregation as the

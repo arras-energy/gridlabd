@@ -1810,6 +1810,8 @@ module/optimize/autotest/test_cvx.glm
 module/optimize/autotest/test_cvx.txt
 module/optimize/autotest/test_cvx_lp.glm
 module/optimize/autotest/test_cvx_lp.txt
+module/optimize/autotest/test_cvx_qp.glm
+module/optimize/autotest/test_cvx_qp.txt
 module/optimize/autotest/test_cvx_update_interval.glm
 module/optimize/autotest/test_cvx_update_interval.txt
 module/optimize/autotest/test_extremum_opt.glm
