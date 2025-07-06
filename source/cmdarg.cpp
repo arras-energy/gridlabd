@@ -2431,7 +2431,7 @@ DEPRECATED static CMDARG main_commands[] = {
 	{"test",		NULL,	test,			"<module>", "Perform unit test of module (deprecated)" },
 	{"testall",		NULL,	testall,		"=<filename>", "Perform tests of modules listed in file" },
 	{"unitstest",	NULL,	unitstest,		NULL, "Perform unit conversion system test" },
-	{"validate",	NULL,	validate,		"...", "Perform model validation check" },
+	{"validate",	NULL,	validate,		"[=<filename> ...", "Perform model validation check" },
 
 	{NULL,NULL,NULL,NULL, "File and I/O Formatting"},
 	{"kml",			NULL,	kml,			"[=<filename>]", "Output to KML (Google Earth) file of model (only supported by some modules)" },
