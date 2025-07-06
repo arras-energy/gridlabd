@@ -1,14 +1,15 @@
 """Regression testing analysis
 
-Syntax: `gridlabd python [OPTIONS ...] utilities/regression.py before.csv after.csv`
+Syntax: `gridlabd python [OPTIONS ...] utilities/regression.py BEFORECSV AFTERCSV`
 
-where `before.csv` and `after.csv` are obtained using the commands
+where `BEFORECSV` and `AFTERCSV` are obtained using the commands
 
-    gridlabd --validate=before.csv
+    gridlabd --validate=BEFORECSV
     # make your changes
-    gridlabd --validate=after.csv
+    gridlabd --validate=AFTERCSV
 
-Options:
+Options
+-------
 
     `-d|--debug`                 enable debug traceback on exception
     
@@ -17,12 +18,13 @@ Options:
     `--sortby=FIELD`             sort output by FIELD (use `-FIELD` to reverse
                                  sort)
     
-    `--ignore`                   ignore failed autotests and mismatched autotest
-                                 names
+    `--ignore`                   ignore failed autotests and mismatched
+                                 autotest names
 
     `-o|--output=[FILE].FORMAT   specify output file and format
 
-If omitted, the default files are `before.csv` and `after.csv`, respectively.
+If omitted, the default input files are `before.csv` and `after.csv`,
+respectively.
 
 The following output formats are supported:
 
@@ -33,6 +35,29 @@ The following output formats are supported:
     `.txt`    Pandas dataframe table
 
 If the output file is not specified then output is sent to `/dev/stderr`.
+
+Output may be sorted using the `--sortby=FIELD` option. Supported fields are
+
+  - `autotest`              the name of the autotest
+  - `before[s]`             the autotest timing before the change
+  - `after[s]`              the autotest timing after the change
+  - `absolute_change[s]`    the absolute change in the timing
+  - `relative_change[%]`    the relative change in the timing
+
+Python usage
+------------
+
+You may call the regression using the `main()` function as follows:
+
+    import sys
+    sys.path.append("utilities")
+    import regression
+    main(OPTIONS,...,BEFORECSV,AFTERCSV)
+
+See Also
+--------
+
+* [/Command/Validate]
 """
 
 import os
