@@ -114,7 +114,7 @@ object cvx
 // This test does not work on linux platforms for some unknown reason
 #ifexist "../test_cvx.txt"
 #ifdef APPLE
-#on_exit 0 diff -w -I '^(param_prob:|Problem solved:|Result:|Data:|  )' ../test_cvx.txt test_cvx.txt > gridlabd.diff
+#on_exit 0 diff -w -I '^(param_prob:|P:|Problem solved:|Result:|Data:|  )' ../test_cvx.txt test_cvx.txt > gridlabd.diff
 #endif
 #endif
 
