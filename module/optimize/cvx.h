@@ -65,6 +65,7 @@ public: // public properties
         SS_UNBOUNDED = 5,
         SS_INVALID = 6,
         SS_ERROR = 7,
+        SS_FAILED = 8,
     } SOLVERSTATUS;
     GL_ATOMIC(enumeration,status);
 
@@ -92,6 +93,8 @@ private: // private properties
         char *spec;
         char *name;
         REFERENCE *data;
+        unsigned int columns;
+        unsigned int rows;
         bool is_parameter;
         PyObject *list;
         struct s_data *next;
@@ -101,7 +104,8 @@ private: // private properties
         char *name;
         REFERENCE *primal;
         REFERENCE *dual;
-        size_t count;
+        unsigned int columns;
+        unsigned int rows;
         struct s_variable *next;
     } VARIABLE;
     typedef struct s_constraint {
@@ -148,6 +152,9 @@ private: // private methods
     void add_variable_group(VARIABLE *item, const char *groupname, const char *primalname, const char *dualname);
     void add_variable_object(VARIABLE *item, const char *objectname, const char *primalname, const char *dualname);
     void add_variable_global(VARIABLE *item, const char *primalname, const char *dualname);
+    void add_variable(VARIABLE *item, OBJECT *obj,const char *primalname,const char *dualname, const char *refname);
+    void add_primal(VARIABLE *item, gld_property &data);
+    void add_dual(VARIABLE *item, gld_property &data);
     bool add_constraints(struct s_problem &problem, const char *value);
     bool set_objective(struct s_problem &problem, const char *value);
     bool update_status(void);
