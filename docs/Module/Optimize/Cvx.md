@@ -15,12 +15,12 @@ object cvx
     event {NONE,INIT,PRECOMMIT,PRESYNC,SYNC,POSTSYNC,COMMIT,FINALIZE};
     data "NAME:[OBJECT.|CLASS:|GROUP@|]PROPERTY[,...][;...]";
     data "~NAME:[OBJECT.|CLASS:|GROUP@|]PROPERTY[,...][;...]";
-    variables "NAME=GLOBAL[&DUAL][;...]";
-    variables "NAME=GROUP@PROPERTY[&DUAL][;...]";
-    variables "NAME=CLASS:PROPERTY[&DUAL][;...]";
-    variables "NAME=OBJECT.PROPERTY[&DUAL][;...]";
+    variables "NAME=GLOBAL[;...]";
+    variables "NAME=GROUP@PROPERTY[;...]";
+    variables "NAME=CLASS:PROPERTY[;...]";
+    variables "NAME=OBJECT.PROPERTY[;...]";
     objective "[Minimize|Maximize](EXPRESSION)";
-    constraints "EXPRESSION[:OBJECT.PROPERTY][,...]";
+    constraints "EXPRESSION[&DUAL][:OBJECT.PROPERTY][,...]";
     value DOUBLE;
     presolve "PYTHON_SCRIPT";
     postsolve "PYTHON_SCRIPT";
