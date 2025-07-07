@@ -7,7 +7,7 @@ clock
 {
     timezone America/Seattle;
     starttime "2020-01-01 00:00:00 PST";
-    stoptime "2020-03-01 00:00:00 PST";
+    stoptime "2020-01-02 00:00:00 PST";
 }
 
 module optimize
@@ -26,6 +26,7 @@ class test
     double lambda;
 }
 
+module pypower;
 module tape
 {
     csv_header_type NAME;
@@ -35,6 +36,8 @@ object test:..3
     parent problem-x;
     name `test_{id}`;
     groupid "test_group";
+    latitude 37.5;
+    longitude -122.5;
     A "type:normal(0,1);refresh:1h";
     b "type:normal(0,1);refresh:1h";
     x 0.0;
@@ -91,7 +94,7 @@ object cvx
     event INIT;
     variables "x=test:x";
     data "A=test:A";
-    objective "Minimize(sum_squares(A.T@x))";
+    objective "Minimize(sum_squares(A@x))";
     constraints "x >= 1";
 }
 
@@ -102,12 +105,8 @@ object cvx
     event SYNC;
     data "~A=test:A;~b=test:b"; // parameter syntax
     variables "y=test:y";
-    objective "Minimize(sum_squares(A.T@y-b))";
+    objective "Minimize(sum_squares(A@y-b))";
     constraints "y >= 1";
-    // check that optimal solution values match objective
-    postsolve """
-        assert __cvx__['problem-y-dpp']['result']['status'] != 'OPTIMAL' or np.abs(sum_squares(A.T@y-b).value-__cvx__['problem-y-dpp']['value']) <= 1e-6, 'incorrect result'
-        """;
 }
 
 #set savefile=${modelname/.glm/.json}
@@ -116,6 +115,10 @@ object cvx
 #ifdef APPLE
 #ifexist "../test_cvx.txt"
 #on_exit 0 diff -w -I '^(param_prob:|Problem solved:|Result:|Data:|  )' ../test_cvx.txt test_cvx.txt > gridlabd.diff
+#define DIR=..
+#else
+#define DIR=.
 #endif
+#on_exit 0 python3 ${DIR}/test_cvx_check.py
 #endif
 
