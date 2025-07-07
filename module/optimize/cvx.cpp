@@ -1780,17 +1780,16 @@ bool cvx::update_solution(void)
         PyObject *result = PyDict_GetItemString(PyDict_GetItemString(cvx,optname),"result");
         for ( VARIABLE *item = problem.variables ; item != NULL ; item = item->next )
         {
-            if ( item->dual != NULL )
-            {
-                warning("TODO: dual values not copied back to object %s",item->name);
-            }
             Py_ssize_t ndx = 0;
             PyObject *var = PyDict_GetItemString(result,item->name);
             for ( REFERENCE *prop = item->primal ; prop != NULL ; prop = prop->next, ndx++ )
             {
-                *(prop->ptr) = PyFloat_AsDouble(PyList_GetItem(var,ndx));
+                *(prop->ptr) = PyFloat_AS_DOUBLE(PyList_GET_ITEM(var,ndx));
             }
-
+            for ( REFERENCE *prop = item->dual ; prop != NULL ; prop = prop->next, ndx++ )
+            {
+                *(prop->ptr) = PyFloat_AS_DOUBLE(PyList_GET_ITEM(var,ndx));
+            }
         }
         if ( strcmp(problemdump,"") != 0 )
         {
