@@ -1,3 +1,5 @@
+#set randomseed=1
+
 module pypower
 {
     stop_on_failure FALSE;
