@@ -83,9 +83,8 @@ object cvx
 
 #set savefile=${modelname/.glm/.json}
 
-// This test does not work on linux platforms for some unknown reason
-#ifdef APPLE
 #ifexist "../${modelname/.glm/.txt}"
+#ifdef APPLE
 #on_exit 0 diff -w -I '^(param_prob:|Problem solved:|Result:|Data:|  )' ../${modelname/.glm/.txt} ${modelname/.glm/.txt} > gridlabd.diff
 #endif
 #endif
