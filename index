@@ -3251,6 +3251,7 @@ setup.sh
 setup/Darwin.sh
 setup/Linux.sh
 setup/README.md
+setup/centos_8-x86_64.sh
 setup/darwin_20.sh
 setup/darwin_21.sh
 setup/darwin_22.sh
@@ -4213,6 +4214,7 @@ utilities/add_module.d/main.cpp
 utilities/build_number
 utilities/cleanwc
 utilities/regen_toc
+utilities/regression.py
 utilities/save_validation_errors
 utilities/troubleshooting.awk
 utilities/troubleshooting.css
