@@ -62,8 +62,8 @@ object cvx
 {
   name "quadratic-program";
   event SYNC;
-  data "~p=input:p0,input:p1";
-  data "~q=input:q";
+  data "p=input:p0,input:p1";
+  data "q=input:q";
   variables "x=output:x";
   presolve """
     if not 'P' in dir(): # initial solve
@@ -72,7 +72,7 @@ object cvx
       h = np.random.randn(1)
       A = np.random.randn(1,2)
       b = np.random.randn(1)
-    P = (p.T @ p).value
+    P = (p.T @ p)
   """;
   objective "Minimize((1/2)*quad_form(x,P) + q.T @ x)";
   constraints """
