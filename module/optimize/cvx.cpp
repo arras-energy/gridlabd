@@ -1761,7 +1761,7 @@ bool cvx::update_solution(void)
         int len = snprintf(buffer,sizeof(buffer)-1,"__cvx__['%s']['result'] = {'status':'%s',",optname,status_string[status]);
         for ( VARIABLE *item = problem.variables ; item != NULL ; item = item->next )
         {
-            len += snprintf(buffer+len,sizeof(buffer)-len-1,"'%s':%s.value.tolist() if not %s.value is None else [],",
+            len += snprintf(buffer+len,sizeof(buffer)-len-1,"'%s':%s.value.round(12).tolist()[-1::-1] if not %s.value is None else [],",
                 item->name,item->name,item->name);
         }
         len += snprintf(buffer+len,sizeof(buffer)-len-1,"%s","}\n");
