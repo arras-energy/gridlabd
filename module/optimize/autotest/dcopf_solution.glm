@@ -9,9 +9,6 @@ class bus
     double Vdc[pu.V]; // DC bus voltage 
 }
 
-// This autotest does not work on LINUX systems for unknown reason
-#ifdef APPLE
-
 #setenv PYTHONPATH=.:..
 #input "${modelname/_opf.glm/_opt.py}" -t pypower
 module optimize
@@ -69,5 +66,3 @@ object cvx
 #endif
 
 #on_exit 0 gridlabd plot -i=${modelname/_opf.glm/_opf.csv} --plot:x=gen --plot:y=price --plot:grid --plot:marker=. --plot:linewidth=0 --plot:xlabel="Generation power [MW]" --plot:ylabel="Generation price [$/MWh]" --plot:title="Bus 1"
-
-#endif

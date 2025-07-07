@@ -4,7 +4,7 @@ Problem dumps starting at t=1577865600 (2020-01-01 00:00:00 PST)
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 54.66767051992789], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -73,7 +73,7 @@ Result: {'status': 'READY', 'g': [3.08e-10, 0.959948280478, 1.13583656838, 1.505
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 47.69871800998894], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -142,7 +142,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.37e-10, 0.956663690049, 1.131950136583, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 52.561597904516184], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -211,7 +211,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.87e-10, 0.959022394023, 1.134740705713, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 33.598563571113274], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -280,7 +280,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.1e-10, 0.947397522561, 1.120998231022, 1.4
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 47.85708576104529], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -349,7 +349,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.39e-10, 0.95674584798, 1.132047311954, 1.5
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 55.03015736385045], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -418,7 +418,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.11e-10, 0.960102378106, 1.136018982613, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 34.14067528743756], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -487,7 +487,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.14e-10, 0.947843169776, 1.121524695799, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 39.96290487131455], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -556,7 +556,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.61e-10, 0.952120658697, 1.126578958961, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 45.133494143992195], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -625,7 +625,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.11e-10, 0.955277097939, 1.130310335425, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 51.32115197121484], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -694,7 +694,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.74e-10, 0.958451381778, 1.134064999738, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 50.46680424536874], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -763,7 +763,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.65e-10, 0.958046370759, 1.133585789167, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 51.20332842776004], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -832,7 +832,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.73e-10, 0.95839610618, 1.133999594339, 1.5
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 56.2682717589323], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -901,7 +901,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.24e-10, 0.960617628999, 1.13662897552, 1.5
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 53.13101425819411], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -970,7 +970,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.92e-10, 0.959278003567, 1.135043212911, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 41.81347560938811], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -1039,7 +1039,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.78e-10, 0.953311178467, 1.127986116034, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 47.28160469958778], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -1108,7 +1108,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.33e-10, 0.95644544485, 1.131692006863, 1.4
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 43.58507840411354], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -1177,7 +1177,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.96e-10, 0.954385826659, 1.129256530386, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 52.62049475296207], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -1246,7 +1246,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.87e-10, 0.959049018869, 1.134772214637, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 35.95968942533765], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -1315,7 +1315,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.27e-10, 0.949275327391, 1.123216695173, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 49.22797612139783], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -1384,7 +1384,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.53e-10, 0.957441278383, 1.132869927926, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 45.591207921884], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -1453,7 +1453,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.16e-10, 0.955532480143, 1.130612320201, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 56.952587608147994], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -1522,7 +1522,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.31e-10, 0.96089527146, 1.136957708577, 1.5
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 51.795782678179485], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -1591,7 +1591,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.79e-10, 0.958672205831, 1.134326299755, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 53.757794079412314], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -1660,7 +1660,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.99e-10, 0.959554784534, 1.135370799696, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 54.44292054040681], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -1729,7 +1729,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.06e-10, 0.959851979985, 1.135722575499, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 49.36376283473241], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -1798,7 +1798,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.54e-10, 0.957508659784, 1.132949639474, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 46.339404500770065], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -1867,7 +1867,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.23e-10, 0.955942328283, 1.131096989203, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 53.646295819020736], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -1936,7 +1936,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.98e-10, 0.959505893088, 1.135312931887, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 62.66523913238018], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -2005,7 +2005,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.86e-10, 0.963032993629, 1.139489802309, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 55.397329413934216], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -2074,7 +2074,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.15e-10, 0.960256951154, 1.136201968469, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 64.73700513309315], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -2143,7 +2143,7 @@ Result: {'status': 'OPTIMAL', 'g': [4.06e-10, 0.96373676041, 1.140323823708, 1.5
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 73.96208668674558], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -2212,7 +2212,7 @@ Result: {'status': 'OPTIMAL', 'g': [4.88e-10, 0.966492124502, 1.143591510807, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 53.27887165272335], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -2281,7 +2281,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.94e-10, 0.959343724158, 1.135120995114, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 73.56298286864043], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -2350,7 +2350,7 @@ Result: {'status': 'OPTIMAL', 'g': [4.85e-10, 0.966384216043, 1.143463460993, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 61.49237721930117], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -2419,7 +2419,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.75e-10, 0.962618647409, 1.138998870648, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 60.87420811616069], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -2488,7 +2488,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.69e-10, 0.962395405251, 1.138734395969, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 51.45838431781524], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -2557,7 +2557,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.75e-10, 0.958515532267, 1.134140907183, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 53.87549515200947], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -2626,7 +2626,7 @@ Result: {'status': 'OPTIMAL', 'g': [3e-10, 0.959606234572, 1.135431696426, 1.504
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 47.032640817968954], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -2695,7 +2695,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.3e-10, 0.956313881904, 1.131536406642, 1.4
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 49.44333671709526], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -2764,7 +2764,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.55e-10, 0.957548024166, 1.132996207425, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 52.165402305480434], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -2833,7 +2833,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.83e-10, 0.9588421548, 1.134527409385, 1.50
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 58.972938775132036], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -2902,7 +2902,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.51e-10, 0.961686794498, 1.137895041584, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 63.46253043146173], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -2971,7 +2971,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.94e-10, 0.963307982571, 1.139815660217, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 62.449190276078326], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -3040,7 +3040,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.84e-10, 0.962957558028, 1.139400418048, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 53.74440725589517], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -3109,7 +3109,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.99e-10, 0.959548922012, 1.135363860837, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 54.27202346939906], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -3178,7 +3178,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.04e-10, 0.959778363117, 1.135635436307, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 46.25906597246812], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -3247,7 +3247,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.22e-10, 0.955898765184, 1.131045471821, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 58.40185679534516], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -3316,7 +3316,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.45e-10, 0.961467210935, 1.137634983686, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 49.320880889595884], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -3385,7 +3385,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.53e-10, 0.957487409067, 1.132924500012, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 54.09713635195803], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -3454,7 +3454,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.02e-10, 0.95970267441, 1.135545846261, 1.5
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 32.722244999125834], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -3523,7 +3523,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.05e-10, 0.946657733336, 1.120124315504, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 49.66490564822006], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -3592,7 +3592,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.57e-10, 0.957657156083, 1.133125313073, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 59.42917301793507], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -3661,7 +3661,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.55e-10, 0.961859940701, 1.138100115928, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 58.868869229371626], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -3730,7 +3730,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.5e-10, 0.96164701725, 1.137847930731, 1.50
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 36.764504859875416], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -3799,7 +3799,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.33e-10, 0.949879647716, 1.123930722142, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 45.56185513112425], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -3868,7 +3868,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.15e-10, 0.955516210043, 1.130593080964, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 48.481024657260114], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -3937,7 +3937,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.45e-10, 0.957065824777, 1.132425792894, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 69.43875054913792], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -4006,7 +4006,7 @@ Result: {'status': 'OPTIMAL', 'g': [4.49e-10, 0.965212441727, 1.142073392677, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 64.99820809818098], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -4075,7 +4075,7 @@ Result: {'status': 'OPTIMAL', 'g': [4.08e-10, 0.963823043489, 1.140426091868, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 57.961442584699604], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -4144,7 +4144,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.41e-10, 0.961295663693, 1.137431828942, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 40.92800280922853], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -4213,7 +4213,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.7e-10, 0.952750573819, 1.12732346966, 1.49
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 50.145529284016064], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -4282,7 +4282,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.62e-10, 0.957891506643, 1.133402565961, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 46.36124229640428], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -4351,7 +4351,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.23e-10, 0.955954151614, 1.131110971643, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 43.08380384817952], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -4420,7 +4420,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.91e-10, 0.954087893247, 1.128904301469, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 42.94023153470861], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -4489,7 +4489,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.89e-10, 0.954001684105, 1.128802384796, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 59.33890312815906], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -4558,7 +4558,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.54e-10, 0.96182584135, 1.138059727324, 1.5
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 56.94264730836806], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -4627,7 +4627,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.31e-10, 0.960891273903, 1.136952975055, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 55.337027398100126], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -4696,7 +4696,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.15e-10, 0.960231668768, 1.136172038107, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 51.70525982868387], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -4765,7 +4765,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.78e-10, 0.958630316199, 1.134276730791, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 58.65513699976996], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -4834,7 +4834,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.48e-10, 0.961564993421, 1.137750787275, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 41.49370638277413], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -4903,7 +4903,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.75e-10, 0.953110594802, 1.127749015895, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 58.55556197676131], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -4972,7 +4972,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.47e-10, 0.961526626325, 1.137705348738, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 47.00994195664586], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -5041,7 +5041,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.3e-10, 0.95630183781, 1.131522161926, 1.49
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 48.33849139381453], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -5110,7 +5110,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.43e-10, 0.956993245511, 1.132339941202, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 46.237220026607545], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -5179,7 +5179,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.22e-10, 0.955886901128, 1.131031441111, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 42.40856842446841], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -5248,7 +5248,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.84e-10, 0.953678980863, 1.128420896203, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 48.698388584210335], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -5317,7 +5317,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.47e-10, 0.957175927253, 1.132556032772, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 49.66464882771915], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -5386,7 +5386,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.57e-10, 0.957657030279, 1.133125163892, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 42.495416122099975], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -5455,7 +5455,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.85e-10, 0.953732071013, 1.128483656185, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 47.96860142021091], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -5524,7 +5524,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.4e-10, 0.956803469451, 1.132115467261, 1.5
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 60.36301503517268], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -5593,7 +5593,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.64e-10, 0.96220819033, 1.138512618808, 1.5
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 50.496915467186824], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -5662,7 +5662,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.65e-10, 0.95806081245, 1.133602875696, 1.5
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 68.708603968868], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -5731,7 +5731,7 @@ Result: {'status': 'OPTIMAL', 'g': [4.42e-10, 0.964993585588, 1.141813847585, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 52.831282362892345], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -5800,7 +5800,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.89e-10, 0.959143954532, 1.134884566942, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 62.54377581303976], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -5869,7 +5869,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.85e-10, 0.962990632547, 1.139439607825, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 52.20817349012065], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -5938,7 +5938,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.83e-10, 0.958861708021, 1.134550548045, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 58.28735576081543], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -6007,7 +6007,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.44e-10, 0.961422797644, 1.137582386124, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 41.463886439163474], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -6076,7 +6076,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.75e-10, 0.953091782854, 1.127726779553, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 62.23785269166555], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -6145,7 +6145,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.82e-10, 0.962883381917, 1.139312528621, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 39.04188287102981], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -6214,7 +6214,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.52e-10, 0.951500268086, 1.125845764902, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 46.44740548561563], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -6283,7 +6283,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.24e-10, 0.956000724784, 1.131166049693, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 51.82860244039772], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -6352,7 +6352,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.79e-10, 0.958687367339, 1.134344240599, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 53.69454322420168], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -6421,7 +6421,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.98e-10, 0.959527067454, 1.135337993679, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 51.213626717550895], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -6490,7 +6490,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.73e-10, 0.95840094479, 1.134005319742, 1.5
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 37.43792934544813], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -6559,7 +6559,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.38e-10, 0.950372273761, 1.124512809322, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 58.23779232638503], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -6628,7 +6628,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.43e-10, 0.961403532219, 1.137559570848, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 63.718178719727554], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -6697,7 +6697,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.96e-10, 0.963395042854, 1.139918832245, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 56.38333574800309], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -6766,7 +6766,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.25e-10, 0.960664662034, 1.136684661464, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 43.84803274559282], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -6835,7 +6835,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.98e-10, 0.954540239279, 1.129439090146, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 49.68885662646853], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -6904,7 +6904,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.57e-10, 0.957668911525, 1.133139220179, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 57.884686836720796], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -6973,7 +6973,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.4e-10, 0.961265567069, 1.137396188398, 1.5
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 46.47250384555895], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -7042,7 +7042,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.24e-10, 0.956014268364, 1.131182066765, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 44.424812130228865], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -7111,7 +7111,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.04e-10, 0.954874510229, 1.129834310502, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 45.687465295805445], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -7180,7 +7180,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.17e-10, 0.955585732976, 1.130675292916, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 52.50757078496522], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -7249,7 +7249,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.86e-10, 0.958997932232, 1.134711756709, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 64.63890622810999], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -7318,7 +7318,7 @@ Result: {'status': 'OPTIMAL', 'g': [4.05e-10, 0.963704217253, 1.140285252227, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 55.33690803806263], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -7387,7 +7387,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.15e-10, 0.960231618523, 1.136171978819, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 39.207000751283076], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -7456,7 +7456,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.54e-10, 0.951612912519, 1.125978886761, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 40.104513284109906], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -7525,7 +7525,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.62e-10, 0.952214355132, 1.12668969679, 1.4
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 34.6322811592605], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -7594,7 +7594,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.17e-10, 0.948239641688, 1.121993081904, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 62.56789148652092], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -7663,7 +7663,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.85e-10, 0.962999052917, 1.139449585508, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 38.86657047046825], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -7732,7 +7732,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.51e-10, 0.951379975682, 1.12570360666, 1.4
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 41.4256811916963], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -7801,7 +7801,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.74e-10, 0.953067654118, 1.127698258596, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 45.394803759786484], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -7870,7 +7870,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.14e-10, 0.955423335066, 1.130483256599, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 52.99762189507017], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -7939,7 +7939,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.91e-10, 0.959218482638, 1.134972769815, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 41.66910340646171], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -8008,7 +8008,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.77e-10, 0.953220875284, 1.127879372259, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 54.91306698043854], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -8077,7 +8077,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.1e-10, 0.960052765099, 1.135960252046, 1.5
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 44.3269180632385], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -8146,7 +8146,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.03e-10, 0.954818199093, 1.129767730572, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 61.237690692876185], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -8215,7 +8215,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.73e-10, 0.962527084654, 1.138890393846, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 39.69598627643481], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -8284,7 +8284,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.58e-10, 0.951942839056, 1.126368800904, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 43.090276716026985], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -8353,7 +8353,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.91e-10, 0.954091770259, 1.128908885073, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 37.63277564734065], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -8422,7 +8422,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.4e-10, 0.950512657601, 1.124678692645, 1.4
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 47.38665364855076], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -8491,7 +8491,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.34e-10, 0.95650066478, 1.131757317192, 1.5
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 59.02097490665163], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -8560,7 +8560,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.51e-10, 0.96170511933, 1.137916744788, 1.5
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 55.658403989908926], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -8629,7 +8629,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.18e-10, 0.960365942664, 1.136330998975, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 38.11943713785694], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -8698,7 +8698,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.44e-10, 0.950859171109, 1.125088157246, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 44.82221309887655], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -8767,7 +8767,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.08e-10, 0.955101352252, 1.130102527403, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 63.1504509045347], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -8836,7 +8836,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.91e-10, 0.963200975926, 1.139688854779, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 55.80103376660291], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -8905,7 +8905,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.19e-10, 0.960425169, 1.136401116063, 1.506
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 29.256314836392264], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -8974,7 +8974,7 @@ Result: {'status': 'OPTIMAL', 'g': [9.2e-11, 0.943473580988, 1.116363230412, 1.4
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 45.75703814465966], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -9043,7 +9043,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.17e-10, 0.955624125616, 1.130720693242, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 54.50316797556911], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -9112,7 +9112,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.06e-10, 0.959877851925, 1.135753200602, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 36.483528474284775], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -9181,7 +9181,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.31e-10, 0.949670627829, 1.123683752517, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 57.83032916383799], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -9250,7 +9250,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.39e-10, 0.961244217004, 1.137370905632, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 57.09123678845197], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -9319,7 +9319,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.32e-10, 0.960950922008, 1.137023603041, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 39.87141757309086], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -9388,7 +9388,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.6e-10, 0.952059889696, 1.126507137764, 1.4
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 59.801205463987], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -9457,7 +9457,7 @@ Result: {'status': 'OPTIMAL', 'g': [3.59e-10, 0.961999660511, 1.138265608523, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 52.74639005359463], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -9526,7 +9526,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.88e-10, 0.959105786778, 1.134839396378, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 38.29502159087928], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -9595,7 +9595,7 @@ Result: {'status': 'OPTIMAL', 'g': [1.46e-10, 0.950982768147, 1.125234211987, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 53.71359599253484], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -9664,7 +9664,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.98e-10, 0.959535421627, 1.135347881747, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 51.128509041819], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -9733,7 +9733,7 @@ Result: {'status': 'OPTIMAL', 'g': [2.72e-10, 0.958360910081, 1.133957949178, 1.
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 68.91683917985253], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -9802,7 +9802,7 @@ Result: {'status': 'OPTIMAL', 'g': [4.44e-10, 0.96505637064, 1.141888303059, 1.5
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 65.74899223448834], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -9871,7 +9871,7 @@ Result: {'status': 'OPTIMAL', 'g': [4.15e-10, 0.964068110442, 1.14071657953, 1.5
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 69.6287363163766], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].
@@ -9940,7 +9940,7 @@ Result: {'status': 'OPTIMAL', 'g': [4.5e-10, 0.965268801115, 1.142140234644, 1.5
 Data: {'P': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 38.91626705334263], 'D': [14.9, 13.5, 6.1, 3.5, 9.0, 29.5, 0.0, 0.0, 11.2, 7.6, 47.8, 94.2, 21.7, 0.0]}
 Objective: minimize P @ g
 Contraints: [Inequality(Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, ()), Constant(CONSTANT, ZERO, ())), Equality(Expression(AFFINE, UNKNOWN, (14,)), Constant(CONSTANT, ZERO, ()))]
-param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x12999e8f0>
+param_prob: <cvxpy.reductions.dcp2cone.cone_matrix_stuffing.ParamConeProg object at 0x131cc6890>
 dims: 15 equalities, 14 inequalities, 0 exponential cones, 
 SOC constraints: [], PSD constraints: [],
  3d power cones [].

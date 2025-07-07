@@ -20,12 +20,12 @@ CLASS *cvx::oclass = NULL;
 cvx *cvx::defaults = NULL;
 
 // convenience objects
-PyObject *gld = NULL;
-PyObject *mod_list = NULL;
-PyObject *class_dict = NULL;
-PyObject *global_list = NULL;
-PyObject *object_dict = NULL;
-PyObject *property_type = NULL;
+static PyObject *gld = NULL;
+static PyObject *mod_list = NULL;
+static PyObject *class_dict = NULL;
+static PyObject *global_list = NULL;
+static PyObject *object_dict = NULL;
+static PyObject *property_type = NULL;
 
 //
 // Global variables
