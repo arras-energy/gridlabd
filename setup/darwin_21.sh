@@ -1,4 +1,4 @@
-set -x
+echo '*** WARNING: This Darwin 21 support is deprecated ***'
 alias INSTALL=''
 
 INSTALL error () { echo "ERROR [darwin_21-x86_64.sh]: $*" > /dev/stderr ; exit 1 ; }
