@@ -1,6 +1,6 @@
 # Run the following commands
 #
-#   docker run -it redhat/ubi8 bash
+#   docker run -it redhat/ubi9 bash
 #   git clone https://github.com/arras-energy/gridlabd
 #   gridlabd/setup.sh
 #
