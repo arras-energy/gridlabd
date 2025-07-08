@@ -131,7 +131,7 @@ notify "OpenSSL $OPENSSLVER ok"
 #
 # Check Python version
 #
-if [ ! $($PYTHONBIN --version 2>/dev/null) != "Python $PYTHONVER" ]; then
+if [ "$($PYTHONBIN --version 2>/dev/null)" != "Python $PYTHONVER" ]; then
     notify "Python $PYTHONVER is required"
     cd /usr/local/src
     if [ ! -d Python-$PYTHONVER ]; then
