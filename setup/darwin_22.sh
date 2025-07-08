@@ -1,4 +1,3 @@
-set -x
 alias INSTALL=''
 
 INSTALL error () { echo "ERROR [darwin_22-x86_64.sh]: $*" > /dev/stderr ; exit 1 ; }

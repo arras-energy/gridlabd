@@ -1,4 +1,3 @@
-set -x
 alias INSTALL=''
 
 INSTALL error () { echo "ERROR [ubuntu_20-x86_64.sh]: $*" > /dev/stderr ; exit 1 ; }

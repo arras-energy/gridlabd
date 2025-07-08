@@ -1,4 +1,3 @@
-set -x
 alias INSTALL=''
 
 INSTALL error () { echo "ERROR [$(basename $0)]: $*" > /dev/stderr ; exit 1 ; }
