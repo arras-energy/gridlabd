@@ -69,7 +69,7 @@ build {
       "sudo apt-get install -y git curl nano",
       "cd /usr/local/src",
       "export INSTALL_SOURCE=https://install-dev.arras.energy",
-      "curl -sL https://install-dev.arras.energy/install.sh | sudo -E sh",
+      "curl --retry 5 -sL https://install-dev.arras.energy/install.sh | sudo -E sh",
       "sudo chown -R $USER /usr/local",
       "gridlabd --version=all"
     ]

@@ -120,7 +120,7 @@ if [ "$($PYTHONBIN --version 2>/dev/null)" != "Python $PYTHONVER" ]; then
     cd /usr/local/src
     if [ ! -d Python-$PYTHONVER ]; then
         notify "Downloading Python $PYTHONVER source code"
-        (curl -s https://www.python.org/ftp/python/$PYTHONVER/Python-$PYTHONVER.tgz | tar xz) 2>>$LOGFILE || error 1 "$PYTHONVER download failed"
+        (curl --retry 5 -sf https://www.python.org/ftp/python/$PYTHONVER/Python-$PYTHONVER.tgz | tar xz) 2>>$LOGFILE || error 1 "$PYTHONVER download failed"
     fi
     cd Python-$PYTHONVER
     if [ ! -f Makefile ]; then
@@ -183,7 +183,7 @@ function gnubuild ()
     if [ "$($1 --version 2>/dev/null | sed -n '1p' | cut -f4 -d' ')" != "$2" ]; then
         notify "Upgrading $1 to $2"
         cd /usr/local/src
-        (curl -s https://ftp.gnu.org/gnu/$1/$1-$2.tar.gz | tar xz) 2>>$LOGFILE || error 1 "unable to download $1-$2"
+        (curl --retry 5 -sf https://ftp.gnu.org/gnu/$1/$1-$2.tar.gz | tar xz) 2>>$LOGFILE || error 1 "unable to download $1-$2"
         cd $1-$2
         run "./configure" "unable to configure $1-$2"
         run "make install" "unable to make install $1-$2"

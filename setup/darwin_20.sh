@@ -1,4 +1,4 @@
-set -x
+echo '*** WARNING: This Darwin 20 support is deprecated ***'
 alias INSTALL=''
 
 INSTALL error () { echo "ERROR [darwin_20-x86_64.sh]: $*" > /dev/stderr ; exit 1 ; }
@@ -36,7 +36,7 @@ test ! -z "$VIRTUAL_ENV" || error "python venv activation failed"
 
 # upgrade pip if needed
 if ! "$PYTHON_EXEC" -m pip --version 1>/dev/null 2>&1 ; then
-    INSTALL curl -fsL https://bootstrap.pypa.io/get-pip.py | python$PYTHON_VERSION
+    INSTALL curl --retry 5 -fsL https://bootstrap.pypa.io/get-pip.py | python$PYTHON_VERSION
     INSTALL "$PYTHON_EXEC" -m pip --version || error "pip installation failed"
 fi
 

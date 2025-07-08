@@ -69,7 +69,7 @@ else
 	curl --version 1>/dev/null 2>&1 || error "you must install curl first"
 	test "$(echo $GRIDLABD_ORIGIN | cut -c-8)" != "https://" && GRIDLABD_ORIGIN=https://raw.githubusercontent.com/$GRIDLABD_ORIGIN
 	echo GRIDLABD_ORIGIN=$GRIDLABD_ORIGIN
-	if curl -H 'Cache-Control: no-cache' -fsL $GRIDLABD_ORIGIN/setup/$SYSTEMNAME.sh > /tmp/setup_$$.sh ; then
+	if curl --retry 5 -H 'Cache-Control: no-cache' -fsL $GRIDLABD_ORIGIN/setup/$SYSTEMNAME.sh > /tmp/setup_$$.sh ; then
 		trap "rm -f /tmp/setup_$$.sh" EXIT
 		sh /tmp/setup_$$.sh 1>$STDOUT 2>$STDERR || error "setup failed"
 	else

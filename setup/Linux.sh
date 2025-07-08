@@ -8,6 +8,6 @@ if [ "$GRIDLABD_ORIGIN" = "." ]; then
 	else
 		sh $SOURCE || error "unable to setup from $GRIDLABD_ORIGIN"
 	fi
-elif ! (curl -H 'Cache-Control: no-cache' -fsL $COMMON | sh); then
-	( curl -H 'Cache-Control: no-cache' -fsL $SOURCE | sh ) || error "unable to find $SOURCE. Manual install required."=
+elif ! (curl --retry 5 -H 'Cache-Control: no-cache' -fsL $COMMON | sh); then
+	( curl --retry 5 -H 'Cache-Control: no-cache' -fsL $SOURCE | sh ) || error "unable to find $SOURCE. Manual install required."=
 fi

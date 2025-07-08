@@ -3263,7 +3263,9 @@ setup/darwin_21.sh
 setup/darwin_22.sh
 setup/darwin_23.sh
 setup/darwin_24.sh
+setup/rhel_10-x86_64.sh
 setup/rhel_8-x86_64.sh
+setup/rhel_9-x86_64.sh
 setup/ubuntu_20.sh
 setup/ubuntu_22.sh
 setup/ubuntu_24.sh
