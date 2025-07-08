@@ -1,0 +1,91 @@
+// test_cvx_lp.glm
+
+#set suppress_repeat_messages=FALSE
+#set randomseed=1
+
+clock
+{
+  timezone America/Seattle;
+  starttime "2020-08-01 00:00:00 PST";
+  stoptime "2020-09-01 00:00:00 PST";
+}
+
+module optimize
+{
+  cvx_failure_handling WARN;
+  cvx_problemdump "${modelname/.glm/.txt}";
+}
+
+class input
+{
+  randomvar A0;
+  randomvar A1;
+}
+
+class output
+{
+  double x;
+}
+
+module tape
+{
+  csv_header_type NAME;
+}
+object input:..3
+{
+  parent "linear-program";
+  A0 "type:normal(0,1);refresh:1h";
+  A1 "type:normal(0,1);refresh:1h";
+  object recorder
+  {
+    file `${modelname/.glm/.txt}_input_{id}.csv`;
+    property "A0,A1";
+    interval -1;
+  };
+}
+
+object output:..2
+{
+  parent "linear-program";
+  x 0.0;
+  object recorder
+  {
+    file `${modelname/.glm/.txt}_output_{id}.csv`;
+    property "x";
+    interval -1;
+  };
+}
+
+object cvx
+{
+  name "linear-program";
+  event SYNC;
+  data "~A=input:A0,input:A1";
+  variables "x=output:x";
+  
+  presolve """
+    if not 'x0' in dir(): # make the problem non-trival
+      np.random.seed(1)
+      s0 = np.random.randn(A.shape[0]) 
+      lamb0 = np.maximum(-s0,0)
+      s0 = np.maximum(s0,0)
+      x0 = np.random.randn(A.shape[1])
+    b = A @ x0 + s0
+    c = -A.T @ lamb0
+  """;
+  objective "Minimize(c.T@x)";
+  constraints "A@x<=b";
+  postsolve """
+    assert np.abs(((c.T@x).value.sum()-__cvx__['linear-program']['value']))<1e-6, 'result is incorrect'
+  """;
+}
+
+#set savefile=${modelname/.glm/.json}
+
+// This test does not work on linux platforms for some unknown reason
+#ifdef APPLE
+#ifexist "../${modelname/.glm/.txt}"
+#on_exit 0 diff -w -I '^(param_prob:|Problem solved:|Result:|Data:|A:|  )' ../${modelname/.glm/.txt} ${modelname/.glm/.txt} > gridlabd.diff
+#endif
+#endif
+

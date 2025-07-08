@@ -70,6 +70,8 @@ notify "Running $PWD/$(basename $0) $*"
 # Update yum
 #
 notify "Updating yum"
+sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* 1>/dev/null 2>&1
+sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*  1>/dev/null 2>&1
 run "yum update -y" "unable to update yum"
 
 #

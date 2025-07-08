@@ -10,7 +10,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
 jobs:
-  build:
+  buildUbuntu24:
 
     runs-on: ubuntu-24.04
     container:
