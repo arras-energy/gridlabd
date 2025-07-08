@@ -1,6 +1,6 @@
 # Run the following commands
 #
-#   docker run -it redhat/ubi8 bash
+#   docker run -it redhat/ubi10 bash
 #   git clone https://github.com/arras-energy/gridlabd
 #   gridlabd/setup.sh
 #
@@ -108,11 +108,12 @@ run "yum install -y openssl-devel openssl-libs ncurses-devel libcurl-devel" "dev
 run "dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm" "unable to install extra packages"
 run "yum install -y bzip2-devel libffi-devel zlib-devel sqlite-devel gdbm" "developer libraries install failed"
 run "dnf install -y https://pkgs.sysadmins.ws/el8/base/x86_64/mdbtools-libs-0.9.3-3.el8.x86_64.rpm" "mdbtools install failed"
+export CFLAGS="$CFLAGS -I/usr/include/openssl -fPIC"
 
 #
 # OpenSSL
 #
-if [ ! -f /usr/local/lib64/libssl.so ]; then
+if [ ! -f /lib64/libssl.so.${OPENSSLVER%.*} -a ! -f /usr/lib64/libssl.so.${OPENSSLVER%.*} -a -f /usr/local/lib64/libssl.so.${OPENSSLVER%.*} ]; then
     notify "Installing OpenSSL $OPENSSLVER"
     cd /usr/local/src
     run "wget https://github.com/openssl/openssl/releases/download/OpenSSL_${OPENSSLVER//./_}/openssl-$OPENSSLVER.tar.gz" "unable to download openssl-$OPENSSLVER.tar.gz"
@@ -121,8 +122,8 @@ if [ ! -f /usr/local/lib64/libssl.so ]; then
     cd openssl-$OPENSSLVER
     run "./config" "unable to configure openssl-$OPENSSLVER"
     run "make" "unable to make openssl-$OPENSSLVER"
-    # run "make test" "test openssl-$OPENSSLVER failed"
     run "make install" "unable to install openssl-$OPENSSLVER"
+    export LDFLAGS="$LDFLAGS -L/usr/local/lib64"
     test -f /usr/local/lib64/libssl.so || error 1 "openssl install failed (/usr/local/lib64/libssl.so not found)"
 fi
 notify "OpenSSL $OPENSSLVER ok"
@@ -130,9 +131,7 @@ notify "OpenSSL $OPENSSLVER ok"
 #
 # Check Python version
 #
-if ( $PYTHONBIN --version 1>/dev/null 2>&1 ); then
-    notify "Python $PYTHONVER ok"
-else
+if [ "$($PYTHONBIN --version 2>/dev/null)" != "Python $PYTHONVER" ]; then
     notify "Python $PYTHONVER is required"
     cd /usr/local/src
     if [ ! -d Python-$PYTHONVER ]; then
@@ -147,11 +146,8 @@ else
     fi
     if [ ! -x python -o ! -x python-config ]; then
         notify "Building Python $PYTHONVER system"
-        export CFLAGS="-I/usr/include/openssl -fPIC"
-        export LDFLAGS="-L/usr/local/lib64"
+        export CFLAGS="$CFLAGS -fPIC"
         run "make -j $(nproc)" "$PYTHONVER make failed"
-        unset CFLAGS
-        unset LDFLAGS
     fi
     if [ ! -x /usr/local/bin/$PYTHONBIN ]; then
         notify "Installing Python $PYTHONVER"
@@ -167,8 +163,8 @@ else
     test -x python || ln -s python3 python
     test -x python-config || ln -s python3-config python-config
     test -x pydoc || ln -sf pydoc3 pydoc
-    notify "Python $PYTHONVER installed ok"
 fi
+notify "Python $PYTHONVER ok"
 
 #
 # Check library path
