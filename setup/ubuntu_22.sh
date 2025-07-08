@@ -70,7 +70,7 @@ ln -s /usr/lib/aarch64-linux-gnu/libmysqlclient.a /usr/local/lib/libmysqlclient.
 
 # install autoconf 2.72 as required
 if [ "$(autoconf --version | head -n 1 | cut -f4 -d' ')" != "2.72" ] ; then
-	(cd /tmp ; curl --retry 5 -sL https://ftpmirror.gnu.org/autoconf/autoconf-2.72.tar.gz | tar xz )
+	(cd /tmp ; curl --retry 5 -sL https://ftp.gnu.org/gnu/autoconf/autoconf-2.72.tar.gz | tar xz )
 	(cd /tmp/autoconf-2.72 ; ./configure ; make ; make install)
 	test "$(autoconf --version | head -n 1 | cut -f4 -d' ')" = "2.72" || error "autoconf installation failed"
 fi
