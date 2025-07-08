@@ -1,0 +1,77 @@
+// test_cvx.glm
+
+#set suppress_repeat_messages=FALSE
+#set randomseed=1
+clock
+{
+    timezone America/Seattle;
+    starttime "2020-01-01 00:00:00 PST";
+    stoptime "2020-01-02 00:00:00 PST";
+}
+
+module optimize
+{
+    cvx_failure_handling WARN;
+    cvx_problemdump "test_cvx_update_interval.txt";
+}
+
+class test
+{
+    randomvar A0;
+    randomvar A1;
+    randomvar A2;
+    randomvar A3;
+    randomvar b0;
+    randomvar b1;
+    double x;
+    double y;
+    double mu;
+    double lambda;
+}
+
+module pypower;
+module tape
+{
+    csv_header_type NAME;
+}
+object test:..3
+{
+    parent "problem-x";
+    name `test_{id}`;
+    groupid "test_group";
+    A0 "type:normal(0,1);refresh:1min";
+    A1 "type:normal(0,1);refresh:1min";
+    A2 "type:normal(0,1);refresh:1min";
+    A3 "type:normal(0,1);refresh:1min";
+    b0 "type:normal(0,1);refresh:1min";
+    b1 "type:normal(0,1);refresh:1min";
+    x 0.0;
+    y 0.0;
+    object recorder
+    {
+        file `test_cvx_{id}.csv`;
+        property "A0,x,y";
+        interval -1;
+    };
+}
+
+object cvx 
+{
+    name "problem-x";
+    event SYNC;
+    data "~A=test:A1";
+    variables "y=test:y";
+    objective "Minimize(sum_squares(A@y))";
+    constraints "y >= 1";
+    update_interval 1h;
+}
+
+#set savefile=${modelname/.glm/.json}
+
+// This test does not work on linux platforms for some unknown reason
+#ifdef APPLE
+#ifexist "../test_cvx_update_interval.txt"
+#on_exit 0 diff -w -I '^(param_prob:|Problem solved:|Result:|Data:|  )' ../test_cvx_update_interval.txt test_cvx_update_interval.txt > gridlabd.diff
+#endif
+#endif
+

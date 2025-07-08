@@ -134,7 +134,7 @@ if [ "$COMMAND" == "get" ]; then
     fi
 
     # get file
-    curl -sL "https://raw.githubusercontent.com/$GITUSER/$GITREPO/$GITBRANCH/gridlabd-$VERSION/${MODEL%%.*}.glm" -o "${OUTPUT%%.*}.glm"
+    curl --retry 5 -sL "https://raw.githubusercontent.com/$GITUSER/$GITREPO/$GITBRANCH/gridlabd-$VERSION/${MODEL%%.*}.glm" -o "${OUTPUT%%.*}.glm"
 
     # convert format if needed
     if [ "${OUTPUT##*.}" != "glm" ]; then
@@ -145,7 +145,7 @@ if [ "$COMMAND" == "get" ]; then
 
 elif [ "$COMMAND" == "index" ]; then
     
-    curl -sL "https://api.github.com/repos/$GITUSER/$GITREPO/git/trees/$GITBRANCH?recursive=1" | gridlabd json-get tree path -c | grep '\.glm$' | grep ^gridlabd-$VERSION/$MODEL | sed -e 's/\.glm$//;s/gridlabd-[0-9]\///'
+    curl --retry 5 -sL "https://api.github.com/repos/$GITUSER/$GITREPO/git/trees/$GITBRANCH?recursive=1" | gridlabd json-get tree path -c | grep '\.glm$' | grep ^gridlabd-$VERSION/$MODEL | sed -e 's/\.glm$//;s/gridlabd-[0-9]\///'
     exit 0
 
 else

@@ -17,7 +17,7 @@ function warning()
 
 function url_ok ()
 {
-    RESULT=$(curl -sI $1 | head -n 1)
+    RESULT=$(curl --retry 5 -sI $1 | head -n 1)
     HTTPVER=$(echo "$RESULT" | cut -f1 -d' ')
     CODE=$(echo "$RESULT" | cut -f2 -d' ')
     if [ "$HTTPVER" == "HTTP/1.1" ]; then
@@ -40,18 +40,18 @@ function url_err ()
             return 1
         fi
     else
-        error 2 "'curl -sI $1' failed"
+        error 2 "'curl --retry 5 -sI $1' failed"
     fi
 }
 
 function url_run ()
 {
-    url_ok "$1" && ( curl -sL "$1" | /bin/bash ) || return 1
+    url_ok "$1" && ( curl --retry 5 -sL "$1" | /bin/bash ) || return 1
 }
 
 function url_tarxz ()
 {
-    url_ok "$1" && ( curl -sL "$1" | tar xz ) || url_err "$1"
+    url_ok "$1" && ( curl --retry 5 -sL "$1" | tar xz ) || url_err "$1"
 }
 
 SYSTEM=$(uname -s | tr A-Z a-z)
@@ -80,7 +80,7 @@ case $SYSTEM in
 esac
 
 url_ok $SOURCE/latest-$SYSTEM-$RELEASE.txt || error 4 "unable to get $SOURCE/latest-$SYSTEM-$RELEASE.txt"
-LATEST=$(curl -sL $SOURCE/latest-$SYSTEM-$RELEASE.txt)
+LATEST=$(curl --retry 5 -sL $SOURCE/latest-$SYSTEM-$RELEASE.txt)
 
 [ ! -x /usr/local/opt/gridlabd/bin/gridlabd ] && error 4 "gridlabd is not installed on this system"
 TARGET=validate-$LATEST
