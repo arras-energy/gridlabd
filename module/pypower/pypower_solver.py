@@ -2,8 +2,16 @@
 # Copyright (C) 2024 Regents of the Leland Stanford Junior University
 
 import os, sys
-from pypower.api import ppoption, runpf, runopf
+
+# version issues with numpy and pypower
+import numpy as np
+if not hasattr(np,"Inf"):
+    np.Inf = np.inf
+elif not hasattr(np,"inf"):
+    np.inf = np.Inf
+
 from numpy import array, set_printoptions, inf
+from pypower.api import ppoption, runpf, runopf
 from math import sqrt
 import json, csv
 

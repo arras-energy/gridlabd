@@ -3,8 +3,8 @@
 # Synopsis
 
 ~~~
-bash$ docker pull arras-energy/gridlabd:latest
-bash$ docker run -it -v $(pwd):$(pwd) arras-energy/gridlabd:latest gridlabd -W $(pwd) <...>
+bash$ docker pull lfenergy/arras:latest
+bash$ docker run -it -v $(pwd):$(pwd) lfenergy/arras:latest gridlabd -W $(pwd) <...>
 ~~~
 
 # Description
@@ -12,13 +12,13 @@ bash$ docker run -it -v $(pwd):$(pwd) arras-energy/gridlabd:latest gridlabd -W $
 To use the latest version of GridLAB-D with docker, install docker from see www.docker.com. Then run 
 
 ~~~
-bash$ docker pull arras-energy/gridlabd:latest
+bash$ docker pull lfenergy/arras:latest
 ~~~
 
 For convenience you may tag the image you wish to use by default:
 
 ~~~
-bash$ docker tag arras-energy/gridlabd:latest gridlabd
+bash$ docker tag lfenergy/arras:latest gridlabd
 ~~~
 
 To get more information about available docker images, see https://hub.docker.com/u/gridlabd/.
@@ -66,7 +66,7 @@ To get a list of available and active docker images:
 ~~~
 bash$ gridlabd --docker status
 REPOSITORY             TAG                 IMAGE ID            CREATED             SIZE
-arras-energy/gridlabd     latest              398e452f9a01        2 days ago          1.56GB
+lfenergy/arras     latest              398e452f9a01        2 days ago          1.56GB
 gridlabd               latest              398e452f9a01        2 days ago          1.56GB
 ~~~
 

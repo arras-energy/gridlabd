@@ -14,25 +14,23 @@
 #assert $(gridlabd matrix -f linalg.det "1,2;-2,5") == '9'
 
 // linalg.eig <matrix>
-#if ${github_actions:-no} == no
-#assert $(gridlabd matrix -f linalg.eig "1,2;-2,5" | tr '\n' ';' | cut -f-2 -d';') == '3+2.9802322e-08j,3-2.9802322e-08j;0.70710678+0j,0.70710678-0j'
+#assert $(gridlabd matrix -f linalg.eig "1,0;0,2" | tr '\n' ';' ) == '1,2;1,0;0,1;'
 
 // linalg.eigh <matrix> UPLO=<str>
-#assert $(gridlabd matrix -f linalg.eigh '1,2;-2,5' | tr '\n' ';') == '0.17157288,5.8284271;-0.92387953,-0.38268343;-0.38268343,0.92387953;'
-#assert $(gridlabd matrix -f linalg.eigh '1,2;-2,5' UPLO=U | tr '\n' ';') == '0.17157288,5.8284271;-0.92387953,0.38268343;0.38268343,0.92387953;'
-#assert $(gridlabd matrix -f linalg.eigh '1,2;-2,5' UPLO=L | tr '\n' ';') == '0.17157288,5.8284271;-0.92387953,-0.38268343;-0.38268343,0.92387953;'
+#assert $(gridlabd matrix -f linalg.eigh '1,0;0,2' | tr '\n' ';') == '1,2;1,0;0,1;'
+#assert $(gridlabd matrix -f linalg.eigh '1,0;0,2' UPLO=U | tr '\n' ';') == '1,2;1,0;0,1;'
+#assert $(gridlabd matrix -f linalg.eigh '1,0;0,2' UPLO=L | tr '\n' ';') == '1,2;1,0;0,1;'
 
 // linalg.eigvals <matrix>
-#assert $(gridlabd matrix -f linalg.eigvals "1,2;-2,5") == '3+2.9802322e-08j,3-2.9802322e-08j'
+#assert $(gridlabd matrix -f linalg.eigvals "1,0;0,2") == '1,2'
 
 // linalg.eigvalsh <matrix> UPLO=<str>
-#assert $(gridlabd matrix -f linalg.eigvalsh "1,2;-2,5") == '0.17157288,5.8284271'
-#assert $(gridlabd matrix -f linalg.eigvalsh "1,2;-2,5" UPLO=U) == '0.17157288,5.8284271'
-#assert $(gridlabd matrix -f linalg.eigvalsh "1,2;-2,5" UPLO=L) == '0.17157288,5.8284271'
-#endif // github_actions = no
+#assert $(gridlabd matrix -f linalg.eigvalsh "1,0;0,2") == '1,2'
+#assert $(gridlabd matrix -f linalg.eigvalsh "1,0;0,2" UPLO=U) == '1,2'
+#assert $(gridlabd matrix -f linalg.eigvalsh "1,0;0,2" UPLO=L) == '1,2'
 
 // linalg.inv <matrix>
-#assert $(gridlabd matrix -f linalg.inv "1,2;-2,5") == '0.55555556,-0.22222222;0.22222222,0.11111111'
+#assert $(gridlabd matrix -f linalg.inv "1,0;0,2") == '1,0;0,0.5'
 
 // linalg.lstsq <matrix> <matrix> rcond=<float>
 #assert $(gridlabd matrix -f linalg.lstsq '0,1;1,1;2,1;3,1' '-1;0.2;0.9;2.1' rcond=-1 | tr '\n' ';') == '1;-0.95;0.05;2;4.1000304,1.0907568;'

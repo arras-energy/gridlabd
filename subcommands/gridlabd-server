@@ -70,7 +70,7 @@ function getport ()
 {
     if [ $# -eq 0 ]; then
         PORT=6267
-        while [ ! -z "$(curl -s http://localhost:$PORT/raw/mainloop_state 2>/dev/null)" ]; do
+        while [ ! -z "$(curl --retry 5 -sf http://localhost:$PORT/raw/mainloop_state 2>/dev/null)" ]; do
             PORT=$(($PORT+1))
         done
         echo $PORT
@@ -82,7 +82,7 @@ function getport ()
 function getstatus()
 {
     for P in $(list $*); do
-        echo $P $(curl -s http://localhost:$P/raw/mainloop_state 2>/dev/null || echo "NOREPLY")
+        echo $P $(curl --retry 5 -sf http://localhost:$P/raw/mainloop_state 2>/dev/null || echo "NOREPLY")
     done
 
 }
@@ -91,7 +91,7 @@ function waitport ()
 {
     for P in $(list $*); do
         T=0
-        while [ ! -z "$(curl -s http://localhost:$P/raw/mainloop_state 2>/dev/null)" ]; do
+        while [ ! -z "$(curl --retry 5 -sf http://localhost:$P/raw/mainloop_state 2>/dev/null)" ]; do
             sleep 1
             T=$(($T+1))
             if [ $T -gt $TIMEOUT ]; then
@@ -105,13 +105,13 @@ function list ()
 {
     if [ $# -gt 0 ]; then
         for P in $*; do
-            curl -s http://localhost:$P/raw/mainloop_state >/dev/null && echo $P
+            curl --retry 5 -sf http://localhost:$P/raw/mainloop_state >/dev/null && echo $P
         done
     else
         P=0
         while [ $P -lt $MAXPORTS ]; do
             PORT=$(($P+6267))
-            curl -s http://localhost:$PORT/raw/mainloop_state >/dev/null && echo $PORT
+            curl --retry 5 -sf http://localhost:$PORT/raw/mainloop_state >/dev/null && echo $PORT
             P=$(($P+1))
         done
     fi
@@ -178,7 +178,7 @@ case $1 in
             PORTLIST=$*
         fi
         for PORT in $PORTLIST; do
-            curl -s http://localhost:$PORT/control/$1
+            curl --retry 5 -sf http://localhost:$PORT/control/$1
         done
         waitport $PORTLIST
         ;;
@@ -210,7 +210,7 @@ case $1 in
                 echo "Server Last update         Status     Options"
                 echo "------ ------------------- ---------- --------------------"
                 for P in $(list $*); do
-                    printf '%6.6s %19.19s %10.10s %s\n' "$P" "$(stat -f %Sm -t "%Y-%m-%d %H:%M:%S" $LOGFILE-$P.log)" "$(curl -s http://localhost:$P/raw/mainloop_state 2>/dev/null || echo 'NOREPLY')" "$(curl -s http://localhost:$P/raw/command_line 2>/dev/null | cut -f5- -d' ')"
+                    printf '%6.6s %19.19s %10.10s %s\n' "$P" "$(stat -f %Sm -t "%Y-%m-%d %H:%M:%S" $LOGFILE-$P.log)" "$(curl --retry 5 -sf http://localhost:$P/raw/mainloop_state 2>/dev/null || echo 'NOREPLY')" "$(curl --retry 5 -sf http://localhost:$P/raw/command_line 2>/dev/null | cut -f5- -d' ')"
                 done
                 echo ""
                 echo "Press Ctrl-C to quit"

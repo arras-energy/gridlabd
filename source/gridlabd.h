@@ -3051,7 +3051,7 @@ static inline gld_object* get_object(OBJECT*obj)
 
 // Function: get_object(char*)
 // Find a gld_object from an object name
-static inline gld_object* get_object(char *n)
+static inline gld_object* get_object(const char *n)
 {
 	OBJECT *obj = callback->get_object(n);
 	return get_object(obj);

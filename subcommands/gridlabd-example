@@ -100,7 +100,7 @@ function main()
 
 function index()
 {
-    curl -sL -H "Cache-Control: no-cache" $URL/.index
+    curl --retry 5 -sL -H "Cache-Control: no-cache" $URL/.index
 }
 
 function get()
@@ -110,7 +110,7 @@ function get()
     fi
     rm -rf .$1
     mkdir .$1
-    curl -sL --fail-with-body -H "Cache-Control: no-cache" $URL/$1/.index > .$1/.index
+    curl --retry 5 -sL --fail-with-body -H "Cache-Control: no-cache" $URL/$1/.index > .$1/.index
     if [ $? -ne 0 ]; then
         MSG=$(cat .$1/.index)
         rm -rf .$1
@@ -122,7 +122,7 @@ function get()
     fi
     for FILE in $(cat .$1/.index); do
         echo -n Downloading $1...
-        curl -sL --fail-with-body -H "Cache-Control: no-cache" $URL/$1/$FILE > .$1/$FILE
+        curl --retry 5 -sL --fail-with-body -H "Cache-Control: no-cache" $URL/$1/$FILE > .$1/$FILE
         if [ $? -ne 0 ]; then
             MSG=$(cat .$1/$FILE)
             rm -rf .$1

@@ -667,12 +667,28 @@ static DIRLIST *popdir(void)
 	return item;
 }
 
+static FILE *validate_fh = NULL;
+
+static void validate_write(const char *format,...)
+{
+	if ( validate_fh != NULL )
+	{
+		va_list ptr;
+		va_start(ptr,format);
+		vfprintf(validate_fh,format,ptr);
+		va_end(ptr);
+		fflush(validate_fh);
+	}
+}
+
 void *run_test_proc(void *arg)
 {
 	size_t id = (size_t)arg;
 	IN_MYCONTEXT output_debug("starting run_test_proc id %d", id);
 	DIRLIST *item;
 	bool passed = true;
+	bool old_profiler = global_profiler;
+	global_profiler = TRUE;
 	while ( (item=popdir())!=NULL )
 	{
 		IN_MYCONTEXT output_debug("process %d picked up '%s'", id, item->name);
@@ -691,10 +707,13 @@ void *run_test_proc(void *arg)
 			snprintf(buffer,sizeof(buffer)-1,"%s%s%6.1f%s%s",flags[code],report_col,dt,report_col,item->name);
 			report_data("%s",buffer);
 			report_newrow();
+			const char *status[] = {"OK","FAILURE","SUCCESS","EXCEPTION"};
+			validate_write("\"%s\",%s,%.6lf\n",item->name,status[code],dt);
 		}
 		final += result;
 	}
 	if ( passed ) final.inc_passed();
+	global_profiler = old_profiler;
 	return NULL;
 }
 
@@ -780,6 +799,16 @@ static unsigned long long hashcode(const char *str)
 	return code;
 }
 
+static void validate_options(const char *options)
+{
+	validate_fh = fopen(options,"w");
+	if ( validate_fh == NULL )
+	{
+		output_error("unable to open '%s' (%s)",options,strerror(errno));
+		throw "validation aborted";
+	}
+}
+
 /** main validation routine */
 int validate(void *main, int argc, const char *argv[])
 {
@@ -787,6 +816,20 @@ int validate(void *main, int argc, const char *argv[])
 	int redirect_found = 0;
 	global_profiler = TRUE;
 	strcpy(validate_cmdargs,"");
+
+	const char *cmd_options = strchr(argv[0],'=');
+	if ( cmd_options != NULL )
+	{
+		try
+		{
+			validate_options(cmd_options+1);
+		}
+		catch (const char *errmsg)
+		{
+			output_fatal(errmsg);
+			exit(XC_TSTERR);
+		}
+	}
 	for ( i = 1 ; i < (size_t)argc ; i++ )
 	{
 		if ( strcmp(argv[i],"--redirect")==0 ) redirect_found = 1;
@@ -799,6 +842,8 @@ int validate(void *main, int argc, const char *argv[])
 	output_message("Starting validation test in directory '%s'", global_workdir);
 	char var[64];
 	if ( global_getvar("clean",var,sizeof(var))!=NULL && atoi(var)!=0 ) clean = true;
+
+	validate_write("autotest,status,time\n");
 
 	report_open();
 	if ( report_fp==NULL )

@@ -2,13 +2,13 @@
 #setenv REQ="The White House"
 #define RES=${SHELL gridlabd geodata merge -D address "$REQ" --reverse -f POS}
 #define ANS=38.89770,-77.03655
-#if ${RES} != ${ANS}
+#if "${RES}" != "${ANS}"
     #error "geodata -D address merge ${REQ}" is incorrect: expected ${ANS} but got ${RES} instead
 #endif
 
 #setenv REQ=38.8977,-77.036553
 #define RES=${SHELL gridlabd geodata merge -D address "$REQ" -f RAW:address}
 #define ANS=1600, Pennsylvania Avenue Northwest
-#if ${ANS} in ${RES}
+#if "${ANS}" in "${RES}"
     #error "geodata -D address location ${REQ}" is incorrect: expected '${ANS}' in '${RES}'
 #endif
