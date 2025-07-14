@@ -20,41 +20,53 @@ import datetime as dt
 import gridlabd.framework as app
 from gridlabd.nsrdb_weather import geocode,geohash
 from herbie import Herbie
+from herbie.models.cfs import time_series_variables as cfs_time_series
 
 GEOHASH_RESOLUTION=9
-MODELS = {
+PRODUCTS = {
     "NOAA" : {
-        "cfs" : {"time_series","6_hourly","monthly_means"},
-        "gefs" : {},
-        "gfs" : {},
-        "hafsa" : {},
-        "hiresw" : {},
-        "href" : {},
-        "hrrr" : {}, 
-        "hrrrak" : {},
-        "nam" : {},
-        "nbm" : {},
-        "rap" : {},
-        "rrfs" : {},
-        "rtma" : {}, 
-        "rtma_ak" : {},
-        "urma" : {}, 
-        "utma_ak" : {},
+        "cfs" : {
+            "time_series": cfs_time_series,
+            },
+        # "gefs" : {},
+        # "gfs" : {},
+        # "hafsa" : {},
+        # "hiresw" : {},
+        # "href" : {},
+        "hrrr" : {
+            "sfc": {
+                "TMP:2 m above": "Temperature at 2 meters",
+                "DPT:2 m above": "Dewpoint at 2 meters",
+                "RH:2 m above": "Relative humidity at 2 meters",
+                },
+            "prs": [],
+            "nat": [],
+            "subh": [],
+            }, 
+        # "hrrrak" : {},
+        # "nam" : {},
+        # "nbm" : {},
+        # "rap" : {},
+        # "rrfs" : {},
+        # "rtma" : {}, 
+        # "rtma_ak" : {},
+        # "urma" : {}, 
+        # "utma_ak" : {},
         },
-    "ECMWF": {
-        "ecmwf" : {},
-        "azure" : {},
-        "aws" : {},
-        },
-    "ECCC" : {
-        "gdps" : {},
-        "hrdps" : {},
-        "rdps" : {},
-        },
-    "USNAVY": {
-        "navgem_nomads" : {},
-        "nogaps_ncei" : {},
-        },
+    # "ECMWF": {
+    #     "ecmwf" : {},
+    #     "azure" : {},
+    #     "aws" : {},
+    #     },
+    # "ECCC" : {
+    #     "gdps" : {},
+    #     "hrdps" : {},
+    #     "rdps" : {},
+    #     },
+    # "USNAVY": {
+    #     "navgem_nomads" : {},
+    #     "nogaps_ncei" : {},
+    #     },
 }
 
 DATE = dt.datetime.now()
@@ -111,6 +123,7 @@ def main(argv:list[str]) -> int:
     hargs = []
     hkwds = {}
     points = {}
+    variable = None
 
     for key,value in args:
 
@@ -122,22 +135,30 @@ def main(argv:list[str]) -> int:
         # add your options 
         if key in ["-l","--list"]:
 
-            for source in value if value else MODELS.keys():
+            for source in value if value else PRODUCTS.keys():
                 spec = source.split("/") if value else []
                 if len(spec) == 0:
                     print(source)
                 elif len(spec) == 1:
-                    if not spec[0] in MODELS:
-                        app.error(f"{spec[0]} is not a valid forecast model source",app.E_NOTFOUND)
+                    if not spec[0] in PRODUCTS:
+                        app.error(f"{spec[0]} is not a valid forecast model source",code=app.E_NOTFOUND)
                     print(f"{source}:")
-                    print("\n".join(f"{n+1:3.0f}. {m}" for n,m in enumerate(sorted(MODELS[spec[0]]))))
+                    items = PRODUCTS[spec[0]]
+                    print("\n".join(f"{n+1:3.0f}. {m}" for n,m in enumerate(sorted(items))),flush=True)
                 elif len(spec) == 2:
-                    if spec[1] not in MODELS[spec[0]]:
-                        app.error(f"{spec[1]} is not found in {spec[0]}")
+                    if spec[1] not in PRODUCTS[spec[0]]:
+                        app.error(f"{spec[1]} is not found in {spec[0]}",code=app.E_NOTFOUND)
                     print(f"{'/'.join(value)}:")
-                    print("\n".join(f"{n+1:3.0f}. {m}" for n,m in enumerate(sorted(MODELS[spec[0]][spec[1]]))))
+                    items = PRODUCTS[spec[0]][spec[1]]
+                    print("\n".join(f"{n+1:3.0f}. {m}" for n,m in enumerate(sorted(items))),flush=True)
+                elif len(spec) == 3:
+                    if spec[2] not in PRODUCTS[spec[0]][spec[1]]:
+                        app.error(f"{spec[2]} is not found in {spec[0]/spec[1]}",code=app.E_NOTFOUND)
+                    print(f"{'/'.join(value)}:")
+                    items = PRODUCTS[spec[0]][spec[1]][spec[2]]
+                    print("\n".join(f"{n+1:3.0f}. {f'{m} ({items[m]})' if isinstance(items,dict) else m}" for n,m in enumerate(sorted(items))),flush=True)
                 else:
-                    app.error("subproduct listing not available",app.E_INVALID)
+                    app.error("subproduct listing not available",code=app.E_INVALID)
                     return app.E_INVALID
             return app.E_OK
 
@@ -145,6 +166,10 @@ def main(argv:list[str]) -> int:
 
             points = dict([to_point(x) for x in ",".join(value).split(";")])
         
+        elif key in ["-v","--variable"]:
+
+            variables = value
+
         elif len(value) == 0:
 
             hargs.append(guesstype(key))
@@ -155,22 +180,25 @@ def main(argv:list[str]) -> int:
 
         else:
 
-            app.error(f"{key} already specified",app.E_INVALID)
+            app.error(f"{key} already specified",code=app.E_INVALID)
             return app.E_INVALID
     try:
 
         if not hargs:
             hargs = [DATE]
-        print(f"calling Herbie({','.join([repr(x) for x in hargs])},{','.join([f'{x}={repr(y)}' for x,y in hkwds.items()])})...",file=sys.stderr)
+        app.verbose(f"calling Herbie({','.join([repr(x) for x in hargs])},{','.join([f'{x}={repr(y)}' for x,y in hkwds.items()])})...",file=sys.stderr)
         H = Herbie(*hargs,verbose=False,**hkwds)
         if any([H.grib is not None, H.idx is not None]):
             xr = H.xarray()
-            if not points:
+            if points:
+                print(points)
+            elif variable:
+                print(xr[variable])
+            else:
                 print(xr)
-                return app.E_OK
-            print(points)
+            return app.E_OK
         else:
-            app.error("unable to find data",app.E_FAILED)
+            app.error("unable to find data",code=app.E_FAILED)
             return app.E_FAILED
     
     except Exception as err:
@@ -185,4 +213,11 @@ def main(argv:list[str]) -> int:
 if __name__ == "__main__":
 
     # app.DEBUG = True
-    app.run(main,[__name__,"-p=37.5,-122.5;IL"])
+    # app.VERBOSE = True
+    app.run(main,[__name__,"-l"])
+    app.run(main,[__name__,"-l=NOAA"])
+    app.run(main,[__name__,"-l=NOAA/cfs"])
+    app.run(main,[__name__,"-l=NOAA/cfs/time_series"])
+    app.run(main,[__name__,"-l=NOAA/hrrr"])
+    app.run(main,[__name__,"-l=NOAA/hrrr/sfc"])
+    app.run(main,[__name__,"--model=hrrr","--product=sfc","--fxx=0","-v=TMP:2 m above","-p=37.5,-122.5;IL"])
