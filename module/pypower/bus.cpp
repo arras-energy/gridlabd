@@ -66,15 +66,15 @@ bus::bus(MODULE *module)
 
 			PT_double, "baseKV[kV]", get_baseKV_offset(),
 				PT_REQUIRED,
-				PT_DESCRIPTION, "voltage magnitude (per unit)",
+				PT_DESCRIPTION, "base voltage (kV)",
 
 			PT_double, "Vm[pu.kV]", get_Vm_offset(),
 				PT_DEFAULT, "1 pu.V",
-				PT_DESCRIPTION, "voltage angle (degrees)",
+				PT_DESCRIPTION, "voltage magnitude (per unit)",
 
 			PT_double, "Va[deg]", get_Va_offset(),
 				PT_DEFAULT, "0 deg",
-				PT_DESCRIPTION, "base voltage (kV)",
+				PT_DESCRIPTION, "voltage angle (degrees)",
 
 			PT_int32, "zone", get_zone_offset(),
 				PT_DESCRIPTION, "loss zone (1-999)",
