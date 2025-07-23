@@ -32,6 +32,17 @@ public:
 	GL_ATOMIC(int32,child_count);
 	GL_ATOMIC(complex,current);
 	GL_ATOMIC(double,loss);
+
+private:
+	gld_object *fobj;
+	gld_object *tobj;
+	double fromKV;
+	double toKV;
+	double length;
+	double frompuZ;
+	double topuZ;
+	bool is_transformer;
+	bool is_device;
 	
 public:
 	// event handlers
