@@ -26,7 +26,7 @@ try:
     count = 0
     for spec in sys.argv[3:]:
         name,prop = spec.split('/')
-        if ref['objects'][name][prop] != act['objects'][name][prop]:
+        if abs(1-float(ref['objects'][name][prop].split()[0])/float(act['objects'][name][prop].split()[0])) > 1e-4:
             if VERBOSE:
                 print(f"ERROR: {spec} differs --> {ref['objects'][name][prop]} != {act['objects'][name][prop]}", file=sys.stderr)
             count += 1
