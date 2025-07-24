@@ -232,13 +232,24 @@ int branch::init(OBJECT *parent)
 		rateC = max(rateB,rateC);
 	}
 	
+	// turns ratio
+	if ( ratio < 0 )
+	{
+		error("turns ratio must be non-negative");
+		return 0;
+	}
+
+	// branch types:
+	//   length == 0 && fromKV!=toKV -> transformer
+	//   length == 0 && fromKV == toKV -> switching device
+	//   length > 0 -> powerline
 	fromKV = f->get_baseKV();
 	toKV = t->get_baseKV();
-	is_transformer = ( ratio != 0 );
+	is_transformer = ( fromKV != toKV );
 
 	// haversine calculation
 	length = fobj->get_distance(tobj);
-	if ( ratio == 0 && ( r == 0 || x == 0 ) )
+	if ( ! is_transformer && ( r == 0 || x == 0 ) )
 	{
 		if ( isnan(length) )
 		{
@@ -252,42 +263,17 @@ int branch::init(OBJECT *parent)
 				length);
 		}
 	}
-	is_device = ( ratio == 0 && length == 0 );
+	else if ( is_transformer && length > 0.01 ) // 60 feet minimum separation
+	{
+		warning("transformer from and to busses are %.2lf miles apart",length);
+	}
+	is_device = ( ! is_transformer && length < 0.01 ); // 60 feet minimum separation
 
 	// // per-unit impedances
 	extern double base_MVA;
 	frompuZ = fromKV*fromKV/base_MVA;
 	topuZ = toKV*toKV/base_MVA;
 	
-	// Generally realistic lines parameters by voltage level
-
-		// 138 kv lines
-		//   r = 0.1 - 0.25 ohms/mile
-		//   x = 0.60 ohms/mile
-		//   b = 4.5 micro-mhos/mile
-
-		// 230 kv lines
-		//   r = 0.05 - 0.1 ohms/mile
-		//   x = 0.50 ohms/mile
-		//   b = 5.5 micro-mhos/mile
-
-		// 345 kv lines
-		//   r = 0.03 - 0.05 ohms/mile
-		//   x = 0.40 ohms/mile
-		//   b = 6.0 micro-mhos/mile
-
-		// 500 kv lines
-		//   r = 0.02 - 0.04 ohms/mile
-		//   x = 0.30 ohms/mile
-		//   b = 6.5 micro-mhos/mile
-
-		// Linear fit for line parameters (using best-in-range values):
-		//   r = 0.0052*fromKV+4.0373 Ohms/mile
-		//   x = -0.0008*fromKV+0.699 Ohms/mile
-		//   b = -0.0002*fromKV+0.1122 uS/mile
-
-		// Source: https://www.eng-tips.com/threads/typical-transmission-line-parameters.65375/
-
 	// Generally accepted transformer parameters by rating
 
 		// Dry-type 3-phase:
@@ -325,7 +311,7 @@ int branch::init(OBJECT *parent)
 
 		//   b = 1/(r+jx)
 
-	// Generally accepted device parameters by voltage level
+	// Generally accepted device parameters
 
 		// r = 0.001 Ohm
 		// x = 0.010 Ohm
@@ -349,7 +335,6 @@ int branch::init(OBJECT *parent)
 		else if ( length > 0 )
 		{
 			// power line
-			// r = (0.0052*fromKV+4.0373)*length/frompuZ;
 			double Imax = rateA / cos(autosize_angle);
 			r = rateA / Imax / frompuZ;
 			warning("line r is zero, autosize for %.1lf A to %.4lg pu.Ohms for %.3lg kV %.1lf mile line",Imax,r,fromKV,length);
@@ -367,7 +352,7 @@ int branch::init(OBJECT *parent)
 		else if ( is_transformer )
 		{
 			// transformer
-			x = r*max(26.8608*log(rateA)-11.7491,5.0);
+			x = r*max(26.8608*log(rateA/1e6)-11.7491,5.0);
 			warning("transformer x is zero, autosize to default %.4lg pu.Ohm for %.1lf MVA",x,rateA);
 		}
 		else if ( length > 0 )
@@ -383,18 +368,16 @@ int branch::init(OBJECT *parent)
 		if ( is_device )
 		{
 			// device, e.g., contactor
-			b = -x/(x*x+r*r);
-			warning("device b is zero, autosize to default %.3lf pu.S for z=%.4lg%+.4lgj pu.Ohm",b,r,x);
+			warning("device b is zero, no autosize available");
 		}
 		else if ( is_transformer )
 		{
 			// transformer
-			b = -x/(x*x+r*r);
-			warning("transformer b is zero, autosize to default %.1lf pu.S for z=%.4lg%+.4lgj pu.Ohm",b*1e6,r,x);
+			warning("transformer b is zero, no autosize available");
 		}
 		else if ( length > 0 )
 		{
-			// power line
+			// power line line-charging susceptance
 			b = (-0.0002*fromKV+0.1122)*1e-6*length*frompuZ;
 			warning("b is zero, autosize to %.4lg pu.S for %.3lg kV %.1lf mile line",b,fromKV,length);
 		}

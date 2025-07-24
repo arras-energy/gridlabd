@@ -1,13 +1,15 @@
 // test_simple.glm
 
 #set suppress_repeat_messages=FALSE
+//#option verbose
+
 module pypower
 {
 	autosize_angle 60 deg;
 	save_case TRUE;
 }
 
-#define BASEKV=69.0 kV
+#define BASEKV=69.0
 
 object bus
 {
@@ -25,7 +27,7 @@ object bus
         Qmax +10 MVAr;
         status 1;
     };
-    baseKV ${BASEKV};
+    baseKV ${BASEKV} kV;
 }
 
 object bus
@@ -34,33 +36,34 @@ object bus
 	longitude -122.0;
     type 1;
     name "bus_2";
-    baseKV ${BASEKV};
+    baseKV ${BASEKV} kV;
 }
 
 object bus
 {
-	latitude 37.2;
-	longitude -122.1;
+	latitude 37.1;
+	longitude -122.0;
     name "bus_3";
     type 1;
     Pd 10 MW;
     Qd 1 MVAr;
-    baseKV ${BASEKV};
+    baseKV ${BASEKV} kV;
 }
 
 object bus
 {
-	latitude 37.2;
-	longitude -122.2;
+	latitude 37.1;
+	longitude -122.0;
     name "bus_4";
     type 1;
     Pd 10 MW;
     Qd 1 MVAr;
-    baseKV ${BASEKV};
+    baseKV (${BASEKV}/2);
 }
 
 object branch
 {
+	name "line_1_2";
 	from "bus_1";
 	to "bus_2";
 	rateA 500 MVA;
@@ -69,6 +72,7 @@ object branch
 
 object branch
 {
+	name "device_2_3";
 	from "bus_2";
 	to "bus_3";
 	rateA 200 MVA;
@@ -77,8 +81,10 @@ object branch
 
 object branch
 {
+	name "transformer_2_4";
 	from "bus_2";
 	to "bus_4";
+	ratio 1.0;
 	rateA 200 MVA;
 	status IN;
 }
@@ -89,7 +95,7 @@ object assert
 	parent "gen_1";
 	target "Pg";
 	relation "==";
-	value 20.0645 MW;
+	value 20.0451 MW;
 	within 0.001;
 }
 object assert
@@ -97,7 +103,7 @@ object assert
 	parent "gen_1";
 	target "Qg";
 	relation "==";
-	value 2.67203 MVAr;
+	value 2.38901 MVAr;
 	within 0.001;
 }
 
