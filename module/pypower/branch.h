@@ -8,6 +8,8 @@
 
 class branch : public gld_object 
 {
+public:
+	static double autosize_angle;
 
 public:
 	// published properties

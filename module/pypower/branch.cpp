@@ -9,6 +9,8 @@ EXPORT_INIT(branch);
 CLASS *branch::oclass = NULL;
 branch *branch::defaults = NULL;
 
+double branch::autosize_angle = 0.0; // 0 = no sizing 
+
 branch::branch(MODULE *module)
 {
 	if (oclass==NULL)
@@ -90,6 +92,14 @@ branch::branch(MODULE *module)
 		{
 				throw "unable to publish branch properties";
 		}
+
+	    gl_global_create("pypower::autosize_angle",
+	        PT_double, &autosize_angle, 
+	        PT_UNITS, "rad",
+	        PT_DESCRIPTION, "Autosize voltage angle to use (0 for no autosizing)",
+	        NULL);
+
+
 	}
 }
 
@@ -181,21 +191,46 @@ int branch::init(OBJECT *parent)
 		set_tbus(t->get_bus_i());
 	}
 
+	// autosize angle check
+	if ( autosize_angle < 0 )
+	{
+		error("autosize_angle must be non-negative");
+		return 0;
+	}
+	if ( autosize_angle > PI/2-0.1 )
+	{
+		warning("autosize_angle should not be 90 deg or greater");
+	}
+
+	// rate checks
 	if ( rateA <= 0 )
 	{
-		error("rateA is not specified");
-		return 0;
+		if ( autosize_angle > 0 )
+		{
+			error("rateA is not specified");
+			return 0;
+		}
+		else
+		{
+			warning("rateA is not specified");
+		}
 	}
 	if ( rateB > 0 && rateB < rateA )
 	{
 		warning("rateB is less than rateA, setting rateB equal to rateA");
 	}
-	rateB = max(rateA,rateB);
+	if ( autosize_angle > 0 )
+	{
+		rateB = max(rateA,rateB);
+	}
 	if ( rateC > 0 && rateC < rateB )
 	{
 		warning("rateC is less than rateB, setting rateC equal to rateB");
 	}
-	rateC = max(rateB,rateC);
+	if ( autosize_angle > 0 )
+	{
+		rateC = max(rateB,rateC);
+	}
 	
 	fromKV = f->get_baseKV();
 	toKV = t->get_baseKV();
@@ -296,70 +331,72 @@ int branch::init(OBJECT *parent)
 		// x = 0.010 Ohm
 		// b = 1/(r+jx)
 
-	if ( r == 0 && frompuZ > 0 )
+	if ( autosize_angle > 0 && r == 0 && frompuZ > 0 )
 	{
 		if ( is_device )
 		{
 			// device, e.g., contactor
 			r = 0.001/frompuZ; // 1 mOhm (?)
-			warning("device r is zero, setting to default %.03lg pu.mOhm",r*1e3);
+			warning("device r is zero, autosize to default %.03lg pu.mOhm",r*1e3);
 		}
 		else if ( is_transformer )
 		{
 			// transformer
 			r = (0.0348*log(fromKV)-0.04209)/frompuZ;
-			warning("transformer r is zero, setting to default %.4lg pu.Ohm for %.1lf kV",r,fromKV);
+			warning("transformer r is zero, autosize to default %.4lg pu.Ohm for %.1lf kV",r,fromKV);
 
 		}
-		else
+		else if ( length > 0 )
 		{
 			// power line
-			r = (0.0052*fromKV+4.0373)*length/frompuZ;
-			warning("line r is zero (defaulting to %.4lg Ohms for %.3lg kV %.1lf mile line)",r,fromKV,length);
+			// r = (0.0052*fromKV+4.0373)*length/frompuZ;
+			double Imax = rateA / cos(autosize_angle);
+			r = rateA / Imax / frompuZ;
+			warning("line r is zero, autosize for %.1lf A to %.4lg pu.Ohms for %.3lg kV %.1lf mile line",Imax,r,fromKV,length);
 		}
 	}
 	
-	if ( x == 0 && frompuZ > 0 )
+	if ( autosize_angle > 0 && x == 0 && frompuZ > 0 )
 	{
 		if ( is_device )
 		{
 			// device, e.g., contactor
 			x = 10*r; // x/r = 10 (?)
-			warning("device x is zero, setting to default %.03lg pu.mOhm",x*1e3);
+			warning("device x is zero, autosize to default %.03lg pu.mOhm",x*1e3);
 		}
 		else if ( is_transformer )
 		{
 			// transformer
 			x = r*max(26.8608*log(rateA)-11.7491,5.0);
-			warning("transformer x is zero, setting to default %.4lg pu.Ohm for %.1lf MVA",x,rateA);
+			warning("transformer x is zero, autosize to default %.4lg pu.Ohm for %.1lf MVA",x,rateA);
 		}
-		else
+		else if ( length > 0 )
 		{
 			// power line
 			x = (-0.0008*fromKV+0.699)*length/frompuZ;
-			warning("line x is zero (defaulting to %.4lg Ohms for %.3lg kV %.1lf mile line)",x,fromKV,length);
+			warning("line x is zero, autosize to %.4lg pu.Ohms for %.3lg kV %.1lf mile line",x,fromKV,length);
 		}
 	}
 
-	if ( b == 0 && frompuZ > 0 )
+	if ( autosize_angle > 0 && b == 0 && frompuZ > 0 )
 	{
 		if ( is_device )
 		{
 			// device, e.g., contactor
 			b = -x/(x*x+r*r);
-			warning("device b is zero, setting to default %.3lf pu.S for z=%.4lg%+.4lgj pu.Ohm",b,r,x);
+			warning("device b is zero, autosize to default %.3lf pu.S for z=%.4lg%+.4lgj pu.Ohm",b,r,x);
 		}
 		else if ( is_transformer )
 		{
 			// transformer
 			b = -x/(x*x+r*r);
-			warning("transformer b is zero, setting to default %.1lf pu.S for z=%.4lg%+.4lgj pu.Ohm",b*1e6,r,x);
+			warning("transformer b is zero, autosize to default %.1lf pu.S for z=%.4lg%+.4lgj pu.Ohm",b*1e6,r,x);
 		}
-		else
+		else if ( length > 0 )
 		{
 			// power line
 			b = (-0.0002*fromKV+0.1122)*1e-6*length*frompuZ;
-			warning("b is zero (defaulting to %.4lg pu.S for %.3lg kV %.1lf mile line)",b,fromKV,length);
+			warning("b is zero, autosize to %.4lg pu.S for %.3lg kV %.1lf mile line",b,fromKV,length);
 		}
 	}	
 
