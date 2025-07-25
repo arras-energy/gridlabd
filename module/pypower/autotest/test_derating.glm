@@ -45,5 +45,5 @@ object weather
 #set savefile=${modelname/.glm/.json}
 
 #ifexist "../test_derating_powerplant_capacity.csv"
-#on_exit 0 diff ../test_derating_powerplant_capacity.csv test_derating_powerplant_capacity.csv_header_type
+#on_exit 0 diff ../test_derating_powerplant_capacity.csv test_derating_powerplant_capacity.csv
 #endif
