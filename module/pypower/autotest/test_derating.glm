@@ -1,14 +1,10 @@
-module pypower
-{
-    message_flags VERBOSE;
-}
+// module/pypower/autotest/test_derating.glm
+
+module pypower;
 module tape
 {
     csv_header_type NAME;
 }
-
-#set output_message_context=NONE
-#option verbose
 
 object bus
 {
@@ -43,3 +39,7 @@ object weather
 }
 
 #set savefile=${modelname/.glm/.json}
+
+#ifexist "../test_derating_powerplant_capacity.csv"
+#on_exit 0 diff ../test_derating_powerplant_capacity.csv test_derating_powerplant_capacity.csv_header_type
+#endif
