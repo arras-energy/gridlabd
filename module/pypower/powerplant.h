@@ -5,6 +5,7 @@
 #define _PYPOWER_POWERPLANT_H
 
 #include "gridlabd.h"
+#include "weather.h"
 
 class powerplant : public gld_object
 {
@@ -87,11 +88,17 @@ public:
 	GL_ATOMIC(double,total_emissions);
 	GL_ATOMIC(double,Pg);
 	GL_ATOMIC(double,Qg);
+	GL_ATOMIC(double,Tnominal);
+	GL_ATOMIC(double,derating);
+	GL_ATOMIC(double,Tcutoff);
+	GL_ATOMIC(object,weather);
 
 private:
 	PyObject *py_controller;
 	PyObject *py_args;
 	PyObject *py_kwargs;
+	class weather *weather_src;
+	double pmax;
 
 private:
 	bool is_dynamic; // true if parent is a gen otherwise false
