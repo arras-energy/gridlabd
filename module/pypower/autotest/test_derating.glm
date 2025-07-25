@@ -1,5 +1,9 @@
 // module/pypower/autotest/test_derating.glm
 
+#ifexist "../test_derating_weather.csv"
+#define DIR=..
+#endif
+
 module pypower;
 module tape
 {
@@ -21,7 +25,7 @@ object bus
         };
         object recorder
         {
-            file test_derating_powerplant_capacity;
+            file test_derating_powerplant_capacity.csv;
             property Pmax,Qmax;
             interval 0;
         };
@@ -34,7 +38,7 @@ object weather
     Td 10 degC;
     object player
     {
-        file test_derating_weather.csv;
+        file ${DIR:-.}/test_derating_weather.csv;
     };
 }
 
