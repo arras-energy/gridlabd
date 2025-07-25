@@ -2571,6 +2571,10 @@ module/pypower/autotest/test_case39.glm
 module/pypower/autotest/test_case4gs.glm
 module/pypower/autotest/test_case57.glm
 module/pypower/autotest/test_case9.glm
+module/pypower/autotest/test_derating.glm
+module/pypower/autotest/test_derating_powerplant_capacity
+module/pypower/autotest/test_derating_powerplant_capacity.csv
+module/pypower/autotest/test_derating_weather.csv
 module/pypower/autotest/test_shunt_capacitor.glm
 module/pypower/autotest/verify.py
 module/pypower/branch.cpp
