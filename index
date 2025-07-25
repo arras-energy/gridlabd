@@ -2538,6 +2538,7 @@ module/pypower/autotest/case57.py
 module/pypower/autotest/case9.py
 module/pypower/autotest/check_case.py
 module/pypower/autotest/controllers.py
+module/pypower/autotest/test_autosize.glm
 module/pypower/autotest/test_case118.glm
 module/pypower/autotest/test_case14.glm
 module/pypower/autotest/test_case14_controller.glm

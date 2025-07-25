@@ -29,6 +29,7 @@ module pypower
 	double total_loss[MW]; // System-wide line losses
 	double generation_shortfall[MW]; // System-wide generation shortfall
     bool with_emissions; // Include emissions results
+    double autosize_angle[rad]; // Autosize voltage angle to use (0 for no autosizing)
 }
 ~~~
 
@@ -50,6 +51,24 @@ increasing the value of `solver_update_resolution`.  The larger this value
 is, the larger a difference between an old value and new value from the
 solver must be to be considered a change necessitating additional iteration.
 The default value is `1e-8`, which should be sufficient for most models.
+
+If `autosize_angle` is specified then any `branch` parameters that are not
+specified will be calculated automatically using the following formulas:
+
+  - lines
+    - $r = \cos(autosize\_angle) * baseMVA / baseKV^2$
+    - $x = (-0.0008*baseKV+0.699) * length * baseMVA / baseKV^2$
+    - $b = (-0.0002*baseKV+0.1122) * 1e-6 * length * baseMVA / baseKV^2$
+
+  - contactors
+    - $r = 0.001 * baseMVA / baseKV^2$
+    - $x = 10 * r$
+    - $b = 0$
+
+  - transformers
+    - $r = (0.0348*\log(baseKV)-0.04209) * baseMVA / baseKV^2$
+    - $x = r*\max(26.8608*\log(rateA/1e6)-11.7491,5.0)$
+    - $b = 0$
 
 The following `pypower` data elements are implemented using the corresponding
 GridLAB-D `pypower` module classes.
