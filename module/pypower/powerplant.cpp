@@ -158,6 +158,18 @@ powerplant::powerplant(MODULE *module)
 			PT_double, "Qg[MW]", get_Qg_offset(),
 				PT_DESCRIPTION, "generator actual reactive power output (MW)",
 
+			PT_double, "Tnominal[degC]", get_Tnominal_offset(),
+				PT_DESCRIPTION, "powerplant nominal operating temperature (degC)",
+
+			PT_double, "derating[pu/degC]", get_derating_offset(),
+				PT_DESCRIPTION, "powerplant temperature derating constant (pu/degC)",
+
+			PT_double, "Tcutoff[degC]", get_Tcutoff_offset(),
+				PT_DESCRIPTION, "powerplant cutoff temperature (degC)",
+
+			PT_object, "weather", get_weather_offset(),
+				PT_DESCRIPTION, "weather object",
+				
 			NULL) < 1 )
 		{
 				throw "unable to publish powerplant properties";
@@ -173,6 +185,7 @@ int powerplant::create(void)
 	last_t = 0;
 	last_Sm = 0;
 	gen_cf = 1.0;
+	weather_src = NULL;
 
 	return 1; // return 1 on success, 0 on failure
 }
@@ -302,6 +315,33 @@ int powerplant::init(OBJECT *parent_hdr)
 		break;
 	}
 
+	// check derating
+	if ( get_weather() != NULL && derating != 0 && Tcutoff != 0 )
+	{
+		weather_src = OBJECTDATA(get_weather(),class weather);
+		verbose("linking powerplant performance to '%s.Td'",get_object(get_weather())->get_name());
+		if ( ! weather_src->isa("weather","pypower") )
+		{
+			error("object '%s' is not a pypower weather object",get_object(get_weather())->get_name());
+			return 0;
+		}
+		if ( Tnominal >= Tcutoff )
+		{
+			error("Tcutoff is not greater than Tnominal");
+			return 0;
+		}
+		if ( derating < 0 )
+		{
+			error("derating must be non-negative");
+			return 0;
+		}
+		if ( derating*(Tcutoff-Tnominal) > 1.0 )
+		{
+			warning("derating cutoff is %.1lf degC",1/derating+Tnominal);
+		}
+
+	}
+
 	return 1; // return 1 on success, 0 on failure, 2 on retry later
 }
 
@@ -380,6 +420,25 @@ TIMESTAMP powerplant::precommit(TIMESTAMP t0)
 	}
 	last_t = t0;
 
+	// powerplant derating (if any)
+	pmax = operating_capacity;
+	if ( weather_src != NULL && weather_src->get_Td() > Tnominal )
+	{
+		if ( weather_src->get_Td() > Tcutoff )
+		{
+			pmax = 0.0;
+		}
+		else
+		{
+			pmax *= 1 - ( weather_src->get_Td() - Tnominal ) * derating;
+			if ( pmax < 0 )
+			{
+				pmax = 0;
+			}
+		}
+		verbose("powerplant rating at %.1lf degC is %.1lf MW",weather_src->get_Td(),pmax);
+	}
+
 	// post costs
 	if ( costobj != NULL )
 	{
@@ -406,7 +465,7 @@ TIMESTAMP powerplant::presync(TIMESTAMP t0)
 		gen *parent = (gen*)get_parent();
 		parent->add_Pg(Pg);
 		parent->add_Qg(Qg);
-		parent->add_Pmax(operating_capacity);
+		parent->add_Pmax(pmax);
 	}
 	else // bus parent
 	{
