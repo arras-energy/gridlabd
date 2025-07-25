@@ -4,6 +4,11 @@
 #define DIR=..
 #endif
 
+clock
+{
+    timezone "GMT0";
+}
+
 module pypower;
 module tape
 {
@@ -45,5 +50,5 @@ object weather
 #set savefile=${modelname/.glm/.json}
 
 #ifexist "../test_derating_powerplant_capacity.csv"
-#on_exit 0 diff ../test_derating_powerplant_capacity.csv test_derating_powerplant_capacity.csv
+#on_exit 0 diff ../test_derating_powerplant_capacity.csv test_derating_powerplant_capacity.csv > gridlabd.diff
 #endif
