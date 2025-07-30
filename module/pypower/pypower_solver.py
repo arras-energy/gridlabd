@@ -42,6 +42,7 @@ csv_headers = {
     "branch" : "fbus,tbus,r,x,b,rateA,rateB,rateC,ratio,angle,status,angmin,angmax,Pfrom,Qfrom,Pto,Qto,mu_Sfrom,mu_Sto,mu_angmin,mu_angmax",
     "gen" : "bus,Pg,Qg,Qmax,Qmin,Vg,mBase,status,Pmax,Pmin,Pc1,Pc2,Qc1min,Qc1max,Qc2min,Qc2max,ramp_agc,ramp_10,ramp_30,ramp_q,apf,mu_Pmax,mu_Pmin,mu_Qmax,mu_Qmin",
     "gencost" : "model,startup,shutdown,parameters",
+    "dcline" : "fbus,tbus,status,Pf,Pt,Qf,Qt,Vf,Vt,Pmin,Pmax,Qminf,Qmaxf,Qmint,Qmaxt,mu_Pmin,mu_Pmax,mu_Qminf,mu_Qmaxf,mu_Qmint,mu_Qmaxt,mu_mu_Pmin",
 }
 
 class PypowerError(Exception):
@@ -70,7 +71,7 @@ def write_case(data,filename,diagnostics=True):
             json.dump(result,fh,indent=2)
     elif ext == ".csv":
         for key,value in data.items():
-            if key in ["bus","branch","gen","gencost"]:
+            if key in ["bus","branch","gen","gencost","dcline"]:
                 with open(f"{name}_{key}.csv","w") as fh:
                     writer = csv.writer(fh)
                     writer.writerow(csv_headers[key].split(','))
@@ -131,7 +132,7 @@ def jsonify(data):
             if type(y) in [int,str,float,bool]:
                 result[x] = y
             elif hasattr(y,"tolist"):
-                if x in ["bus","branch","gen"]:
+                if x in ["bus","branch","gen","dcline"]:
                     result[x] = f"{modelname.replace(os.getcwd(),'.')}_results_{x}.csv"
                 else:
                     result[x] = y.tolist()
@@ -200,7 +201,7 @@ def solver(pf_case):
         casedata = dict(version=str(pf_case['version']),baseMVA=pf_case['baseMVA'])
 
         # copy from model
-        for name in ['bus','branch']:
+        for name in ['bus','branch','dcline']:
             if name in pf_case:
                 casedata[name] = array(pf_case[name])
 

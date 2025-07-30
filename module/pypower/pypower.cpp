@@ -71,6 +71,7 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
 
     new bus(module);
     new branch(module);
+    new dcline(module);
     new gen(module);
     new gencost(module);
     new geodata(module);
@@ -246,6 +247,8 @@ PyObject *gendata = NULL;
 size_t ngencost = 0;
 gencost *gencostlist[MAXENT];
 PyObject *gencostdata = NULL;
+
+PyObject *dclinedata = NULL;
 
 static void PyMatrix_INIT(PyObject *a,size_t n,size_t m,double value=0)
 {
@@ -438,6 +441,13 @@ EXPORT bool on_init(void)
         PyDict_SetItemString(data,"gencost",gencostdata);
     }
 
+    if ( dcline::ndcline > 0 )
+    {
+        dclinedata = PyList_New(dcline::ndcline);
+        PyMatrix_INIT(dclinedata,dcline::ndcline,23,0.0);
+        PyDict_SetItemString(data,"dcline",dclinedata);
+    }
+
     // set options
     gld_global global_verbose("verbose");
     PyDict_SetItemString(data,"verbose",global_verbose.get_bool()?Py_True:Py_False);
@@ -487,6 +497,16 @@ EXPORT bool on_init(void)
         PyObject *value = Py##TO##_From##FROM(obj->get_##NAME()); \
         if ( value == NULL ) { \
             gl_warning("pypower:on_*(t0=%lld): unable to create value " #NAME " for data item %d",t0,INDEX); \
+        } \
+        else { \
+            PyList_SET_ITEM(pyobj,INDEX,value); \
+            Py_XDECREF(py); \
+}}}
+#define SENDXP(INDEX,NAME,PART,FROM,TO) { PyObject *py = PyList_GET_ITEM(pyobj,INDEX); \
+    if ( py == NULL || fabs(obj->get_##NAME().PART-Py##TO##_As##FROM(py)) > solver_update_resolution ) { \
+        PyObject *value = Py##TO##_From##FROM(obj->get_##NAME().PART); \
+        if ( value == NULL ) { \
+            gl_warning("pypower:on_*(t0=%lld): unable to create value " #NAME "." #PART " for data item %d",t0,INDEX); \
         } \
         else { \
             PyList_SET_ITEM(pyobj,INDEX,value); \
@@ -598,6 +618,42 @@ static TIMESTAMP update_controller(TIMESTAMP t0,PyObject *command,const char *na
         }
     }
 
+    if ( dclinedata )
+    {
+        for ( size_t i = 0 ; i < dcline::ndcline ; i++ )
+        {
+            dcline *obj = dcline::dclinelist[i];
+            PyObject *pyobj = PyList_GetItem(dclinedata,i);
+            SENDX(0,fbus,Long,Long)
+            SENDX(1,tbus,Long,Long)
+            SENDX(2,status,Long,Long)
+            SENDXP(3,Sfrom,r,Double,Float)
+            SENDXP(4,Sfrom,i,Double,Float)
+            SENDXP(5,Sto,r,Double,Float)
+            SENDXP(6,Sto,i,Double,Float)
+            SENDX(7,Vfrom,Double,Float)
+            SENDX(8,Vto,Double,Float)
+            SENDX(9,Pmin,Double,Float)
+            SENDX(10,Pmax,Double,Float)
+            SENDX(11,Qminf,Double,Float)
+            SENDX(12,Qmaxf,Double,Float)
+            SENDX(13,Qmint,Double,Float)
+            SENDX(14,Qmaxt,Double,Float)
+            SENDX(15,loss0,Double,Float)
+            SENDX(16,loss1,Double,Float)
+            if ( opf_needed(t0) )
+            {
+                SENDX(17,mu_Pmin,Double,Float)
+                SENDX(18,mu_Pmax,Double,Float)
+                SENDX(19,mu_Qminf,Double,Float)
+                SENDX(20,mu_Qmaxf,Double,Float)
+                SENDX(21,mu_Qmint,Double,Float)
+                SENDX(22,mu_Qmaxt,Double,Float)
+            }
+
+        }
+    }
+
     PyDict_SetItemString(data,"t",PyLong_FromLong(t0));        
     PyErr_Clear();
     PyObject *ts = PyObject_CallOneArg(command,data);
@@ -644,6 +700,24 @@ static TIMESTAMP update_controller(TIMESTAMP t0,PyObject *command,const char *na
             if ( CHANGE ) { \
                 gl_debug("pypower.update_solution(t=%lld): sending bus %d %s, updating from %lf to %lf", \
                     t0,n,#NAME,b,a); \
+                n_changes++; \
+            } \
+            Py_XDECREF(py); \
+}}}
+
+#define SENDP(INDEX,NAME,PART,FROM,TO,CHANGE) { PyObject *py = PyList_GET_ITEM(pyobj,INDEX); \
+    double a = obj->get_##NAME().PART; \
+    double b = Py##TO##_As##FROM(py); \
+    if ( py == NULL || fabs(a-b) > solver_update_resolution ) { \
+        PyObject *value = Py##TO##_From##FROM(a); \
+        if ( value == NULL ) { \
+            gl_warning("pypower:on_*(t0=%lld): unable to create value " #NAME "." #PART " for data item %d",t0,INDEX); \
+        } \
+        else { \
+            PyList_SET_ITEM(pyobj,INDEX,value); \
+            if ( CHANGE ) { \
+                gl_debug("pypower.update_solution(t=%lld): sending bus %d %s, updating from %lf to %lf", \
+                    t0,n,#NAME "." #PART,b,a); \
                 n_changes++; \
             } \
             Py_XDECREF(py); \
@@ -778,6 +852,43 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
                 Py_XDECREF(py);
                 PyList_SET_ITEM(pyobj,3,PyUnicode_FromString(obj->get_costs()));
                 n_changes++;
+            }
+        }
+    }
+
+    if ( dclinedata )
+    {
+        gl_verbose("updating dcline data");
+        PyDict_SetItemString(data,"dcline",dclinedata);
+        for ( size_t n = 0 ; n < dcline::ndcline ; n++ )
+        {
+            dcline *obj = dcline::dclinelist[n];
+            PyObject *pyobj = PyList_GetItem(dclinedata,n);
+            SEND(0,fbus,Long,Long,true)
+            SEND(1,tbus,Long,Long,true)
+            SEND(2,status,Long,Long,true)
+            SENDP(3,Sfrom,r,Double,Float,true)
+            SENDP(4,Sfrom,i,Double,Float,true)
+            SENDP(5,Sto,r,Double,Float,true)
+            SENDP(6,Sto,i,Double,Float,true)
+            SEND(7,Vfrom,Double,Float,true)
+            SEND(8,Vto,Double,Float,true)
+            SEND(9,Pmin,Double,Float,true)
+            SEND(10,Pmax,Double,Float,true)
+            SEND(11,Qminf,Double,Float,true)
+            SEND(12,Qmaxf,Double,Float,true)
+            SEND(13,Qmint,Double,Float,true)
+            SEND(14,Qmaxt,Double,Float,true)
+            SEND(15,loss0,Double,Float,true)
+            SEND(16,loss1,Double,Float,true)
+            if ( do_opf )
+            {
+                SEND(17,mu_Pmin,Double,Float,false)
+                SEND(18,mu_Pmax,Double,Float,false)
+                SEND(19,mu_Qminf,Double,Float,false)
+                SEND(20,mu_Qmaxf,Double,Float,false)
+                SEND(21,mu_Qmint,Double,Float,false)
+                SEND(22,mu_Qmaxt,Double,Float,false)
             }
         }
     }
@@ -941,6 +1052,7 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
                 solver_status = SS_FAILED;
                 return TS_INVALID;
             }
+
             generation_shortfall = 0;
             gl_verbose("reading gen data");
             for ( size_t n = 0 ; n < ngen ; n++ )
@@ -971,6 +1083,23 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
                 }
                 generation_shortfall += max(obj->get_Pg() - obj->get_Pmax(),0.0);
             }
+
+            if ( dcline::ndcline > 0 && do_opf )
+            {
+                gl_verbose("reading dcline data");
+                for ( size_t n = 0 ; n < dcline::ndcline ; n++ )
+                {
+                    dcline *obj = dcline::dclinelist[n];
+                    PyObject *pyobj = PyList_GetItem(dclinedata,n);
+                    RECV(mu_Pmax,17,Float,Double,false)
+                    RECV(mu_Pmin,18,Float,Double,false)
+                    RECV(mu_Qminf,19,Float,Double,false)
+                    RECV(mu_Qmaxf,20,Float,Double,false)
+                    RECV(mu_Qmint,21,Float,Double,false)
+                    RECV(mu_Qmaxt,22,Float,Double,false)
+                }
+            }
+
             gl_verbose("%d changes detected",n_changes);
         }
     }

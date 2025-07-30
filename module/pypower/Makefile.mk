@@ -16,6 +16,7 @@ module_pypower_pypower_la_SOURCES += module/pypower/pypower.cpp module/pypower/p
 
 module_pypower_pypower_la_SOURCES += module/pypower/branch.cpp module/pypower/branch.h
 module_pypower_pypower_la_SOURCES += module/pypower/bus.cpp module/pypower/bus.h
+module_pypower_pypower_la_SOURCES += module/pypower/dcline.cpp module/pypower/dcline.h
 module_pypower_pypower_la_SOURCES += module/pypower/gen.cpp module/pypower/gen.h
 module_pypower_pypower_la_SOURCES += module/pypower/gencost.cpp module/pypower/gencost.h
 module_pypower_pypower_la_SOURCES += module/pypower/geodata.cpp module/pypower/geodata.h
