@@ -191,6 +191,36 @@ class gencost {
 
 Note that `gencost` objects must have the generator they describe to as the parent object.
 
+## DC Line Objects
+
+~~~
+class dcline {
+    object from; // (REQUIRED) 'from' bus name
+    object to; // (REQUIRED) 'to' bus name
+    int32 fbus; // (OUTPUT) 'from' bus number
+    int32 tbus; // (OUTPUT) 'to' bus number
+    enumeration {IN=1, OUT=0} status; // initial branch status, IN=1 - in service, OUT=0 - out of service
+    complex Sfrom[MVA]; // (REQUIRED) MVA flow in at 'from' bus
+    complex Sto[MVA]; // (REQUIRED) MW flow in at 'to' bus
+    double Vfrom[pu.V]; // voltage setpoint at 'from' bus (p.u.)
+    double Vto[pu.V]; // voltage setpoint at  'to'  bus (p.u.)
+    double Pmin[MW]; // lower limit on PF (MW flow at 'from' end)
+    double Pmax[MW]; // upper limit on PF (MW flow at 'from' end)
+    double Qminf[MVAr]; // lower limit on MVAr injection at 'from' bus
+    double Qmaxf[MVAr]; // upper limit on MVAr injection at 'from' bus
+    double Qmint[MVAr]; // lower limit on MVAr injection at  'to'  bus
+    double Qmaxt[MVAr]; // upper limit on MVAr injection at  'to'  bus
+    double loss0[MW]; // constant term of linear loss function (MW) on Sfrom
+    double loss1[MW/MW]; // linear term of linear loss function (MW/MW) w.r.t Sfrom
+    double mu_Pmin[$/MW]; // (OUTPUT) Kuhn-Tucker multiplier on lower flow limit at 'from' bus
+    double mu_Pmax[$/MW]; // (OUTPUT) Kuhn-Tucker multiplier on upper flow limit at 'from' bus
+    double mu_Qminf[$/MW]; // (OUTPUT) Kuhn-Tucker multiplier on lower VAr limit at 'from' bus
+    double mu_Qmaxf[$/MW]; // (OUTPUT) Kuhn-Tucker multiplier on upper VAr limit at 'from' bus
+    double mu_Qmint[$/MW]; // (OUTPUT) Kuhn-Tucker multiplier on lower VAr limit at 'to' bus
+    double mu_Qmaxt[$/MW]; // (OUTPUT) Kuhn-Tucker multiplier on upper VAr limit at 'to' bus
+}
+~~~
+
 # Integration Objects
 
 Integration objects are used to link assets and control models with `pypower`
