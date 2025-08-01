@@ -12,6 +12,8 @@ public:
 
     static size_t ndcline;
     static dcline *dclinelist[MAXENT];
+    static double default_loss0;
+    static double default_loss1;
 
 public:
 
@@ -41,6 +43,21 @@ public:
     GL_ATOMIC(double,mu_Qmaxf);
     GL_ATOMIC(double,mu_Qmint);
     GL_ATOMIC(double,mu_Qmaxt);
+
+    typedef enum {
+        CP_SINK=0,
+        CP_SOURCE=1,
+        CP_TO=2,
+        CP_FROM=3,
+    } CONTROLPOINT;
+    GL_ATOMIC(enumeration,control);
+
+public:
+
+    void update(void);
+    void update_from(void);
+    void update_to(void);
+    double calculate_loss(double constant=0);
 
 public:
 

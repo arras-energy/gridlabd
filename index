@@ -2536,6 +2536,7 @@ module/pypower/autotest/case39.py
 module/pypower/autotest/case4gs.py
 module/pypower/autotest/case57.py
 module/pypower/autotest/case9.py
+module/pypower/autotest/case9dc.py
 module/pypower/autotest/check_case.py
 module/pypower/autotest/controllers.py
 module/pypower/autotest/test_autosize.glm
@@ -2572,6 +2573,7 @@ module/pypower/autotest/test_case39.glm
 module/pypower/autotest/test_case4gs.glm
 module/pypower/autotest/test_case57.glm
 module/pypower/autotest/test_case9.glm
+module/pypower/autotest/test_case9dc.glm
 module/pypower/autotest/test_derating.glm
 module/pypower/autotest/test_derating_powerplant_capacity
 module/pypower/autotest/test_derating_powerplant_capacity.csv

@@ -12,6 +12,8 @@ dcline *dcline::defaults = NULL;
 
 size_t dcline::ndcline = 0;
 dcline *dcline::dclinelist[MAXENT];
+double dcline::default_loss0 = 0.0;
+double dcline::default_loss1 = 0.05;
 
 dcline::dcline(MODULE *module)
 {
@@ -46,9 +48,9 @@ dcline::dcline(MODULE *module)
                 PT_DESCRIPTION, "'to' bus number",
 
             PT_enumeration, "status", get_status_offset(),
-                PT_KEYWORD,"OUT",(enumeration)DS_OUT,
-                PT_KEYWORD,"IN",(enumeration)DS_IN,
                 PT_DEFAULT, "IN",
+                PT_KEYWORD,"IN",(enumeration)DS_IN,
+                PT_KEYWORD,"OUT",(enumeration)DS_OUT,
                 PT_DESCRIPTION, "initial branch status, IN=1 - in service, OUT=0 - out of service",
 
             PT_complex, "Sfrom[MVA]", get_Sfrom_offset(),
@@ -115,10 +117,30 @@ dcline::dcline(MODULE *module)
                 PT_OUTPUT,
                 PT_DESCRIPTION, "Kuhn-Tucker multiplier on upper VAr limit at 'to' bus",
 
+            PT_enumeration, "control", get_control_offset(),
+                PT_DEFAULT, "SINK",
+                PT_KEYWORD, "FROM", (enumeration)CP_FROM,
+                PT_KEYWORD, "TO", (enumeration)CP_TO,
+                PT_KEYWORD, "SOURCE", (enumeration)CP_SOURCE,
+                PT_KEYWORD, "SINK", (enumeration)CP_SINK,
+                PT_DESCRIPTION, "Control point at which power flow is regulated",
+
             NULL) < 1 )
         {
             throw "unable to publish dcline properties";
         }
+
+        gl_global_create("pypower::default_dcline_loss0",
+            PT_double, &default_loss0, 
+            PT_UNITS, "MW",
+            PT_DESCRIPTION, "Default DC line power loss constant",
+            NULL);
+
+        gl_global_create("pypower::default_dcline_loss1",
+            PT_double, &default_loss1, 
+            PT_UNITS, "MW/MW",
+            PT_DESCRIPTION, "Default DC line power loss factor",
+            NULL);
     }
 }
 
@@ -157,6 +179,8 @@ int dcline::create(void)
     set_mu_Qmaxf(0.0);
     set_mu_Qmint(0.0);
     set_mu_Qmaxt(0.0);
+
+    set_control(CP_SINK);
 
     return 1;
 }
@@ -207,19 +231,87 @@ int dcline::init(OBJECT *parent)
         set_tbus(t->get_bus_i());
     }
 
+    double loss = calculate_loss(loss0);
+    if ( Sfrom.r > 0 && Sto.r > 0 )
+    {
+        if ( loss1 == 0 )
+        {
+            loss1 = loss;
+        }
+        else if ( fabs(loss1-loss) > 1e-6 )
+        {
+            warning("specified loss function Sto=%.6lg*Sfrom%+.6lg is inconsistent with Sfrom=%.6lg%+.6lgj and Sto=%.6lg%+.6lgj, fixing line output",
+                loss1,loss0,Sfrom.r,Sfrom.i,Sto.r,Sto.i);
+            update();
+        }
+    }
+    else if ( loss1 == 0 )
+    {
+        warning("loss1 is not specified and cannot be inferred from initial values of Sfrom and Sto, using default %.6lg*S%+.6lg loss",
+            default_loss1,default_loss0);
+        loss0 = default_loss0;
+        loss1 = default_loss1;
+    }
+    else
+    {
+        update();
+    }
+
     return 1;
+}
+
+void dcline::update(void)
+{
+    if ( status == DS_OUT )
+    {
+        Sfrom = 0.0;
+        Sto = 0.0;
+    }
+    else if ( control == CP_TO || (control==CP_SINK && Sto.r<Sfrom.r) )
+    {
+        update_to();
+    }
+    else
+    {
+        update_from();
+    }
+}
+
+void dcline::update_from(void)
+{
+    Sfrom = Sto*(1+loss1) + loss0;
+    Sfrom.r = min(max(Pmin,Sfrom.r),Pmax);
+    Sfrom.i = min(max(Qminf,Sfrom.i),Qmaxf);
+    Sto = Sfrom*(1-loss1) - loss0;
+}
+
+void dcline::update_to(void)
+{
+    Sto = Sfrom*(1+loss1) + loss0;
+    Sto.r = min(max(Pmin,Sto.r),Pmax);
+    Sto.i = min(max(Qminf,Sto.i),Qmaxf);
+    Sfrom = Sto*(1-loss1) - loss0;
+}
+
+double dcline::calculate_loss(double constant)
+{
+    if ( Sto.r < Sfrom.r )
+    {
+        return (Sto.r+constant)/Sfrom.r;
+    }
+    else if ( Sfrom.r < Sto.r )
+    {
+        return (Sfrom.r+constant)/Sto.r;
+    }
+    else
+    {
+        return loss1;
+    }
 }
 
 TIMESTAMP dcline::precommit(TIMESTAMP t0)
 {
-    // power flow is determine to by "load" side
-    complex &load = ( Sto.r < 0 ? Sto : Sfrom );
-    complex &gen = ( Sto.r > 0 ? Sto : Sfrom );
-    load.i = min(max(Qmint,load.i),Qmaxt);
-    // logic: gen = load + loss1*gen + loss0
-    load =  ( gen + loss0 ) / (1 + loss1);
-    gen.r = min(max(Pmin,gen.r),Pmax);
-    gen.i = min(max(Qminf,gen.i),Qmaxf);
+    update();
     return TS_NEVER;
 }
 

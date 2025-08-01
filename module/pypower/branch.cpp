@@ -101,8 +101,6 @@ branch::branch(MODULE *module)
 	        PT_UNITS, "rad",
 	        PT_DESCRIPTION, "Autosize voltage angle to use (0 for no autosizing)",
 	        NULL);
-
-
 	}
 }
 
