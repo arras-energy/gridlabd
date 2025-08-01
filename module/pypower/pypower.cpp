@@ -624,8 +624,16 @@ static TIMESTAMP update_controller(TIMESTAMP t0,PyObject *command,const char *na
         {
             dcline *obj = dcline::dclinelist[i];
             PyObject *pyobj = PyList_GetItem(dclinedata,i);
-            SENDX(0,fbus,Long,Long)
-            SENDX(1,tbus,Long,Long)
+            if ( obj->get_Sfrom().r >= obj->get_Sto().r ) // forward flow
+            {
+                SENDX(0,fbus,Long,Long)
+                SENDX(1,tbus,Long,Long)
+            }
+            else // reverse flow
+            {
+                SENDX(0,tbus,Long,Long)
+                SENDX(1,fbus,Long,Long)
+            }
             SENDX(2,status,Long,Long)
             SENDXP(3,Sfrom,r,Double,Float)
             SENDXP(4,Sfrom,i,Double,Float)

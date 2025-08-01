@@ -45,10 +45,8 @@ public:
     GL_ATOMIC(double,mu_Qmaxt);
 
     typedef enum {
-        CP_SINK=0,
-        CP_SOURCE=1,
-        CP_TO=2,
-        CP_FROM=3,
+        CP_TO=0,
+        CP_FROM=1,
     } CONTROLPOINT;
     GL_ATOMIC(enumeration,control);
 

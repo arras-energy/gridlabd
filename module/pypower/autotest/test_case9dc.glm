@@ -7,6 +7,9 @@
 #endif
 #include "${DIR:-.}/case.glm"
 
+#option verbose
+#option debug
+
 module pypower
 {
 	solver_method GS;

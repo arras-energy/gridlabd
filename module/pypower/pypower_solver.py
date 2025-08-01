@@ -264,6 +264,15 @@ def solver(pf_case):
                 for n,row in enumerate(casedata["gencost"]):
                     print(f"{float(genmap[n]):5.0f} {['-','PWLF','POLY'][int(row[0])]:5.5s} {row[1]:7.2f} {row[2]:8.2f} {row[3]:5.0f} {','.join([str(x) for x in row[4:]])}",file=sys.stderr)
 
+        # output dcline details
+        if debug and verbose and 'dcline' in casedata:
+            print("")
+            print(f"\n*** DCLINE DATA ***\n",file=sys.stderr)
+            print("FBUS  TBUS  STATUS PFROM QFROM PTO   QTO   VFROM VTO   PMIN  PMAX  QMINF QMAXF QMINT QMAXT LOSS0 LOSS1",file=sys.stderr)
+            print("----- ----- ------ ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----",file=sys.stderr)
+            for n,row in enumerate(casedata["dcline"]):
+                print(f"{float(row[0]):5.0f} {float(row[1]):5.0f} {'IN    ' if row[2] else 'OUT   '} {row[3]:5.1f} {row[4]:5.1f} {row[5]:5.1f} {row[6]:5.1f} {row[7]:5.1f} {row[8]:5.1f} {row[9]:5.1f} {row[10]:5.1f} {row[11]:5.1f} {row[12]:5.1f} {row[13]:5.1f} {row[14]:5.1f} {row[15]:5.1f} {row[16]:5.3f}",file=sys.stderr)
+
         # save casedata to file
         if save_case:
             write_case(casedata,f"{modelname}_casedata.{save_format}",False)

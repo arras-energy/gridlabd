@@ -118,11 +118,9 @@ dcline::dcline(MODULE *module)
                 PT_DESCRIPTION, "Kuhn-Tucker multiplier on upper VAr limit at 'to' bus",
 
             PT_enumeration, "control", get_control_offset(),
-                PT_DEFAULT, "SINK",
+                PT_DEFAULT, "TO",
                 PT_KEYWORD, "FROM", (enumeration)CP_FROM,
                 PT_KEYWORD, "TO", (enumeration)CP_TO,
-                PT_KEYWORD, "SOURCE", (enumeration)CP_SOURCE,
-                PT_KEYWORD, "SINK", (enumeration)CP_SINK,
                 PT_DESCRIPTION, "Control point at which power flow is regulated",
 
             NULL) < 1 )
@@ -180,7 +178,7 @@ int dcline::create(void)
     set_mu_Qmint(0.0);
     set_mu_Qmaxt(0.0);
 
-    set_control(CP_SINK);
+    set_control(CP_TO);
 
     return 1;
 }
@@ -267,19 +265,19 @@ void dcline::update(void)
         Sfrom = 0.0;
         Sto = 0.0;
     }
-    else if ( control == CP_TO || (control==CP_SINK && Sto.r<Sfrom.r) )
+    else if ( control == CP_TO )
     {
-        update_to();
+        update_from();
     }
     else
     {
-        update_from();
+        update_to();
     }
 }
 
 void dcline::update_from(void)
 {
-    Sfrom = Sto*(1+loss1) + loss0;
+    Sfrom = Sto/(1-loss1) + loss0;
     Sfrom.r = min(max(Pmin,Sfrom.r),Pmax);
     Sfrom.i = min(max(Qminf,Sfrom.i),Qmaxf);
     Sto = Sfrom*(1-loss1) - loss0;
@@ -287,10 +285,10 @@ void dcline::update_from(void)
 
 void dcline::update_to(void)
 {
-    Sto = Sfrom*(1+loss1) + loss0;
+    Sto = Sfrom*(1-loss1) - loss0;
     Sto.r = min(max(Pmin,Sto.r),Pmax);
     Sto.i = min(max(Qminf,Sto.i),Qmaxf);
-    Sfrom = Sto*(1-loss1) - loss0;
+    Sfrom = Sto/(1-loss1) + loss0;
 }
 
 double dcline::calculate_loss(double constant)
