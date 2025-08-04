@@ -337,7 +337,7 @@ int powerplant::init(OBJECT *parent_hdr)
 		}
 		if ( derating*(Tcutoff-Tnominal) > 1.0 )
 		{
-			warning("derating cutoff is %.1lf degC",1/derating+Tnominal);
+			warning("derating cutoff is actually %.1lf degC not %.1lf",1/derating+Tnominal,Tcutoff);
 		}
 
 	}

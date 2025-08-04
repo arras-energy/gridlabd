@@ -1,0 +1,17 @@
+
+#set suppress_repeat_messages=FALSE
+
+#define CASE=9dc
+#ifexists "../case.glm"
+#define DIR=..
+#endif
+#include "${DIR:-.}/case.glm"
+
+#option verbose
+#option debug
+
+module pypower
+{
+	solver_method GS;
+	save_case TRUE;
+}
