@@ -99,7 +99,6 @@ def convert(ifile,ofile,options={}):
         )
 
     busndx = {}
-    genndx = {}
     branchndx = {}
     xfrmndx = {}
     bus_S = {}
@@ -230,14 +229,13 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
                 elif block == "GENERATOR_DATA":
 
                     genid = int(row[0])
-                    genndx[genid] = genndx[genid]+1 if genid in genndx else 0
                     if not row[0] in busndx:
                         warning(f"gen '{row[0]}' not a valid bus index",ifile,lineno)
                     # PSSE: I,'ID', PG, QG, QT, QB, VS, IREG, MBASE, ZR, ZX, RT, XT, GTAP, STAT, RMPCT, PT, PB, O1, F1, O2, F2, O3, F3, O4, F4, WMOD, WPF, NREG
                     if "gen" not in exclude:
                         print(f"""object pypower.gen
 {{
-    name "{oname}_G_{row[0]}_{genndx[genid]}";
+    name "{oname}_G_{row[0]}_{row[1]}";
     parent "{oname}_N_{row[0]}";
     bus {busndx[row[0]]};
     Pg {row[2]} MW;
@@ -278,7 +276,7 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
     rateA {row[7]} MVA;
     rateB {row[7]} MVA;
     rateC {row[8]} MVA;
-    ratio 1.0 pu;
+    ratio 0.0 pu;
     angle 0.0 deg;
     status IN;
     angmin -360 deg;
@@ -312,13 +310,16 @@ modify {oname}_N_{row[0]}.Qd {bus_S[row[0]].imag:.6g};
     to "{oname}_N_{dd['J']}";
     fbus {busndx[dd['I']]};
     tbus {busndx[dd['J']]};
+    ratio 1.0 pu;
+    angle 0.0 pu;
     status IN;
+    rateA {float(dd['SBASE1-2']):.5g} MVA;
     object pypower.transformer
     {{
         name "{oname}_T_{xfrmid}_{xfrmndx[xfrmid]}";
         impedance {float(dd['R1-2']):.6g}+{float(dd['X1-2']):.6g}j Ohm;
         phase_shift {float(dd['ANG1']):.5g} deg;
-        rated_power {float(dd['SBASE1-2']):.5g} MVA;
+        rated_power {max([float(dd['RATE1-1']),float(dd['RATE1-2']),float(dd['RATE1-3'])]):.5g} MVA;
         status IN;
     }};
     angmin -360 deg;
