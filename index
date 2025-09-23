@@ -744,6 +744,7 @@ docs/Module/Powerflow/Underground_line_conductor.md
 docs/Module/Powerflow/Vfd.md
 docs/Module/Powerflow/Volt_var_control.md
 docs/Module/Powerflow/Voltdump.md
+docs/Module/Powerflow/zipload.md
 docs/Module/Pypower.md
 docs/Module/Pypower/Geodata.md
 docs/Module/Pypower/Load.md
@@ -2393,6 +2394,7 @@ module/powerflow/data/extract_resstock.py
 module/powerflow/data/inverter_settings.csv
 module/powerflow/data/resstock_loadshapes.csv
 module/powerflow/data/update_loadshapes.py
+module/powerflow/data/ziploads.csv
 module/powerflow/docs/Building model.ipynb
 module/powerflow/docs/Building validation.ipynb
 module/powerflow/docs/Ductbank model reduction.ipynb
@@ -2504,6 +2506,8 @@ module/powerflow/triplex_meter.cpp
 module/powerflow/triplex_meter.h
 module/powerflow/triplex_node.cpp
 module/powerflow/triplex_node.h
+module/powerflow/triplex_zipload.cpp
+module/powerflow/triplex_zipload.h
 module/powerflow/underground_line.cpp
 module/powerflow/underground_line.h
 module/powerflow/underground_line_conductor.cpp
@@ -2514,6 +2518,8 @@ module/powerflow/volt_var_control.cpp
 module/powerflow/volt_var_control.h
 module/powerflow/voltdump.cpp
 module/powerflow/voltdump.h
+module/powerflow/zipload.cpp
+module/powerflow/zipload.h
 module/powernet/Makefile.mk
 module/powernet/agent.cpp
 module/powernet/agent.h
@@ -3712,6 +3718,7 @@ subcommands/gridlabd-manual
 subcommands/gridlabd-marimo
 subcommands/gridlabd-matrix
 subcommands/gridlabd-model
+subcommands/gridlabd-notebook
 subcommands/gridlabd-openfido
 subcommands/gridlabd-pandas
 subcommands/gridlabd-plot

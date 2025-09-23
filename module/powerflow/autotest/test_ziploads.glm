@@ -1,0 +1,465 @@
+// module/powerflow/autotest/test_ziploads.glm
+
+// Settings for canonical feeder model
+
+//
+// Simulation clock
+//
+#define TIMEZONE=America/San_Francisco
+#define STARTTIME=2025-01-01 00:00:00 PST
+#define STOPTIME=2026-01-01 00:00:00 PST
+
+//
+// Weather
+//
+#define WEATHER=CA-San_Francisco_Intl_Ap
+
+//
+// Substation parameters
+//
+#define SUBSTATION_LATITUDE=0.0
+#define SUBSTATION_LONGITUDE=0.0
+#define SUBSTATION_VOLTAGE=69 kV
+
+//
+// Feeder parameters
+//
+#define FEEDER_TRANSFORMER_TYPE=WYE_WYE
+#define FEEDER_RATING=25 MVA
+#define FEEDER_IMPEDANCE=0.25+10j %
+#define FEEDER_REGULATOR_TYPE=WYE_WYE
+#define FEEDER_REGULATION=5%
+#define FEEDER_TAPS=16
+#define FEEDER_BANDWIDTH=62.5 V
+#define FEEDER_DELAY=1 min
+
+//
+// Primary distribution line parameters (repeated for each primary node)
+//
+#define PRIMARY_NAME=PRIMARY
+#define PRIMARY_VOLTAGE=12.5 kV
+#define PRIMARY_PHASES=ABCN
+#define PRIMARY_LATITUDE=0.0
+#define PRIMARY_LONGITUDE=0.0
+#define PRIMARY_FROM=MAIN
+#define PRIMARY_LENGTH=1000 ft
+#define PRIMARY_CONDUCTOR_GMR=0.0244 in
+#define PRIMARY_CONDUCTOR_R=0.306 Ohm/mile
+#define PRIMARY_NEUTRAL_GMR=0.00814 in
+#define PRIMARY_NEUTRAL_R=0.592 Ohm/mile
+#define PRIMARY_SPACING_AB=2.5 ft
+#define PRIMARY_SPACING_BC=4.5 ft
+#define PRIMARY_SPACING_AC=7.0 ft
+#define PRIMARY_SPACING_AN=5.66 ft
+#define PRIMARY_SPACING_BN=4.27 ft
+#define PRIMARY_SPACING_CN=5.0 ft
+
+//
+// Secondary transformer parameters (repeat for each service transformer)
+//
+#define SECONDARY_NAME=SECONDARY
+#define SECONDARY_LATITUDE=0.0
+#define SECONDARY_LONGITUDE=0.0
+#define SECONDARY_PHASES=ABCN
+#define SECONDARY_TRANSFORMER_TYPE=WYE_WYE
+#define SECONDARY_VOLTAGE=2400 V
+#define SECONDARY_TRANSFORMER_RATING=5 MVA
+#define SECONDARY_TRANSFORMER_IMPEDANCE=0.01+2j %
+
+//
+// Secondary distribution line parameters (repeated for each secondary node)
+//
+#define SECONDARY_LENGTH=1000 ft
+#define SECONDARY_CONDUCTOR_GMR=0.0244 in
+#define SECONDARY_CONDUCTOR_R=0.306 Ohm/mile
+#define SECONDARY_NEUTRAL_GMR=0.00814 in
+#define SECONDARY_NEUTRAL_R=0.592 Ohm/mile
+#define SECONDARY_SPACING_AB=2.5 ft
+#define SECONDARY_SPACING_BC=4.5 ft
+#define SECONDARY_SPACING_AC=7.0 ft
+#define SECONDARY_SPACING_AN=5.66 ft
+#define SECONDARY_SPACING_BN=4.27 ft
+#define SECONDARY_SPACING_CN=5.0 ft
+
+//
+// Service transformer parameters (repeat for each service transformer)
+//
+#define SERVICE_NAME=SERVICE
+#define SERVICE_LATITUDE=0.0
+#define SERVICE_LONGITUDE=0.0
+
+#define SERVICE_VOLTAGE=480 V
+#define SERVICE_TRANSFORMER_RATING=500 kVA
+#define SERVICE_TRANSFORMER_IMPEDANCE=0.25+10j %
+
+#define SERVICE_VOLTAGE_SPLIT=120 V
+#define SERVICE_TRANSFORMER_TYPE=WYE_WYE
+#define SERVICE_TRANSFORMER_RATING_SPLIT=100 kVA
+#define SERVICE_TRANSFORMER_IMPEDANCE_SPLIT=1+6j %
+
+//
+// Customer parameters (repeat for each customer)
+//
+#define CUSTOMER_NAME=CUSTOMER
+#define CUSTOMER_LATITUDE=0.0
+#define CUSTOMER_LONGITUDE=0.0
+#define CUSTOMER_CTYPE=office // 3-phase loads only lookup from ziploads.csv
+#define CUSTOMER_RTYPE=singlefamily // triplex loads only lookup from ziploads.csv
+
+clock
+{
+    timezone "${TIMEZONE}";
+    starttime "${STARTTIME}";
+    stoptime "${STOPTIME}";
+}
+
+module powerflow
+{
+    solver_method NR;
+}
+
+#weather get ${WEATHER}.tmy3
+#input "${WEATHER}.tmy3" --property=name=weather
+
+//
+// Substation
+//
+object node
+{
+    latitude ${SUBSTATION_LATITUDE};
+    longitude ${SUBSTATION_LONGITUDE};
+    name "SUBSTATION";
+    bustype SWING;
+    phases ${PRIMARY_PHASES};
+    nominal_voltage ${SUBSTATION_VOLTAGE};
+    voltage_A ${SUBSTATION_VOLTAGE};
+    voltage_B ${SUBSTATION_VOLTAGE};
+    voltage_C ${SUBSTATION_VOLTAGE};
+}
+
+//
+// Feeder
+//
+object transformer
+{
+    latitude ${SUBSTATION_LATITUDE};
+    longitude ${SUBSTATION_LONGITUDE};
+    name "SUBSTATION-FEEDER";
+    from "SUBSTATION";
+    to "FEEDER";
+    configuration "SUBSTATION_FEEDER_CONFIG";
+    phases ${PRIMARY_PHASES};
+}
+
+object transformer_configuration
+{
+    name "SUBSTATION_FEEDER_CONFIG";
+    connect_type ${FEEDER_TRANSFORMER_TYPE};
+    primary_voltage ${SUBSTATION_VOLTAGE};
+    secondary_voltage ${PRIMARY_VOLTAGE};
+    power_rating ${FEEDER_RATING};
+    impedance ${FEEDER_IMPEDANCE};
+}
+
+object node 
+{
+    latitude ${SUBSTATION_LATITUDE};
+    longitude ${SUBSTATION_LONGITUDE};
+    name "FEEDER";
+    phases ${PRIMARY_PHASES};
+    nominal_voltage ${PRIMARY_VOLTAGE};
+}
+
+//
+// Voltage regulator
+//
+object regulator
+{
+    latitude ${SUBSTATION_LATITUDE};
+    longitude ${SUBSTATION_LONGITUDE};
+    name "FEEDER-MAIN";
+    from "FEEDER";
+    to "MAIN";
+    configuration "FEEDER_MAIN_CONFIG";
+    phases ${PRIMARY_PHASES};
+}
+
+object regulator_configuration
+{
+    name "FEEDER_MAIN_CONFIG";
+    connect_type ${FEEDER_REGULATOR_TYPE};
+    Control OUTPUT_VOLTAGE;
+    regulation ${FEEDER_REGULATION};
+    raise_taps ${FEEDER_TAPS};
+    lower_taps ${FEEDER_TAPS};
+    band_center ${PRIMARY_VOLTAGE};
+    band_width ${FEEDER_BANDWIDTH};
+    time_delay ${FEEDER_DELAY};
+}
+
+object node 
+{
+    latitude ${SUBSTATION_LATITUDE};
+    longitude ${SUBSTATION_LONGITUDE};
+    name "MAIN";
+    phases ${PRIMARY_PHASES};
+    nominal_voltage ${PRIMARY_VOLTAGE};
+}
+
+//
+// Primary distribution line (repeated for each primary segment)
+//
+object node
+{
+    latitude ${PRIMARY_LATITUDE};
+    longitude ${PRIMARY_LONGITUDE};
+    name ${PRIMARY_NAME};
+    nominal_voltage ${PRIMARY_VOLTAGE};
+    phases ${PRIMARY_PHASES};
+}
+
+object overhead_line
+{
+    name "${PRIMARY_FROM}-${PRIMARY_NAME}";
+    from "${PRIMARY_FROM}";
+    to "${PRIMARY_NAME}";
+    phases ${PRIMARY_PHASES};
+    configuration "${PRIMARY_NAME}_CONFIG";
+    length ${PRIMARY_LENGTH};
+}
+
+object line_configuration // can be shared among multiple primary lines
+{
+    name "${PRIMARY_NAME}_CONFIG";
+    conductor_A "${PRIMARY_NAME}_CONDUCTOR";
+    conductor_B "${PRIMARY_NAME}_CONDUCTOR";
+    conductor_C "${PRIMARY_NAME}_CONDUCTOR";
+    conductor_N "${PRIMARY_NAME}_NEUTRAL";
+    spacing "${PRIMARY_NAME}_SPACING";
+}
+
+object overhead_line_conductor // can be shared among multiple primary lines
+{
+    name "${PRIMARY_NAME}_CONDUCTOR";
+    geometric_mean_radius ${PRIMARY_CONDUCTOR_GMR};
+    resistance ${PRIMARY_CONDUCTOR_R};
+}
+
+object overhead_line_conductor // can be shared among multiple primary lines
+{
+    name "${PRIMARY_NAME}_NEUTRAL";
+    geometric_mean_radius ${PRIMARY_NEUTRAL_GMR};
+    resistance ${PRIMARY_NEUTRAL_R};
+}
+
+object line_spacing // can be shared among multiple primary lines
+{
+    name "${PRIMARY_NAME}_SPACING";
+    distance_AB ${PRIMARY_SPACING_AB};
+    distance_BC ${PRIMARY_SPACING_BC};
+    distance_AC ${PRIMARY_SPACING_AC};
+    distance_AN ${PRIMARY_SPACING_AN};
+    distance_BN ${PRIMARY_SPACING_BN};
+    distance_CN ${PRIMARY_SPACING_CN};
+}
+
+//
+// Secondary distribution switch (repeated for each secondary branch)
+//
+
+object switch
+{
+    latitude ${PRIMARY_LATITUDE};
+    longitude ${PRIMARY_LONGITUDE};
+    name "${PRIMARY_NAME}-${SECONDARY_NAME}-SWITCH";
+    from "${PRIMARY_NAME}";
+    to "${SECONDARY_NAME}_MAIN";
+    phases ${SECONDARY_PHASES};
+    nominal_voltage ${PRIMARY_VOLTAGE};
+    operating_mode BANKED;
+}
+
+//
+// Secondary transformer (repeated for each secondary branch)
+//
+object node
+{
+    latitude ${PRIMARY_LATITUDE};
+    longitude ${PRIMARY_LONGITUDE};
+    name "${SECONDARY_NAME}_MAIN";
+    phases ${SECONDARY_PHASES};
+    nominal_voltage ${PRIMARY_VOLTAGE};
+}
+object transformer
+{
+    name "${SECONDARY_NAME}_TRANSFORMER";
+    from "${SECONDARY_NAME}_MAIN";
+    to "${SECONDARY_NAME}";
+    configuration "${SECONDARY_NAME}_TRANSFORMER_CONFIGURATION";
+    phases ${SECONDARY_PHASES};
+}
+object transformer_configuration // can be shared among multiple secondary transformers
+{
+    name "${SECONDARY_NAME}_TRANSFORMER_CONFIGURATION";
+    connect_type ${SECONDARY_TRANSFORMER_TYPE};
+    primary_voltage ${PRIMARY_VOLTAGE};
+    secondary_voltage ${SECONDARY_VOLTAGE};
+    power_rating ${SECONDARY_TRANSFORMER_RATING};
+    impedance ${SECONDARY_TRANSFORMER_IMPEDANCE};
+}
+
+//
+// Secondary distribution line (repeated for each segment)
+//
+
+object node
+{
+    latitude ${SECONDARY_LATITUDE};
+    longitude ${SECONDARY_LONGITUDE};
+    name "${SECONDARY_NAME}";
+    nominal_voltage ${SECONDARY_VOLTAGE};
+    phases ${SECONDARY_PHASES};
+}
+
+object overhead_line
+{
+    name "SWITCH-${SECONDARY_NAME}";
+    from "${SECONDARY_NAME}";
+    to "SERVICE";
+    phases ${SECONDARY_PHASES};
+    configuration "${SECONDARY_NAME}_CONFIG";
+    length ${SECONDARY_LENGTH};
+}
+
+object line_configuration // can be shared among multiple secondary lines
+{
+    name "${SECONDARY_NAME}_CONFIG";
+    conductor_A "${SECONDARY_NAME}_CONDUCTOR";
+    conductor_B "${SECONDARY_NAME}_CONDUCTOR";
+    conductor_C "${SECONDARY_NAME}_CONDUCTOR";
+    conductor_N "${SECONDARY_NAME}_NEUTRAL";
+    spacing "${SECONDARY_NAME}_SPACING";
+}
+
+object overhead_line_conductor // can be shared among multiple secondary lines
+{
+    name "${SECONDARY_NAME}_CONDUCTOR";
+    geometric_mean_radius ${SECONDARY_CONDUCTOR_GMR};
+    resistance ${SECONDARY_CONDUCTOR_R};
+}
+
+object overhead_line_conductor // can be shared among multiple secondary lines
+{
+    name "${SECONDARY_NAME}_NEUTRAL";
+    geometric_mean_radius ${SECONDARY_NEUTRAL_GMR};
+    resistance ${SECONDARY_NEUTRAL_R};
+}
+
+object line_spacing  // can be shared among multiple secondary lines
+{
+    name "${SECONDARY_NAME}_SPACING";
+    distance_AB ${SECONDARY_SPACING_AB};
+    distance_BC ${SECONDARY_SPACING_BC};
+    distance_AC ${SECONDARY_SPACING_AC};
+    distance_AN ${SECONDARY_SPACING_AN};
+    distance_BN ${SECONDARY_SPACING_BN};
+    distance_CN ${SECONDARY_SPACING_CN};
+}
+
+//
+// Service transformer
+//
+object node
+{
+    latitude ${SERVICE_LATITUDE};
+    longitude ${SERVICE_LONGITUDE};
+    name "${SERVICE_NAME}";
+    nominal_voltage ${SECONDARY_VOLTAGE};
+    phases ${SECONDARY_PHASES};
+}
+
+//
+// Customer loads
+//
+object transformer
+{
+    name "${SERVICE_NAME}_TRANSFORMER_${SECONDARY_PHASES}";
+    from "${SERVICE_NAME}";
+    to "CUSTOMER_${SECONDARY_PHASES}";
+    configuration "${SERVICE_NAME}_TRANSFORMER_${SECONDARY_PHASES}_CONFIGURATION";
+    phases ${SECONDARY_PHASES};
+}
+object transformer_configuration // can be shared among multiple service transformers
+{
+    name "${SERVICE_NAME}_TRANSFORMER_${SECONDARY_PHASES}_CONFIGURATION";
+    connect_type ${SERVICE_TRANSFORMER_TYPE};
+    primary_voltage ${SECONDARY_VOLTAGE};
+    secondary_voltage ${SERVICE_VOLTAGE};
+    power_rating ${SERVICE_TRANSFORMER_RATING};
+    impedance ${SERVICE_TRANSFORMER_IMPEDANCE};
+}
+object meter
+{
+    latitude ${CUSTOMER_LATITUDE};
+    longitude ${CUSTOMER_LONGITUDE};
+    name "${CUSTOMER_NAME}_${SECONDARY_PHASES}";
+    nominal_voltage ${SERVICE_VOLTAGE};
+    phases ${SECONDARY_PHASES};
+    object zipload
+    {
+        phases inherit;
+        nominal_voltage inherit;
+        load_class C;
+        load_type "${CUSTOMER_CTYPE}";
+    };
+}
+
+#for PHASE in A B C
+object transformer
+{
+    name "${SERVICE_NAME}_TRANSFORMER_${PHASE}";
+    from "${SERVICE_NAME}";
+    to "CUSTOMER_${PHASE}";
+    configuration "SERVICE_TRANSFORMER_${PHASE}_CONFIGURATION";
+    phases ${PHASE}S;
+}
+object transformer_configuration // can be shared among multiple service transformers
+{
+    name "${SERVICE_NAME}_TRANSFORMER_${PHASE}_CONFIGURATION";
+    connect_type SINGLE_PHASE_CENTER_TAPPED;
+    primary_voltage ${SECONDARY_VOLTAGE};
+    secondary_voltage ${SERVICE_VOLTAGE_SPLIT};
+    power${PHASE}_rating ${SERVICE_TRANSFORMER_RATING_SPLIT};
+    impedance ${SERVICE_TRANSFORMER_IMPEDANCE_SPLIT};
+}
+object triplex_meter
+{
+    latitude ${CUSTOMER_LATITUDE};
+    longitude ${CUSTOMER_LONGITUDE};
+    name "${CUSTOMER_NAME}_${PHASE}";
+    nominal_voltage ${SERVICE_VOLTAGE_SPLIT};
+    phases ${PHASE}S;
+    object triplex_zipload
+    {
+        phases inherit;
+        nominal_voltage inherit;
+        load_class R;
+        load_type "${CUSTOMER_RTYPE}";
+    };
+}
+#done
+
+module tape
+{
+    csv_header_type NAME;
+}
+
+#for PHASE in ${SECONDARY_PHASES} A B C
+object recorder
+{
+    parent "${CUSTOMER_NAME}_${PHASE}";
+    file "test_ziploads_${PHASE}.csv";
+    property "measured_demand";
+    interval 0;
+}
+#done
