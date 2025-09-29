@@ -371,6 +371,10 @@ typedef struct s_callbacks {
 		bool (*call)(PyObject *pModule, const char *method, const char *vargsfmt, va_list varargs, void *result);
 		PyObject *(*property_type)(void);
 	} python;
+	struct {
+		const char *(*encode)(char *buffer, int len, double lat, double lon, int resolution);
+		const char *(*decode)(char *buffer, int size, const char *code);
+	} geocode;
 	long unsigned int magic; /* used to check structure alignment */
 } CALLBACKS; /**< core callback function table */
 

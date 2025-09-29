@@ -1620,7 +1620,7 @@ DEPRECATED const char *global_findobj(char *buffer, int size, const char *spec)
 
 static const char geocode_decodemap[] = "0123456789bcdefghjkmnpqrstuvwxyz";
 static const unsigned char *geocode_encodemap = NULL;
-const char *geocode_encode(char *buffer, int len, double lat, double lon, int resolution=12)
+const char *geocode_encode(char *buffer, int len, double lat, double lon, int resolution)
 {
 	if ( len < resolution+1 )
 	{
@@ -1682,7 +1682,7 @@ const char *geocode_encode(char *buffer, int len, double lat, double lon, int re
 	return buffer;
 }
 
-DEPRECATED const char *geocode_decode(char *buffer, int size, const char *code)
+const char *geocode_decode(char *buffer, int size, const char *code)
 {
 	double lat_err = 90, lon_err = 180;
 	double lat_interval[] = {-lat_err,lat_err};

@@ -966,5 +966,8 @@ private:
 };
 #endif
 
+const char *geocode_encode(char *buffer, int len, double lat, double lon, int resolution=12);
+const char *geocode_decode(char *buffer, int size, const char *code);
+
 #endif /* _GLOBAL_H */
 /**@}**/

@@ -240,6 +240,7 @@ static CALLBACKS callbacks = {
 	{version_major,version_minor,version_patch,version_build,version_branch},
 	call_external_callback,
 	{NULL,python_embed_import,python_embed_call,python_property_gettype},
+	{geocode_encode,geocode_decode},
 	MAGIC /* used to check structure */
 };
 CALLBACKS *module_callbacks(void) { return &callbacks; }
