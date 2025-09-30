@@ -79,6 +79,7 @@ zipload::zipload(MODULE *mod) : load(mod)
 			PT_double, "Qp_W[VAr/mph]", PADDR(power_q[3]),
 			PT_double, "Qp_R[VAr*h/in]", PADDR(power_q[4]),
 			PT_double, "Qp[VAr]", PADDR(power_q[5]),
+			PT_double, "scalar[pu.W]", PADDR(scalar),
 			PT_double, "H[degF]", PADDR(input[0]), PT_ACCESS, PA_REFERENCE,
 			PT_double, "C[degF]", PADDR(input[1]), PT_ACCESS, PA_REFERENCE,
 			PT_double, "S[kW]", PADDR(input[2]), PT_ACCESS, PA_REFERENCE,
@@ -106,6 +107,7 @@ zipload::zipload(MODULE *mod) : load(mod)
 		memset((void*)power_p,0,sizeof(power_p));
 		memset((void*)power_q,0,sizeof(power_q));
 		memset((void*)input,0,sizeof(input));
+		scalar = 1.0;
 		input[5] = 1.0; /* constant term */
 		memset((void*)output,0,sizeof(output));
 		memset(Z,0,sizeof(Z));
@@ -208,12 +210,12 @@ TIMESTAMP zipload::sync(TIMESTAMP t0)
 	}
 
 	// compute ZIP values
-	double scalar = scale[month][weekday][hour] / sqrt(3);
+	double schedule_scale = scale[month][weekday][hour] / sqrt(3);
 	for ( unsigned int i = 0 ; i < 3 ; i++ )
 	{
-		Z[i] = complex(output[0],output[1]) * scalar;
-		I[i] = complex(output[2],output[3]) * scalar;
-		P[i] = complex(output[4],output[5]) * scalar;
+		Z[i] = complex(output[0],output[1]) * schedule_scale * scalar;
+		I[i] = complex(output[2],output[3]) * schedule_scale * scalar;
+		P[i] = complex(output[4],output[5]) * schedule_scale * scalar;
 		double Zmag = Z[i].Mag();
 		double Imag = I[i].Mag();
 		double Pmag = P[i].Mag();

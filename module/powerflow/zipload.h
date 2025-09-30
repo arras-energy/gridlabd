@@ -34,7 +34,8 @@ public:
 	double input[6]; // H, C, S, W, R, 1.0 */
 	double output[6]; // Zp, Zq, Ip, Iq, Pp, Pq */
 	complex Z[3], I[3], P[3]; // Zp+Zq*1j, Ip+Iq*1j, Pp+Pq*1j
-
+	double scalar;
+	
 	char1024 schedule;
 	double scale[12][8][24]; // month, weekday, hour
 
