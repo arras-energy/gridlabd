@@ -347,3 +347,9 @@ object triplex_meter
     };
 }
 #done
+
+#for PHASES in ABCN A B C
+#ifexist "../test_ziploads_${PHASES}.csv"
+#on_exit 0 diff ../test_ziploads_${PHASES}.csv test_ziploads_${PHASES}.csv > gridlabd.diff
+#endif
+#done
