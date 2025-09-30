@@ -122,6 +122,10 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
 		PT_DESCRIPTION, "maximum voltage deviation per unit nominal voltage before ZIP loads are cut off",
 		NULL);
 
+	gl_global_create("powerflow::geocode_find",
+		PT_int32, &geocode_find,
+		PT_DESCRIPTION, "geocode find method (<0 = none, 0 = nearest, >0 = exact geocode precision)",
+		NULL);
 
 	// register each object class by creating the default instance
 	new powerflow_object(module);

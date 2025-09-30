@@ -355,3 +355,13 @@ cell &table::at(const char *r, const char *c)
     table::ROW &row = load_data->at(r);
     return row.at(load_data->column_index[c]);
 }
+
+table::COLUMN table::get_column(unsigned int n)
+{
+    COLUMN data;
+    for ( auto row = rows.begin() ; row != rows.end() ; row++ )
+    {
+        data.push_back(row->at(n));
+    }
+    return data;
+}

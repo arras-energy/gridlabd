@@ -62,6 +62,7 @@ module_powerflow_powerflow_la_SOURCES += module/powerflow/solver_py.cpp module/p
 module_powerflow_powerflow_la_SOURCES += module/powerflow/substation.cpp module/powerflow/substation.h
 module_powerflow_powerflow_la_SOURCES += module/powerflow/switch_coordinator.cpp module/powerflow/switch_coordinate.h
 module_powerflow_powerflow_la_SOURCES += module/powerflow/switch_object.cpp module/powerflow/switch_object.h
+module_powerflow_powerflow_la_SOURCES += module/powerflow/table.cpp module/powerflow/table.h
 module_powerflow_powerflow_la_SOURCES += module/powerflow/transformer_configuration.cpp module/powerflow/transformer_configuration.h
 module_powerflow_powerflow_la_SOURCES += module/powerflow/transformer.cpp module/powerflow/transformer.h
 module_powerflow_powerflow_la_SOURCES += module/powerflow/triplex_line_conductor.cpp module/powerflow/triplex_line_conductor.h

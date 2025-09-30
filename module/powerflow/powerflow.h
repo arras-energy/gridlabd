@@ -17,6 +17,8 @@
 #include "line_sensor.h"
 #include "switch_coordinator.h"
 
+#include "table.h"
+
 #ifdef _DEBUG
 void print_matrix(complex mat[3][3]);
 #endif
@@ -148,8 +150,15 @@ EXTERN char32 humidity_name INIT("humidity");
 EXTERN char32 solar_name INIT("solar_flux");
 EXTERN char32 wind_name INIT("wind_speed");
 EXTERN char32 rain_name INIT("rainfall");
-EXTERN const char *load_data INIT(NULL); // contents of load data file
-EXTERN double maximum_voltage_deviation INIT(0.5); // maximum voltage deviation before ZIP loads are cut off
+EXTERN table *load_data INIT(NULL); // contents of load data file
+typedef struct s_latlon
+{
+	double latitude;
+	double longitude;
+} LATLON;
+EXTERN std::map<std::string,LATLON> *geocodes INIT(NULL); // list of known geocodes
+EXTERN int32 geocode_find INIT(0); // geocode find: <0 = none, 0 = nearest, >0 = exact geocode precision
+EXTERN double maximum_voltage_deviation INIT(0.5); // maximum voltage deviation from 1.0 pu.V before ZIP loads are cut off
 
 /* gld_object class hierarchy -- indent level indicates inheritance */
 #include "powerflow_library.h"

@@ -1564,6 +1564,12 @@ inline size_t nextpow2(size_t x)
 #define gl_forecast_save DEPRECATED (*callback->forecast.save)
 /**@}*/
 
+///////////////
+// Geocoding //
+///////////////
+
+#define gl_geocode_encode DEPRECATED (*callback->geocode.encode)
+#define gl_geocode_decode DEPRECATED (*callback->geocode.decode)
 
 /******************************************************************************
  * Init/Sync/Create catchall macros

@@ -1,116 +1,10 @@
 // module/powerflow/autotest/test_ziploads.glm
 
-// Settings for canonical feeder model
-
-//
-// Simulation clock
-//
-#define TIMEZONE=America/San_Francisco
-#define STARTTIME=2025-01-01 00:00:00 PST
-#define STOPTIME=2026-01-01 00:00:00 PST
-
-//
-// Weather
-//
-#define WEATHER=CA-San_Francisco_Intl_Ap
-
-//
-// Substation parameters
-//
-#define SUBSTATION_LATITUDE=0.0
-#define SUBSTATION_LONGITUDE=0.0
-#define SUBSTATION_VOLTAGE=69 kV
-
-//
-// Feeder parameters
-//
-#define FEEDER_TRANSFORMER_TYPE=WYE_WYE
-#define FEEDER_RATING=25 MVA
-#define FEEDER_IMPEDANCE=0.25+10j %
-#define FEEDER_REGULATOR_TYPE=WYE_WYE
-#define FEEDER_REGULATION=5%
-#define FEEDER_TAPS=16
-#define FEEDER_BANDWIDTH=62.5 V
-#define FEEDER_DELAY=1 min
-
-//
-// Primary distribution line parameters (repeated for each primary node)
-//
-#define PRIMARY_NAME=PRIMARY
-#define PRIMARY_VOLTAGE=12.5 kV
-#define PRIMARY_PHASES=ABCN
-#define PRIMARY_LATITUDE=0.0
-#define PRIMARY_LONGITUDE=0.0
-#define PRIMARY_FROM=MAIN
-#define PRIMARY_LENGTH=1000 ft
-#define PRIMARY_CONDUCTOR_GMR=0.0244 in
-#define PRIMARY_CONDUCTOR_R=0.306 Ohm/mile
-#define PRIMARY_NEUTRAL_GMR=0.00814 in
-#define PRIMARY_NEUTRAL_R=0.592 Ohm/mile
-#define PRIMARY_SPACING_AB=2.5 ft
-#define PRIMARY_SPACING_BC=4.5 ft
-#define PRIMARY_SPACING_AC=7.0 ft
-#define PRIMARY_SPACING_AN=5.66 ft
-#define PRIMARY_SPACING_BN=4.27 ft
-#define PRIMARY_SPACING_CN=5.0 ft
-
-//
-// Secondary transformer parameters (repeat for each service transformer)
-//
-#define SECONDARY_NAME=SECONDARY
-#define SECONDARY_LATITUDE=0.0
-#define SECONDARY_LONGITUDE=0.0
-#define SECONDARY_PHASES=ABCN
-#define SECONDARY_TRANSFORMER_TYPE=WYE_WYE
-#define SECONDARY_VOLTAGE=2400 V
-#define SECONDARY_TRANSFORMER_RATING=5 MVA
-#define SECONDARY_TRANSFORMER_IMPEDANCE=0.01+2j %
-
-//
-// Secondary distribution line parameters (repeated for each secondary node)
-//
-#define SECONDARY_LENGTH=1000 ft
-#define SECONDARY_CONDUCTOR_GMR=0.0244 in
-#define SECONDARY_CONDUCTOR_R=0.306 Ohm/mile
-#define SECONDARY_NEUTRAL_GMR=0.00814 in
-#define SECONDARY_NEUTRAL_R=0.592 Ohm/mile
-#define SECONDARY_SPACING_AB=2.5 ft
-#define SECONDARY_SPACING_BC=4.5 ft
-#define SECONDARY_SPACING_AC=7.0 ft
-#define SECONDARY_SPACING_AN=5.66 ft
-#define SECONDARY_SPACING_BN=4.27 ft
-#define SECONDARY_SPACING_CN=5.0 ft
-
-//
-// Service transformer parameters (repeat for each service transformer)
-//
-#define SERVICE_NAME=SERVICE
-#define SERVICE_LATITUDE=0.0
-#define SERVICE_LONGITUDE=0.0
-
-#define SERVICE_VOLTAGE=480 V
-#define SERVICE_TRANSFORMER_RATING=500 kVA
-#define SERVICE_TRANSFORMER_IMPEDANCE=0.25+10j %
-
-#define SERVICE_VOLTAGE_SPLIT=120 V
-#define SERVICE_TRANSFORMER_TYPE=WYE_WYE
-#define SERVICE_TRANSFORMER_RATING_SPLIT=100 kVA
-#define SERVICE_TRANSFORMER_IMPEDANCE_SPLIT=1+6j %
-
-//
-// Customer parameters (repeat for each customer)
-//
-#define CUSTOMER_NAME=CUSTOMER
-#define CUSTOMER_LATITUDE=0.0
-#define CUSTOMER_LONGITUDE=0.0
-#define CUSTOMER_CTYPE=office // 3-phase loads only lookup from ziploads.csv
-#define CUSTOMER_RTYPE=singlefamily // triplex loads only lookup from ziploads.csv
-
 clock
 {
-    timezone "${TIMEZONE}";
-    starttime "${STARTTIME}";
-    stoptime "${STOPTIME}";
+    timezone "America/San_Francisco";
+    starttime "2025-01-01 00:00:00 PST";
+    stoptime "2026-01-01 00:00:00 PST";
 }
 
 module powerflow
@@ -118,23 +12,26 @@ module powerflow
     solver_method NR;
 }
 
-#weather get ${WEATHER}.tmy3
-#input "${WEATHER}.tmy3" --property=name=weather
+module tape
+{
+    csv_header_type NAME;
+}
+
+#weather get CA-San_Francisco_Intl_Ap.tmy3
+#input "CA-San_Francisco_Intl_Ap.tmy3" --property=name=weather
 
 //
 // Substation
 //
 object node
 {
-    latitude ${SUBSTATION_LATITUDE};
-    longitude ${SUBSTATION_LONGITUDE};
     name "SUBSTATION";
     bustype SWING;
-    phases ${PRIMARY_PHASES};
-    nominal_voltage ${SUBSTATION_VOLTAGE};
-    voltage_A ${SUBSTATION_VOLTAGE};
-    voltage_B ${SUBSTATION_VOLTAGE};
-    voltage_C ${SUBSTATION_VOLTAGE};
+    phases ABCN;
+    nominal_voltage 69 kV;
+    voltage_A 69 kV;
+    voltage_B 69 kV;
+    voltage_C 69 kV;
 }
 
 //
@@ -142,32 +39,28 @@ object node
 //
 object transformer
 {
-    latitude ${SUBSTATION_LATITUDE};
-    longitude ${SUBSTATION_LONGITUDE};
     name "SUBSTATION-FEEDER";
     from "SUBSTATION";
     to "FEEDER";
     configuration "SUBSTATION_FEEDER_CONFIG";
-    phases ${PRIMARY_PHASES};
+    phases ABCN;
 }
 
 object transformer_configuration
 {
     name "SUBSTATION_FEEDER_CONFIG";
-    connect_type ${FEEDER_TRANSFORMER_TYPE};
-    primary_voltage ${SUBSTATION_VOLTAGE};
-    secondary_voltage ${PRIMARY_VOLTAGE};
-    power_rating ${FEEDER_RATING};
-    impedance ${FEEDER_IMPEDANCE};
+    connect_type WYE_WYE;
+    primary_voltage 69 kV;
+    secondary_voltage 12.5 kV;
+    power_rating 25 MVA;
+    impedance 0.25+10j %;
 }
 
 object node 
 {
-    latitude ${SUBSTATION_LATITUDE};
-    longitude ${SUBSTATION_LONGITUDE};
     name "FEEDER";
-    phases ${PRIMARY_PHASES};
-    nominal_voltage ${PRIMARY_VOLTAGE};
+    phases ABCN;
+    nominal_voltage 12.5 kV;
 }
 
 //
@@ -175,35 +68,31 @@ object node
 //
 object regulator
 {
-    latitude ${SUBSTATION_LATITUDE};
-    longitude ${SUBSTATION_LONGITUDE};
     name "FEEDER-MAIN";
     from "FEEDER";
     to "MAIN";
     configuration "FEEDER_MAIN_CONFIG";
-    phases ${PRIMARY_PHASES};
+    phases ABCN;
 }
 
 object regulator_configuration
 {
     name "FEEDER_MAIN_CONFIG";
-    connect_type ${FEEDER_REGULATOR_TYPE};
+    connect_type WYE_WYE;
     Control OUTPUT_VOLTAGE;
-    regulation ${FEEDER_REGULATION};
-    raise_taps ${FEEDER_TAPS};
-    lower_taps ${FEEDER_TAPS};
-    band_center ${PRIMARY_VOLTAGE};
-    band_width ${FEEDER_BANDWIDTH};
-    time_delay ${FEEDER_DELAY};
+    regulation 5%;
+    raise_taps 16;
+    lower_taps 16;
+    band_center 12.5 kV;
+    band_width 62.5 V;
+    time_delay 1 min;
 }
 
 object node 
 {
-    latitude ${SUBSTATION_LATITUDE};
-    longitude ${SUBSTATION_LONGITUDE};
     name "MAIN";
-    phases ${PRIMARY_PHASES};
-    nominal_voltage ${PRIMARY_VOLTAGE};
+    phases ABCN;
+    nominal_voltage 12.5 kV;
 }
 
 //
@@ -211,56 +100,54 @@ object node
 //
 object node
 {
-    latitude ${PRIMARY_LATITUDE};
-    longitude ${PRIMARY_LONGITUDE};
-    name ${PRIMARY_NAME};
-    nominal_voltage ${PRIMARY_VOLTAGE};
-    phases ${PRIMARY_PHASES};
+    name PRIMARY;
+    nominal_voltage 12.5 kV;
+    phases ABCN;
 }
 
 object overhead_line
 {
-    name "${PRIMARY_FROM}-${PRIMARY_NAME}";
-    from "${PRIMARY_FROM}";
-    to "${PRIMARY_NAME}";
-    phases ${PRIMARY_PHASES};
-    configuration "${PRIMARY_NAME}_CONFIG";
-    length ${PRIMARY_LENGTH};
+    name "MAIN-PRIMARY";
+    from "MAIN";
+    to "PRIMARY";
+    phases ABCN;
+    configuration "PRIMARY_CONFIG";
+    length 1000 ft;
 }
 
 object line_configuration // can be shared among multiple primary lines
 {
-    name "${PRIMARY_NAME}_CONFIG";
-    conductor_A "${PRIMARY_NAME}_CONDUCTOR";
-    conductor_B "${PRIMARY_NAME}_CONDUCTOR";
-    conductor_C "${PRIMARY_NAME}_CONDUCTOR";
-    conductor_N "${PRIMARY_NAME}_NEUTRAL";
-    spacing "${PRIMARY_NAME}_SPACING";
+    name "PRIMARY_CONFIG";
+    conductor_A "PRIMARY_CONDUCTOR";
+    conductor_B "PRIMARY_CONDUCTOR";
+    conductor_C "PRIMARY_CONDUCTOR";
+    conductor_N "PRIMARY_NEUTRAL";
+    spacing "PRIMARY_SPACING";
 }
 
 object overhead_line_conductor // can be shared among multiple primary lines
 {
-    name "${PRIMARY_NAME}_CONDUCTOR";
-    geometric_mean_radius ${PRIMARY_CONDUCTOR_GMR};
-    resistance ${PRIMARY_CONDUCTOR_R};
+    name "PRIMARY_CONDUCTOR";
+    geometric_mean_radius 0.0244 in;
+    resistance 0.306 Ohm/mile;
 }
 
 object overhead_line_conductor // can be shared among multiple primary lines
 {
-    name "${PRIMARY_NAME}_NEUTRAL";
-    geometric_mean_radius ${PRIMARY_NEUTRAL_GMR};
-    resistance ${PRIMARY_NEUTRAL_R};
+    name "PRIMARY_NEUTRAL";
+    geometric_mean_radius 0.00814 in;
+    resistance 0.592 Ohm/mile;
 }
 
 object line_spacing // can be shared among multiple primary lines
 {
-    name "${PRIMARY_NAME}_SPACING";
-    distance_AB ${PRIMARY_SPACING_AB};
-    distance_BC ${PRIMARY_SPACING_BC};
-    distance_AC ${PRIMARY_SPACING_AC};
-    distance_AN ${PRIMARY_SPACING_AN};
-    distance_BN ${PRIMARY_SPACING_BN};
-    distance_CN ${PRIMARY_SPACING_CN};
+    name "PRIMARY_SPACING";
+    distance_AB 2.5 ft;
+    distance_BC 4.5 ft;
+    distance_AC 7.0 ft;
+    distance_AN 5.7 ft;
+    distance_BN 4.3 ft;
+    distance_CN 5.0 ft;
 }
 
 //
@@ -269,13 +156,11 @@ object line_spacing // can be shared among multiple primary lines
 
 object switch
 {
-    latitude ${PRIMARY_LATITUDE};
-    longitude ${PRIMARY_LONGITUDE};
-    name "${PRIMARY_NAME}-${SECONDARY_NAME}-SWITCH";
-    from "${PRIMARY_NAME}";
-    to "${SECONDARY_NAME}_MAIN";
-    phases ${SECONDARY_PHASES};
-    nominal_voltage ${PRIMARY_VOLTAGE};
+    name "PRIMARY-SECONDARY-SWITCH";
+    from "PRIMARY";
+    to "SECONDARY_MAIN";
+    phases ABCN;
+    nominal_voltage 12.5 kV;
     operating_mode BANKED;
 }
 
@@ -284,28 +169,26 @@ object switch
 //
 object node
 {
-    latitude ${PRIMARY_LATITUDE};
-    longitude ${PRIMARY_LONGITUDE};
-    name "${SECONDARY_NAME}_MAIN";
-    phases ${SECONDARY_PHASES};
-    nominal_voltage ${PRIMARY_VOLTAGE};
+    name "SECONDARY_MAIN";
+    phases ABCN;
+    nominal_voltage 12.5 kV;
 }
 object transformer
 {
-    name "${SECONDARY_NAME}_TRANSFORMER";
-    from "${SECONDARY_NAME}_MAIN";
-    to "${SECONDARY_NAME}";
-    configuration "${SECONDARY_NAME}_TRANSFORMER_CONFIGURATION";
-    phases ${SECONDARY_PHASES};
+    name "SECONDARY_TRANSFORMER";
+    from "SECONDARY_MAIN";
+    to "SECONDARY";
+    configuration "SECONDARY_TRANSFORMER_CONFIGURATION";
+    phases ABCN;
 }
 object transformer_configuration // can be shared among multiple secondary transformers
 {
-    name "${SECONDARY_NAME}_TRANSFORMER_CONFIGURATION";
-    connect_type ${SECONDARY_TRANSFORMER_TYPE};
-    primary_voltage ${PRIMARY_VOLTAGE};
-    secondary_voltage ${SECONDARY_VOLTAGE};
-    power_rating ${SECONDARY_TRANSFORMER_RATING};
-    impedance ${SECONDARY_TRANSFORMER_IMPEDANCE};
+    name "SECONDARY_TRANSFORMER_CONFIGURATION";
+    connect_type WYE_WYE;
+    primary_voltage 12.5 kV;
+    secondary_voltage 4.2 kV;
+    power_rating 500 kVA;
+    impedance 0.25+10j%;
 }
 
 //
@@ -314,56 +197,54 @@ object transformer_configuration // can be shared among multiple secondary trans
 
 object node
 {
-    latitude ${SECONDARY_LATITUDE};
-    longitude ${SECONDARY_LONGITUDE};
-    name "${SECONDARY_NAME}";
-    nominal_voltage ${SECONDARY_VOLTAGE};
-    phases ${SECONDARY_PHASES};
+    name "SECONDARY";
+    nominal_voltage 4.2 kV;
+    phases ABCN;
 }
 
 object overhead_line
 {
-    name "SWITCH-${SECONDARY_NAME}";
-    from "${SECONDARY_NAME}";
+    name "SWITCH-SECONDARY";
+    from "SECONDARY";
     to "SERVICE";
-    phases ${SECONDARY_PHASES};
-    configuration "${SECONDARY_NAME}_CONFIG";
-    length ${SECONDARY_LENGTH};
+    phases ABCN;
+    configuration "SECONDARY_CONFIG";
+    length 1000 ft;
 }
 
 object line_configuration // can be shared among multiple secondary lines
 {
-    name "${SECONDARY_NAME}_CONFIG";
-    conductor_A "${SECONDARY_NAME}_CONDUCTOR";
-    conductor_B "${SECONDARY_NAME}_CONDUCTOR";
-    conductor_C "${SECONDARY_NAME}_CONDUCTOR";
-    conductor_N "${SECONDARY_NAME}_NEUTRAL";
-    spacing "${SECONDARY_NAME}_SPACING";
+    name "SECONDARY_CONFIG";
+    conductor_A "SECONDARY_CONDUCTOR";
+    conductor_B "SECONDARY_CONDUCTOR";
+    conductor_C "SECONDARY_CONDUCTOR";
+    conductor_N "SECONDARY_NEUTRAL";
+    spacing "SECONDARY_SPACING";
 }
 
 object overhead_line_conductor // can be shared among multiple secondary lines
 {
-    name "${SECONDARY_NAME}_CONDUCTOR";
-    geometric_mean_radius ${SECONDARY_CONDUCTOR_GMR};
-    resistance ${SECONDARY_CONDUCTOR_R};
+    name "SECONDARY_CONDUCTOR";
+    geometric_mean_radius 0.0244 in;
+    resistance 0.306 Ohm/mile;
 }
 
 object overhead_line_conductor // can be shared among multiple secondary lines
 {
-    name "${SECONDARY_NAME}_NEUTRAL";
-    geometric_mean_radius ${SECONDARY_NEUTRAL_GMR};
-    resistance ${SECONDARY_NEUTRAL_R};
+    name "SECONDARY_NEUTRAL";
+    geometric_mean_radius 0.00814 in;
+    resistance 0.592 Ohm/mile;
 }
 
 object line_spacing  // can be shared among multiple secondary lines
 {
-    name "${SECONDARY_NAME}_SPACING";
-    distance_AB ${SECONDARY_SPACING_AB};
-    distance_BC ${SECONDARY_SPACING_BC};
-    distance_AC ${SECONDARY_SPACING_AC};
-    distance_AN ${SECONDARY_SPACING_AN};
-    distance_BN ${SECONDARY_SPACING_BN};
-    distance_CN ${SECONDARY_SPACING_CN};
+    name "SECONDARY_SPACING";
+    distance_AB 2.5 ft;
+    distance_BC 4.5 ft;
+    distance_AC 7.0 ft;
+    distance_AN 5.7 ft;
+    distance_BN 4.3 ft;
+    distance_CN 5.0 ft;
 }
 
 //
@@ -371,11 +252,9 @@ object line_spacing  // can be shared among multiple secondary lines
 //
 object node
 {
-    latitude ${SERVICE_LATITUDE};
-    longitude ${SERVICE_LONGITUDE};
-    name "${SERVICE_NAME}";
-    nominal_voltage ${SECONDARY_VOLTAGE};
-    phases ${SECONDARY_PHASES};
+    name "SERVICE";
+    nominal_voltage 4.2 kV;
+    phases ABCN;
 }
 
 //
@@ -383,83 +262,88 @@ object node
 //
 object transformer
 {
-    name "${SERVICE_NAME}_TRANSFORMER_${SECONDARY_PHASES}";
-    from "${SERVICE_NAME}";
-    to "CUSTOMER_${SECONDARY_PHASES}";
-    configuration "${SERVICE_NAME}_TRANSFORMER_${SECONDARY_PHASES}_CONFIGURATION";
-    phases ${SECONDARY_PHASES};
+    name "SERVICE_TRANSFORMER_ABCN";
+    from "SERVICE";
+    to "CUSTOMER_ABCN";
+    configuration "SERVICE_TRANSFORMER_ABCN_CONFIGURATION";
+    phases ABCN;
 }
 object transformer_configuration // can be shared among multiple service transformers
 {
-    name "${SERVICE_NAME}_TRANSFORMER_${SECONDARY_PHASES}_CONFIGURATION";
-    connect_type ${SERVICE_TRANSFORMER_TYPE};
-    primary_voltage ${SECONDARY_VOLTAGE};
-    secondary_voltage ${SERVICE_VOLTAGE};
-    power_rating ${SERVICE_TRANSFORMER_RATING};
-    impedance ${SERVICE_TRANSFORMER_IMPEDANCE};
+    name "SERVICE_TRANSFORMER_ABCN_CONFIGURATION";
+    connect_type WYE_WYE;
+    primary_voltage 4.2 kV;
+    secondary_voltage 480 V;
+    power_rating 100 kVA;
+    impedance 1+6j%;
 }
 object meter
 {
-    latitude ${CUSTOMER_LATITUDE};
-    longitude ${CUSTOMER_LONGITUDE};
-    name "${CUSTOMER_NAME}_${SECONDARY_PHASES}";
-    nominal_voltage ${SERVICE_VOLTAGE};
-    phases ${SECONDARY_PHASES};
+    name "CUSTOMER_ABCN";
+    nominal_voltage 480 V;
+    phases ABCN;
     object zipload
     {
         phases inherit;
         nominal_voltage inherit;
         load_class C;
-        load_type "${CUSTOMER_CTYPE}";
+        load_type "office";
+        Pz 1.2 kW;
+        Qz 120 W;
+        Pz_H 10 W/degF;
+        Qz_H 1 W/degF;
+        Pz_C 10 W/degF;
+        Qz_C 1 W/degF;
+    };
+    object recorder
+    {
+        file "test_ziploads_ABCN.csv";
+        property "measured_power,measured_voltage_A,measured_voltage_B,measured_voltage_C";
+        interval 0;
     };
 }
 
 #for PHASE in A B C
 object transformer
 {
-    name "${SERVICE_NAME}_TRANSFORMER_${PHASE}";
-    from "${SERVICE_NAME}";
+    name "SERVICE_TRANSFORMER_${PHASE}";
+    from "SERVICE";
     to "CUSTOMER_${PHASE}";
     configuration "SERVICE_TRANSFORMER_${PHASE}_CONFIGURATION";
     phases ${PHASE}S;
 }
 object transformer_configuration // can be shared among multiple service transformers
 {
-    name "${SERVICE_NAME}_TRANSFORMER_${PHASE}_CONFIGURATION";
+    name "SERVICE_TRANSFORMER_${PHASE}_CONFIGURATION";
     connect_type SINGLE_PHASE_CENTER_TAPPED;
-    primary_voltage ${SECONDARY_VOLTAGE};
-    secondary_voltage ${SERVICE_VOLTAGE_SPLIT};
-    power${PHASE}_rating ${SERVICE_TRANSFORMER_RATING_SPLIT};
-    impedance ${SERVICE_TRANSFORMER_IMPEDANCE_SPLIT};
+    primary_voltage 4.2 kV;
+    secondary_voltage 120 V;
+    power${PHASE}_rating 100 kVA;
+    impedance 1+6j%;
 }
 object triplex_meter
 {
-    latitude ${CUSTOMER_LATITUDE};
-    longitude ${CUSTOMER_LONGITUDE};
-    name "${CUSTOMER_NAME}_${PHASE}";
-    nominal_voltage ${SERVICE_VOLTAGE_SPLIT};
+    name "CUSTOMER_${PHASE}";
+    nominal_voltage 120 V;
     phases ${PHASE}S;
     object triplex_zipload
     {
         phases inherit;
         nominal_voltage inherit;
         load_class R;
-        load_type "${CUSTOMER_RTYPE}";
+        load_type "singlefamily";
+        Pz 1.2 kW;
+        Qz 120 W;
+        Pz_H 10 W/degF;
+        Qz_H 1 W/degF;
+        Pz_C 10 W/degF;
+        Qz_C 1 W/degF;
     };
-}
-#done
-
-module tape
-{
-    csv_header_type NAME;
-}
-
-#for PHASE in ${SECONDARY_PHASES} A B C
-object recorder
-{
-    parent "${CUSTOMER_NAME}_${PHASE}";
-    file "test_ziploads_${PHASE}.csv";
-    property "measured_demand";
-    interval 0;
+    object recorder
+    {
+        file "test_ziploads_${PHASE}.csv";
+        property "measured_power,measured_voltage_12";
+        interval 0;
+    };
 }
 #done

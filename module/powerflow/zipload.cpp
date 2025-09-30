@@ -87,6 +87,7 @@ zipload::zipload(MODULE *mod) : load(mod)
 			PT_complex, "Z[ohm]", PADDR(Z), PT_ACCESS, PA_REFERENCE,
 			PT_complex, "I[A]", PADDR(I), PT_ACCESS, PA_REFERENCE,
 			PT_complex, "P[VA]", PADDR(P), PT_ACCESS, PA_REFERENCE,
+			PT_char1024, "schedule", PADDR(schedule),
 			NULL) < 1 )
 		{
 			GL_THROW("unable to publish properties in %s",__FILE__);
@@ -110,8 +111,7 @@ zipload::zipload(MODULE *mod) : load(mod)
 		memset(Z,0,sizeof(Z));
 		memset(I,0,sizeof(I));
 		memset(P,0,sizeof(P));
-
-		strcpy(schedule, "* * * 1.0");
+		strcpy(schedule, "* * * 1.0;");
 		load_class = LC_UNKNOWN;
     }
 }
@@ -219,7 +219,7 @@ TIMESTAMP zipload::sync(TIMESTAMP t0)
 		double Pmag = P[i].Mag();
 		complex S = Z[i] + I[i] + P[i];
 		double Smag = S.Mag();
-		base_power[i] = Smag;
+		base_power[i] = fabs(voltage[i].Mag()-1) < maximum_voltage_deviation ? Smag : 0.0;
 		impedance_fraction[i] = Zmag / Smag;
 		current_fraction[i] = Imag / Smag;
 		power_fraction[i] = Pmag / Smag;
@@ -336,39 +336,159 @@ bool zipload::build_schedule(void)
 	return TRUE;
 }
 
+table *get_load_data(void)
+{
+	// get the load data file
+	if ( load_data == NULL )
+	{
+		load_data = new table(loaddata_pathname);
+		load_data->set_index("geocode","load_class","load_type",NULL);		
+	}
+
+	// get list of geocodes in the load data file
+	table::COLUMN data = load_data->get_column("geocode");
+	geocodes = new std::map<std::string,LATLON>;
+	for ( auto geocode = data.begin() ; geocode != data.end() ; geocode++ )
+	{
+		char buffer[64];
+		LATLON location;
+		if ( gl_geocode_decode(buffer,sizeof(buffer)-1,geocode->to_string().c_str(),&location.latitude,&location.longitude) )
+		{
+			std::string code = geocode->to_string();
+			if ( geocode_find > 0 )
+			{
+				code.resize(geocode_find);
+			}
+			(*geocodes)[code] = location;
+		}
+		else
+		{
+			gl_warning("get_load_data() file '%s' contains invalid geocode %s",(const char*)loaddata_pathname,geocode);
+		}
+	}
+	return load_data;	
+}
+
+std::string find_nearest(const char *geocode)
+{
+	double dist = 1e12;
+	char buffer[64];
+	LATLON origin;
+	std::string found;
+	double clat = cos(origin.latitude);
+	table::COLUMN data = load_data->get_column("geocode");
+	if ( gl_geocode_decode(buffer,sizeof(buffer)-1,geocode,&origin.latitude,&origin.longitude) == NULL )
+	{
+		gl_warning("find_nearest(const char *geocode='%s') geocode is invalid",geocode);
+		return found;
+	}
+
+	geocodes = new std::map<std::string,LATLON>;
+	for ( auto code = data.begin() ; code != data.end() ; code++ )
+	{
+		if ( code->to_string() == "" )
+		{
+			continue;
+		}
+		LATLON location;
+		if ( gl_geocode_decode(buffer,sizeof(buffer)-1,code->to_string().c_str(),&location.latitude,&location.longitude) )
+		{
+			double dlat = origin.latitude - location.latitude;
+			double dlon = origin.longitude - location.longitude;
+			double dd = (1-cos(dlat)) + clat*cos(origin.longitude)*(1-cos(dlon));
+			if ( dd < dist )
+			{
+				dist = dd;
+				found = code->to_string();
+			}
+		}
+		else
+		{
+			// ignore invalid geocodes (always warned above)
+		}
+	}
+	return found;
+}
+
 void zipload::read_loadtype(void)
 {
-	// locate the file
-	char pathname[1024];
-	if ( gl_findfile(loaddata_pathname,NULL,R_OK,pathname,sizeof(pathname)-1) == NULL )
+	get_load_data();
+
+	char ndx[1024];
+	char geocode[16] = "";
+	if ( geocode_find >= 0 )
 	{
-		gl_error("unable to find '%s'",(const char*)loaddata_pathname);
-		return;
+		for ( OBJECT *obj = my() ; obj != NULL ; obj = obj->parent )
+		{
+			gld_object *object = get_object(obj);
+			if ( isfinite(object->get_latitude()) && isfinite(object->get_longitude()) )
+			{
+				callback->geocode.encode(geocode,sizeof(geocode)-1,object->get_latitude(),object->get_longitude(),geocode_find>0?geocode_find:12);
+				break;
+			}
+		}
+		if ( geocode_find == 0 )
+		{
+			strcpy(geocode,find_nearest(geocode).c_str());
+		}
+		else if ( geocodes->find(geocode) == geocodes->end() )
+		{
+			gl_warning("geocode [%s] not found in %s, using default load data for null geocode",geocode,(const char*)loaddata_pathname);
+			strcpy(geocode,"");
+		}
 	}
 
-	// get the size of the file's contents
-	struct stat buf;
-	if ( stat(pathname,&buf) == -1 )
-	{
-		gl_error("unable to get size of '%s'",(const char*)pathname);		
-		return;
-	}
-	load_data = (char*)malloc(buf.st_size+1);
+	gld_property load_class_property(my(),"load_class");
+	gld_string load_class_string = load_class_property.get_string();
+	snprintf(ndx,sizeof(ndx)-1,"%*s|%s|%s",geocode_find>0?geocode_find:12,geocode,(const char*)load_class_string,(const char*)load_type);
+	table::ROW &data = load_data->at(ndx);
 
-	// open the file for reading	
-	FILE *fp = fopen(pathname,"rb");
-	if ( fp == NULL )
-	{
-		gl_error("unable to open '%s'",(const char*)pathname);
-		return;
-	}
+	Theat = data[load_data->column_index["Theat"]].to_double(0);
+	Tcool = data[load_data->column_index["Tcool"]].to_double(0);
 
-	// read the file into the data buffer
-	if ( fread((void*)load_data,1,buf.st_size,fp) < (unsigned int)buf.st_size )
-	{
-		gl_error("unable to read '%s'",(const char*)pathname);
-		return;
-	}
+	imped_p[0] = data[load_data->column_index["Pz_H"]].to_double(0);
+	imped_p[1] = data[load_data->column_index["Pz_C"]].to_double(0);
+	imped_p[2] = data[load_data->column_index["Pz_S"]].to_double(0);
+	imped_p[3] = data[load_data->column_index["Pz_W"]].to_double(0);
+	imped_p[4] = data[load_data->column_index["Pz_R"]].to_double(0);
+	imped_p[5] = data[load_data->column_index["Pz"]].to_double(0);
+
+	imped_q[0] = data[load_data->column_index["Qz_H"]].to_double(0);
+	imped_q[1] = data[load_data->column_index["Qz_C"]].to_double(0);
+	imped_q[2] = data[load_data->column_index["Qz_S"]].to_double(0);
+	imped_q[3] = data[load_data->column_index["Qz_W"]].to_double(0);
+	imped_q[4] = data[load_data->column_index["Qz_R"]].to_double(0);
+	imped_q[5] = data[load_data->column_index["Qz"]].to_double(0);
+
+	current_p[0] = data[load_data->column_index["Pi_H"]].to_double(0);
+	current_p[1] = data[load_data->column_index["Pi_C"]].to_double(0);
+	current_p[2] = data[load_data->column_index["Pi_S"]].to_double(0);
+	current_p[3] = data[load_data->column_index["Pi_W"]].to_double(0);
+	current_p[4] = data[load_data->column_index["Pi_R"]].to_double(0);
+	current_p[5] = data[load_data->column_index["Pi"]].to_double(0);
+
+	current_q[0] = data[load_data->column_index["Qi_H"]].to_double(0);
+	current_q[1] = data[load_data->column_index["Qi_C"]].to_double(0);
+	current_q[2] = data[load_data->column_index["Qi_S"]].to_double(0);
+	current_q[3] = data[load_data->column_index["Qi_W"]].to_double(0);
+	current_q[4] = data[load_data->column_index["Qi_R"]].to_double(0);
+	current_q[5] = data[load_data->column_index["Qi"]].to_double(0);
+
+	power_p[0] = data[load_data->column_index["Pp_H"]].to_double(0);
+	power_p[1] = data[load_data->column_index["Pp_C"]].to_double(0);
+	power_p[2] = data[load_data->column_index["Pp_S"]].to_double(0);
+	power_p[3] = data[load_data->column_index["Pp_W"]].to_double(0);
+	power_p[4] = data[load_data->column_index["Pp_R"]].to_double(0);
+	power_p[5] = data[load_data->column_index["Pp"]].to_double(0);
+
+	power_q[0] = data[load_data->column_index["Qp_H"]].to_double(0);
+	power_q[1] = data[load_data->column_index["Qp_C"]].to_double(0);
+	power_q[2] = data[load_data->column_index["Qp_S"]].to_double(0);
+	power_q[3] = data[load_data->column_index["Qp_W"]].to_double(0);
+	power_q[4] = data[load_data->column_index["Qp_R"]].to_double(0);
+	power_q[5] = data[load_data->column_index["Qp"]].to_double(0);
+
+	strncpy(schedule,data[load_data->column_index["schedule"]].to_string().c_str(),sizeof(schedule)-1);
 }
 
 void zipload::link_weather(void)

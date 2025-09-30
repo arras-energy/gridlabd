@@ -1682,7 +1682,7 @@ const char *geocode_encode(char *buffer, int len, double lat, double lon, int re
 	return buffer;
 }
 
-const char *geocode_decode(char *buffer, int size, const char *code)
+const char *geocode_decode(char *buffer, int size, const char *code, double *latitude, double *longitude)
 {
 	double lat_err = 90, lon_err = 180;
 	double lat_interval[] = {-lat_err,lat_err};
@@ -1732,21 +1732,33 @@ const char *geocode_decode(char *buffer, int size, const char *code)
 		spec = c+1;
 	}
 	int res = -(int)log10(lat_err);
+	double lat = (lat_interval[0] + lat_interval[1])/2;
+	double lon = (lon_interval[0] + lon_interval[1])/2;
+
+	if ( latitude != NULL )
+	{
+		*latitude = lat;
+	}
+	if ( longitude != NULL )
+	{
+		*longitude = lon;
+		if ( latitude == NULL )
+		{
+			return "";
+		}
+	}
+
 	if ( spec == NULL )
 	{
-		return snprintf(buffer,size,"%.*lf,%.*lf",
-			res,(lat_interval[0] + lat_interval[1])/2,
-			res,(lon_interval[0] + lon_interval[1])/2) < size ? buffer : NULL;
+		return snprintf(buffer,size,"%.*lf,%.*lf",res,lat,res,lon) < size ? buffer : NULL;
 	}
 	else if ( strcmp(spec,"lat") == 0 )
 	{
-		return snprintf(buffer,size,"%.*lf",
-			res,(lat_interval[0] + lat_interval[1])/2) < size ? buffer : NULL;
+		return snprintf(buffer,size,"%.*lf",res,lat) < size ? buffer : NULL;
 	}
 	else if ( strcmp(spec,"lon") == 0 )
 	{
-		return snprintf(buffer,size,"%.*lf",
-			res,(lon_interval[0] + lon_interval[1])/2) < size ? buffer : NULL;
+		return snprintf(buffer,size,"%.*lf",res,lon) < size ? buffer : NULL;
 	}
 	else 
 	{

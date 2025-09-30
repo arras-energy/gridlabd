@@ -63,7 +63,7 @@ class table
 public: // types
 
     typedef std::vector<cell> ROW;
-    typedef std::vector<ROW> ROWLIST;
+    typedef std::vector<cell> COLUMN;
 
 public: // data
 
@@ -94,6 +94,8 @@ public: // methods
     cell &at(const char *r, const char *c);
     void set_index(const char *column,...);
     std::string get_index(const char *column,...);
+    COLUMN get_column(unsigned int n);
+    inline COLUMN get_column(const char *fld) { return get_column(column_index[fld]);};
 
     // data storage
     void to_csv(const char *filename=NULL);

@@ -739,6 +739,7 @@ docs/Module/Powerflow/Triplex_line_configuration.md
 docs/Module/Powerflow/Triplex_load.md
 docs/Module/Powerflow/Triplex_meter.md
 docs/Module/Powerflow/Triplex_node.md
+docs/Module/Powerflow/Triplex_zipload.md
 docs/Module/Powerflow/Underground_line.md
 docs/Module/Powerflow/Underground_line_conductor.md
 docs/Module/Powerflow/Vfd.md
@@ -2349,6 +2350,11 @@ module/powerflow/autotest/test_violation_record.glm
 module/powerflow/autotest/test_zero_OHL_conductor_NR_err.glm
 module/powerflow/autotest/test_zero_TPL_conductor_NR_err.glm
 module/powerflow/autotest/test_zero_UGL_conductor_NR_err.glm
+module/powerflow/autotest/test_ziploads.glm
+module/powerflow/autotest/test_ziploads_A.csv
+module/powerflow/autotest/test_ziploads_ABCN.csv
+module/powerflow/autotest/test_ziploads_B.csv
+module/powerflow/autotest/test_ziploads_C.csv
 module/powerflow/autotest/triplex_meter_reactive_energy_delta.player
 module/powerflow/autotest/triplex_meter_real_energy_delta.player
 module/powerflow/billdump.cpp
@@ -2490,6 +2496,8 @@ module/powerflow/switch_coordinator.cpp
 module/powerflow/switch_coordinator.h
 module/powerflow/switch_object.cpp
 module/powerflow/switch_object.h
+module/powerflow/table.cpp
+module/powerflow/table.h
 module/powerflow/transformer.cpp
 module/powerflow/transformer.h
 module/powerflow/transformer_configuration.cpp

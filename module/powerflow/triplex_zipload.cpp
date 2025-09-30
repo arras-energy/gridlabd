@@ -340,36 +340,9 @@ bool triplex_zipload::build_schedule(void)
 
 void triplex_zipload::read_loadtype(void)
 {
-	// locate the file
-	char pathname[1024];
-	if ( gl_findfile(loaddata_pathname,NULL,R_OK,pathname,sizeof(pathname)-1) == NULL )
+	if ( load_data == NULL )
 	{
-		gl_error("unable to find '%s'",(const char*)loaddata_pathname);
-		return;
-	}
-
-	// get the size of the file's contents
-	struct stat buf;
-	if ( stat(pathname,&buf) == -1 )
-	{
-		gl_error("unable to get size of '%s'",(const char*)pathname);		
-		return;
-	}
-	load_data = (char*)malloc(buf.st_size+1);
-
-	// open the file for reading	
-	FILE *fp = fopen(pathname,"rb");
-	if ( fp == NULL )
-	{
-		gl_error("unable to open '%s'",(const char*)pathname);
-		return;
-	}
-
-	// read the file into the data buffer
-	if ( fread((void*)load_data,1,buf.st_size,fp) < (unsigned int)buf.st_size )
-	{
-		gl_error("unable to read '%s'",(const char*)pathname);
-		return;
+		load_data = new table(loaddata_pathname);
 	}
 }
 
