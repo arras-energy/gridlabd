@@ -39,7 +39,7 @@ triplex_zipload::triplex_zipload(MODULE *mod) : triplex_load(mod)
 		if ( gl_publish_variable(oclass,
 			PT_INHERIT, "triplex_load",
 			PT_char32,"load_type", PADDR(load_type),
-				PT_DESCRIPTION, "load type for triplex_zipload load parameter look-up",
+				PT_DESCRIPTION, "load type for zipload load parameter look-up",
 			PT_object, "weather", PADDR(weather),
 			PT_double, "Theat[degF]", PADDR(Theat),
 			PT_double, "Tcool[degF]", PADDR(Tcool),
@@ -79,6 +79,7 @@ triplex_zipload::triplex_zipload(MODULE *mod) : triplex_load(mod)
 			PT_double, "Qp_W[VAr/mph]", PADDR(power_q[3]),
 			PT_double, "Qp_R[VAr*h/in]", PADDR(power_q[4]),
 			PT_double, "Qp[VAr]", PADDR(power_q[5]),
+			PT_double, "scalar[pu.W]", PADDR(scalar),
 			PT_double, "H[degF]", PADDR(input[0]), PT_ACCESS, PA_REFERENCE,
 			PT_double, "C[degF]", PADDR(input[1]), PT_ACCESS, PA_REFERENCE,
 			PT_double, "S[kW]", PADDR(input[2]), PT_ACCESS, PA_REFERENCE,
@@ -87,6 +88,7 @@ triplex_zipload::triplex_zipload(MODULE *mod) : triplex_load(mod)
 			PT_complex, "Z[ohm]", PADDR(Z), PT_ACCESS, PA_REFERENCE,
 			PT_complex, "I[A]", PADDR(I), PT_ACCESS, PA_REFERENCE,
 			PT_complex, "P[VA]", PADDR(P), PT_ACCESS, PA_REFERENCE,
+			PT_char1024, "schedule", PADDR(schedule),
 			NULL) < 1 )
 		{
 			GL_THROW("unable to publish properties in %s",__FILE__);
@@ -105,13 +107,13 @@ triplex_zipload::triplex_zipload(MODULE *mod) : triplex_load(mod)
 		memset((void*)power_p,0,sizeof(power_p));
 		memset((void*)power_q,0,sizeof(power_q));
 		memset((void*)input,0,sizeof(input));
+		scalar = 1.0;
 		input[5] = 1.0; /* constant term */
 		memset((void*)output,0,sizeof(output));
 		Z = I = P = 0.0;
-
-		strcpy(schedule, "* * * 1.0");
+		strcpy(schedule, "* * * 1.0;");
 		load_class = LC_UNKNOWN;
-    }
+	}
 }
 
 int triplex_zipload::create(void)
@@ -119,6 +121,8 @@ int triplex_zipload::create(void)
 	int res = 0;
 	
 	memcpy((void*)this, defaults, sizeof(triplex_zipload));
+	service_status = ND_IN_SERVICE;
+	bustype = PQ;
 
 	res = node::create();
 
@@ -202,11 +206,11 @@ TIMESTAMP triplex_zipload::sync(TIMESTAMP t0)
 		month = dt.get_month()-1;
 		now = t0;
 	}
-	double scalar = scale[month][weekday][hour];
+	double schedule_scale = scale[month][weekday][hour] / sqrt(3);
 
-	Z = complex(output[0],output[1]) * scalar;
-	I = complex(output[2],output[3]) * scalar;
-	P = complex(output[4],output[5]) * scalar;
+	Z = complex(output[0],output[1]) * schedule_scale * scalar;
+	I = complex(output[2],output[3]) * schedule_scale * scalar;
+	P = complex(output[4],output[5]) * schedule_scale * scalar;
 
 	double Zmag = Z.Mag();
 	double Imag = I.Mag();
@@ -233,50 +237,85 @@ TIMESTAMP triplex_zipload::sync(TIMESTAMP t0)
 	return triplex_load::sync(t0);
 }
 
-static unsigned int read_schedule(const char *str,unsigned int last=0)
+void triplex_zipload::read_loadtype(void)
 {
-	// fprintf(stderr,"read_schedule(const char *str='%s',unsigned int last=%u)\n",str,last);
-	char *next=NULL, *prev=NULL;
-	char buffer[strlen(str)+1];
-	strcpy(buffer,str);
-	while ( (next=strtok_r(next?NULL:buffer,",",&prev)) != NULL )
+	get_load_data();
+
+	char ndx[1024];
+	char geocode[16] = "";
+	if ( geocode_find >= 0 )
 	{
-		// fprintf(stderr,"  processing '%s'...\n",next);
-		unsigned int from, to, value;
-		if ( strchr(next,'-') != NULL )
+		for ( OBJECT *obj = my() ; obj != NULL ; obj = obj->parent )
 		{
-			if ( sscanf(next,"%u-%u",&from,&to) != 2 )
+			gld_object *object = get_object(obj);
+			if ( isfinite(object->get_latitude()) && isfinite(object->get_longitude()) )
 			{
-				gl_error("schedule '%s' is not valid (hyphen found without from/to value)");
-				return 0;
+				callback->geocode.encode(geocode,sizeof(geocode)-1,object->get_latitude(),object->get_longitude(),geocode_find>0?geocode_find:12);
+				break;
 			}
-			if ( from <= to && from <= last+1 && last < to )
-			{
-				// fprintf(stderr," --> %u\n",last+1);
-				return last+1;
-			}
-			else if ( to < from && ( last < from || last+1 >= to ) )
-			{
-				// fprintf(stderr," --> %u\n",last+1);
-				return last+1;
-			}
-			continue;
 		}
-		char *end = NULL;
-		value = strtoul(next,&end,10);
-		if ( *end != '\0' )
+		if ( geocode_find == 0 )
 		{
-			gl_error("schedule '%s' is not valid (invalid character after '%u'",next,value);
-			return 0;
+			strcpy(geocode,find_nearest(geocode).c_str());
 		}
-		if ( value > last )
+		else if ( geocodes->find(geocode) == geocodes->end() )
 		{
-			// fprintf(stderr," --> %u\n",value);
-			return value;
+			gl_warning("geocode [%s] not found in %s, using default load data for null geocode",geocode,(const char*)loaddata_pathname);
+			strcpy(geocode,"");
 		}
 	}
-	// fprintf(stderr," --> 0\n");
-	return 0;
+
+	gld_property load_class_property(my(),"load_class");
+	gld_string load_class_string = load_class_property.get_string();
+	snprintf(ndx,sizeof(ndx)-1,"%*s|%s|%s",geocode_find>0?geocode_find:12,geocode,(const char*)load_class_string,(const char*)load_type);
+	table::ROW &data = load_data->at(ndx);
+
+	Theat = data[load_data->column_index["Theat"]].to_double(0);
+	Tcool = data[load_data->column_index["Tcool"]].to_double(0);
+
+	imped_p[0] = data[load_data->column_index["Pz_H"]].to_double(0);
+	imped_p[1] = data[load_data->column_index["Pz_C"]].to_double(0);
+	imped_p[2] = data[load_data->column_index["Pz_S"]].to_double(0);
+	imped_p[3] = data[load_data->column_index["Pz_W"]].to_double(0);
+	imped_p[4] = data[load_data->column_index["Pz_R"]].to_double(0);
+	imped_p[5] = data[load_data->column_index["Pz"]].to_double(0);
+
+	imped_q[0] = data[load_data->column_index["Qz_H"]].to_double(0);
+	imped_q[1] = data[load_data->column_index["Qz_C"]].to_double(0);
+	imped_q[2] = data[load_data->column_index["Qz_S"]].to_double(0);
+	imped_q[3] = data[load_data->column_index["Qz_W"]].to_double(0);
+	imped_q[4] = data[load_data->column_index["Qz_R"]].to_double(0);
+	imped_q[5] = data[load_data->column_index["Qz"]].to_double(0);
+
+	current_p[0] = data[load_data->column_index["Pi_H"]].to_double(0);
+	current_p[1] = data[load_data->column_index["Pi_C"]].to_double(0);
+	current_p[2] = data[load_data->column_index["Pi_S"]].to_double(0);
+	current_p[3] = data[load_data->column_index["Pi_W"]].to_double(0);
+	current_p[4] = data[load_data->column_index["Pi_R"]].to_double(0);
+	current_p[5] = data[load_data->column_index["Pi"]].to_double(0);
+
+	current_q[0] = data[load_data->column_index["Qi_H"]].to_double(0);
+	current_q[1] = data[load_data->column_index["Qi_C"]].to_double(0);
+	current_q[2] = data[load_data->column_index["Qi_S"]].to_double(0);
+	current_q[3] = data[load_data->column_index["Qi_W"]].to_double(0);
+	current_q[4] = data[load_data->column_index["Qi_R"]].to_double(0);
+	current_q[5] = data[load_data->column_index["Qi"]].to_double(0);
+
+	power_p[0] = data[load_data->column_index["Pp_H"]].to_double(0);
+	power_p[1] = data[load_data->column_index["Pp_C"]].to_double(0);
+	power_p[2] = data[load_data->column_index["Pp_S"]].to_double(0);
+	power_p[3] = data[load_data->column_index["Pp_W"]].to_double(0);
+	power_p[4] = data[load_data->column_index["Pp_R"]].to_double(0);
+	power_p[5] = data[load_data->column_index["Pp"]].to_double(0);
+
+	power_q[0] = data[load_data->column_index["Qp_H"]].to_double(0);
+	power_q[1] = data[load_data->column_index["Qp_C"]].to_double(0);
+	power_q[2] = data[load_data->column_index["Qp_S"]].to_double(0);
+	power_q[3] = data[load_data->column_index["Qp_W"]].to_double(0);
+	power_q[4] = data[load_data->column_index["Qp_R"]].to_double(0);
+	power_q[5] = data[load_data->column_index["Qp"]].to_double(0);
+
+	strncpy(schedule,data[load_data->column_index["schedule"]].to_string().c_str(),sizeof(schedule)-1);
 }
 
 bool triplex_zipload::build_schedule(void)
@@ -307,8 +346,6 @@ bool triplex_zipload::build_schedule(void)
 			strcpy(hours,"1-24");
 		}
 		unsigned int hour = 0, day = 0, month = 0;
-		// fprintf(stderr,"Schedule [%s]: months=[%s], days=[%s], hours=[%s], value=%lf, remark='%s'\n",
-		// 	(const char*)schedule,months,days,hours,value,remark);
 		while ( (hour=read_schedule(hours,hour)) > 0 )
 		{
 			if ( hour < 1 || hour > 24 )
@@ -336,14 +373,6 @@ bool triplex_zipload::build_schedule(void)
 		}
 	}
 	return TRUE;
-}
-
-void triplex_zipload::read_loadtype(void)
-{
-	if ( load_data == NULL )
-	{
-		load_data = new table(loaddata_pathname);
-	}
 }
 
 void triplex_zipload::link_weather(void)

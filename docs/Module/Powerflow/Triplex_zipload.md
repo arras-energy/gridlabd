@@ -1,4 +1,4 @@
-[[/Module/Powerflow/Zipload]] -- Class zipload
+[[/Module/Powerflow/Triplex_zipload]] -- Class triplex_zipload
 
 # Synopsis
 
@@ -46,6 +46,7 @@ GLM:
     Pq_W "<decimal> VAr/mph";
     Pq_R "<decimal> VAr*h/in";
     Pq "<decimal> VAr";
+    scalar "<decimal> pu.W";
     H "<decimal> degF";
     C "<decimal> degF";
     S "<decimal> Btu/h";
@@ -62,7 +63,7 @@ GLM:
 
 # Description
 
-A `triplex_zipload` object describes a 3-phase load with constant impedance
+A `triplex_zipload` object describes a split-phase load with constant impedance
 (`Z`), current(`I`), and power (`P`) all given in Watts, with sensitivities
 to weather, i.e., temperature, humidity, solar gains, wind, and rainfall. In
 addition, the loads and their sensitivities can be scaled according to a
@@ -71,7 +72,14 @@ schedule varying by month of year, day of week, and hour of day.
 If `load_class` and `load_type` are specified, then the load parameters are
 obtained from the load data file specified by the module global
 `zipload_data`. The default file is `ziploads.csv` and is stored in the 
-`${GLD_ETC}` folder.
+`${GLD_ETC}` folder. 
+
+If a latitude and longitude are specified, then the `load_class` and
+`load_type` are selected for that the geocode. The module global variable
+`geocode_find` determines whether and how the geocodes in the `ziploads.csv`
+are searched: `geocode_find==0` indicates find nearest
+(default), `geocode_find>0` indicates the geocode precision with which to
+search, and `geocode<0` indicates no search (use defaults non-geocoded values).
 
 The `weather` is used to update the temperature (`T`), humidity (`H`), solar
 gains (`S`), wind (`W`), and rainfall (`R`) values to drive the sensitivity
@@ -89,5 +97,5 @@ loads in a model as this can result is solver convergence problems.
 # See also
 
 * [[/Module/Powerflow]]
-* [[/Module/Powerflow/Triplex_zipload]]
+* [[/Module/Powerflow/Zipload]]
 

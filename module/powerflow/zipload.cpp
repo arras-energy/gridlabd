@@ -110,9 +110,7 @@ zipload::zipload(MODULE *mod) : load(mod)
 		scalar = 1.0;
 		input[5] = 1.0; /* constant term */
 		memset((void*)output,0,sizeof(output));
-		memset(Z,0,sizeof(Z));
-		memset(I,0,sizeof(I));
-		memset(P,0,sizeof(P));
+		Z = I = P = 0.0;
 		strcpy(schedule, "* * * 1.0;");
 		load_class = LC_UNKNOWN;
     }
@@ -210,38 +208,36 @@ TIMESTAMP zipload::sync(TIMESTAMP t0)
 	}
 
 	// compute ZIP values
-	double schedule_scale = scale[month][weekday][hour] / sqrt(3);
-	for ( unsigned int i = 0 ; i < 3 ; i++ )
-	{
-		Z[i] = complex(output[0],output[1]) * schedule_scale * scalar;
-		I[i] = complex(output[2],output[3]) * schedule_scale * scalar;
-		P[i] = complex(output[4],output[5]) * schedule_scale * scalar;
-		double Zmag = Z[i].Mag();
-		double Imag = I[i].Mag();
-		double Pmag = P[i].Mag();
-		complex S = Z[i] + I[i] + P[i];
-		double Smag = S.Mag();
-		base_power[i] = fabs(voltage[i].Mag()-1) < maximum_voltage_deviation ? Smag : 0.0;
-		impedance_fraction[i] = Zmag / Smag;
-		current_fraction[i] = Imag / Smag;
-		power_fraction[i] = Pmag / Smag;
-		impedance_pf[i] = ( Z[i].i > 0 ? +1 : -1 ) * Z[i].r / Zmag;
-		current_pf[i] = ( I[i].i > 0 ? +1 : -1 ) * I[i].r / Imag;
-		power_pf[i] = ( P[i].i > 0 ? +1 : -1 ) * P[i].r / Pmag;
-	}
+	double schedule_scale = scale[month][weekday][hour] / 3;
+	Z = complex(output[0],output[1]) * schedule_scale * scalar;
+	I = complex(output[2],output[3]) * schedule_scale * scalar;
+	P = complex(output[4],output[5]) * schedule_scale * scalar;
+	double Zmag = Z.Mag();
+	double Imag = I.Mag();
+	double Pmag = P.Mag();
+	complex S = Z + I + P;
+	double Smag = S.Mag();
+
+	base_power[0] = fabs(voltage[0].Mag()-1) < maximum_voltage_deviation ? Smag : 0.0;
+	base_power[1] = fabs(voltage[1].Mag()-1) < maximum_voltage_deviation ? Smag : 0.0;
+	base_power[2] = fabs(voltage[2].Mag()-1) < maximum_voltage_deviation ? Smag : 0.0;
+	impedance_fraction[0] = impedance_fraction[1] = impedance_fraction[2] = Zmag / Smag;
+	current_fraction[0] = current_fraction[1] = current_fraction[2] = Imag / Smag;
+	power_fraction[0] = power_fraction[1] = power_fraction[2] = Pmag / Smag;
+	impedance_pf[0] = impedance_pf[1] = impedance_pf[2] = ( Z.i > 0 ? +1 : -1 ) * Z.r / Zmag;
+	current_pf[0] = current_pf[1] = current_pf[2] = ( I.i > 0 ? +1 : -1 ) * I.r / Imag;
+	power_pf[0] = power_pf[1] = power_pf[2] = ( P.i > 0 ? +1 : -1 ) * P.r / Pmag;
 
 	return load::sync(t0);
 }
 
-static unsigned int read_schedule(const char *str,unsigned int last=0)
+unsigned int read_schedule(const char *str,unsigned int last)
 {
-	// fprintf(stderr,"read_schedule(const char *str='%s',unsigned int last=%u)\n",str,last);
 	char *next=NULL, *prev=NULL;
 	char buffer[strlen(str)+1];
 	strcpy(buffer,str);
 	while ( (next=strtok_r(next?NULL:buffer,",",&prev)) != NULL )
 	{
-		// fprintf(stderr,"  processing '%s'...\n",next);
 		unsigned int from, to, value;
 		if ( strchr(next,'-') != NULL )
 		{
@@ -252,12 +248,10 @@ static unsigned int read_schedule(const char *str,unsigned int last=0)
 			}
 			if ( from <= to && from <= last+1 && last < to )
 			{
-				// fprintf(stderr," --> %u\n",last+1);
 				return last+1;
 			}
 			else if ( to < from && ( last < from || last+1 >= to ) )
 			{
-				// fprintf(stderr," --> %u\n",last+1);
 				return last+1;
 			}
 			continue;
@@ -271,11 +265,9 @@ static unsigned int read_schedule(const char *str,unsigned int last=0)
 		}
 		if ( value > last )
 		{
-			// fprintf(stderr," --> %u\n",value);
 			return value;
 		}
 	}
-	// fprintf(stderr," --> 0\n");
 	return 0;
 }
 
@@ -307,8 +299,6 @@ bool zipload::build_schedule(void)
 			strcpy(hours,"1-24");
 		}
 		unsigned int hour = 0, day = 0, month = 0;
-		// fprintf(stderr,"Schedule [%s]: months=[%s], days=[%s], hours=[%s], value=%lf, remark='%s'\n",
-		// 	(const char*)schedule,months,days,hours,value,remark);
 		while ( (hour=read_schedule(hours,hour)) > 0 )
 		{
 			if ( hour < 1 || hour > 24 )

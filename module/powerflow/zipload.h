@@ -8,6 +8,7 @@
 #error "this header must be included by powerflow.h"
 #endif
 
+unsigned int read_schedule(const char *str,unsigned int last=0);
 table *get_load_data(void);
 std::string find_nearest(const char *geocode);
 
@@ -33,9 +34,9 @@ public:
 	double power_q[6]; // Qo_{H,C,S,W,R,1}
 	double input[6]; // H, C, S, W, R, 1.0 */
 	double output[6]; // Zp, Zq, Ip, Iq, Pp, Pq */
-	complex Z[3], I[3], P[3]; // Zp+Zq*1j, Ip+Iq*1j, Pp+Pq*1j
+	complex Z, I, P; // Zp+Zq*1j, Ip+Iq*1j, Pp+Pq*1j
 	double scalar;
-	
+
 	char1024 schedule;
 	double scale[12][8][24]; // month, weekday, hour
 

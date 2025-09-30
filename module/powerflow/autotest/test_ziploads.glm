@@ -284,6 +284,7 @@ object meter
     phases ABCN;
     object zipload
     {
+        name "CUSTOMER_ABCN_ZIP";
         phases inherit;
         nominal_voltage inherit;
         load_class C;
@@ -328,6 +329,7 @@ object triplex_meter
     phases ${PHASE}S;
     object triplex_zipload
     {
+        name "CUSTOMER_${PHASE}_ZIP";
         phases inherit;
         nominal_voltage inherit;
         load_class R;
