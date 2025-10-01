@@ -1,5 +1,7 @@
 // module/powerflow/autotest/test_ziploads.glm
 
+#set complex_format=%.3lf%+.3lf
+
 clock
 {
     timezone "America/San_Francisco";
