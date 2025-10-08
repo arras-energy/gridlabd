@@ -25,6 +25,7 @@ public:
 		GT_COMBUSTIONTURBINE 	= 0x0100,
 		GT_PHOTOVOLTAIC			= 0x0200,
 		GT_COMBINEDCYCLE		= 0x0400,
+		GT_CONCENTRATEDSOLAR	= 0x0800,
 	} GENERATORTYPE;
 
 	typedef enum {
@@ -55,6 +56,7 @@ public:
 public:
 	// published properties
 	GL_ATOMIC(char32,city);
+	GL_ATOMIC(char32,county);
 	GL_ATOMIC(char32,state);
 	GL_ATOMIC(char32,zipcode);
 	GL_ATOMIC(char32,country);
