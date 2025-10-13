@@ -1,7 +1,12 @@
+CODE_OF_CONDUCT.md
+COMMITTERS.md
+CONTRIBUTING.md
 COPYRIGHT
+GOVERNANCE.md
 LICENSE
 Makefile.am
 README.md
+SUPPORT.md
 aminclude.mk
 autotest/README.md
 autotest/autotest/R1-12.27-4_reg_output.csv
@@ -3712,6 +3717,7 @@ subcommands/gridlabd-manual
 subcommands/gridlabd-marimo
 subcommands/gridlabd-matrix
 subcommands/gridlabd-model
+subcommands/gridlabd-notebook
 subcommands/gridlabd-openfido
 subcommands/gridlabd-pandas
 subcommands/gridlabd-plot
