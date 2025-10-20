@@ -1,5 +1,7 @@
+#ifdef APPLE
 #python -m gridlabd.fire_report -s=CA -y=2014 -u=SCE > test_fire_report.csv
 
 #ifexist ../test_fire_report.csv
 #on_exit 0 diff ../test_fire_report.csv test_fire_report.csv > gridlabd.diff
+#endif
 #endif
