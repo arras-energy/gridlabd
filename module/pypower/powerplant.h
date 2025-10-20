@@ -55,6 +55,7 @@ public:
 public:
 	// published properties
 	GL_ATOMIC(char32,city);
+	GL_ATOMIC(char32,county);
 	GL_ATOMIC(char32,state);
 	GL_ATOMIC(char32,zipcode);
 	GL_ATOMIC(char32,country);

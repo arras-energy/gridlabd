@@ -29,6 +29,9 @@ powerplant::powerplant(MODULE *module)
 			PT_char32, "city", get_city_offset(),
 				PT_DESCRIPTION, "City in which powerplant is located",
 			
+			PT_char32, "county", get_county_offset(),
+				PT_DESCRIPTION, "County in which powerplant is located",
+			
 			PT_char32, "state", get_state_offset(),
 				PT_DESCRIPTION, "State in which powerplant is located",
 			
