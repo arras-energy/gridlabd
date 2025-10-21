@@ -30,11 +30,12 @@ OPTIONS
 
 COMMANDS
 
-    create PROJECT   Create and open a new project
     config
       show           Show the current configuration
       save           Save options are default configuration
+    create PROJECT   Create and open a new project
     edit PROJECT     Open an existing project
+    list [WORKDIR]   List projects in WORKDIR (. by default)
     save MESSAGE     Save project to github
 
 EXAMPLE
@@ -52,126 +53,133 @@ E_MISSING = 4
 E_EXISTS = 5
 E_EXCEPTION = 9
 
-_COMMANDS = ["create","edit","config","save","list"]
+_COMMANDS = ["config","create","edit","list","save"]
 
-def list(workdir=None):
+class Command:
 
-    if workdir is None:
+    @staticmethod
+    def list(workdir=None):
+
+        if workdir is None:
+            workdir = settings["workdir"]
+        for item in os.listdir(workdir):
+            itempath = os.path.join(workdir,item)
+            if not item.startswith(".") and os.path.isdir(itempath):
+                Command.list(itempath)
+            ok = True
+            for required in [".git","notebook.py"]:
+                if not os.path.exists(os.path.join(itempath,required)):
+                    ok = False
+            if ok: 
+                output(itempath)
+
+    @staticmethod
+    def create(project):
+
+        # create work folder in workdir
         workdir = settings["workdir"]
-    for item in os.listdir(workdir):
-        itempath = os.path.join(workdir,item)
-        if not item.startswith(".") and os.path.isdir(itempath):
-            list(itempath)
-        ok = True
-        for required in [".git","notebook.py"]:
-            if not os.path.exists(os.path.join(itempath,required)):
-                ok = False
-        if ok: 
-            print(itempath)
+        project_path = os.path.join(workdir,project)
+        if os.path.exists(os.path.join(project_path)):
+            error(f"{project=} exists in {workdir=}",E_EXISTS)
+        verbose(f"creating {project=} in {workdir=}...")
+        os.makedirs(project_path)
+        os.chdir(project_path)
+        verbose(f"...ok")
 
-def create(project):
+        # git init the folder
+        if os.system("git init"):
+            raise RuntimeError("git init failed")
 
-    # create work folder in workdir
-    workdir = settings["workdir"]
-    project_path = os.path.join(workdir,project)
-    if os.path.exists(os.path.join(project_path)):
-        error(f"{project=} exists in {workdir=}",E_EXISTS)
-    verbose(f"creating {project=} in {workdir=}...")
-    os.makedirs(project_path)
-    os.chdir(project_path)
-    verbose(f"...ok")
+        # copy template files from GitHub
+        if settings["template"]:
+            warning(f"unable to copy template files from {settings['template']}")
 
-    # git init the folder
-    if os.system("git init"):
-        raise RuntimeError("git init failed")
+        # edit the project
+        return edit(project)
 
-    # copy template files from GitHub
-    if settings["template"]:
-        warning(f"unable to copy template files from {settings['template']}")
+    @staticmethod
+    def edit(project):
 
-    # edit the project
-    return edit(project)
+        # edit the project in Marimo notebook
+        workdir = settings["workdir"]
+        project_path = os.path.join(workdir,project)
+        if not os.path.exists(os.path.join(project_path)):
+            error(f"{project=} does not exist in {workdir=}",E_NOTFOUND)
+        verbose(f"opening {project=} in {workdir=} with marimo...")
+        os.chdir(project_path)
+        os.system(f"marimo edit notebook.py")
+        verbose(f"...ok")
 
-def edit(project):
+    @staticmethod
+    def config(command,*args,**kwargs):
 
-    # edit the project in Marimo notebook
-    workdir = settings["workdir"]
-    project_path = os.path.join(workdir,project)
-    if not os.path.exists(os.path.join(project_path)):
-        error(f"{project=} does not exist in {workdir=}",E_NOTFOUND)
-    verbose(f"opening {project=} in {workdir=} with marimo...")
-    os.chdir(project_path)
-    os.system(f"marimo edit notebook.py")
-    verbose(f"...ok")
+        global settings
+        file = sys.argv[0].replace(".py",".conf")
+        
+        if command == "show":
+        
+            if kwargs:
 
-def config(command,*args,**kwargs):
+                error(f"{kwargs=} is invalid",E_INVALID)
 
-    global settings
-    file = sys.argv[0].replace(".py",".conf")
-    
-    if command == "show":
-    
-        if kwargs:
+            if args:
 
-            error(f"{kwargs=} is invalid",E_INVALID)
+                for key in args:
 
-        if args:
+                    print(f"{key}={settings[key]}")
 
-            for key in args:
+                return E_OK
 
-                print(f"{key}={settings[key]}")
+            for key,value in settings.items():
+                output(f"{key}={value}")
+            return E_OK
+        
+        if command == "load":
+            try:
+                with open(file,"r") as fh:
+                    settings = json.load(fh)
+            except:
+                settings = dict(
+                    workdir = os.path.join(os.environ["HOME"],"github"),
+                    show = False,
+                    quiet = False,
+                    warning = True,
+                    debug = None,
+                    verbose = False,
+                    exception = False,
+                    template = "arras-energy/.project",
+                    )
+            return E_OK
+
+        if command == "set":
+
+            if args:
+
+                error(f"{args=} is invalid",E_INVALID)
+
+            if not kwargs:
+
+                error("missing key=value",E_MISSING)
+
+            for key,value in kwargs:
+
+                settings[key] = eval(value)
 
             return E_OK
 
-        for key,value in settings.items():
-            print(f"{key}={value}")
-        return E_OK
-    
-    if command == "load":
-        try:
-            with open(file,"r") as fh:
-                settings = json.load(fh)
-        except:
-            settings = dict(
-                workdir = os.path.join(os.environ["HOME"],"github"),
-                show = False,
-                quiet = False,
-                warning = True,
-                debug = None,
-                verbose = False,
-                exception = False,
-                template = "arras-energy/.project",
-                )
-        return E_OK
-
-    if command == "set":
-
-        if args:
-
-            error(f"{args=} is invalid",E_INVALID)
-
-        if not kwargs:
-
-            error("missing key=value",E_MISSING)
-
-        for key,value in kwargs:
-
-            settings[key] = eval(value)
-
-        return E_OK
-
-    if command == "save":
-    
-        with open(file,"w") as fh:
-            json.dump(settings,fh)
+        if command == "save":
         
-        return E_OK
+            with open(file,"w") as fh:
+                json.dump(settings,fh)
+            
+            return E_OK
 
-    error(f"{command=} is not a valid config command",E_INVALID)
+        error(f"{command=} is not a valid config command",E_INVALID)
 
-def save(message):
+    @staticmethod
+    def save(message):
 
-    verbose(f"TODO save({message=})")
+        verbose(f"TODO save({message=})")
 
 def exception(msg=None,code=None):
     """Print exception message
@@ -280,7 +288,7 @@ def output(msg,code=None):
 def main(argv):
 
     global settings
-    config("load")
+    Command.config("load")
 
     os.chdir(settings["workdir"])
 
@@ -295,9 +303,9 @@ def main(argv):
 
     for arg in argv[1:]:
         
-        if arg in _COMMANDS:
+        if hasattr(Command,arg):
 
-            command = globals()[arg]
+            command = getattr(Command,arg)
             continue
 
         if arg in ["-h","--help","help"]:
