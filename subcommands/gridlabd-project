@@ -56,10 +56,10 @@ E_EXCEPTION = 9
 _COMMANDS = ["config","create","edit","list","save"]
 
 class Command:
-
+    """Class implementing all main-level commands"""
     @staticmethod
     def list(workdir=None):
-
+        """Send list of projects to output"""
         if workdir is None:
             workdir = settings["workdir"]
         for item in os.listdir(workdir):
@@ -75,7 +75,7 @@ class Command:
 
     @staticmethod
     def create(project):
-
+        """Create a project"""
         # create work folder in workdir
         workdir = settings["workdir"]
         project_path = os.path.join(workdir,project)
@@ -99,7 +99,7 @@ class Command:
 
     @staticmethod
     def edit(project):
-
+        """Edit a project"""
         # edit the project in Marimo notebook
         workdir = settings["workdir"]
         project_path = os.path.join(workdir,project)
@@ -112,7 +112,7 @@ class Command:
 
     @staticmethod
     def config(command,*args,**kwargs):
-
+        """Configure project subcommand"""
         global settings
         file = sys.argv[0].replace(".py",".conf")
         
@@ -178,7 +178,7 @@ class Command:
 
     @staticmethod
     def save(message):
-
+        """Save a project"""
         verbose(f"TODO save({message=})")
 
 def exception(msg=None,code=None):
