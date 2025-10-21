@@ -5,8 +5,8 @@
 clock
 {
     timezone "America/San_Francisco";
-    starttime "2025-01-01 00:00:00 PST";
-    stoptime "2026-01-01 00:00:00 PST";
+    starttime "2025-07-01 00:00:00 PDT";
+    stoptime "2025-07-02 00:00:00 PDT";
 }
 
 module powerflow
