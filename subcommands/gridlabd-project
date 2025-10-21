@@ -15,7 +15,9 @@ GLM:
 
 DESCRIPTION
 
-    The 'gridlabd project' command manage GridLAB-D projects in GitHub.
+    The 'gridlabd project' command manages GridLAB-D projects in GitHub.
+    GridLAB-D projects can be opened from GitHub repositories and edited
+    using Marimo.
 
 OPTIONS
 
@@ -33,13 +35,44 @@ COMMANDS
     config
       show           Show the current configuration
       save           Save options are default configuration
+      KEY=e_value    Change configuration setting
     create PROJECT   Create and open a new project
     edit PROJECT     Open an existing project
     list [WORKDIR]   List projects in WORKDIR (. by default)
     save MESSAGE     Save project to github
 
-EXAMPLE
+CONFIGURATION
 
+    workdir=$HOME/github
+
+        The `workdir` value specifies the default working folder for projects.
+        You can override this by specifying the full path to the project.
+
+    quiet=False
+
+        The `quiet` value suppresses error messages during processing.
+
+    warning=True
+
+        The `warning` value enable warning messages during processing.
+
+    debug=None
+
+        The `debug` value enables exception traceback during processing.
+
+    verbose=False
+
+        The `verbose` value enables verbose message output during processing.
+
+    exception=False
+
+        The `exception` value enables raising exceptions instead of displaying
+        error messages and returning error codes.
+
+    template=arras-energy/.project
+
+        The `template` value specifies the GitHub project template to use when
+        creating a new project.
 """
 
 import sys, os
@@ -51,9 +84,14 @@ E_INVALID = 2
 E_NOTFOUND = 3
 E_MISSING = 4
 E_EXISTS = 5
+E_FAILED = 6
 E_EXCEPTION = 9
 
 _COMMANDS = ["config","create","edit","list","save"]
+
+class ProjectError:
+
+    pass
 
 class Command:
     """Class implementing all main-level commands"""
@@ -72,6 +110,7 @@ class Command:
                     ok = False
             if ok: 
                 output(itempath)
+        return E_OK
 
     @staticmethod
     def create(project):
@@ -107,8 +146,9 @@ class Command:
             error(f"{project=} does not exist in {workdir=}",E_NOTFOUND)
         verbose(f"opening {project=} in {workdir=} with marimo...")
         os.chdir(project_path)
-        os.system(f"marimo edit notebook.py")
+        rc = os.system(f"marimo edit .")
         verbose(f"...ok")
+        return E_OK if rc == 0 else E_FAILED
 
     @staticmethod
     def config(command,*args,**kwargs):
@@ -132,6 +172,7 @@ class Command:
 
             for key,value in settings.items():
                 output(f"{key}={value}")
+
             return E_OK
         
         if command == "load":
@@ -141,7 +182,6 @@ class Command:
             except:
                 settings = dict(
                     workdir = os.path.join(os.environ["HOME"],"github"),
-                    show = False,
                     quiet = False,
                     warning = True,
                     debug = None,
@@ -163,6 +203,9 @@ class Command:
 
             for key,value in kwargs:
 
+                if key not in settings:
+                    error(f"{key=} is not found",E_NOTFOUND)
+
                 settings[key] = eval(value)
 
             return E_OK
@@ -180,6 +223,7 @@ class Command:
     def save(message):
         """Save a project"""
         verbose(f"TODO save({message=})")
+        return E_FAILED
 
 def exception(msg=None,code=None):
     """Print exception message
@@ -220,7 +264,7 @@ def error(msg,code=None):
     if not settings["quiet"]:
         print(f"ERROR [gridlabd-project]: {msg}",file=sys.stderr)
     if type(code) is int:
-        exit(code)
+        raise ProjectError((msg,code))
 
 def warning(msg):
     """Print warning message
@@ -360,7 +404,7 @@ def main(argv):
 
     if command:
 
-        exit(command(*args,**kwargs))
+        return command(*args,**kwargs)
 
     else:
 
