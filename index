@@ -4093,7 +4093,7 @@ tools/autotest/test_group.glm
 tools/autotest/test_group_assets_opt.glm
 tools/autotest/test_group_modify_opt.glm
 tools/autotest/test_group_network_opt.glm
-tools/autotest/test_isone.glm
+tools/autotest/test_isone_opt.glm
 tools/autotest/test_isone_record.csv
 tools/autotest/test_location.glm
 tools/autotest/test_location.txt
