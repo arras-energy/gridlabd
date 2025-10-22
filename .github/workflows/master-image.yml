@@ -284,7 +284,7 @@ jobs:
   buildAWSUbuntuAMI:
     runs-on: ubuntu-24.04
     environment: Integration
-    needs: [buildUbuntu24FastS3,buildMacos13FastS3]
+    needs: [buildUbuntu24FastS3,buildMacos14FastS3]
 
     steps:
     - uses: actions/checkout@v4
