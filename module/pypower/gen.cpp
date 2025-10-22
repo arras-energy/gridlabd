@@ -207,7 +207,7 @@ void gen::add_Qg(double reactive)
 void gen::add_Pmax(double capacity)
 {
 	Pmax += capacity;
-	Qmax = Pmax/default_reactive_power_fraction; 
+	Qmax = Pmax*default_reactive_power_fraction; 
 	Qmin = -Qmax;
 }
 

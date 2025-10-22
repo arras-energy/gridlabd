@@ -116,8 +116,11 @@ openfido.err
 
 # docs
 html/
+
+# testing
 test_*_exception_branch.csv
 test_*_exception_bus.csv
 test_*_exception_gen.csv
+test_*_exception_dcline.csv
 after.csv
 before.csv

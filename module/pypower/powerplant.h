@@ -5,6 +5,7 @@
 #define _PYPOWER_POWERPLANT_H
 
 #include "gridlabd.h"
+#include "weather.h"
 
 class powerplant : public gld_object
 {
@@ -24,6 +25,7 @@ public:
 		GT_COMBUSTIONTURBINE 	= 0x0100,
 		GT_PHOTOVOLTAIC			= 0x0200,
 		GT_COMBINEDCYCLE		= 0x0400,
+		GT_CONCENTRATEDSOLAR	= 0x0800,
 	} GENERATORTYPE;
 
 	typedef enum {
@@ -54,6 +56,7 @@ public:
 public:
 	// published properties
 	GL_ATOMIC(char32,city);
+	GL_ATOMIC(char32,county);
 	GL_ATOMIC(char32,state);
 	GL_ATOMIC(char32,zipcode);
 	GL_ATOMIC(char32,country);
@@ -87,11 +90,17 @@ public:
 	GL_ATOMIC(double,total_emissions);
 	GL_ATOMIC(double,Pg);
 	GL_ATOMIC(double,Qg);
+	GL_ATOMIC(double,Tnominal);
+	GL_ATOMIC(double,derating);
+	GL_ATOMIC(double,Tcutoff);
+	GL_ATOMIC(object,weather);
 
 private:
 	PyObject *py_controller;
 	PyObject *py_args;
 	PyObject *py_kwargs;
+	class weather *weather_src;
+	double pmax;
 
 private:
 	bool is_dynamic; // true if parent is a gen otherwise false

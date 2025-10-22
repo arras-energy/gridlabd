@@ -2873,6 +2873,17 @@ public:
 	// Method: get_longitude
 	inline double get_longitude(void) { return my()->longitude; };
 
+	// Method: get_distance
+	inline double get_distance(gld_object *to, bool km=false)
+	{
+		double flat = my()->latitude*PI/180;
+		double flon = my()->longitude*PI/180;
+		double tlat = to->get_latitude()*PI/180;
+		double tlon = to->get_longitude()*PI/180;
+		double radius = km ? 6371.0 : 3958.8; // km or miles
+		return 2*radius*asin(sqrt((1-cos(flat-tlat)+cos(flat)*cos(tlat)*(1-cos(flon-tlon)))/2));		
+	}
+
 	// Method: get_in_svc
 	inline TIMESTAMP get_in_svc(void) { return my()->in_svc; };
 

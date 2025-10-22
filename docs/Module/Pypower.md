@@ -5,30 +5,41 @@
 GLM:
 
 ~~~
-module pypower
+module pypower 
 {
-	set {QUIET=65536, WARNING=131072, DEBUG=262144, VERBOSE=524288} message_flags; // module message control flags
-	char256 timestamp_format; // Format for weather file timestamps ('' is RFC822/ISO8601)
-	int32 version; // Version of pypower used
-	enumeration {NR=1, FD_XB=2, FD_BX=3, GS=4} solver_method; // PyPower solver method to use
-	int32 maximum_timestep; // Maximum timestep allowed between solutions
-	double baseMVA[MVA]; // Base MVA value
-	bool enable_opf; // Flag to enable optimal powerflow (OPF) solver
+    set {QUIET=65536, WARNING=131072, DEBUG=262144, VERBOSE=524288} message_flags; // module message control flags
+    double autosize_angle[rad]; // Autosize voltage angle to use (0 for no autosizing)
+    double default_dcline_loss0[MW]; // Default DC line power loss constant
+    double default_dcline_loss1[MW/MW]; // Default DC line power loss factor
+    double default_reactive_power_fraction[pu]; // Default fraction of real power generation available for reactive power
+    double minimum_voltage_magnitude_deadband[pu.kV]; // Minimum deadband on voltage magnitude control
+    double minimum_voltage_angle_deadband[deg]; // Minimum deadband on voltage angle control
+    char256 timestamp_format; // Format for weather file timestamps ('' is RFC822/ISO8601)
+    int32 version; // Version of pypower used
+    enumeration {NR=1, FD_XB=2, FD_BX=3, GS=4} solver_method; // PyPower solver method to use
+    double maximum_timestep[s]; // Maximum timestep allowed between solutions
+    double baseMVA[MVA]; // Base MVA value
+    bool enable_opf; // Flag to enable optimal powerflow (OPF) solver
     double opf_update_interval[s]; // Interval at which to update OPF solution (only if enable_opf is TRUE, 0 is always)
-	bool stop_on_failure; // Flag to stop simulation on solver failure
-	bool save_case; // Flag to save pypower case data and results
-	char1024 controllers_path; // Path to find module containing controller functions
-	char1024 controllers; // Python module containing controller functions
-	double solver_update_resolution; // Minimum difference before a value is considered changed
-	int32 maximum_iterations; // Maximum iterations (0 defaults to pypower default for solver_method)
-	double solution_tolerance; // Solver convergence error tolerante (0 defaults to pypower default)
-	enumeration {FAILED=2, SUCCESS=1, INIT=0} solver_status; // Result of the last pypower solver run
-	bool enforce_q_limits; // Enable enforcement of reactive power limits
-	bool use_dc_powerflow; // Enable use of DC powerflow solution
-	enumeration {PY=2, JSON=1, CSV=0} save_format; // Save case format
-	double total_loss[MW]; // System-wide line losses
-	double generation_shortfall[MW]; // System-wide generation shortfall
+    bool stop_on_failure; // Flag to stop simulation on solver failure
+    bool save_case; // Flag to save pypower case data and results
+    char1024 controllers_path; // Path to find module containing controller functions
+    char1024 controllers; // Python module containing controller functions
+    double solver_update_resolution; // Minimum difference before a value is considered changed
+    int32 maximum_iterations; // Maximum iterations (0 defaults to pypower default for solver_method)
+    double solution_tolerance; // Solver convergence error tolerante (0 defaults to pypower default)
+    enumeration {FAILED=2, SUCCESS=1, INIT=0} solver_status; // Result of the last pypower solver run
+    bool enforce_q_limits; // Enable enforcement of reactive power limits
+    bool use_dc_powerflow; // Enable use of DC powerflow solution
+    enumeration {PY=2, JSON=1, CSV=0} save_format; // Save case format
+    double total_loss[MW]; // System-wide line losses
+    double generation_shortfall[MW]; // System-wide generation shortfall
     bool with_emissions; // Include emissions results
+    int32 maximum_iterations_opf; // Maximum iterations allowed for OPF
+    double opf_feasibility_tolerance; // OPF feasibility condition convergence tolerance
+    double opf_gradient_tolerance; // OPF gradient convergence tolerance
+    double opf_condition_tolerance; // OPF complimentary condition convergence tolerance
+    double opf_cost_tolerance; // OPF cost convergence tolerance
 }
 ~~~
 
@@ -51,13 +62,32 @@ is, the larger a difference between an old value and new value from the
 solver must be to be considered a change necessitating additional iteration.
 The default value is `1e-8`, which should be sufficient for most models.
 
+If `autosize_angle` is specified then any `branch` parameters that are not
+specified will be calculated automatically using the following formulas:
+
+  - lines
+    - $r = \cos(autosize\_angle) * baseMVA / baseKV^2$
+    - $x = (-0.0008*baseKV+0.699) * length * baseMVA / baseKV^2$
+    - $b = (-0.0002*baseKV+0.1122) * 1e-6 * length * baseMVA / baseKV^2$
+
+  - contactors
+    - $r = 0.001 * baseMVA / baseKV^2$
+    - $x = 10 * r$
+    - $b = 0$
+
+  - transformers
+    - $r = (0.0348*\log(baseKV)-0.04209) * baseMVA / baseKV^2$
+    - $x = r*\max(26.8608*\log(rateA/1e6)-11.7491,5.0)$
+    - $b = 0$
+
 The following `pypower` data elements are implemented using the corresponding
 GridLAB-D `pypower` module classes.
 
 ## Bus Objects
 
 ~~~
-class bus {
+class bus 
+{
     int32 bus_i; // bus number (1 to 29997)
     complex S[MVA]; // base load demand not counting child objects, including weather sensitivities, copied to Pd,Qd by default (MVA)
     enumeration {PQREF=1, NONE=4, REF=3, PV=2, PQ=1, UNKNOWN=0} type; // bus type (1 = PQ, 2 = PV, 3 = ref, 4 = isolated)
@@ -108,7 +138,8 @@ Note that the cutoff value is always used to identify the intercept point, i.e.,
 ## Branch Objects
 
 ~~~
-class branch {
+class branch 
+{
     int32 fbus; // from bus number
     int32 tbus; // to bus number
     double r[pu.Ohm]; // resistance (p.u.)
@@ -128,7 +159,8 @@ class branch {
 ## Generator Objects
 
 ~~~
-class gen {
+class gen 
+{
     int32 bus; // bus number
     double Pg[MW]; // real power output (MW)
     double Qg[MVAr]; // reactive power output (MVAr)
@@ -162,7 +194,8 @@ Note that `gen` objects must have the bus they are connected to as the parent ob
 ## Generator Cost Objects
 
 ~~~
-class gencost {
+class gencost 
+{
     enumeration {POLYNOMIAL=2, PIECEWISE=1, UNKNOWN=0} model; // cost model (1=piecewise linear, 2=polynomial)
     double startup[$]; // startup cost ($)
     double shutdown[$]; // shutdown cost($)
@@ -171,6 +204,40 @@ class gencost {
 ~~~
 
 Note that `gencost` objects must have the generator they describe to as the parent object.
+
+## DC Line Objects
+
+~~~
+class dcline 
+{
+    object from; // (REQUIRED) 'from' bus name
+    object to; // (REQUIRED) 'to' bus name
+    int32 fbus; // (OUTPUT) 'from' bus number
+    int32 tbus; // (OUTPUT) 'to' bus number
+    enumeration {OUT=0, IN=1} status; // initial branch status, IN=1 - in service, OUT=0 - out of service
+    complex Sfrom[MVA]; // (REQUIRED) MVA flow in at 'from' bus
+    complex Sto[MVA]; // (REQUIRED) MW flow in at 'to' bus
+    double Vfrom[pu.V]; // voltage setpoint at 'from' bus (p.u.)
+    double Vto[pu.V]; // voltage setpoint at  'to'  bus (p.u.)
+    double Pmin[MW]; // lower limit on PF (MW flow at 'from' end)
+    double Pmax[MW]; // upper limit on PF (MW flow at 'from' end)
+    double Qminf[MVAr]; // lower limit on MVAr injection at 'from' bus
+    double Qmaxf[MVAr]; // upper limit on MVAr injection at 'from' bus
+    double Qmint[MVAr]; // lower limit on MVAr injection at  'to'  bus
+    double Qmaxt[MVAr]; // upper limit on MVAr injection at  'to'  bus
+    double loss0[MW]; // constant term of linear loss function (MW) on Sfrom
+    double loss1[MW/MW]; // linear term of linear loss function (MW/MW) w.r.t Sfrom
+    double mu_Pmin[$/MW]; // (OUTPUT) Kuhn-Tucker multiplier on lower flow limit at 'from' bus
+    double mu_Pmax[$/MW]; // (OUTPUT) Kuhn-Tucker multiplier on upper flow limit at 'from' bus
+    double mu_Qminf[$/MW]; // (OUTPUT) Kuhn-Tucker multiplier on lower VAr limit at 'from' bus
+    double mu_Qmaxf[$/MW]; // (OUTPUT) Kuhn-Tucker multiplier on upper VAr limit at 'from' bus
+    double mu_Qmint[$/MW]; // (OUTPUT) Kuhn-Tucker multiplier on lower VAr limit at 'to' bus
+    double mu_Qmaxt[$/MW]; // (OUTPUT) Kuhn-Tucker multiplier on upper VAr limit at 'to' bus
+    enumeration {SINK=0, SOURCE=1, TO=2, FROM=3} control; // Control point at which power flow is regulated
+}
+~~~
+
+DC line objects are initialized and updated according which end of the line is specified as the control point. When power flow toward the control point, the source of power is updated based on the sink and vice-versa. In addition, the `loss1` is not specified, it will be inferred from source and sink power injections, if possible, otherwise a 5% loss is used.
 
 # Integration Objects
 
