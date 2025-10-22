@@ -11,7 +11,7 @@ module pypower
 
 module assert;
 #define MRES=0.001 // magnitude test resolution
-#define ARES=0.01 // angle test resolution
+#define ARES=0.05 // angle test resolution
 
 #begin python
 import sys

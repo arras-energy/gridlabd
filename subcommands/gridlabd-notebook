@@ -1,0 +1,12 @@
+#!/bin/bash
+## Syntax: notebook [ARGS ...]
+##
+## Open the marimo notebook editor in the current directory. See
+## https://docs.marimo.io/ for details.
+#
+# EXIT 0 - ok
+# EXIT 1 - not found error
+# EXIT 2 - syntax error
+#
+
+marimo edit $*
