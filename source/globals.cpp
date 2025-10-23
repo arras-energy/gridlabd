@@ -1802,19 +1802,25 @@ DEPRECATED const char *global_pid(char *buffer, int size)
 
 DEPRECATED const char * global_random(char *buffer, int size, const char *spec=NULL)
 {
-	static double last=0;
+	static double last_r = 0;
+	static unsigned int64 last_i = 0;
 	static enum {LK_NONE, LK_INTEGER, LK_DOUBLE} last_kind = LK_NONE;
 
 	// uniform unit random
 	if ( spec == NULL )
 	{
-		last = randunit(&global_randomstate);
+		last_r = randunit(&global_randomstate);
 		last_kind = LK_DOUBLE;
-		snprintf(buffer,size,"%lg",last);
+		snprintf(buffer,size,"%lg",last_r);
 		return buffer;
 	}
 
 	// last random
+	union {
+		unsigned int integer;
+		unsigned int64 integer_64;
+		double real;
+	} tmp;
 	if ( strcmp(spec,"last") == 0 )
 	{
 		switch ( last_kind )
@@ -1823,10 +1829,10 @@ DEPRECATED const char * global_random(char *buffer, int size, const char *spec=N
 			snprintf(buffer,size,"%u",global_randomseed);
 			break;
 		case LK_INTEGER:
-			snprintf(buffer,size,"%llu",*(unsigned int64*)&last);
+			snprintf(buffer,size,"%llu",last_i);
 			break;
 		case LK_DOUBLE:
-			snprintf(buffer,size,"%lg",last);
+			snprintf(buffer,size,"%lg",last_r);
 			break;
 		default:
 			output_error("global_random(spec='%s'): internal state error (last_kind=%ld)",spec,(int)last_kind);
@@ -1846,16 +1852,16 @@ DEPRECATED const char * global_random(char *buffer, int size, const char *spec=N
 			+ (((unsigned int64)randwarn(&global_randomstate))<<32)
 			+ (((unsigned int64)randwarn(&global_randomstate))<<48);
 		rn &= mask;
-		*(unsigned int64*)&last = rn;
+		last_i = rn;
 		last_kind = LK_INTEGER;
 		snprintf(buffer,size,"%llu",rn);
 		return buffer;
 	}
 
 	// random distribution
-	if ( random_from_string(spec,&last) )
+	if ( random_from_string(spec,&last_r) )
 	{
-		snprintf(buffer,size,"%lg",last);
+		snprintf(buffer,size,"%lg",last_r);
 		last_kind = LK_DOUBLE;
 		return buffer;
 	}
