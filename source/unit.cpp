@@ -306,6 +306,7 @@ int unit_derived(const char *name,const char *derivation)
 		/*	TROUBLESHOOT
 			The specified derived unit has already been defined within the unit file.  Please review the unit definition file and remove the offending line.
 		*/
+		return 0;
 	}
 	
 	/* extract scalar */
@@ -335,6 +336,7 @@ int unit_derived(const char *name,const char *derivation)
 				The unit definition contains a character that prevents it from being parsed.  No unit definitions should contain
 				the characters ^, -, *, /, or +.
 			*/
+			return 0;
 		}
 
 		/* non-exponential ops */
@@ -362,6 +364,7 @@ int unit_derived(const char *name,const char *derivation)
 						the point the exception is raised.  Review the unit file and either move the offending unit down the
 						file, or verify that the base unit exists.
 					*/
+					return 0;
 				}
 			}
 		}
@@ -424,6 +427,7 @@ int unit_derived(const char *name,const char *derivation)
 							The unit was defined akin to "m^2", but the exponent was an integer value less than 1,
 							which is nonsensical for a physical simulation
 						*/
+						return 0;
 					}
 					repeat--;
 					switch(lastOp) {
@@ -464,7 +468,6 @@ int unit_derived(const char *name,const char *derivation)
 					The unit file used an invalid syntax to define a unit.  Correct the syntax and try again.
 				 */
 				return 0;
-				break;
 			// endswitch nextOp
 		}
 		lastOp = nextOp;
