@@ -29,6 +29,11 @@ public:
 	GL_ATOMIC(enumeration,status);
 	GL_ATOMIC(double,angmin);
 	GL_ATOMIC(double,angmax);
+	GL_ATOMIC(double,mu_sfrom);
+	GL_ATOMIC(double,mu_sto);
+	GL_ATOMIC(double,mu_angmin);
+	GL_ATOMIC(double,mu_angmax)
+
 
 public:
 	GL_ATOMIC(int32,child_count);
