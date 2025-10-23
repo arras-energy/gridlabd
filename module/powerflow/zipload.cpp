@@ -365,9 +365,8 @@ std::string find_nearest(const char *geocode)
 {
 	double dist = 1e12;
 	char buffer[64];
-	LATLON origin;
+	LATLON origin = {0,0};
 	std::string found;
-	double clat = cos(origin.latitude);
 	table::COLUMN data = load_data->get_column("geocode");
 	if ( gl_geocode_decode(buffer,sizeof(buffer)-1,geocode,&origin.latitude,&origin.longitude) == NULL )
 	{
@@ -375,6 +374,7 @@ std::string find_nearest(const char *geocode)
 		return found;
 	}
 
+	double clat = cos(origin.latitude);
 	geocodes = new std::map<std::string,LATLON>;
 	for ( auto code = data.begin() ; code != data.end() ; code++ )
 	{
