@@ -277,17 +277,6 @@ void table::to_csv(const char *filename)
         fprintf(fh,"\n");
     }
 }
-#ifdef LINUX
-template<class InputIt, class T = typename std::iterator_traits<InputIt>::value_type>
-constexpr InputIt find(InputIt first, InputIt last, const T& value)
-{
-    for (; first != last; ++first)
-        if (*first == value)
-            return first;
- 
-    return last;
-}
-#endif
 
 void table::set_index(const char *column,...)
 {
@@ -297,7 +286,12 @@ void table::set_index(const char *column,...)
     while ( column != NULL )
     {
         // printf("looking for column '%s'...",column);
-        if ( std::find(column_name.begin(),column_name.end(),column) == column_name.end() )
+        std::vector<std::string>::iterator item = column_name.begin();
+        for ( ; item != column_name.end() ; item++ )
+            if ( *item == column)
+                break;
+
+        if ( item == column_name.end() )
         {
             gl_exception("table::set_index(const char *column='%s'): column not found",column);
         }
