@@ -743,11 +743,6 @@ static TIMESTAMP update_controller(TIMESTAMP t0,PyObject *command,const char *na
         obj->set_##NAME(b); \
     }}
 
-// #define RECVX(NAME,INDEX,FROM,TO) { PyObject *py = PyList_GET_ITEM(pyobj,INDEX);\
-//     if ( fabs(obj->get_##NAME()-Py##FROM##_As##TO(py)) > solver_update_resolution ) { \
-//         obj->set_##NAME(Py##FROM##_As##TO(py)); \
-//     }}
-
 static TIMESTAMP update_solution(TIMESTAMP t0)
 {
     gl_verbose("pypower::update_solution(t0='%s')",gld_clock(t0).get_string().get_buffer());
