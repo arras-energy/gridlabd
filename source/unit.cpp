@@ -286,7 +286,7 @@ int unit_derived(const char *name,const char *derivation)
 	UNIT local;
 
 	// ignore terms after '.' not between digits -- these are derivation terminators, e.g., "pu.V"
-	char buffer[strlen(derivation)+2];
+	char *buffer = new char[strlen(derivation)+2];
 	strncpy(buffer,derivation,sizeof(buffer)-1);
 	char *p = buffer;
 	while ( (p=strchr(p+1,'.')) != NULL )
@@ -299,7 +299,9 @@ int unit_derived(const char *name,const char *derivation)
 	}	
 	p = buffer;
 	
-	if (unit_find_raw(name) != NULL){
+	if (unit_find_raw(name) != NULL)
+	{
+		delete[] buffer;
 		throw_exception("%s(%d): derived definition of '%s' failed; unit already defined", filepath, linenum, name);
 		/*	TROUBLESHOOT
 			The specified derived unit has already been defined within the unit file.  Please review the unit definition file and remove the offending line.
@@ -325,7 +327,9 @@ int unit_derived(const char *name,const char *derivation)
 		UNIT *pUnit = NULL;
 
 		/* extract operation */
-		if (sscanf(p,"%[^-*/^+]",term)!=1){
+		if (sscanf(p,"%[^-*/^+]",term)!=1)
+		{
+			delete[] buffer;
 			throw_exception("%s(%d): unable to read unit '%s'", filepath,linenum,p);
 			/*	TROUBLESHOOT
 				The unit definition contains a character that prevents it from being parsed.  No unit definitions should contain
@@ -351,6 +355,7 @@ int unit_derived(const char *name,const char *derivation)
 					}
 					pUnit = &local;
 				} else {
+					delete[] buffer;
 					throw_exception("%s(%d): unable to find or derive unit '%s'", filepath, linenum, p);
 					/*	TROUBLESHOOT
 						The specified term was neither found nor derived, and likely does not exist in the unit subsystem at
@@ -413,6 +418,7 @@ int unit_derived(const char *name,const char *derivation)
 				if (lastUnit!=NULL){
 					int repeat = 0;
 					if (sscanf(term, "%d", &repeat) != 1 || repeat < 2){
+						delete[] buffer;
 						throw_exception("%s(%d): syntax error at '%s', exponent must be greater than 1", filepath,linenum,term);
 						/*	TROUBLESHOOT
 							The unit was defined akin to "m^2", but the exponent was an integer value less than 1,
@@ -442,6 +448,7 @@ int unit_derived(const char *name,const char *derivation)
 							prec = min(prec, lastUnit->prec);
 							break;
 						default:
+							delete[] buffer;
 							throw_exception("%s(%d): ^ not allowed after '%c' at '%s'", filepath, linenum, lastOp, term);
 							/* TROUBLESHOOT
 								The unit file used an invalid syntax to define a unit.  Correct the syntax and try again.
@@ -451,6 +458,7 @@ int unit_derived(const char *name,const char *derivation)
 				} // endif (lastUnit != NULL)
 				break;
 			default:
+				delete[] buffer;
 				throw_exception("%s(%d): '%c' is not recognized at '%s'", filepath,linenum,lastOp,term);
 				/* TROUBLESHOOT
 					The unit file used an invalid syntax to define a unit.  Correct the syntax and try again.
@@ -466,6 +474,7 @@ int unit_derived(const char *name,const char *derivation)
 		lastUnit = pUnit;
 	}
 
+	delete[] buffer;
 	return (unit_primary(name, c, e, h, k, m, s, a, b, prec) != NULL);
 }
 

@@ -347,24 +347,30 @@ bool property_compare_basic(PROPERTYTYPE ptype, PROPERTYCOMPAREOP op, void *x, v
 bool property_compare_basic_str(PROPERTY *prop, PROPERTYCOMPAREOP op, void *x, const char *a, const char *b, const char *part)
 {
 	// convert a and b to their respective underlying property values
-	char *xa[property_type[prop->ptype].size];
-	char *xb[property_type[prop->ptype].size];
+	char *xa = new char[property_type[prop->ptype].size];
+	char *xb = new char[property_type[prop->ptype].size];
+	bool result;
 	if ( property_type[prop->ptype].string_to_compare == NULL )
-		return false;
-	if ( property_type[prop->ptype].string_to_compare(a,(void*)xa,prop) < 0 )
+	{
+		result = false;
+	}
+	else if ( property_type[prop->ptype].string_to_compare(a,(void*)xa,prop) < 0 )
 	{
 		output_warning("property type '%s' cannot compare to value '%s'", property_type[prop->ptype].name,a);
-		return false;
+		result = false;
 	}
 	else if ( b != NULL && property_type[prop->ptype].string_to_compare(b,(void*)xb,prop) < 0 )
 	{
 		output_warning("property type '%s' cannot compare to value '%s'", property_type[prop->ptype].name,b);
-		return false;
+		result = false;
 	}
 	else
 	{
-		return property_compare_basic(prop->ptype,op,x,(void*)xa,(void*)xb,part);
+		result = property_compare_basic(prop->ptype,op,x,(void*)xa,(void*)xb,part);
 	}
+	delete[] xa;
+	delete[] xb;
+	return result;
 }
 
 PROPERTYTYPE property_get_type(const char *name)

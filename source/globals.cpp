@@ -1174,7 +1174,7 @@ DEPRECATED const char *global_range(char *buffer, int size, const char *name)
 		delim = ' ';
 	}
 	int len = 0;
-	char temp[size+100];
+	char *temp = new char[size+100];
 	for ( double value = start ; value <= stop ; value += step )
 	{
 		if ( len > 0 )
@@ -1191,7 +1191,9 @@ DEPRECATED const char *global_range(char *buffer, int size, const char *name)
 			break;
 		}
 	}
-	return strncpy(buffer,temp,len+1);
+	strncpy(buffer,temp,len+1);
+	delete[] temp;
+	return buffer;
 }
 
 DEPRECATED const char *global_python(char *buffer, int size, const char *command)
@@ -1507,7 +1509,7 @@ DEPRECATED const char *global_findfile(char *buffer, int size, const char *spec)
 
 DEPRECATED const char *global_filename(char *buffer, int size, const char *spec)
 {
-	char var[size+1];
+	char *var = new char[size+1];
 	if ( spec[0] != '$' )
 	{
 		strncpy(var,spec,sizeof(var)-1);
@@ -1532,12 +1534,13 @@ DEPRECATED const char *global_filename(char *buffer, int size, const char *spec)
 	{
 		*ext = '\0';
 	}
+	delete[] var;
 	return buffer;
 }
 
 DEPRECATED const char *global_filepath(char *buffer, int size, const char *spec)
 {
-	char var[size+1];
+	char *var = new char[size+1];
 	if ( spec[0] != '$' )
 	{
 		strncpy(var,spec,sizeof(var)-1);
@@ -1557,12 +1560,13 @@ DEPRECATED const char *global_filepath(char *buffer, int size, const char *spec)
 	{
 		strcpy(buffer,".");
 	}
+	delete[] var;
 	return buffer;
 }
 
 DEPRECATED const char *global_filetype(char *buffer, int size, const char *spec)
 {
-	char var[size+1];
+	char *var = new char[size+1];
 	if ( spec[0] != '$' )
 	{
 		strncpy(var,spec,sizeof(var)-1);
@@ -1582,6 +1586,7 @@ DEPRECATED const char *global_filetype(char *buffer, int size, const char *spec)
 	{
 		strcpy(buffer,"");
 	}
+	delete[] var;
 	return buffer;
 }
 

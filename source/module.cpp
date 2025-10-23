@@ -2993,7 +2993,7 @@ void module_load_templates(MODULE *mod)
 		IN_MYCONTEXT output_debug("module_load_templates(MODULE *mod=<%s>): reading shared module templates folder '%s'",mod->name,loadpath);
 		while ( (entry=readdir(dp)) )
 		{
-			char file[strlen(loadpath)+strlen(entry->d_name)+2];
+			char *file = new char[strlen(loadpath)+strlen(entry->d_name)+2];
 			snprintf(file,sizeof(file)-1,"%s/%s",loadpath,entry->d_name);
 			IN_MYCONTEXT output_debug("module_load_templates(MODULE *mod=<%s>): loading '%s'",mod->name,file);
 			if ( lstat(file,&statbuf) != 0 )
@@ -3012,6 +3012,7 @@ void module_load_templates(MODULE *mod)
 					output_error("module template '%s' load failed",file);
 				}
 			}
+			delete[] file;
 		}
 		closedir(dp);
 		mod->templates_loaded = true;

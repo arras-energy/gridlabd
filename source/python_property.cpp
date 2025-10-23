@@ -106,10 +106,11 @@ PyObject *python_property_str ( PyObject * self ) ///< Python **gridlabx.object*
     {
         size = object_get_value(pyprop->obj,pyprop->prop,NULL,0);
     }
-    char buffer[size+2];
+    char *buffer = new char[size+2];
     object_get_value(pyprop->obj,pyprop->prop,buffer,size+1);
     PyObject *str = PyUnicode_FromFormat("%s",buffer);
     Py_INCREF(str);
+    delete[] buffer;
     return str;
 }
 
