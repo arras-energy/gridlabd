@@ -1427,8 +1427,8 @@ typedef struct s_callbacks {
 		PyObject *(*property_type)(void);
 	} python;
 	struct {
-		const char *encode(char *buffer, int len, double lat, double lon, int resolution),
-		const char *geocode_decode(char *buffer, int size, const char *code, double *latitude, double *longitude),
+		const char *encode(char *buffer, int len, double lat, double lon, int resolution);
+		const char *geocode_decode(char *buffer, int size, const char *code, double *latitude, double *longitude);
 	} geocode;
 	long unsigned int magic; /* used to check structure alignment */
 } CALLBACKS; /**< core callback function table */
