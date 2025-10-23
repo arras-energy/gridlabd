@@ -277,6 +277,17 @@ void table::to_csv(const char *filename)
         fprintf(fh,"\n");
     }
 }
+#ifdef LINUX
+template<class InputIt, class T = typename std::iterator_traits<InputIt>::value_type>
+constexpr InputIt find(InputIt first, InputIt last, const T& value)
+{
+    for (; first != last; ++first)
+        if (*first == value)
+            return first;
+ 
+    return last;
+}
+#endif
 
 void table::set_index(const char *column,...)
 {
