@@ -1816,11 +1816,6 @@ DEPRECATED const char * global_random(char *buffer, int size, const char *spec=N
 	}
 
 	// last random
-	union {
-		unsigned int integer;
-		unsigned int64 integer_64;
-		double real;
-	} tmp;
 	if ( strcmp(spec,"last") == 0 )
 	{
 		switch ( last_kind )
