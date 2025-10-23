@@ -286,8 +286,8 @@ int unit_derived(const char *name,const char *derivation)
 	UNIT local;
 
 	// ignore terms after '.' not between digits -- these are derivation terminators, e.g., "pu.V"
-	char *buffer = new char[strlen(derivation)+2];
-	strncpy(buffer,derivation,sizeof(buffer)-1);
+	char *buffer = new char[strlen(derivation)+1];
+	strcpy(buffer,derivation);
 	char *p = buffer;
 	while ( (p=strchr(p+1,'.')) != NULL )
 	{
