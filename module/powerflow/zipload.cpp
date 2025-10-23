@@ -234,7 +234,7 @@ TIMESTAMP zipload::sync(TIMESTAMP t0)
 unsigned int read_schedule(const char *str,unsigned int last)
 {
 	char *next=NULL, *prev=NULL;
-	char buffer[strlen(str)+1];
+	char *buffer = new char[strlen(str)+1];
 	strcpy(buffer,str);
 	while ( (next=strtok_r(next?NULL:buffer,",",&prev)) != NULL )
 	{
@@ -244,14 +244,17 @@ unsigned int read_schedule(const char *str,unsigned int last)
 			if ( sscanf(next,"%u-%u",&from,&to) != 2 )
 			{
 				gl_error("schedule '%s' is not valid (hyphen found without from/to value)");
+				delete[] buffer;
 				return 0;
 			}
 			if ( from <= to && from <= last+1 && last < to )
 			{
+				delete[] buffer;
 				return last+1;
 			}
 			else if ( to < from && ( last < from || last+1 >= to ) )
 			{
+				delete[] buffer;
 				return last+1;
 			}
 			continue;
@@ -261,13 +264,16 @@ unsigned int read_schedule(const char *str,unsigned int last)
 		if ( *end != '\0' )
 		{
 			gl_error("schedule '%s' is not valid (invalid character after '%u'",next,value);
+			delete[] buffer;
 			return 0;
 		}
 		if ( value > last )
 		{
+			delete[] buffer;
 			return value;
 		}
 	}
+	delete[] buffer;
 	return 0;
 }
 
@@ -275,7 +281,8 @@ bool zipload::build_schedule(void)
 {
 	memset(scale,0,sizeof(scale)/sizeof(scale[0][0][0]));
 	char *next=NULL, *last=NULL;
-	char buffer[strlen((const char *)schedule)+1]; strcpy(buffer,(const char*)schedule);
+	char *buffer = new char[strlen((const char *)schedule)+1]; 
+	strcpy(buffer,(const char*)schedule);
 	while ( (next=strtok_r(next?NULL:buffer,";",&last)) != NULL )
 	{
 		char months[256],days[256],hours[256],remark[256];
@@ -284,6 +291,7 @@ bool zipload::build_schedule(void)
 			months,days,hours,&value,remark) < 4 )
 		{
 			gl_error("schedule '%s' is not valid",next);
+			delete[] buffer;
 			return FALSE;
 		}
 		if ( strcmp(months,"*") == 0 )
@@ -304,6 +312,7 @@ bool zipload::build_schedule(void)
 			if ( hour < 1 || hour > 24 )
 			{
 				gl_error("invalid hour in schedule '%s'",next);
+				delete[] buffer;
 				return FALSE;
 			}
 			while ( (day=read_schedule(days,day)) > 0 )
@@ -311,6 +320,7 @@ bool zipload::build_schedule(void)
 			if ( day < 1 || day > 8 )
 			{
 				gl_error("invalid day in schedule '%s'",next);
+				delete[] buffer;
 				return FALSE;
 			}
 				while ( (month=read_schedule(months,month)) > 0 )
@@ -318,6 +328,7 @@ bool zipload::build_schedule(void)
 				if ( month < 1 || month > 12 )
 				{
 					gl_error("invalid month in schedule '%s'",next);
+					delete[] buffer;
 					return FALSE;
 				}
 					scale[month-1][day-1][hour-1] = value;
@@ -325,6 +336,7 @@ bool zipload::build_schedule(void)
 			}
 		}
 	}
+	delete[] buffer;
 	return TRUE;
 }
 

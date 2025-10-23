@@ -189,7 +189,8 @@ table::table(const char *filename, bool as_string)
     std::string line;
     if ( std::getline(file,line) )
     {
-        char buffer[line.length()+1]; strcpy(buffer,line.c_str());
+        char *buffer = new char[line.length()+1]; 
+        strcpy(buffer,line.c_str());
         char *next=NULL, *last=NULL;
         while ( (next=strtok_r(next?NULL:buffer,",",&last)) )
         {
@@ -198,13 +199,14 @@ table::table(const char *filename, bool as_string)
             column_index[value] = ncolumns;
             ncolumns++;
         }
+        delete[] buffer;
     }
 
     // read records
     nrows = 0;
     while ( std::getline(file,line) )
     {
-        char buffer[line.length()+1], *p = buffer; *p='\0';
+        char *buffer = new char[line.length()+1], *p = buffer; *p='\0';
         ROW data;
         bool quoted = false;
         bool escaped = false;
@@ -244,6 +246,7 @@ table::table(const char *filename, bool as_string)
         }
         rows.push_back(data);
         nrows++;
+        delete[] buffer;
     }
 }
 

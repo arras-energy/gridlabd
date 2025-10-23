@@ -2856,7 +2856,8 @@ TIMESTAMP node::sync(TIMESTAMP t0)
 					debug("starting DER voltage fluctuation checks...");
 
 					// save all the bus voltages before DER is applied
-					complex Vb[NR_bus_count][3];
+					typedef complex complex3[3];
+					complex3 *Vb = new complex3[NR_bus_count];
 					for ( unsigned int b = 0 ; b < NR_bus_count ; b++ )
 					{
 						BUSDATA *bus = NR_busdata+b;
@@ -2986,6 +2987,8 @@ TIMESTAMP node::sync(TIMESTAMP t0)
 							result = solver_nr(NR_bus_count, NR_busdata, NR_branch_count, NR_branchdata, &NR_powerflow, powerflow_type, NULL, &bad_computation);					
 						}
 					}
+
+					delete[] Vb;
 				}
 
 				//See where we wanted to go
