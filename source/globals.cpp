@@ -1191,7 +1191,7 @@ DEPRECATED const char *global_range(char *buffer, int size, const char *name)
 			break;
 		}
 	}
-	strncpy(buffer,temp,len+1);
+	strncpy(buffer,temp,size-1);
 	delete[] temp;
 	return buffer;
 }
@@ -1512,11 +1512,11 @@ DEPRECATED const char *global_filename(char *buffer, int size, const char *spec)
 	char *var = new char[size+1];
 	if ( spec[0] != '$' )
 	{
-		strncpy(var,spec,sizeof(var)-1);
+		strncpy(var,spec,size);
 	}
-	else if ( global_getvar(spec+1,var,sizeof(var)-1) == NULL )
+	else if ( global_getvar(spec+1,var,size) == NULL )
 	{
-		output_error("global_filename(buffer=%x,size=%d,spec='%s'): global '%s' is not found");
+		output_error("global_filename(buffer=%x,size=%d,spec='%s'): global '%s' is not found",buffer,size,spec);
 		return NULL;
 	}
 	char *dir = strrchr(var,'/');
@@ -1543,11 +1543,11 @@ DEPRECATED const char *global_filepath(char *buffer, int size, const char *spec)
 	char *var = new char[size+1];
 	if ( spec[0] != '$' )
 	{
-		strncpy(var,spec,sizeof(var)-1);
+		strncpy(var,spec,size);
 	}
-	else if ( global_getvar(spec+1,var,sizeof(var)-1) == NULL )
+	else if ( global_getvar(spec+1,var,size) == NULL )
 	{
-		output_error("global_filename(buffer=%x,size=%d,spec='%s'): global '%s' is not found");
+		output_error("global_filename(buffer=%x,size=%d,spec='%s'): global '%s' is not found",buffer,size,spec);
 		return NULL;
 	}
 	char *dir = strrchr(var,'/');
@@ -1569,11 +1569,11 @@ DEPRECATED const char *global_filetype(char *buffer, int size, const char *spec)
 	char *var = new char[size+1];
 	if ( spec[0] != '$' )
 	{
-		strncpy(var,spec,sizeof(var)-1);
+		strncpy(var,spec,size);
 	}
-	else if ( global_getvar(spec+1,var,sizeof(var)-1) == NULL )
+	else if ( global_getvar(spec+1,var,size) == NULL )
 	{
-		output_error("global_filename(buffer=%x,size=%d,spec='%s'): global '%s' is not found");
+		output_error("global_filename(buffer=%x,size=%d,spec='%s'): global '%s' is not found",buffer,size,spec);
 		return NULL;
 	}
 	char *dir = strrchr(var,'/');
