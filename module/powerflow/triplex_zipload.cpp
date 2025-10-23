@@ -241,7 +241,7 @@ void triplex_zipload::read_loadtype(void)
 {
 	get_load_data();
 
-	char ndx[1024];
+	char ndx[2048];
 	char geocode[16] = "";
 	if ( geocode_find >= 0 )
 	{
