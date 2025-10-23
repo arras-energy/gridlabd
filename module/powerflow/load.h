@@ -47,7 +47,15 @@ public:
 	double current_fraction[3];
 	bool three_phase_protect;
 
-	enum {LC_UNKNOWN=0, LC_RESIDENTIAL, LC_COMMERCIAL, LC_INDUSTRIAL, LC_AGRICULTURAL};
+	typedef enum {
+		LC_UNKNOWN=0, 
+		LC_RESIDENTIAL=1, 
+		LC_COMMERCIAL=2, 
+		LC_INDUSTRIAL=3, 
+		LC_AGRICULTURAL=4,
+		LC_TRANSPORTATION=5,
+		LC_PUBLICSERVICE=6,
+	} LOADCLASS;
 	enumeration load_class;
 
 	int create(void);

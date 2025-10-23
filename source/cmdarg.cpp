@@ -714,10 +714,10 @@ int GldCmdarg::version(int argc, const char *argv[])
 #define OUTPUT_LIST_START(TAG) output_message("\t\"%s\" : [",TAG)
 #define OUTPUT_LIST_ITEM(VALUE) output_message("\t\t\"%s\",",escape(VALUE))
 #define OUTPUT_LIST_END(VALUE) output_message("\t\t\"%s\"],",escape(VALUE))
-#define OUTPUT_MULTILINE(TAG,VALUE) {\
-		const char *value = VALUE;\
+#define OUTPUT_MULTILINE(TAG,VALUE) \
+	{	const char *value = VALUE;\
 		char *token=NULL, *last=NULL;\
-		char buffer[strlen(value)+1];\
+		char *buffer = new char[strlen(value)+1];\
 		strcpy(buffer,value);\
 		OUTPUT_LIST_START(TAG);\
 		while ( (token=strtok_r(token?NULL:buffer,"\n",&last)) != NULL )\
@@ -725,6 +725,7 @@ int GldCmdarg::version(int argc, const char *argv[])
 			OUTPUT_LIST_ITEM(token);\
 		}\
 		OUTPUT_LIST_END("");\
+		delete[] buffer;\
 	}
 		OUTPUT("application","%s",PACKAGE);
 		OUTPUT("version","%s",PACKAGE_VERSION);

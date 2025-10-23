@@ -455,10 +455,18 @@ inline DEPRECATED void GL_THROW(const char *format, ...)
 
 /*	Define: gl_error
 
-	Outputs a message to the warning stream when <global_quiet> is <FALSE>.	
+	Outputs a message to the error stream when <global_quiet> is <FALSE>.	
 	See <output_error>.
  */
  #define gl_error (*callback->output_error)
+
+/*	Define: gl_exception
+
+	Outputs a message to the exception stream when <global_quiet> is <FALSE>
+	and pass the exception to the current exception handler.	
+	See <output_exception>.
+ */
+ #define gl_exception (*callback->exception.throw_exception)
 
 /*	Define: gl_debug
 
@@ -1556,6 +1564,12 @@ inline size_t nextpow2(size_t x)
 #define gl_forecast_save DEPRECATED (*callback->forecast.save)
 /**@}*/
 
+///////////////
+// Geocoding //
+///////////////
+
+#define gl_geocode_encode DEPRECATED (*callback->geocode.encode)
+#define gl_geocode_decode DEPRECATED (*callback->geocode.decode)
 
 /******************************************************************************
  * Init/Sync/Create catchall macros

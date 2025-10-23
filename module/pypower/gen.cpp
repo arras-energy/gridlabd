@@ -132,7 +132,6 @@ int gen::create(void)
 		throw "maximum gen entities exceeded";
 	}
 
-	extern double base_MVA;
 	cost = NULL;
 	plant_count = 0;
 	bus = 0; // flag for unset
