@@ -1048,10 +1048,13 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
                 if ( do_opf )
                 {
                     PyObject *pyobj = PyList_GetItem(branchdata,n);
-                    RECV(mu_sfrom,17,Float,Double,false)
-                    RECV(mu_sto,18,Float,Double,false)
-                    RECV(mu_angmin,19,Float,Double,false)
-                    RECV(mu_angmax,20,Float,Double,false)
+                    if ( PyList_Size(pyobj) >= 21 )
+                    {
+                        RECV(mu_sfrom,17,Float,Double,false)
+                        RECV(mu_sto,18,Float,Double,false)
+                        RECV(mu_angmin,19,Float,Double,false)
+                        RECV(mu_angmax,20,Float,Double,false)
+                    }
                 }
             }
 
@@ -1085,7 +1088,7 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
                     RECV(Qg,2,Float,Double,true)
                 }
                 RECV(apf,20,Float,Double,false)
-                if ( do_opf )
+                if ( do_opf && PyList_Size(pyobj) > 24 )
                 {
                     RECV(mu_Pmax,21,Float,Double,false)
                     RECV(mu_Pmin,22,Float,Double,false)
@@ -1102,12 +1105,15 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
                 {
                     dcline *obj = dcline::dclinelist[n];
                     PyObject *pyobj = PyList_GetItem(dclinedata,n);
-                    RECV(mu_Pmax,17,Float,Double,false)
-                    RECV(mu_Pmin,18,Float,Double,false)
-                    RECV(mu_Qminf,19,Float,Double,false)
-                    RECV(mu_Qmaxf,20,Float,Double,false)
-                    RECV(mu_Qmint,21,Float,Double,false)
-                    RECV(mu_Qmaxt,22,Float,Double,false)
+                    if ( PyList_Size(pyobj) > 22 )
+                    {                        
+                        RECV(mu_Pmax,17,Float,Double,false)
+                        RECV(mu_Pmin,18,Float,Double,false)
+                        RECV(mu_Qminf,19,Float,Double,false)
+                        RECV(mu_Qmaxf,20,Float,Double,false)
+                        RECV(mu_Qmint,21,Float,Double,false)
+                        RECV(mu_Qmaxt,22,Float,Double,false)
+                    }
                 }
             }
 
