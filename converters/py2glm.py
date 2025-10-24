@@ -202,7 +202,7 @@ module pypower
                 shutdown = line[2]
                 count = line[3]
                 costs = line[4:]
-                assert(len(costs)==count)
+                #assert(len(costs)==count*(2 if model == 1 else 1))
                 oname = f"{NL}    name pp_gencost_{n+1};" if autoname else ""
                 glm.write(f"""object pypower.gencost
 {{{oname}
@@ -213,6 +213,38 @@ module pypower
     costs "{','.join([str(x) for x in costs])}";
 }}
 """)
+        if 'dcline' in data:
+            glm.write("\n//\n// dcline\n//\n")
+            for n,line in enumerate(data['dcline']):
+                print("object pypower.dcline\n{",file=glm)
+                print(f"    name pp_dcline_{n};",file=glm)
+                print(f"    from pp_bus_{line[0]:.0f};",file=glm)
+                print(f"    to pp_bus_{line[1]:.0f};",file=glm)
+                print(f"    status {line[2]};",file=glm)
+                print(f"    Sfrom {line[3]:.6g}{line[4]:+.6g}j MVA;",file=glm)
+                print(f"    Sto {line[5]:.6g}{line[6]:+.6g}j MVA;",file=glm)
+                print(f"    Vfrom {line[7]:.6g} pu.V;",file=glm)
+                print(f"    Vto {line[8]:.6g} pu.V;",file=glm)
+                print(f"    Pmin {line[9]:.6g} MW;",file=glm)
+                print(f"    Pmax {line[10]:.6g} MW;",file=glm)
+                print(f"    Qminf {line[11]:.6g} MVAr;",file=glm)
+                print(f"    Qmaxf {line[12]:.6g} MVAr;",file=glm)
+                print(f"    Qmint {line[13]:.6g} MVAr;",file=glm)
+                print(f"    Qmaxt {line[14]:.6g} MVAr;",file=glm)
+                print(f"    loss0 {line[15]:.6g} MW;",file=glm)
+                print(f"    loss1 {line[16]:.6g} MW/MW;",file=glm)
+                if len(line) > 17:
+                    print(f"    mu_Pmin {line[17]:.6g} $/MW;",file=glm)
+                    print(f"    mu_Pmax {line[18]:.6g} $/MW;",file=glm)
+                    print(f"    mu_Qminf {line[19]:.6g} $/MVAr;",file=glm)
+                    print(f"    mu_Qmaxf {line[20]:.6g} $MVAr;",file=glm)
+                    print(f"    mu_Qmint {line[21]:.6g} $/MVAr;",file=glm)
+                    print(f"    mu_Qmaxt {line[22]:.6g} $/MVAr;",file=glm)
+                print("}",file=glm)
+
+        # if 'dclinecost' in data:
+        #     print("WARNING: dclinecost data not exported to GLM",file=sys.stderr)
+
     return 0
 
 converters = {

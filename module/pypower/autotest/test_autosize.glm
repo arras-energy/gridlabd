@@ -1,0 +1,107 @@
+// test_autosize.glm
+
+#set suppress_repeat_messages=FALSE
+//#option verbose
+
+module pypower
+{
+	autosize_angle 60 deg;
+	save_case TRUE;
+}
+
+#define BASEKV=69.0
+
+object bus
+{
+	latitude 37.0;
+	longitude -122.0;
+    name "bus_1";
+    type 3;
+    object gen
+    {
+        name "gen_1";
+        Pmax 25 MW;
+        Qmin -10 MVAr;
+        Qmax +10 MVAr;
+        status 1;
+    };
+    baseKV ${BASEKV} kV;
+}
+
+object bus
+{
+	latitude 37.1;
+	longitude -122.0;
+    type 1;
+    name "bus_2";
+    baseKV ${BASEKV} kV;
+}
+
+object bus
+{
+	latitude 37.1;
+	longitude -122.0;
+    name "bus_3";
+    type 1;
+    Pd 10 MW;
+    Qd 1 MVAr;
+    baseKV ${BASEKV} kV;
+}
+
+object bus
+{
+	latitude 37.1;
+	longitude -122.0;
+    name "bus_4";
+    type 1;
+    Pd 10 MW;
+    Qd 1 MVAr;
+    baseKV (${BASEKV}/2);
+}
+
+object branch
+{
+	name "line_1_2";
+	from "bus_1";
+	to "bus_2";
+	rateA 100 MVA;
+	status IN;
+}
+
+object branch
+{
+	name "device_2_3";
+	from "bus_2";
+	to "bus_3";
+	rateA 50 MVA;
+	status IN;
+}
+
+object branch
+{
+	name "transformer_2_4";
+	from "bus_2";
+	to "bus_4";
+	rateA 50 MVA;
+	status IN;
+}
+
+module assert;
+object assert
+{
+	parent "gen_1";
+	target "Pg";
+	relation "==";
+	value 20.0451 MW;
+	within 0.001;
+}
+object assert
+{
+	parent "gen_1";
+	target "Qg";
+	relation "==";
+	value 2.38901 MVAr;
+	within 0.001;
+}
+
+#set savefile=test_simple.json
