@@ -7,8 +7,8 @@
 #endif
 #include "${DIR:-.}/case.glm"
 
-#option verbose
-#option debug
+//#option verbose
+//#option debug
 
 module pypower
 {

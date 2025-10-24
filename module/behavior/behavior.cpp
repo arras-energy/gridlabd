@@ -74,11 +74,11 @@ static int group(int *groups, enumeration type, int n=-1)
 
 EXPORT TIMESTAMP on_precommit(TIMESTAMP t0)
 {
-    int t_groups[n_systems];
+    int *t_groups = new int[n_systems];
     memset(t_groups,-1,sizeof(t_groups[0])*n_systems);
     group(t_groups,system::VALUE);
 
-    int m_groups[n_systems];
+    int *m_groups = new int[n_systems];
     memset(m_groups,-1,sizeof(m_groups[0])*n_systems);
     group(m_groups,system::ASSET);
 
@@ -89,18 +89,15 @@ EXPORT TIMESTAMP on_precommit(TIMESTAMP t0)
     for ( size_t n = 0 ; n < n_systems ; n++ )
     {
         class system *sys = system_list[n];
-        // fprintf(stderr,"system %lu: Cp = %g, N = %lld\n",n,sys->get_Cp(),sys->get_N());
         C += sys->get_Cp();
         N += sys->get_N();
     }
     for ( size_t n = 0 ; n < n_systems ; n++ )
     {
         class system *sys = system_list[n];
-        // fprintf(stderr,"system %lu: T = %g, M = %g\n",n,sys->get_tau(),sys->get_mu());
         T += sys->get_Cp() / C * sys->get_tau();
         M += sys->get_N() / N * sys->get_mu();
     }
-    // fprintf(stderr,"C = %g, T = %g, M = %g\n",C,T,M);
     for ( size_t n = 0 ; n < n_systems ; n++ )
     {
         class system *sys = system_list[n];
@@ -108,6 +105,8 @@ EXPORT TIMESTAMP on_precommit(TIMESTAMP t0)
         sys->set_mu(M);
         sys->update();
     }
+    delete[] t_groups;
+    delete[] m_groups;
     return TS_NEVER;
 }
 

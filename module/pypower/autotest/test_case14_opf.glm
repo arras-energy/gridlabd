@@ -1,7 +1,16 @@
-#ifexist ../case14.py
-#system cp ../case14.py .
+#set suppress_repeat_messages=FALSE
+#define NO_ONEXIT TRUE
+#define CASE=14
+#ifexists "../case.glm"
 #define DIR=..
 #endif
+#include "${DIR:-.}/case.glm"
+
+module pypower
+{
+    //solver_method GS;
+    save_case TRUE;
+}
 
 clock
 {
@@ -10,11 +19,17 @@ clock
     stoptime "2020-02-01 00:00:00 PST";
 }
 
-#input "case14.py" -t pypower
+module assert;
+#define MRES=0.05 // magnitude test resolution
+#define ARES=0.2 // angle test resolution
 
-#gridlabd -C "case14.glm" -D "starttime=${starttime}" -o "case14_ref.json" 
-
-#set savefile=case14_opf.json
+#begin python
+import sys
+sys.path.append("${DIR:-.}")
+import case${CASE}
+import verify
+verify.write_glm("case${CASE}_verify.glm",case${CASE}.case${CASE}())
+#end
 
 module pypower
 {

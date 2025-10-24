@@ -419,32 +419,34 @@ bool multiplayer::load(void)
 	fseek(fp,0,SEEK_SET);
 	size_t len;
 	char *buffer = fgetln(fp,&len);
-	char line[len+1];
+	char *line = new char[len+1];
 	strncpy(line,buffer,len);
 	line[len] = '\0';
 	if ( line[len-1] == '\n' )
 	{
 		line[len-1] = '\0';
 	}
-	if ( target_list->size() > 0 )
+	if ( target_list->size() == 0 )
 	{
-		return read();
-	}
-	char *last=NULL;
-	char *next=strtok_r(line,",",&last);
-	if ( next == NULL || strcmp(next,indexname)!=0 )
-	{
-		error("column '%s' is not '%s' as specified by indexname property",next?next:"0",(const char *)indexname);
-		return false;
-	}
-	while ( (next=strtok_r(NULL,",",&last)) != NULL )
-	{
-		if ( property(next,0) <= 0 )
+		char *last=NULL;
+		char *next=strtok_r(line,",",&last);
+		if ( next == NULL || strcmp(next,indexname)!=0 )
 		{
-			error("file load failed");
+			error("column '%s' is not '%s' as specified by indexname property",next?next:"0",(const char *)indexname);
+			delete[] line;
 			return false;
 		}
+		while ( (next=strtok_r(NULL,",",&last)) != NULL )
+		{
+			if ( property(next,0) <= 0 )
+			{
+				error("file load failed");
+				delete[] line;
+				return false;
+			}
+		}
 	}
+	delete[] line;
 	return read();
 }
 

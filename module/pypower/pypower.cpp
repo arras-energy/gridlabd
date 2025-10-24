@@ -743,11 +743,6 @@ static TIMESTAMP update_controller(TIMESTAMP t0,PyObject *command,const char *na
         obj->set_##NAME(b); \
     }}
 
-// #define RECVX(NAME,INDEX,FROM,TO) { PyObject *py = PyList_GET_ITEM(pyobj,INDEX);\
-//     if ( fabs(obj->get_##NAME()-Py##FROM##_As##TO(py)) > solver_update_resolution ) { \
-//         obj->set_##NAME(Py##FROM##_As##TO(py)); \
-//     }}
-
 static TIMESTAMP update_solution(TIMESTAMP t0)
 {
     gl_verbose("pypower::update_solution(t0='%s')",gld_clock(t0).get_string().get_buffer());
@@ -776,13 +771,13 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
         SEND(10,zone,Long,Long,false)
         SEND(11,Vmax,Double,Float,false)
         SEND(12,Vmin,Double,Float,false)
-        if ( do_opf )
-        {
-            SEND(13,lam_P,Double,Float,false)
-            SEND(14,lam_Q,Double,Float,false)
-            SEND(15,mu_Vmax,Double,Float,false)
-            SEND(16,mu_Vmin,Double,Float,false)
-        }
+        // if ( do_opf )
+        // {
+        //     SEND(13,lam_P,Double,Float,false)
+        //     SEND(14,lam_Q,Double,Float,false)
+        //     SEND(15,mu_Vmax,Double,Float,false)
+        //     SEND(16,mu_Vmin,Double,Float,false)
+        // }
     }
 
     gl_verbose("updating branch data");
@@ -834,13 +829,13 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
         SEND(18,ramp_30,Double,Float,false)
         SEND(19,ramp_q,Double,Float,false)
         SEND(20,apf,Double,Float,false)
-        if ( do_opf )
-        {
-            SEND(21,mu_Pmax,Double,Float,false)
-            SEND(22,mu_Pmin,Double,Float,false)
-            SEND(23,mu_Qmax,Double,Float,false)
-            SEND(24,mu_Qmin,Double,Float,false)
-        }
+        // if ( do_opf )
+        // {
+        //     SEND(21,mu_Pmax,Double,Float,false)
+        //     SEND(22,mu_Pmin,Double,Float,false)
+        //     SEND(23,mu_Qmax,Double,Float,false)
+        //     SEND(24,mu_Qmin,Double,Float,false)
+        // }
     }
 
     if ( gencostdata )
@@ -889,15 +884,15 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
             SEND(14,Qmaxt,Double,Float,true)
             SEND(15,loss0,Double,Float,true)
             SEND(16,loss1,Double,Float,true)
-            if ( do_opf )
-            {
-                SEND(17,mu_Pmin,Double,Float,false)
-                SEND(18,mu_Pmax,Double,Float,false)
-                SEND(19,mu_Qminf,Double,Float,false)
-                SEND(20,mu_Qmaxf,Double,Float,false)
-                SEND(21,mu_Qmint,Double,Float,false)
-                SEND(22,mu_Qmaxt,Double,Float,false)
-            }
+            // if ( do_opf )
+            // {
+            //     SEND(17,mu_Pmin,Double,Float,false)
+            //     SEND(18,mu_Pmax,Double,Float,false)
+            //     SEND(19,mu_Qminf,Double,Float,false)
+            //     SEND(20,mu_Qmaxf,Double,Float,false)
+            //     SEND(21,mu_Qmint,Double,Float,false)
+            //     SEND(22,mu_Qmaxt,Double,Float,false)
+            // }
         }
     }
 
@@ -1027,9 +1022,9 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
             gl_verbose("reading branch data");
             for ( size_t n = 0 ; n < nbranch ; n++ )
             {
-                branch *line = branchlist[n];
-                size_t fbus_id = line->get_fbus()-1;
-                size_t tbus_id = line->get_tbus()-1;
+                branch *obj = branchlist[n];
+                size_t fbus_id = obj->get_fbus()-1;
+                size_t tbus_id = obj->get_tbus()-1;
                 if ( fbus_id < 0 || fbus_id >= nbus )
                 {
                     gl_warning("pypower::on_sync(): from bus %d on branch %d is not valid",fbus_id,n);
@@ -1040,15 +1035,26 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
                 }
                 else
                 {
-                    complex Z(line->get_r(),line->get_x());
+                    complex Z(obj->get_r(),obj->get_x());
                     bus *fbus = buslist[fbus_id];
                     bus *tbus = buslist[tbus_id];
                     complex DV = fbus->V - tbus->V;
                     complex current = DV / Z;
-                    line->set_current(current*base_MVA);
+                    obj->set_current(current*base_MVA);
                     double loss = (DV * ~current).Mag() / base_MVA;
-                    line->set_loss(loss);
+                    obj->set_loss(loss);
                     total_loss += loss;
+                }
+                if ( do_opf )
+                {
+                    PyObject *pyobj = PyList_GetItem(branchdata,n);
+                    if ( PyList_Size(pyobj) >= 21 )
+                    {
+                        RECV(mu_sfrom,17,Float,Double,false)
+                        RECV(mu_sto,18,Float,Double,false)
+                        RECV(mu_angmin,19,Float,Double,false)
+                        RECV(mu_angmax,20,Float,Double,false)
+                    }
                 }
             }
 
@@ -1082,7 +1088,7 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
                     RECV(Qg,2,Float,Double,true)
                 }
                 RECV(apf,20,Float,Double,false)
-                if ( do_opf )
+                if ( do_opf && PyList_Size(pyobj) > 24 )
                 {
                     RECV(mu_Pmax,21,Float,Double,false)
                     RECV(mu_Pmin,22,Float,Double,false)
@@ -1099,12 +1105,15 @@ static TIMESTAMP update_solution(TIMESTAMP t0)
                 {
                     dcline *obj = dcline::dclinelist[n];
                     PyObject *pyobj = PyList_GetItem(dclinedata,n);
-                    RECV(mu_Pmax,17,Float,Double,false)
-                    RECV(mu_Pmin,18,Float,Double,false)
-                    RECV(mu_Qminf,19,Float,Double,false)
-                    RECV(mu_Qmaxf,20,Float,Double,false)
-                    RECV(mu_Qmint,21,Float,Double,false)
-                    RECV(mu_Qmaxt,22,Float,Double,false)
+                    if ( PyList_Size(pyobj) > 22 )
+                    {                        
+                        RECV(mu_Pmax,17,Float,Double,false)
+                        RECV(mu_Pmin,18,Float,Double,false)
+                        RECV(mu_Qminf,19,Float,Double,false)
+                        RECV(mu_Qmaxf,20,Float,Double,false)
+                        RECV(mu_Qmint,21,Float,Double,false)
+                        RECV(mu_Qmaxt,22,Float,Double,false)
+                    }
                 }
             }
 
