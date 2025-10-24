@@ -18,7 +18,7 @@ void tmpfile_get(
         const char *ext = "tmp";
         const char *name = tag;
 
-        char label[strlen(tag)+1];
+        char *label = new char [strlen(tag)+1];
         strcpy(label,tag);
         char *delim = strchr(label,':');
         if ( delim != NULL )
@@ -57,6 +57,7 @@ void tmpfile_get(
         }
         
         tmpfiles[std::string(tag)] = std::string(tmpname);
+        delete [] label;
     }
     snprintf(buffer,len-1,"%s",tmpfiles[std::string(tag)].c_str());
 }

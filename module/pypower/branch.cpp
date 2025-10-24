@@ -91,6 +91,18 @@ branch::branch(MODULE *module)
 				PT_OUTPUT,
 				PT_DESCRIPTION, "line loss (MW)",
 
+			PT_double, "mu_sfrom", get_mu_sfrom_offset(),
+				PT_DESCRIPTION, "Kuhn-Tucker multiplier on MVA limit at 'from' bus",
+
+			PT_double, "mu_sto", get_mu_sto_offset(),
+				PT_DESCRIPTION, "Kuhn-Tucker multiplier on MVA limit at 'to' bus ",
+
+			PT_double, "mu_angmin", get_mu_angmin_offset(),
+				PT_DESCRIPTION, "Kuhn-Tucker multiplier lower angle difference limit",
+
+			PT_double, "mu_angmax", get_mu_angmax_offset(),
+				PT_DESCRIPTION, "Kuhn-Tucker multiplier upper angle difference limit",
+
 			NULL)<1)
 		{
 				throw "unable to publish branch properties";

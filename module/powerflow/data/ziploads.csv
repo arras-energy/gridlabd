@@ -1,0 +1,16 @@
+geocode,load_class,load_type,Theat,Tcool,Pz,Pz_H,Pz_C,Qz,Qz_H,Qz_C,Pi,Pi_H,Pi_C,Qi,Qi_H,Qi_C,Pp,Pp_H,Pp_C,Qp,Qp_H,Qp_C,schedule,description
+,R,"singlefamily",60,70,1.5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"* * * 1",
+,R,"multifamily",60,70,0.9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"* * * 1",
+,C,"office",60,70,1.5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"* * * 1",
+,C,"retail",60,70,1.5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"* * * 1",
+,C,"grocery",60,70,1.8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"* * * 1",
+,C,"healthcare",60,70,2.5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"* * * 1",
+,C,"lodging",60,70,1.6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"* * * 1",
+,C,"restaurant",60,70,1.5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"* * * 1",
+,I,"000000",,,20,,,0,,,0,,,0,,,0,,,0,,,"* * * 1","some random industrial facility"
+,A,"000000",,,10,,,0,,,0,,,0,,,0,,,0,,,"* * * 1","some random AG facility"
+,T,"charging",,,16,,,0,,,0,,,0,,,0,,,0,,,"* * * 1","chargers @ level 2 charging"
+,T,"rail",,,2.00E+07,,,0,,,0,,,0,,,0,,,0,,,"* * * 1","maximum load per substation"
+,P,"lighting",,,250,,,0,,,0,,,0,,,0,,,0,,,"* * * 1","lights @ 250 W/light"
+,P,"water",,,4.2,,,0,,,0,,,0,,,0,,,0,,,"* * * 1","residents @ 1Wh/gal, 100gal/day/resident"
+,P,"sewer",,,19.3,,,0,,,0,,,0,,,0,,,0,,,"* * * 1","residents @ 20kBtu/gal, 100 gal/day/resident"
