@@ -33,16 +33,18 @@ OPTIONS
 COMMANDS
 
     config
-      show           Show the current configuration
-      save           Save options are default configuration
-      KEY=e_value    Change configuration setting
-    create PROJECT   Create and open a new project
-    edit PROJECT     Open an existing project
-    list [WORKDIR]   List projects in WORKDIR (. by default)
-    save MESSAGE     Save project to github
+      show                   Show the current configuration
+      save                   Save options as default configuration
+      set KEY=VALUE[,...]    Change configuration setting
+    create PROJECT           Create and open a new project
+    edit PROJECT             Open an existing project
+    list [WORKDIR]           List projects in WORKDIR (. by default)
+    save MESSAGE             Save project to github
 
 CONFIGURATION
 
+    The following keys and values are supported by the `config` command:
+    
     workdir=$HOME/github
 
         The `workdir` value specifies the default working folder for projects.
