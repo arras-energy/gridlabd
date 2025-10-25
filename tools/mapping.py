@@ -131,7 +131,7 @@ def main(argv:list[str]) -> int:
         print("\n".join([x for x in __doc__.split("\n") if x.startswith("Syntax: ")]))
         return app.E_SYNTAX
 
-    args = read_stdargs(argv)
+    args = app.read_stdargs(argv)
 
     fig = None
 
@@ -181,9 +181,9 @@ def main(argv:list[str]) -> int:
                 nodedata={
                     "latitude": float,
                     "longitude": float,
-                    "voltage_A": lambda x:complex_unit(x,'d'),
-                    "voltage_B": lambda x:complex_unit(x,'d'),
-                    "voltage_C": lambda x:complex_unit(x,'d'),
+                    "voltage_A": lambda x:app.complex_unit(x,'d'),
+                    "voltage_B": lambda x:app.complex_unit(x,'d'),
+                    "voltage_C": lambda x:app.complex_unit(x,'d'),
                     "class": str,
                     },
                 linkdata={
@@ -356,7 +356,7 @@ class Map:
                 "phases":str,
                 "flow_direction":str,
                 "violation_detected":str,
-                "power_out":lambda x:complex_unit(x,'real')
+                "power_out":lambda x:app.complex_unit(x,'real')
                 }.items():
             if x not in linkdata:
                 linkdata[x] = y
@@ -465,7 +465,7 @@ class Map:
                     )
                 if hasattr(config,"node_options"):
                     self.map.update_traces(**config.node_options,selector={"type":f"scatter{config.mapper}"})
-                power_out = complex_unit(data["power_out"],'real')
+                power_out = app.complex_unit(data["power_out"],'real')
                 symbols = {
                     "switch" : "square-stroked" if power_out<0.1 else "square",
                     "transformer" : "circle-stroked",
