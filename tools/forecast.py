@@ -21,13 +21,23 @@ import gridlabd.framework as app
 from gridlabd.nsrdb_weather import geocode,geohash
 from herbie import Herbie
 from herbie.models.cfs import time_series_variables as cfs_time_series
+import warnings
+
+warnings.simplefilter("error")
+
+class ForecastError(Exception):
+
+    def __init__(self,*args):
+
+        Exception.__init__(self,args[0] if args else None)
+        self.data = args[1:] if len(args) > 1 else None
 
 GEOHASH_RESOLUTION=9
 PRODUCTS = {
     "NOAA" : {
-        "cfs" : {
-            "time_series": cfs_time_series,
-            },
+        # "cfs" : {
+        #     "time_series": cfs_time_series,
+        #     },
         # "gefs" : {},
         # "gfs" : {},
         # "hafsa" : {},
@@ -35,13 +45,13 @@ PRODUCTS = {
         # "href" : {},
         "hrrr" : {
             "sfc": {
-                "TMP:2 m above": "Temperature at 2 meters",
-                "DPT:2 m above": "Dewpoint at 2 meters",
-                "RH:2 m above": "Relative humidity at 2 meters",
+                "TMP:2 m above": {"name": "Temperature at 2 meters","attr":"t2m"},
+                "DPT:2 m above": {"name": "Dewpoint at 2 meters","attr":"d2m"},
+                "RH:2 m above": {"name": "Relative humidity at 2 meters","attr":"r2"},
                 },
-            "prs": [],
-            "nat": [],
-            "subh": [],
+            # "prs": [],
+            # "nat": [],
+            # "subh": [],
             }, 
         # "hrrrak" : {},
         # "nam" : {},
@@ -72,29 +82,41 @@ PRODUCTS = {
 DATE = dt.datetime.now()
 
 def guesstype(x):
+    """Determine the basic type of a value"""
 
+    # date/time value
     for dateformat in ["%Y-%m-%d %H:%M:%S","%Y-%m-%d %H:%M","%Y-%m-%d %H","%Y-%m-%d"]:
         try:
             return dt.datetime.strptime(x,dateformat)
         except ValueError:
             pass
 
+    # integer value
     try:
         return int(x)
     except:
         pass
 
+    # real value
     try:
         return float(x)
     except:
         pass
 
+    # complex value
     try:
         return complex(x)
     except:
         pass
 
-    return str(x)
+    # string value
+    try:
+        return str(x)
+    except:
+        pass
+
+    # cannot be reduce to a basic type
+    return None
 
 def to_point(x):
     if "," in x:
@@ -109,7 +131,22 @@ def to_point(x):
         except:
             return (x,None)
 
+def data(*args,**kwargs):
+    """Access data"""
+    app.debug(f"entering data({','.join([repr(x) for x in args])},{','.join([f'{x}={repr(y)}' for x,y in kwargs.items()])})")
+    kwargs["verbose"] = False # Herbie print statements contain non UTF-8 text that cannot be handled by some streams
+    warnings.simplefilter("ignore")
+    H = Herbie(*args,**kwargs)
+    if not any([H.grib is not None, H.idx is not None]):
+        warnings.simplefilter("always")
+        raise ForecastError("unable to find data",app.E_FAILED)
+    result = H.xarray
+    warnings.simplefilter("always")
+    app.debug(f"returning {result}")
+    return result
+
 def main(argv:list[str]) -> int:
+    """Main routine"""
 
     # handle no options case -- typically a cry for help
     if len(argv) == 0:
@@ -121,9 +158,10 @@ def main(argv:list[str]) -> int:
     args = app.read_stdargs(argv)
 
     hargs = []
-    hkwds = {}
+    hkwds = {"--model":"hrrr","--product":"sfc","--fxx":0,}
     points = {}
-    variable = None
+    variables = ["TMP:2 m above","DPT:2 m above","RH:2 m above"]
+    output = ["-","-","-"]
 
     for key,value in args:
 
@@ -156,19 +194,23 @@ def main(argv:list[str]) -> int:
                         app.error(f"{spec[2]} is not found in {spec[0]/spec[1]}",code=app.E_NOTFOUND)
                     print(f"{'/'.join(value)}:")
                     items = PRODUCTS[spec[0]][spec[1]][spec[2]]
-                    print("\n".join(f"{n+1:3.0f}. {f'{m} ({items[m]})' if isinstance(items,dict) else m}" for n,m in enumerate(sorted(items))),flush=True)
+                    print("\n".join(f"""{n+1:3.0f}. {f'{m} -- {items[m]["name"]}' if isinstance(items,dict) else m}""" for n,m in enumerate(sorted(items))),flush=True)
                 else:
                     app.error("subproduct listing not available",code=app.E_INVALID)
                     return app.E_INVALID
             return app.E_OK
 
-        elif key in ["-p","--position","--points"]:
+        elif key in ["-P","--position","--points","-L","--location"]:
 
             points = dict([to_point(x) for x in ",".join(value).split(";")])
         
-        elif key in ["-v","--variable"]:
+        elif key in ["-V","--variable"]:
 
-            variables = value
+            variables.extend(value)
+
+        elif key in ["-o","--output"]:
+
+            output.extend(value)
 
         elif len(value) == 0:
 
@@ -186,20 +228,39 @@ def main(argv:list[str]) -> int:
 
         if not hargs:
             hargs = [DATE]
-        app.verbose(f"calling Herbie({','.join([repr(x) for x in hargs])},{','.join([f'{x}={repr(y)}' for x,y in hkwds.items()])})...",file=sys.stderr)
-        H = Herbie(*hargs,verbose=False,**hkwds)
-        if any([H.grib is not None, H.idx is not None]):
-            xr = H.xarray()
-            if points:
-                print(points)
-            elif variable:
-                print(xr[variable])
-            else:
-                print(xr)
-            return app.E_OK
+
+        # app.verbose(f"calling Herbie({','.join([repr(x) for x in hargs])},{','.join([f'{x}={repr(y)}' for x,y in hkwds.items()])})...",file=sys.stderr)
+        try:
+            xr = data(*hargs,**hkwds)
+        except ForecastError as err:
+            print(f"ERROR [forecast]: {err}")
+            return err.exitcode
+        except Exception as err:
+            if app.DEBUG:
+                raise
+            print(f"ERROR [forecast]: {err}")
+            return app.E_EXCEPTION
+        if variables:
+            assert len(variables) == len(output), f"number of variables ({len(variables)}) does not match number of outputs ({len(output)})"
+            for variable,ofile in zip(variables,output):
+                attr = PRODUCTS["NOAA"][hkwds["--model"]][hkwds["--product"]][variable]["attr"]
+                result = getattr(xr(variable),attr)
+                if ofile.endswith(".png"):
+                    result.plot(cmap="Spectral_r", figsize=[8, 4]).figure.savefig(ofile)
+                elif ofile.endswith(".csv"):
+                    df = result.to_pandas()
+                    df.to_csv(ofile,header=True,index=True)
+                elif ofile.endswith(".txt"):
+                    with open(ofile,"w") as fh:
+                        print(result,file=fh)
+                elif ofile in ["-","stdout","/dev/stdout"]:
+                    print(result,file=sys.stdout)
+                else:
+                    raise ForecastError(f"'{ofile}' is not a supported output file type")
+        elif points:
+            print(points)
         else:
-            app.error("unable to find data",code=app.E_FAILED)
-            return app.E_FAILED
+            print(xr)
     
     except Exception as err:
     
@@ -214,10 +275,13 @@ if __name__ == "__main__":
 
     # app.DEBUG = True
     # app.VERBOSE = True
-    app.run(main,[__name__,"-l"])
-    app.run(main,[__name__,"-l=NOAA"])
-    app.run(main,[__name__,"-l=NOAA/cfs"])
-    app.run(main,[__name__,"-l=NOAA/cfs/time_series"])
-    app.run(main,[__name__,"-l=NOAA/hrrr"])
-    app.run(main,[__name__,"-l=NOAA/hrrr/sfc"])
-    app.run(main,[__name__,"--model=hrrr","--product=sfc","--fxx=0","-v=TMP:2 m above","-p=37.5,-122.5;IL"])
+    # app.run(main,[__name__,"-l"])
+    # app.run(main,[__name__,"-l=NOAA"])
+    # app.run(main,[__name__,"-l=NOAA/cfs"])
+    # app.run(main,[__name__,"-l=NOAA/cfs/time_series"])
+    # app.run(main,[__name__,"--model=cfs","--product=time_series","-p=37.5,-122.5"])
+    # app.run(main,[__name__,"-l=NOAA/hrrr"])
+    # app.run(main,[__name__,"-l=NOAA/hrrr/sfc"])
+    # app.run(main,[__name__,"--model=hrrr","--product=sfc","-fxx=0","-v=TMP:2 m above"])
+    # app.run(main,[__name__,"--model=hrrr","--product=sfc","--fxx=0","-v=TMP:2 m above","-p=37.5,-122.5"])
+    app.run(main,[__name__,"2025-10-25 09:00","-P=37.5,-122.5"])
