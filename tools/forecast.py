@@ -6,6 +6,8 @@ Options:
 
 Commands:
 
+    clean   Clean up data cache folder
+
 The `forecast` tool provides access to recent and archived numerical weather
 prediction model outputs from different cloud archive sources delivered by
 Herbie. 
@@ -22,6 +24,7 @@ from gridlabd.nsrdb_weather import geocode,geohash
 from herbie import Herbie
 from herbie.models.cfs import time_series_variables as cfs_time_series
 import warnings
+import shutil
 
 warnings.simplefilter("error")
 
@@ -35,14 +38,6 @@ class ForecastError(Exception):
 GEOHASH_RESOLUTION=9
 PRODUCTS = {
     "NOAA" : {
-        # "cfs" : {
-        #     "time_series": cfs_time_series,
-        #     },
-        # "gefs" : {},
-        # "gfs" : {},
-        # "hafsa" : {},
-        # "hiresw" : {},
-        # "href" : {},
         "hrrr" : {
             "sfc": {
                 "TMP:2 m above": {"name": "Temperature at 2 meters","attr":"t2m"},
@@ -53,33 +48,9 @@ PRODUCTS = {
             # "nat": [],
             # "subh": [],
             }, 
-        # "hrrrak" : {},
-        # "nam" : {},
-        # "nbm" : {},
-        # "rap" : {},
-        # "rrfs" : {},
-        # "rtma" : {}, 
-        # "rtma_ak" : {},
-        # "urma" : {}, 
-        # "utma_ak" : {},
         },
-    # "ECMWF": {
-    #     "ecmwf" : {},
-    #     "azure" : {},
-    #     "aws" : {},
-    #     },
-    # "ECCC" : {
-    #     "gdps" : {},
-    #     "hrdps" : {},
-    #     "rdps" : {},
-    #     },
-    # "USNAVY": {
-    #     "navgem_nomads" : {},
-    #     "nogaps_ncei" : {},
-    #     },
-}
-
-DATE = dt.datetime.now()
+    }
+DATADIR = os.path.join(os.environ["GLD_ETC"],"herbie")
 
 def guesstype(x):
     """Determine the basic type of a value"""
@@ -135,15 +106,14 @@ def data(*args,**kwargs):
     """Access data"""
     app.debug(f"entering data({','.join([repr(x) for x in args])},{','.join([f'{x}={repr(y)}' for x,y in kwargs.items()])})")
     kwargs["verbose"] = False # Herbie print statements contain non UTF-8 text that cannot be handled by some streams
-    warnings.simplefilter("ignore")
-    H = Herbie(*args,**kwargs)
-    if not any([H.grib is not None, H.idx is not None]):
-        warnings.simplefilter("always")
-        raise ForecastError("unable to find data",app.E_FAILED)
-    result = H.xarray
-    warnings.simplefilter("always")
-    app.debug(f"returning {result}")
-    return result
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        H = Herbie(*args,save_dir=DATADIR,**kwargs)
+        if not any([H.grib is not None, H.idx is not None]):
+            raise ForecastError("unable to find data",app.E_FAILED)
+        result = H.xarray
+        app.debug(f"returning {result}")
+        return result
 
 def main(argv:list[str]) -> int:
     """Main routine"""
@@ -157,11 +127,11 @@ def main(argv:list[str]) -> int:
     # handle stardard app arguments --debug, --warning, --verbose, --quiet, --silent
     args = app.read_stdargs(argv)
 
-    hargs = []
-    hkwds = {"--model":"hrrr","--product":"sfc","--fxx":0,}
-    points = {}
-    variables = ["TMP:2 m above","DPT:2 m above","RH:2 m above"]
-    output = ["-","-","-"]
+    hargs = [] # current date/time
+    hkwds = {} # model=hrrr/product=sfc/fxx=0
+    points = {} # all locations (entire CONUS)
+    variables = [] # 2m tmp, dpt, and rh
+    output = [] # all to stdout
 
     for key,value in args:
 
@@ -212,6 +182,10 @@ def main(argv:list[str]) -> int:
 
             output.extend(value)
 
+        elif key == "clean":
+
+            shutil.rmtree(DATADIR)
+
         elif len(value) == 0:
 
             hargs.append(guesstype(key))
@@ -227,9 +201,17 @@ def main(argv:list[str]) -> int:
     try:
 
         if not hargs:
-            hargs = [DATE]
+            hargs = [dt.datetime.now()]
 
-        # app.verbose(f"calling Herbie({','.join([repr(x) for x in hargs])},{','.join([f'{x}={repr(y)}' for x,y in hkwds.items()])})...",file=sys.stderr)
+        if not hkwds:
+            hkwds = {"--model":"hrrr","--product":"sfc","--fxx":0}
+
+        if not variables:
+            variables = ["TMP:2 m above","DPT:2 m above","RH:2 m above"]
+
+        if not output:
+            output = ["-","-","-"] # send all variables to stdout
+
         try:
             xr = data(*hargs,**hkwds)
         except ForecastError as err:
@@ -240,22 +222,44 @@ def main(argv:list[str]) -> int:
                 raise
             print(f"ERROR [forecast]: {err}")
             return app.E_EXCEPTION
+
+        # variables selected
         if variables:
+
             assert len(variables) == len(output), f"number of variables ({len(variables)}) does not match number of outputs ({len(output)})"
             for variable,ofile in zip(variables,output):
                 attr = PRODUCTS["NOAA"][hkwds["--model"]][hkwds["--product"]][variable]["attr"]
                 result = getattr(xr(variable),attr)
+                df = result.to_pandas()
+
+                if points:
+                    print(result.time,result.step,result.latitude,result.longitude)
+                    print(df)
+                    quit()
+
+                # png image
                 if ofile.endswith(".png"):
+
                     result.plot(cmap="Spectral_r", figsize=[8, 4]).figure.savefig(ofile)
+
+                # csv file
                 elif ofile.endswith(".csv"):
-                    df = result.to_pandas()
+
                     df.to_csv(ofile,header=True,index=True)
+
+                # text output to file
                 elif ofile.endswith(".txt"):
+
                     with open(ofile,"w") as fh:
                         print(result,file=fh)
+
+                # text output to stdout
                 elif ofile in ["-","stdout","/dev/stdout"]:
+
                     print(result,file=sys.stdout)
+
                 else:
+
                     raise ForecastError(f"'{ofile}' is not a supported output file type")
         elif points:
             print(points)
@@ -284,4 +288,6 @@ if __name__ == "__main__":
     # app.run(main,[__name__,"-l=NOAA/hrrr/sfc"])
     # app.run(main,[__name__,"--model=hrrr","--product=sfc","-fxx=0","-v=TMP:2 m above"])
     # app.run(main,[__name__,"--model=hrrr","--product=sfc","--fxx=0","-v=TMP:2 m above","-p=37.5,-122.5"])
-    app.run(main,[__name__,"2025-10-25 09:00","-P=37.5,-122.5"])
+    # app.run(main,[__name__,"2025-10-25 09:00"])
+    # app.run(main,[__name__,"2025-10-25 09:00","-P=37.5,-122.5"])
+    app.run(main,sys.argv[1:] if len(sys.argv) > 0 else [])
