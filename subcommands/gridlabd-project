@@ -7,6 +7,7 @@ __doc__="""GridLAB-D project subcommand
 SYNOPSIS
 
 Shell:
+
     $ gridlabd project [OPTIONS ...] COMMAND [ARGUMENTS ...]
 
 GLM:
@@ -45,7 +46,7 @@ CONFIGURATION
 
     The following keys and values are supported by the `config` command:
     
-    workdir=$HOME/github
+    workdir=$HOME/Projects
 
         The `workdir` value specifies the default working folder for projects.
         You can override this by specifying the full path to the project.
@@ -79,6 +80,23 @@ CONFIGURATION
 
 import sys, os
 import json
+import warnings
+import datetime as dt
+
+try:
+    with open(os.path.join(os.environ["HOME"],".gridlabd","project-settings.json"),"r") as fh:
+        settings = json.load(fh)
+except:
+    settings = {
+        "workdir": os.path.join(os.environ['HOME'],"Arras"),
+        "template": "arras-energy/.project",
+        "quiet": False,
+        "warning": True,
+        "debug": None,
+        "verbose": False,
+        "exception": False,
+        "gitorg": os.environ['USER'],
+    }
 
 E_OK = 0
 E_SYNTAX = 1
@@ -91,8 +109,8 @@ E_EXCEPTION = 9
 
 _COMMANDS = ["config","create","edit","list","save"]
 
-class ProjectError:
-
+class ProjectError(Exception):
+    """Project exception handler"""
     pass
 
 class Command:
@@ -117,26 +135,47 @@ class Command:
     @staticmethod
     def create(project):
         """Create a project"""
+
         # create work folder in workdir
         workdir = settings["workdir"]
         project_path = os.path.join(workdir,project)
         if os.path.exists(os.path.join(project_path)):
             error(f"{project=} exists in {workdir=}",E_EXISTS)
+
+        # get template
+        template_path = os.path.join(os.environ["GLD_ETC"],"project")
+        os.makedirs(template_path,exist_ok=True)
+        template_dir = os.path.join(template_path,settings["template"])
+        verbose(f"downloading {template_path}...")
+        if not os.path.exists(template_dir) and \
+                os.system(f"git clone https://github.com/{settings['template']} {template_dir}"):
+            error(f"unable to download template {settings['template']} from https://github.com/",E_NOTFOUND)
+        verbose("...ok")
+        # 
         verbose(f"creating {project=} in {workdir=}...")
         os.makedirs(project_path)
-        os.chdir(project_path)
         verbose(f"...ok")
 
         # git init the folder
-        if os.system("git init"):
-            raise RuntimeError("git init failed")
+        if os.system(f"git init {project_path}"):
+            error(f"git init failed for '{project_path}'",E_FAILED)
 
-        # copy template files from GitHub
-        if settings["template"]:
-            warning(f"unable to copy template files from {settings['template']}")
+        # set remote
+        if os.system(f"git remote add origin https://github.com/{setting['gitorg']}/{project}"):
+            error("unable to set remote")
+
+        if os.system("git push --set-upstream origin main"):
+            error("unable to set upstream")
+
+        # get template
+        template = ""
+        if not settings["template"]:
+            warning(f"no template specified")
+        elif os.system(f"cp {template_dir}/* {project_path}"):
+            error(f"unable to copy template files from '{settings['template']}'",E_FAILED)
 
         # edit the project
-        return edit(project)
+        return self.edit(project)
 
     @staticmethod
     def edit(project):
@@ -144,7 +183,8 @@ class Command:
         # edit the project in Marimo notebook
         workdir = settings["workdir"]
         project_path = os.path.join(workdir,project)
-        if not os.path.exists(os.path.join(project_path)):
+        if not os.path.exists(os.path.join(project_path)) and \
+                os.system(f"git clone https://github.com/{os.environ['USER']}/{project}"):
             error(f"{project=} does not exist in {workdir=}",E_NOTFOUND)
         verbose(f"opening {project=} in {workdir=} with marimo...")
         os.chdir(project_path)
@@ -177,23 +217,7 @@ class Command:
 
             return E_OK
         
-        if command == "load":
-            try:
-                with open(file,"r") as fh:
-                    settings = json.load(fh)
-            except:
-                settings = dict(
-                    workdir = os.path.join(os.environ["HOME"],"github"),
-                    quiet = False,
-                    warning = True,
-                    debug = None,
-                    verbose = False,
-                    exception = False,
-                    template = "arras-energy/.project",
-                    )
-            return E_OK
-
-        if command == "set":
+        elif command == "set":
 
             if args:
 
@@ -210,22 +234,23 @@ class Command:
 
                 settings[key] = eval(value)
 
-            return E_OK
-
-        if command == "save":
-        
-            with open(file,"w") as fh:
+            with open(os.path.join(os.environ["HOME"],".gridlabd","project-settings.json"),"w") as fh:
                 json.dump(settings,fh)
             
             return E_OK
 
-        error(f"{command=} is not a valid config command",E_INVALID)
+        else:
+
+            error(f"{command=} is not a valid config command",E_INVALID)
 
     @staticmethod
-    def save(message):
+    def save(project):
         """Save a project"""
-        verbose(f"TODO save({message=})")
-        return E_FAILED
+        os.chdir(os.path.join(os.environ["HOME"],"Arras",project))
+        assert os.system("git add -A") == 0, "git add failed"
+        assert os.system(f"git commit -a -m \"Save on {dt.datetime.now()}\"") == 0, "git commit failed"
+        assert os.system("git push") == 0, "git push failed"
+        return E_OK
 
 def exception(msg=None,code=None):
     """Print exception message
@@ -333,14 +358,12 @@ def output(msg,code=None):
 
 def main(argv):
 
-    global settings
-    Command.config("load")
-
+    os.makedirs(settings["workdir"],exist_ok=True)
     os.chdir(settings["workdir"])
 
     if len(argv) == 1:
-        print(__doc__)
-        exit(E_SYNTAX)
+        print("Syntax: gridlabd project [OPTIONS ...] COMMAND [ARGUMENTS ...]")
+        return E_SYNTAX
 
     args = []
     kwargs = {}
@@ -414,4 +437,22 @@ def main(argv):
 
 if __name__ == "__main__":
 
-    main(sys.argv)
+    try:
+        main(sys.argv)
+    except SystemExit:
+        warnings.warn("improper exit() call from within main()")
+        if settings["debug"]:
+            raise
+    except:
+        e_type,e_value,e_trace = sys.exc_info()
+        if settings["debug"]:
+            raise
+        elif type(e_type) == type(ProjectError):
+            pass
+        elif isinstance(e_value,(tuple,list)):
+            print(f"EXCEPTION [project]: ({e_type.__name__}) {e_value[0]}",file=sys.stderr)
+            exit(e_value[1])
+        else:
+            print(f"EXCEPTION [project]: ({e_type.__name__}) {e_value}",file=sys.stderr)
+            exit(E_EXCEPTION)
+
