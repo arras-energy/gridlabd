@@ -74,6 +74,7 @@ CONFIGURATION
 
         The `template` value specifies the GitHub project template to use when
         creating a new project.
+        
     verbose=False
 
         The `verbose` value enables verbose message output during processing.
