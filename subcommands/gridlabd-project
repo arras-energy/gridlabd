@@ -16,18 +16,19 @@ GLM:
 
 DESCRIPTION
 
-    The 'gridlabd project' command manages GridLAB-D projects in GitHub.
+    The `gridlabd project` command manages GridLAB-D projects in GitHub.
     GridLAB-D projects can be opened from GitHub repositories and edited
     using Marimo.
 
+    To use the `gridlabd project` command you must first login to GitHub 
+    using the `gh auth login` command.
+
 OPTIONS
 
-    -b|--branch BRANCH       Specify the repository BRANCH
     -d|--debug               Enable debug output and exception traceback
     -h|--help|help           Display this help information
     -o|--org ORG             Specify the GitHub ORG
     -q|--quiet               Disable error output
-    -r|--repo REPO           Specify the GitHub REPO
     -v|--verbose             Enable verbose output
     -w|--warning             Disable warning output
 
@@ -35,7 +36,6 @@ COMMANDS
 
     config
       show                   Show the current configuration
-      save                   Save options as default configuration
       set KEY=VALUE[,...]    Change configuration setting
     create PROJECT           Create and open a new project
     edit PROJECT             Open an existing project
@@ -46,36 +46,46 @@ CONFIGURATION
 
     The following keys and values are supported by the `config` command:
     
-    workdir=$HOME/Projects
+    branch=BRANCH
 
-        The `workdir` value specifies the default working folder for projects.
-        You can override this by specifying the full path to the project.
-
-    quiet=False
-
-        The `quiet` value suppresses error messages during processing.
-
-    warning=True
-
-        The `warning` value enable warning messages during processing.
+        Determines the default branch name to use when creating new
+        repositories.
 
     debug=None
 
         The `debug` value enables exception traceback during processing.
-
-    verbose=False
-
-        The `verbose` value enables verbose message output during processing.
 
     exception=False
 
         The `exception` value enables raising exceptions instead of displaying
         error messages and returning error codes.
 
+    gitorg=ORG
+
+        Determines the default GitHub organization or user in which new
+        repositories are created.
+
+    quiet=False
+
+        The `quiet` value suppresses error messages during processing.
+
     template=arras-energy/.project
 
         The `template` value specifies the GitHub project template to use when
         creating a new project.
+    verbose=False
+
+        The `verbose` value enables verbose message output during processing.
+
+    warning=True
+
+        The `warning` value enable warning messages during processing.
+
+    workdir=$HOME/Projects
+
+        The `workdir` value specifies the default working folder for projects.
+        You can override this by specifying the full path to the project.
+
 """
 
 import sys, os
@@ -89,13 +99,14 @@ try:
 except:
     settings = {
         "workdir": os.path.join(os.environ['HOME'],"Arras"),
-        "template": "arras-energy/.project",
+        "template": "https://github.com/arras-energy/.project",
         "quiet": False,
         "warning": True,
         "debug": None,
         "verbose": False,
         "exception": False,
         "gitorg": os.environ['USER'],
+        "branch": "main",
     }
 
 E_OK = 0
@@ -109,11 +120,21 @@ E_EXCEPTION = 9
 
 _COMMANDS = ["config","create","edit","list","save"]
 
+def system(*args,**kwargs):
+    verbose(f"system({args=},{kwargs=})...")
+    exitcode = os.system(*args,**kwargs)
+    verbose(f"... --> {exitcode=}")
+    return exitcode
+
 class ProjectError(Exception):
     """Project exception handler"""
     pass
 
 class Command:
+
+    gitorg = settings["gitorg"]
+    branch = settings["branch"]
+
     """Class implementing all main-level commands"""
     @staticmethod
     def list(workdir=None):
@@ -125,7 +146,7 @@ class Command:
             if not item.startswith(".") and os.path.isdir(itempath):
                 Command.list(itempath)
             ok = True
-            for required in [".git","notebook.py"]:
+            for required in [".git"]:
                 if not os.path.exists(os.path.join(itempath,required)):
                     ok = False
             if ok: 
@@ -136,46 +157,23 @@ class Command:
     def create(project):
         """Create a project"""
 
+        if not settings["template"]:
+            warning(f"no template specified")
+
         # create work folder in workdir
         workdir = settings["workdir"]
         project_path = os.path.join(workdir,project)
-        if os.path.exists(os.path.join(project_path)):
+        if os.path.exists(project_path):
             error(f"{project=} exists in {workdir=}",E_EXISTS)
 
-        # get template
-        template_path = os.path.join(os.environ["GLD_ETC"],"project")
-        os.makedirs(template_path,exist_ok=True)
-        template_dir = os.path.join(template_path,settings["template"])
-        verbose(f"downloading {template_path}...")
-        if not os.path.exists(template_dir) and \
-                os.system(f"git clone https://github.com/{settings['template']} {template_dir}"):
-            error(f"unable to download template {settings['template']} from https://github.com/",E_NOTFOUND)
-        verbose("...ok")
-        # 
-        verbose(f"creating {project=} in {workdir=}...")
+        # create repo on remote and clone to workdir
         os.makedirs(project_path)
-        verbose(f"...ok")
-
-        # git init the folder
-        if os.system(f"git init {project_path}"):
-            error(f"git init failed for '{project_path}'",E_FAILED)
-
-        # set remote
-        if os.system(f"git remote add origin https://github.com/{setting['gitorg']}/{project}"):
-            error("unable to set remote")
-
-        if os.system("git push --set-upstream origin main"):
-            error("unable to set upstream")
-
-        # get template
-        template = ""
-        if not settings["template"]:
-            warning(f"no template specified")
-        elif os.system(f"cp {template_dir}/* {project_path}"):
-            error(f"unable to copy template files from '{settings['template']}'",E_FAILED)
+        os.chdir(workdir)
+        template = settings["template"]
+        assert system(f"gh repo create {Command.gitorg}/{project} --template={settings['template']} --private --clone") == 0, f"unable to create new repo for {project}"
 
         # edit the project
-        return self.edit(project)
+        return Command.edit(project)
 
     @staticmethod
     def edit(project):
@@ -184,13 +182,14 @@ class Command:
         workdir = settings["workdir"]
         project_path = os.path.join(workdir,project)
         if not os.path.exists(os.path.join(project_path)) and \
-                os.system(f"git clone https://github.com/{os.environ['USER']}/{project}"):
+                system(f"git clone https://github.com/{os.environ['USER']}/{project}"):
             error(f"{project=} does not exist in {workdir=}",E_NOTFOUND)
         verbose(f"opening {project=} in {workdir=} with marimo...")
         os.chdir(project_path)
-        rc = os.system(f"marimo edit .")
+        assert system("git pull") == 0, "unable to update"
+        assert system("marimo edit .") == 0, "unable to edit"
         verbose(f"...ok")
-        return E_OK if rc == 0 else E_FAILED
+        return E_OK
 
     @staticmethod
     def config(command,*args,**kwargs):
@@ -227,12 +226,12 @@ class Command:
 
                 error("missing key=value",E_MISSING)
 
-            for key,value in kwargs:
+            for key,value in kwargs.items():
 
                 if key not in settings:
                     error(f"{key=} is not found",E_NOTFOUND)
 
-                settings[key] = eval(value)
+                settings[key] = value
 
             with open(os.path.join(os.environ["HOME"],".gridlabd","project-settings.json"),"w") as fh:
                 json.dump(settings,fh)
@@ -246,10 +245,12 @@ class Command:
     @staticmethod
     def save(project):
         """Save a project"""
-        os.chdir(os.path.join(os.environ["HOME"],"Arras",project))
-        assert os.system("git add -A") == 0, "git add failed"
-        assert os.system(f"git commit -a -m \"Save on {dt.datetime.now()}\"") == 0, "git commit failed"
-        assert os.system("git push") == 0, "git push failed"
+        workdir = settings["workdir"]
+        project_path = os.path.join(workdir,project)
+        os.chdir(project_path)
+        assert system("git add -A") == 0, "git add failed"
+        assert system(f"git commit -a -m \"Save on {dt.datetime.now()}\"") == 0, "git commit failed"
+        assert system("git push") == 0, "git push failed"
         return E_OK
 
 def exception(msg=None,code=None):
@@ -273,7 +274,7 @@ def exception(msg=None,code=None):
         else:
             msg = e_value
         code = E_EXCEPTION
-    print(f"EXCEPTION [gridlabd-project]: {msg}",file=sys.stderr)
+    print(f"EXCEPTION [gridlabd-project]: {msg}",file=sys.stderr,flush=True)
     if type(code) is int:
         exit(code)
 
@@ -289,7 +290,7 @@ def error(msg,code=None):
         code (None or int)   Exit code. None does not exit. Default is None)
     """
     if not settings["quiet"]:
-        print(f"ERROR [gridlabd-project]: {msg}",file=sys.stderr)
+        print(f"ERROR [gridlabd-project]: {msg}",file=sys.stderr,flush=True)
     if type(code) is int:
         raise ProjectError((msg,code))
 
@@ -304,7 +305,7 @@ def warning(msg):
         msg (str)   Warning message
     """
     if settings["warning"]:
-        print(f"WARNING [gridlabd-project]: {msg}",file=sys.stderr)
+        print(f"WARNING [gridlabd-project]: {msg}",file=sys.stderr,flush=True)
 
 def verbose(msg):
     """Print verbose message
@@ -322,9 +323,13 @@ def verbose(msg):
         msg (str)   Verbose message
     """
     if settings["verbose"]:
+        if verbose.active:
+            print("")
         heading = "VERBOSE [gridlabd-project]: " if not msg.startswith("...") else ""
+        print(f"{heading}{msg[(0 if heading else 3):]}",end="" if msg.endswith("...") else None,file=sys.stderr,flush=True)
+        verbose.active = True if heading else False
 
-        print(f"{heading}{msg[(0 if heading else 3):]}",end="..." if msg.endswith("...") else "\n",file=sys.stderr)
+verbose.active = False
 
 def debug(msg,level=0):
     """Print debug message
@@ -339,7 +344,7 @@ def debug(msg,level=0):
         level (int)   Debug message level (default is 0)
     """
     if settings["debug"] and level <= config["debug"]:
-        print(f"DEBUG [gridlabd-project]: (level {level}) {msg}",file=sys.stderr)
+        print(f"DEBUG [gridlabd-project]: (level {level}) {msg}",file=sys.stderr,flush=True)
 
 def output(msg,code=None):
     """Print output message
@@ -404,13 +409,23 @@ def main(argv):
             else:
                 settings['debug'] = not settings['debug']
 
-        elif tag in ["-v","--verbose"]:
+        elif tag in ["-o","--org","--organization","-u","--user"]:
 
-            settings['verbose'] = not settings['verbose']
+            if value:
+
+                Command.gitorg = value
+
+            else:
+
+                error("missing user/org",E_INVALID)
 
         elif tag in ["-q","--quiet"]:
 
             settings['quiet'] = True
+
+        elif tag in ["-v","--verbose"]:
+
+            settings['verbose'] = not settings['verbose']
 
         elif tag in ["-w","--warning"]:
 
@@ -447,7 +462,7 @@ if __name__ == "__main__":
         e_type,e_value,e_trace = sys.exc_info()
         if settings["debug"]:
             raise
-        elif type(e_type) == type(ProjectError):
+        elif e_type.__name__ == "ProjectError":
             pass
         elif isinstance(e_value,(tuple,list)):
             print(f"EXCEPTION [project]: ({e_type.__name__}) {e_value[0]}",file=sys.stderr)
