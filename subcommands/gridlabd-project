@@ -38,8 +38,9 @@ COMMANDS
       show                   Show the current configuration
       set KEY=VALUE[,...]    Change configuration setting
     create PROJECT           Create and open a new project
-    edit PROJECT             Open an existing project
+    edit PROJECT             Edit an existing project in Marimo
     list [WORKDIR]           List projects in WORKDIR (. by default)
+    open PROJECT             Open an existing project on GitHub
     save MESSAGE             Save project to github
 
 CONFIGURATION
@@ -92,6 +93,7 @@ import sys, os
 import json
 import warnings
 import datetime as dt
+import webbrowser as wb
 
 try:
     with open(os.path.join(os.environ["HOME"],".gridlabd","project-settings.json"),"r") as fh:
@@ -177,16 +179,18 @@ class Command:
 
     @staticmethod
     def edit(project):
-        """Edit a project"""
-        # edit the project in Marimo notebook
+        """Edit a project in Marimo"""
+
         workdir = settings["workdir"]
         project_path = os.path.join(workdir,project)
-        if not os.path.exists(os.path.join(project_path)) and \
-                system(f"git clone https://github.com/{os.environ['USER']}/{project}"):
-            error(f"{project=} does not exist in {workdir=}",E_NOTFOUND)
+        if not os.path.exists(project_path):
+            assert system(f"git clone https://github.com/{Command.gitorg}/{project}") == 0, f"{Command.gitorg}/{project} does not exist"
+            os.chdir(project_path)
+        else:
+            os.chdir(project_path)
+            assert system("git pull") == 0, f"unable to update {project} from {Command.gitorg}/{project}"
+
         verbose(f"opening {project=} in {workdir=} with marimo...")
-        os.chdir(project_path)
-        assert system("git pull") == 0, "unable to update"
         assert system("marimo edit .") == 0, "unable to edit"
         verbose(f"...ok")
         return E_OK
@@ -252,6 +256,11 @@ class Command:
         assert system(f"git commit -a -m \"Save on {dt.datetime.now()}\"") == 0, "git commit failed"
         assert system("git push") == 0, "git push failed"
         return E_OK
+
+    def open(project):
+        """Open project on GitHub"""
+        project_url = f"https://github.com/{Command.gitorg}/{project}"
+        return E_OK if wb.open_new_tab(project_url) else E_FAILED
 
 def exception(msg=None,code=None):
     """Print exception message
