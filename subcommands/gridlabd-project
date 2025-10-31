@@ -1,0 +1,483 @@
+''':'
+exec "$GLD_BIN/python3" "$0" "$@"
+:' '''
+# Syntax: plot [OPTIONS ...]
+__doc__="""GridLAB-D project subcommand
+
+SYNOPSIS
+
+Shell:
+
+    $ gridlabd project [OPTIONS ...] COMMAND [ARGUMENTS ...]
+
+GLM:
+
+    #project [OPTIONS ...] COMMAND [ARGUMENTS ...]
+
+DESCRIPTION
+
+    The `gridlabd project` command manages GridLAB-D projects in GitHub.
+    GridLAB-D projects can be opened from GitHub repositories and edited
+    using Marimo.
+
+    To use the `gridlabd project` command you must first login to GitHub 
+    using the `gh auth login` command.
+
+OPTIONS
+
+    -d|--debug               Enable debug output and exception traceback
+    -h|--help|help           Display this help information
+    -o|--org ORG             Specify the GitHub ORG
+    -q|--quiet               Disable error output
+    -v|--verbose             Enable verbose output
+    -w|--warning             Disable warning output
+
+COMMANDS
+
+    config
+      show                   Show the current configuration
+      set KEY=VALUE[,...]    Change configuration setting
+    create PROJECT           Create and open a new project
+    edit PROJECT             Edit an existing project in Marimo
+    list [WORKDIR]           List projects in WORKDIR (. by default)
+    open PROJECT             Open an existing project on GitHub
+    save MESSAGE             Save project to github
+
+CONFIGURATION
+
+    The following keys and values are supported by the `config` command:
+    
+    branch=BRANCH
+
+        Determines the default branch name to use when creating new
+        repositories.
+
+    debug=None
+
+        The `debug` value enables exception traceback during processing.
+
+    exception=False
+
+        The `exception` value enables raising exceptions instead of displaying
+        error messages and returning error codes.
+
+    gitorg=ORG
+
+        Determines the default GitHub organization or user in which new
+        repositories are created.
+
+    quiet=False
+
+        The `quiet` value suppresses error messages during processing.
+
+    template=arras-energy/.project
+
+        The `template` value specifies the GitHub project template to use when
+        creating a new project.
+        
+    verbose=False
+
+        The `verbose` value enables verbose message output during processing.
+
+    warning=True
+
+        The `warning` value enable warning messages during processing.
+
+    workdir=$HOME/Projects
+
+        The `workdir` value specifies the default working folder for projects.
+        You can override this by specifying the full path to the project.
+
+"""
+
+import sys, os
+import json
+import warnings
+import datetime as dt
+import webbrowser as wb
+
+try:
+    with open(os.path.join(os.environ["HOME"],".gridlabd","project-settings.json"),"r") as fh:
+        settings = json.load(fh)
+except:
+    settings = {
+        "workdir": os.path.join(os.environ['HOME'],"Arras"),
+        "template": "https://github.com/arras-energy/.project",
+        "quiet": False,
+        "warning": True,
+        "debug": None,
+        "verbose": False,
+        "exception": False,
+        "gitorg": os.environ['USER'],
+        "branch": "main",
+    }
+
+E_OK = 0
+E_SYNTAX = 1
+E_INVALID = 2
+E_NOTFOUND = 3
+E_MISSING = 4
+E_EXISTS = 5
+E_FAILED = 6
+E_EXCEPTION = 9
+
+_COMMANDS = ["config","create","edit","list","save"]
+
+def system(*args,**kwargs):
+    verbose(f"system({args=},{kwargs=})...")
+    exitcode = os.system(*args,**kwargs)
+    verbose(f"... --> {exitcode=}")
+    return exitcode
+
+class ProjectError(Exception):
+    """Project exception handler"""
+    pass
+
+class Command:
+
+    gitorg = settings["gitorg"]
+    branch = settings["branch"]
+
+    """Class implementing all main-level commands"""
+    @staticmethod
+    def list(workdir=None):
+        """Send list of projects to output"""
+        if workdir is None:
+            workdir = settings["workdir"]
+        for item in os.listdir(workdir):
+            itempath = os.path.join(workdir,item)
+            if not item.startswith(".") and os.path.isdir(itempath):
+                Command.list(itempath)
+            ok = True
+            for required in [".git"]:
+                if not os.path.exists(os.path.join(itempath,required)):
+                    ok = False
+            if ok: 
+                output(itempath)
+        return E_OK
+
+    @staticmethod
+    def create(project):
+        """Create a project"""
+
+        if not settings["template"]:
+            warning(f"no template specified")
+
+        # create work folder in workdir
+        workdir = settings["workdir"]
+        project_path = os.path.join(workdir,project)
+        if os.path.exists(project_path):
+            error(f"{project=} exists in {workdir=}",E_EXISTS)
+
+        # create repo on remote and clone to workdir
+        os.makedirs(project_path)
+        os.chdir(workdir)
+        template = settings["template"]
+        assert system(f"gh repo create {Command.gitorg}/{project} --template={settings['template']} --private --clone") == 0, f"unable to create new repo for {project}"
+
+        # edit the project
+        return Command.edit(project)
+
+    @staticmethod
+    def edit(project):
+        """Edit a project in Marimo"""
+
+        workdir = settings["workdir"]
+        project_path = os.path.join(workdir,project)
+        if not os.path.exists(project_path):
+            assert system(f"git clone https://github.com/{Command.gitorg}/{project}") == 0, f"{Command.gitorg}/{project} does not exist"
+            os.chdir(project_path)
+        else:
+            os.chdir(project_path)
+            assert system("git pull") == 0, f"unable to update {project} from {Command.gitorg}/{project}"
+
+        verbose(f"opening {project=} in {workdir=} with marimo...")
+        assert system("marimo edit .") == 0, "unable to edit"
+        verbose(f"...ok")
+        return E_OK
+
+    @staticmethod
+    def config(command,*args,**kwargs):
+        """Configure project subcommand"""
+        global settings
+        file = sys.argv[0].replace(".py",".conf")
+        
+        if command == "show":
+        
+            if kwargs:
+
+                error(f"{kwargs=} is invalid",E_INVALID)
+
+            if args:
+
+                for key in args:
+
+                    print(f"{key}={settings[key]}")
+
+                return E_OK
+
+            for key,value in settings.items():
+                output(f"{key}={value}")
+
+            return E_OK
+        
+        elif command == "set":
+
+            if args:
+
+                error(f"{args=} is invalid",E_INVALID)
+
+            if not kwargs:
+
+                error("missing key=value",E_MISSING)
+
+            for key,value in kwargs.items():
+
+                if key not in settings:
+                    error(f"{key=} is not found",E_NOTFOUND)
+
+                settings[key] = value
+
+            with open(os.path.join(os.environ["HOME"],".gridlabd","project-settings.json"),"w") as fh:
+                json.dump(settings,fh)
+            
+            return E_OK
+
+        else:
+
+            error(f"{command=} is not a valid config command",E_INVALID)
+
+    @staticmethod
+    def save(project):
+        """Save a project"""
+        workdir = settings["workdir"]
+        project_path = os.path.join(workdir,project)
+        os.chdir(project_path)
+        assert system("git add -A") == 0, "git add failed"
+        assert system(f"git commit -a -m \"Save on {dt.datetime.now()}\"") == 0, "git commit failed"
+        assert system("git push") == 0, "git push failed"
+        return E_OK
+
+    def open(project):
+        """Open project on GitHub"""
+        project_url = f"https://github.com/{Command.gitorg}/{project}"
+        return E_OK if wb.open_new_tab(project_url) else E_FAILED
+
+def exception(msg=None,code=None):
+    """Print exception message
+
+    Exception messages are printed only if the configuration parameter `exception` is false.
+    Otherwise, the exception is raised. Use the '-e|--exception' option to toggle this setting.
+
+    PARAMETERS
+
+        msg (None or str)    Exception message (None to get last exception)
+        code (None or int)   Exit code. None does not exit. Default is None)
+    """
+    if settings["exception"]:
+        raise
+    if not msg:
+        e_type, e_value, e_trace = sys.exc_info()
+        if settings["debug"]:
+            import traceback
+            msg = "".join(traceback.format_exception(e_type,e_value,e_trace))
+        else:
+            msg = e_value
+        code = E_EXCEPTION
+    print(f"EXCEPTION [gridlabd-project]: {msg}",file=sys.stderr,flush=True)
+    if type(code) is int:
+        exit(code)
+
+def error(msg,code=None):
+    """Print error message
+
+    Error messages are printed only if the configuration parameters `quiet` is false.
+    Otherwise, the error message is suppressed. Use the '-q|--quiet' option to toggle this setting.
+
+    PARAMETERS
+
+        msg (str)            Error message
+        code (None or int)   Exit code. None does not exit. Default is None)
+    """
+    if not settings["quiet"]:
+        print(f"ERROR [gridlabd-project]: {msg}",file=sys.stderr,flush=True)
+    if type(code) is int:
+        raise ProjectError((msg,code))
+
+def warning(msg):
+    """Print warning message
+
+    Warning messages are printed only if the configuration parameter `warning` is true.
+    Otherwise the warning message is suppressed. Use the '-w|--warning' option to toggle this setting.
+
+    PARAMETERS
+
+        msg (str)   Warning message
+    """
+    if settings["warning"]:
+        print(f"WARNING [gridlabd-project]: {msg}",file=sys.stderr,flush=True)
+
+def verbose(msg):
+    """Print verbose message
+
+    Verbose messages are printed only if the configuration parameter `verbose`
+    is true. Otherwise the verbose message is suppressed. Use
+    the '-v|--verbose' option to toggle this setting.
+
+    If msg ends with ... then the final carriage return is not output. If the
+    msg starts with ... then the initial heading is not output and the
+    leading ... is suppressed.
+
+    PARAMETERS
+
+        msg (str)   Verbose message
+    """
+    if settings["verbose"]:
+        if verbose.active:
+            print("")
+        heading = "VERBOSE [gridlabd-project]: " if not msg.startswith("...") else ""
+        print(f"{heading}{msg[(0 if heading else 3):]}",end="" if msg.endswith("...") else None,file=sys.stderr,flush=True)
+        verbose.active = True if heading else False
+
+verbose.active = False
+
+def debug(msg,level=0):
+    """Print debug message
+
+    Debug messages are printed only if the configuration parameter `debug` is an integer and the
+    value of level is less than or equal to the `debug` value. Otherwise the debug message is 
+    suppressed. Use the '-d|--debug' option to toggle this setting.
+
+    PARAMETERS
+
+        msg (str)     Debug message
+        level (int)   Debug message level (default is 0)
+    """
+    if settings["debug"] and level <= config["debug"]:
+        print(f"DEBUG [gridlabd-project]: (level {level}) {msg}",file=sys.stderr,flush=True)
+
+def output(msg,code=None):
+    """Print output message
+
+    Output messages are printed only if the configuration parameter `quiet` is false.
+    Otherwise the output message is suppressed. Use the '-q|--quiet' option to toggle this setting.
+
+    PARAMETERS
+
+        msg (str)    Output message
+        code (int)   Exit code to use after message is output (use `None` to not exit)
+    """
+    print(msg,file=sys.stdout)
+    if type(code) is int:
+        exit(code)
+
+def main(argv):
+
+    os.makedirs(settings["workdir"],exist_ok=True)
+    os.chdir(settings["workdir"])
+
+    if len(argv) == 1:
+        print("Syntax: gridlabd project [OPTIONS ...] COMMAND [ARGUMENTS ...]")
+        return E_SYNTAX
+
+    args = []
+    kwargs = {}
+
+    command = None
+
+    for arg in argv[1:]:
+        
+        if hasattr(Command,arg):
+
+            command = getattr(Command,arg)
+            continue
+
+        if arg in ["-h","--help","help"]:
+
+            output(__doc__,E_OK)
+
+        if "=" in arg:
+
+            tag,value = arg.split("=",1)
+
+        else:
+
+            tag,value = arg,None
+
+        if tag in ["-d","--debug"]:
+
+            if value:
+                if value.upper() in ["T","TRUE","Y","YES"]:
+                    settings['debug'] = True
+                elif value.upper() in ["F","FALSE","N","NO"]:
+                    settings['debug'] = False
+                else:
+                    try:
+                        settings['debug'] = (int(value)!=0)
+                    except:
+                        error(f"debug={repr(value)} is invalid")
+            else:
+                settings['debug'] = not settings['debug']
+
+        elif tag in ["-o","--org","--organization","-u","--user"]:
+
+            if value:
+
+                Command.gitorg = value
+
+            else:
+
+                error("missing user/org",E_INVALID)
+
+        elif tag in ["-q","--quiet"]:
+
+            settings['quiet'] = True
+
+        elif tag in ["-v","--verbose"]:
+
+            settings['verbose'] = not settings['verbose']
+
+        elif tag in ["-w","--warning"]:
+
+            settings['warning'] = not settings['warning']
+
+        elif command:
+
+            if value:
+                kwargs[tag] = value
+            else:
+                args.append(tag)
+
+        else:
+
+            error(f"option {arg} is not valid",E_INVALID)
+
+    if command:
+
+        return command(*args,**kwargs)
+
+    else:
+
+        error("no command",E_MISSING)
+
+if __name__ == "__main__":
+
+    try:
+        main(sys.argv)
+    except SystemExit:
+        warnings.warn("improper exit() call from within main()")
+        if settings["debug"]:
+            raise
+    except:
+        e_type,e_value,e_trace = sys.exc_info()
+        if settings["debug"]:
+            raise
+        elif e_type.__name__ == "ProjectError":
+            pass
+        elif isinstance(e_value,(tuple,list)):
+            print(f"EXCEPTION [project]: ({e_type.__name__}) {e_value[0]}",file=sys.stderr)
+            exit(e_value[1])
+        else:
+            print(f"EXCEPTION [project]: ({e_type.__name__}) {e_value}",file=sys.stderr)
+            exit(E_EXCEPTION)
+

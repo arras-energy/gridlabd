@@ -1,0 +1,7 @@
+
+#python -m gridlabd.noaa_weather KSFO -y=2020 --output=test_noaa_weather.csv
+
+#ifexist ../test_noaa_weather.csv
+#on_exit 0 diff ../test_noaa_weather.csv ./test_noaa_weather.csv > gridlabd.diff
+#endif
+
