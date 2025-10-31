@@ -4,13 +4,13 @@ Syntax: gridlabd noaa_weather [OPTION ...] STATION
 
 Options:
 
-    --list                          Get a list of available US stations
+- `--list`                          Get a list of available US stations
 
-    -o|--output=FILENAME.csv        Specify the output file name (default to stdout)
+- `-o|--output=FILENAME.csv`        Specify the output file name (default to stdout)
 
-    -y|--year=[YEAR[-YEAR][,...]]   Specify years to download (default is current year)
+- `-y|--year=[YEAR[-YEAR][,...]]``   Specify years to download (default is current year)
 
-    -p|--position=LAT,LON           Specify latitude longitude to search for nearest station
+- `-p|--position=LAT,LON`           Specify latitude longitude to search for nearest station
 
 Description:
 
