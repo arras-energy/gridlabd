@@ -11,7 +11,7 @@ import os
 import pandas as pd
 import urllib
 import gridlabd.framework as app
-from gridlabd.nsrdb_weather import geohash
+from gridlabd.geocode import geohash
 import datetime as dt
 
 THISYEAR = dt.datetime.now().year
@@ -201,7 +201,7 @@ def main(argv:list[str]) -> int:
 if __name__ == "__main__":
 
     app.run(main)
-    
+
     # app.run(main,[__name__,"-l"])
     # app.run(main,[__name__,"KSFO","-y=2020"])
     # app.run(main,[__name__,"-p=37.5,-122.5"])
