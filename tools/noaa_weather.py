@@ -11,6 +11,7 @@ Options:
     -p|--position=LAT,LON           Specify latitude longitude to search for nearest station
 """
 import os
+import sys
 import pandas as pd
 import urllib
 import gridlabd.framework as app
