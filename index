@@ -4132,6 +4132,7 @@ tools/autotest/test_network.glm
 tools/autotest/test_noaa_forecast.csv
 tools/autotest/test_noaa_forecast.glm
 tools/autotest/test_noaa_forecast_opt.glm
+tools/autotest/test_noaa_weather.csv
 tools/autotest/test_noaa_weather.glm
 tools/autotest/test_pole_analysis.glm
 tools/autotest/test_pole_analysis_opt.csv
