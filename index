@@ -3735,6 +3735,7 @@ subcommands/gridlabd-notebook
 subcommands/gridlabd-openfido
 subcommands/gridlabd-pandas
 subcommands/gridlabd-plot
+subcommands/gridlabd-project
 subcommands/gridlabd-python
 subcommands/gridlabd-require
 subcommands/gridlabd-requirements
@@ -4131,6 +4132,8 @@ tools/autotest/test_network.glm
 tools/autotest/test_noaa_forecast.csv
 tools/autotest/test_noaa_forecast.glm
 tools/autotest/test_noaa_forecast_opt.glm
+tools/autotest/test_noaa_weather.csv
+tools/autotest/test_noaa_weather.glm
 tools/autotest/test_pole_analysis.glm
 tools/autotest/test_pole_analysis_opt.csv
 tools/autotest/test_pole_analysis_opt.glm
@@ -4175,6 +4178,7 @@ tools/fire_report.py
 tools/fit_filter.py
 tools/forecast.py
 tools/framework.py
+tools/geocode.py
 tools/gldserver.py
 tools/gridlabd-editor.png
 tools/gridlabd-editor.py
@@ -4195,6 +4199,7 @@ tools/modeler.py
 tools/moutils.py
 tools/network.py
 tools/noaa_forecast.py
+tools/noaa_weather.py
 tools/nsrdb_weather.py
 tools/pole_analysis.py
 tools/powerline.py
