@@ -161,6 +161,24 @@ def main(argv:list[str]) -> int:
                 else:
                     years.append(year)
 
+        elif key in ["-p","--position","--location"]:
+
+            station = NOAAWeather.station_list([float(value[0]),float(value[1])]).index.tolist()[0]
+
+        elif key in ["-o","--output"]:
+        
+            if len(value) == 0:
+
+                error("missing output filename",app.E_MISSING)
+
+            elif len(value) > 1:
+
+                error("only one output filename is valid",app.E_INVALID)
+
+            else:
+
+                output = value[0]
+
         elif key in station_list.index:
 
             station = key
@@ -168,10 +186,6 @@ def main(argv:list[str]) -> int:
         elif key in station_list.ICAO.values:
 
             station = station_list[station_list.ICAO==key].index.tolist()[0]
-
-        elif key in ["-p","--position","--location"]:
-
-            station = NOAAWeather.station_list([float(value[0]),float(value[1])]).index.tolist()[0]
 
         else:
 
