@@ -4176,6 +4176,7 @@ tools/find_location.py
 tools/fire_danger.py
 tools/fire_report.py
 tools/fit_filter.py
+tools/forecast.py
 tools/framework.py
 tools/geocode.py
 tools/gldserver.py

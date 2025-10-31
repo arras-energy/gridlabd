@@ -178,6 +178,9 @@ def exception(exc:[TypeVar('Exception')|str]):
         exc = ApplicationError(exc)
     raise exc
 
+def _exitcode(n):
+    return ",".join([f"{x}={y}" for x,y in globals().items() if x.startswith("E_") and y == n])
+
 def error(*msg:list,code:[int|None]=None,**kwargs):
     """Error message output
 
@@ -193,11 +196,13 @@ def error(*msg:list,code:[int|None]=None,**kwargs):
 
     If the exit `code` is specified, exit is called with the code.
     """
+    if not "file" in kwargs:
+        kwargs["file"] = sys.stderr
     if not QUIET:
         if code:
-            print(f"ERROR [{EXENAME}]: {' '.join([str(x) for x in msg])} (code {repr(code)})",file=sys.stderr,**kwargs)
+            print(f"ERROR [{EXENAME}]: {' '.join([str(x) for x in msg])} (exit code {_exitcode(code)})",**kwargs)
         else:
-            print(f"ERROR [{EXENAME}]: {' '.join([str(x) for x in msg])}",file=sys.stderr,**kwargs)
+            print(f"ERROR [{EXENAME}]: {' '.join([str(x) for x in msg])}",**kwargs)
     if DEBUG:
         raise ApplicationError(*msg)
     if not code is None:
@@ -214,8 +219,10 @@ def verbose(*msg:list,**kwargs):
 
     Messages are enabled when the `--verbose` option is used.
     """
+    if not "file" in kwargs:
+        kwargs["file"] = sys.stderr
     if VERBOSE:
-        print(f"VERBOSE [{EXENAME}]: {' '.join([str(x) for x in msg])}",file=sys.stderr,**kwargs)
+        print(f"VERBOSE [{EXENAME}]: {' '.join([str(x) for x in msg])}",**kwargs)
 
 def warning(*msg:list,**kwargs):
     """Warning message output
@@ -228,8 +235,10 @@ def warning(*msg:list,**kwargs):
 
     Messages are suppress when the `--warning` option is used.
     """
+    if not "file" in kwargs:
+        kwargs["file"] = sys.stderr
     if WARNING:
-        print(f"WARNING [{EXENAME}]: {' '.join([str(x) for x in msg])}",file=sys.stderr,**kwargs)
+        print(f"WARNING [{EXENAME}]: {' '.join([str(x) for x in msg])}",**kwargs)
 
 def debug(*msg:list,**kwargs):
     """Debugging message output
@@ -242,8 +251,10 @@ def debug(*msg:list,**kwargs):
 
     Messages are enabled when the `--debug` option is used.
     """
+    if not "file" in kwargs:
+        kwargs["file"] = sys.stderr
     if DEBUG:
-        print(f"DEBUG [{EXENAME}]: {' '.join([str(x) for x in msg])}",file=sys.stderr,**kwargs)
+        print(f"DEBUG [{EXENAME}]: {' '.join([str(x) for x in msg])}",**kwargs)
 
 def gridlabd(*args:list[str], 
     bin=True, 
@@ -458,27 +469,35 @@ def test(test:callable,name:str,exit=exit,print=print):
         exit(E_FAILED)
     exit(E_OK)
 
-def run(main:callable,exit=exit,print=print):
+def run(main:callable,args=sys.argv,exit=exit,print=print):
     """Run a main function under this app framework
 
     Arguments:
 
     * `main`: the main function to run
 
+    * `args`: the main call arguments (defaults to sys.argv)
+
     * `exit`: the exit function to call (default is `exit`)
 
     * `print`: the print funtion to call on exceptions (default is `print`)
 
-    This function does not return. When the app is done it calls exit.
+    This function does not return. When the app is done it calls exit unless
+    `DEBUG` is set to `True`, in which case it may raise an exception if
+    necessary.
     """
     try:
 
-        rc = main(sys.argv)
+        rc = main(args)
         exit(rc)
 
     except KeyboardInterrupt:
 
         exit(app.E_INTERRUPT)
+
+    except SystemExit:
+
+        pass
 
     except Exception as exc:
 

@@ -65,7 +65,7 @@ import gridlabd.unitcalc as unitcalc
 from typing import TypeVar
 import traceback
 
-from gridlabd.framework import *
+import gridlabd.framework as app
 
 DEFAULT_MAPPER = "map" # "map" or "mapbox"
 
@@ -129,9 +129,9 @@ def main(argv:list[str]) -> int:
     if argc == 1:
 
         print("\n".join([x for x in __doc__.split("\n") if x.startswith("Syntax: ")]))
-        return E_SYNTAX
+        return app.E_SYNTAX
 
-    args = read_stdargs(argv)
+    args = app.read_stdargs(argv)
 
     fig = None
 
@@ -141,13 +141,13 @@ def main(argv:list[str]) -> int:
 
             print(__doc__,file=sys.stdout)
 
-            return E_OK
+            return app.E_OK
 
         if key in ["--save"]:
 
             if len(value) == 0:
                 error("missing filename")
-                return E_MISSING
+                return app.E_MISSING
 
             options = get_options(value[1:],{"center":"auto","zoom":14})
             fig.save(value[0],**options)
@@ -181,9 +181,9 @@ def main(argv:list[str]) -> int:
                 nodedata={
                     "latitude": float,
                     "longitude": float,
-                    "voltage_A": lambda x:complex_unit(x,'d'),
-                    "voltage_B": lambda x:complex_unit(x,'d'),
-                    "voltage_C": lambda x:complex_unit(x,'d'),
+                    "voltage_A": lambda x:app.complex_unit(x,'d'),
+                    "voltage_B": lambda x:app.complex_unit(x,'d'),
+                    "voltage_C": lambda x:app.complex_unit(x,'d'),
                     "class": str,
                     },
                 linkdata={
@@ -201,9 +201,9 @@ def main(argv:list[str]) -> int:
 
             error(f"'{key}={value}'' is invalid")
 
-            return E_SYNTAX
+            return app.E_SYNTAX
 
-    return E_OK
+    return app.E_OK
 
 def get_options(value:str,default:dict=None) -> dict:
     """Extract save/show options from argument value
@@ -356,7 +356,7 @@ class Map:
                 "phases":str,
                 "flow_direction":str,
                 "violation_detected":str,
-                "power_out":lambda x:complex_unit(x,'real')
+                "power_out":lambda x:app.complex_unit(x,'real')
                 }.items():
             if x not in linkdata:
                 linkdata[x] = y
@@ -465,7 +465,7 @@ class Map:
                     )
                 if hasattr(config,"node_options"):
                     self.map.update_traces(**config.node_options,selector={"type":f"scatter{config.mapper}"})
-                power_out = complex_unit(data["power_out"],'real')
+                power_out = app.complex_unit(data["power_out"],'real')
                 symbols = {
                     "switch" : "square-stroked" if power_out<0.1 else "square",
                     "transformer" : "circle-stroked",
@@ -541,16 +541,16 @@ if __name__ == "__main__":
 
     except KeyboardInterrupt:
 
-        exit(E_INTERRUPT)
+        exit(app.E_INTERRUPT)
 
     except Exception as exc:
 
-        if DEBUG:
+        if app.DEBUG:
             raise exc
 
-        if not QUIET:
+        if not app.QUIET:
             e_type,e_value,e_trace = sys.exc_info()
             tb = traceback.TracebackException(e_type,e_value,e_trace).stack[1]
             print(f"EXCEPTION [{os.path.basename(tb.filename)}@{tb.lineno}]: ({e_type.__name__}) {e_value}",file=sys.stderr)
 
-        exit(E_EXCEPTION)
+        exit(app.E_EXCEPTION)

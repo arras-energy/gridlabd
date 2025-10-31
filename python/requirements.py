@@ -86,7 +86,7 @@ else:
     requirements.set_index(["module","sysinfo"],inplace=True,verify_integrity=True)
     requirements.sort_index(inplace=True)
     requirements = requirements[requirements['version']!='']
-    # print(requirements,file=sys.stderr)
+    print(requirements,file=sys.stderr)
 
     for module in requirements.index.get_level_values(0).unique():
         info = requirements.loc[module]

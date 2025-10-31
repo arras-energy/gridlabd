@@ -252,11 +252,15 @@ Arguments:
 
 * `main`: the main function to run
 
+* `args`: the main call arguments (defaults to sys.argv)
+
 * `exit`: the exit function to call (default is `exit`)
 
 * `print`: the print funtion to call on exceptions (default is `print`)
 
-This function does not return. When the app is done it calls exit.
+This function does not return. When the app is done it calls exit unless
+`DEBUG` is set to `True`, in which case it may raise an exception if
+necessary.
 
 
 ---
