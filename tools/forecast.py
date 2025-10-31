@@ -1,12 +1,18 @@
 """Forecast data access
 
-Syntax: gridlabd forecast [OPTIONS ...] COMMAND [ARGUMENTS ...]
+Syntax: gridlabd forecast [OPTIONS ...] DATETIME[--DATETIME|+TIMEDELTA|][,...]
 
 Options:
 
-Commands:
+    -L|--location LAT/LON[,...]   Latitude/longitude of location(s)
 
-    clean   Clean up data cache folder
+    -G|--geocode GEOCODE[,...]    Geocode of location(s)
+
+    -V|--variable NAME[,...]      Weather variable(s) to download
+
+    --clean   Clean up data cache folder
+
+    -o|--output FILENAME.EXT      File to save data in
 
 The `forecast` tool provides access to recent and archived numerical weather
 prediction model outputs from different cloud archive sources delivered by
@@ -25,6 +31,7 @@ from herbie import Herbie
 from herbie.models.cfs import time_series_variables as cfs_time_series
 import warnings
 import shutil
+import pandas as pd
 
 warnings.simplefilter("error")
 
@@ -89,7 +96,8 @@ def guesstype(x):
     # cannot be reduce to a basic type
     return None
 
-def to_point(x):
+def to_point(x:str) -> tuple:
+    """Convert string to a geocode tuple"""
     if "," in x:
         xy = [float(x) for x in x.split(",")]
         try:
@@ -102,8 +110,40 @@ def to_point(x):
         except:
             return (x,None)
 
+def distance(a,b):
+    """Get the distance between to geohashes"""
+    return math.sqrt(distance2(a,b))
+
+def distance2(a,b):
+    """Get the distance squared between two geohashes"""
+    x0,y0 = geocode(a)
+    x1,y1 = geocode(b)
+    dx,dy = x0-x1,y0-y1
+    return dx*dx+dy*dy
+
+def nearest(hash,hashlist):
+    """Find the nearest geohash in a list of geohashes"""
+    if len(hashlist) > 0:
+        dist = sorted([(x,distance2(hash,x)) for x in hashlist],key=lambda y:y[1])
+        return dist[0][0]
+    else:
+        return (None,float('nan')) if withdist else None
+
 def data(*args,**kwargs):
-    """Access data"""
+    """Access Herbie forecast data
+
+    Arguments:
+
+    (see Herbie documentation at https://herbie.readthedocs.io/)
+
+    Returns:
+
+    Herbie xarray on success, None of failure
+
+    Exceptions:
+
+    ForecastError: Herbie data inventory error, i.e., no GRIB or no index
+    """
     app.debug(f"entering data({','.join([repr(x) for x in args])},{','.join([f'{x}={repr(y)}' for x,y in kwargs.items()])})")
     kwargs["verbose"] = False # Herbie print statements contain non UTF-8 text that cannot be handled by some streams
     with warnings.catch_warnings():
@@ -170,9 +210,13 @@ def main(argv:list[str]) -> int:
                     return app.E_INVALID
             return app.E_OK
 
-        elif key in ["-P","--position","--points","-L","--location"]:
+        elif key in ["-L","--location"]:
 
-            points = dict([to_point(x) for x in ",".join(value).split(";")])
+            points = dict([to_point(",".join(x.split("/",2))) for x in value])
+
+        elif key in ["-G","--geocode"]:
+
+            points = dict([to_point(x) for x in value])
         
         elif key in ["-V","--variable"]:
 
@@ -182,9 +226,11 @@ def main(argv:list[str]) -> int:
 
             output.extend(value)
 
-        elif key == "clean":
+        elif key == "--clean":
 
-            shutil.rmtree(DATADIR)
+            app.debug(f"cleaning {DATADIR}")
+            if os.path.exists(DATADIR):
+                shutil.rmtree(DATADIR)
 
         elif len(value) == 0:
 
@@ -230,41 +276,58 @@ def main(argv:list[str]) -> int:
             for variable,ofile in zip(variables,output):
                 attr = PRODUCTS["NOAA"][hkwds["--model"]][hkwds["--product"]][variable]["attr"]
                 result = getattr(xr(variable),attr)
-                df = result.to_pandas()
-
-                if points:
-                    print(result.time,result.step,result.latitude,result.longitude)
-                    print(df)
-                    quit()
 
                 # png image
                 if ofile.endswith(".png"):
 
                     result.plot(cmap="Spectral_r", figsize=[8, 4]).figure.savefig(ofile)
 
-                # csv file
-                elif ofile.endswith(".csv"):
-
-                    df.to_csv(ofile,header=True,index=True)
-
                 # text output to file
                 elif ofile.endswith(".txt"):
 
                     with open(ofile,"w") as fh:
-                        print(result,file=fh)
+                        print(df,file=fh)
 
-                # text output to stdout
-                elif ofile in ["-","stdout","/dev/stdout"]:
+                elif points:
+                    time = result.time.to_pandas()
+                    values = result.to_pandas().stack()
+                    latitude = result.latitude.to_pandas().stack()
+                    longitude = result.longitude.to_pandas().stack()
 
-                    print(result,file=sys.stdout)
+                    geopanel = pd.concat({"temperature":values,
+                        "latitude":latitude,
+                        "longitude":longitude,
+                        },axis=1)
+                    geocodes = [geohash(x,(y-360 if y>180 else y),GEOHASH_RESOLUTION) for x,y in zip(latitude,longitude)]
+                    geopanel["geocode"] = [geohash(x,(y-360 if y>180 else y),GEOHASH_RESOLUTION) for x,y in zip(latitude,longitude)]
+                    geopanel["datetime"] = time
+                    geopanel.set_index(["datetime","geocode"],inplace=True)
+                    result = []
+                    for point in points:
+                        location = nearest(point,geocodes)
+                        result.append(geopanel.loc[time,location])
+                    df = pd.concat(result,axis=0)
 
+                    # csv file
+                    if ofile.endswith(".csv"):
+
+                        df.to_csv(ofile,header=True,index=True)
+
+                    # text output to stdout
+                    elif ofile in ["-","stdout","/dev/stdout"]:
+
+                        print(df,file=sys.stdout)
+
+                    else:
+
+                        raise ForecastError(f"'{ofile}' is not a supported output file type")
                 else:
 
                     raise ForecastError(f"'{ofile}' is not a supported output file type")
-        elif points:
-            print(points)
+
         else:
-            print(xr)
+
+            raise ForecastError(f"no variables specified")
     
     except Exception as err:
     
@@ -276,6 +339,8 @@ def main(argv:list[str]) -> int:
     return app.E_OK
 
 if __name__ == "__main__":
+
+    # app.run(main,sys.argv[1:] if len(sys.argv) > 0 else [])
 
     # app.DEBUG = True
     # app.VERBOSE = True
@@ -289,5 +354,9 @@ if __name__ == "__main__":
     # app.run(main,[__name__,"--model=hrrr","--product=sfc","-fxx=0","-v=TMP:2 m above"])
     # app.run(main,[__name__,"--model=hrrr","--product=sfc","--fxx=0","-v=TMP:2 m above","-p=37.5,-122.5"])
     # app.run(main,[__name__,"2025-10-25 09:00"])
-    # app.run(main,[__name__,"2025-10-25 09:00","-P=37.5,-122.5"])
-    app.run(main,sys.argv[1:] if len(sys.argv) > 0 else [])
+    # app.run(main,[__name__,"clean"])
+    app.run(main,[__name__,"--debug","2025-10-25 09:00","-G=9qd9xh,9x603v,9qd2ds"])
+    # app.run(main,[__name__,"2025-10-25 10:00","-L=37.5/-122.5,48.5/-122.5"])
+    # app.run(main,[__name__,"2025-10-25 10:00,2025-10-25 11:00,2025-10-25 12:00","-L=37.5/-122.5,48.5/-122.5"])
+    # app.run(main,[__name__,"2025-10-25 00:00--2025-10-25 00:00","-L=37.5/-122.5,48.5/-122.5"])
+    # app.run(main,[__name__,"2025-10-25 00:00+2D12H","-L=37.5/-122.5,48.5/-122.5"])
