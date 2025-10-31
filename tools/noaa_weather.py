@@ -5,7 +5,10 @@ Syntax: gridlabd noaa_weather [OPTION ...] STATION
 Options:
 
     --list                          Get a list of available US stations
+
     -y|--year=[YEAR[-YEAR][,...]]   Specify years to download (default is current year)
+
+    -p|--position=LAT,LON           Specify latitude longitude to search for nearest station
 """
 import os
 import pandas as pd
