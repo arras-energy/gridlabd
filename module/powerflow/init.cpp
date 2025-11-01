@@ -3,7 +3,6 @@
 
 #include "powerflow.h"
 
-
 EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
 {
 	if (!set_callback(fntable)) {
@@ -87,6 +86,47 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
 	gl_global_create("powerflow::solver_dump_enable", PT_bool, &solver_dump_enable, PT_DESCRIPTION, "flag to enable bus/branch dump when solvers fails",NULL);
 #endif
 
+	gl_global_create("powerflow::zipload_data",
+		PT_char1024,(char*)loaddata_pathname,
+		PT_DESCRIPTION, "zipload load data file pathname",
+		NULL);
+
+	gl_global_create("powerflow::zipload_temperature",
+		PT_char32,(char*)temperature_name,
+		PT_DESCRIPTION, "zipload weather temperature property name[unit]",
+		NULL);
+
+	gl_global_create("powerflow::zipload_humidity",
+		PT_char32,(char*)humidity_name,
+		PT_DESCRIPTION, "zipload weather humidity property name[unit]",
+		NULL);
+
+	gl_global_create("powerflow::zipload_solar",
+		PT_char32,(char*)solar_name,
+		PT_DESCRIPTION, "zipload weather solar property name[unit]",
+		NULL);
+
+	gl_global_create("powerflow::zipload_wind",
+		PT_char32,(char*)wind_name,
+		PT_DESCRIPTION, "zipload weather wind property name[unit]",
+		NULL);
+
+	gl_global_create("powerflow::zipload_rain",
+		PT_char32,(char*)rain_name,
+		PT_DESCRIPTION, "zipload weather rain property name[unit]",
+		NULL);
+
+	gl_global_create("powerflow::maximum_voltage_deviation",
+		PT_double, &maximum_voltage_deviation,
+		PT_UNITS, "pu.V",
+		PT_DESCRIPTION, "maximum voltage deviation per unit nominal voltage before ZIP loads are cut off",
+		NULL);
+
+	gl_global_create("powerflow::geocode_find",
+		PT_int32, &geocode_find,
+		PT_DESCRIPTION, "geocode find method (<0 = none, 0 = nearest, >0 = exact geocode precision)",
+		NULL);
+
 	// register each object class by creating the default instance
 	new powerflow_object(module);
 	new powerflow_library(module);
@@ -132,6 +172,7 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
 	new emissions(module);
 	new load_tracker(module);
 	new triplex_load(module);
+	new triplex_zipload(module);
 	new impedance_dump(module);
 	new vfd(module);
 	new pole(module);
@@ -142,6 +183,7 @@ EXPORT CLASS *init(CALLBACKS *fntable, MODULE *module, int argc, char *argv[])
     new agricultural(module);
     new public_service(module);
     new ductbank(module);
+	new zipload(module);
 
 	/* always return the first class registered */
 	return node::oclass;

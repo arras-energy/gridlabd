@@ -8,6 +8,8 @@
 
 class branch : public gld_object 
 {
+public:
+	static double autosize_angle;
 
 public:
 	// published properties
@@ -27,11 +29,27 @@ public:
 	GL_ATOMIC(enumeration,status);
 	GL_ATOMIC(double,angmin);
 	GL_ATOMIC(double,angmax);
+	GL_ATOMIC(double,mu_sfrom);
+	GL_ATOMIC(double,mu_sto);
+	GL_ATOMIC(double,mu_angmin);
+	GL_ATOMIC(double,mu_angmax)
+
 
 public:
 	GL_ATOMIC(int32,child_count);
 	GL_ATOMIC(complex,current);
 	GL_ATOMIC(double,loss);
+
+private:
+	gld_object *fobj;
+	gld_object *tobj;
+	double fromKV;
+	double toKV;
+	double length;
+	double frompuZ;
+	double topuZ;
+	bool is_transformer;
+	bool is_device;
 	
 public:
 	// event handlers

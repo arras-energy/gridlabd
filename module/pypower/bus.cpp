@@ -66,15 +66,15 @@ bus::bus(MODULE *module)
 
 			PT_double, "baseKV[kV]", get_baseKV_offset(),
 				PT_REQUIRED,
-				PT_DESCRIPTION, "voltage magnitude (per unit)",
+				PT_DESCRIPTION, "base voltage (kV)",
 
 			PT_double, "Vm[pu.kV]", get_Vm_offset(),
 				PT_DEFAULT, "1 pu.V",
-				PT_DESCRIPTION, "voltage angle (degrees)",
+				PT_DESCRIPTION, "voltage magnitude (per unit)",
 
 			PT_double, "Va[deg]", get_Va_offset(),
 				PT_DEFAULT, "0 deg",
-				PT_DESCRIPTION, "base voltage (kV)",
+				PT_DESCRIPTION, "voltage angle (degrees)",
 
 			PT_int32, "zone", get_zone_offset(),
 				PT_DESCRIPTION, "loss zone (1-999)",
@@ -90,22 +90,18 @@ bus::bus(MODULE *module)
 			PT_double, "lam_P", get_lam_P_offset(),
 				PT_OUTPUT,
 				PT_DESCRIPTION, "Lagrange multiplier on real power mismatch (u/MW)",
-				PT_ACCESS, PA_REFERENCE,
 
 			PT_double, "lam_Q", get_lam_Q_offset(),
 				PT_OUTPUT,
 				PT_DESCRIPTION, "Lagrange multiplier on reactive power mismatch (u/MVAr)",
-				PT_ACCESS, PA_REFERENCE,
 
 			PT_double, "mu_Vmax", get_mu_Vmax_offset(),
 				PT_OUTPUT,
 				PT_DESCRIPTION, "Kuhn-Tucker multiplier on upper voltage limit (u/per unit)",
-				PT_ACCESS, PA_REFERENCE,
 
 			PT_double, "mu_Vmin", get_mu_Vmin_offset(),
 				PT_OUTPUT,
 				PT_DESCRIPTION, "Kuhn-Tucker multiplier on lower voltage limit (u/per unit)",
-				PT_ACCESS, PA_REFERENCE,
 
 			PT_char1024, "weather_file", get_weather_file_offset(),
 				PT_DESCRIPTION, "Source object for weather data",
@@ -205,7 +201,7 @@ int bus::init(OBJECT *parent)
 		return 0;
 	}
 
-	char buffer[strlen(weather_sensitivity)+1];
+	char *buffer = new char[strlen(weather_sensitivity)+1];
 	strcpy(buffer,weather_sensitivity);
 	char *next=NULL, *last=NULL;
 	// fprintf(stderr,"weather_sensitivity = '%s'\n",(const char*)get_weather_sensitivity());
@@ -223,11 +219,13 @@ int bus::init(OBJECT *parent)
 			if ( ! source.is_valid() )
 			{
 				error("weather_sensitivity source '%s' is not valid",varname);
+				delete[] buffer;
 				return 0;
 			}
 			else if ( source.get_type() != PT_double )
 			{
 				error("weather_sensitivity source '%s' is not a double",varname);
+				delete[] buffer;
 				return 0;
 			}
 			SENSITIVITY *sensitivity = new SENSITIVITY;
@@ -242,6 +240,8 @@ int bus::init(OBJECT *parent)
 			else
 			{
 				error("property '%s' is not valid",propname);
+				delete[] buffer;
+				return 0;
 			}
 			sensitivity->def = strdup(next);
 			sensitivity->source = (double*)source.get_addr();
@@ -255,10 +255,12 @@ int bus::init(OBJECT *parent)
 		else
 		{
 			error("weather_sensitivity '%s' in not valid",next);
+			delete[] buffer;
 			return 0;
 		}
 	}
 
+	delete[] buffer;
 	return 1; // return 1 on success, 0 on failure, 2 on retry later
 }
 

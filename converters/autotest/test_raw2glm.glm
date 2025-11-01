@@ -12,9 +12,9 @@ module pypower
 }
 
 clock {
-    timezone PST+8PDT;
-    starttime '2024-01-01 00:00:00 PST';
-    stoptime '2024-02-01 00:00:00 PST';
+    timezone "PST+8PDT";
+    starttime "2024-01-01 00:00:00 PST";
+    stoptime "2024-02-01 00:00:00 PST";
 }
 
 #input "wecc240.raw" -X psse_owner,psse_area,psse_zone

@@ -58,7 +58,7 @@ const char *version_branch(void)
 
 bool version_check(const char *expression)
 {
-	char line[strlen(expression)+1];
+	char *line = new char[strlen(expression)+1];
 	strcpy(line,expression);
 	int criteria = 0;
 	bool invert = false;
@@ -152,10 +152,8 @@ bool version_check(const char *expression)
 	if ( ! done )
 	{
 		output_error("version_check(expression='%s'): expression is invalid",expression);
-		return false;
+		ok = false;
 	}
-	else
-	{
-		return ok;
-	}
+	delete[] line;
+	return ok;
 }

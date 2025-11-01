@@ -17,6 +17,8 @@
 #include "line_sensor.h"
 #include "switch_coordinator.h"
 
+#include "table.h"
+
 #ifdef _DEBUG
 void print_matrix(complex mat[3][3]);
 #endif
@@ -141,6 +143,23 @@ void schedule_deltamode_start(TIMESTAMP tstart);	/* Anticipated time for a delta
 #define UNKNOWN 0
 #define ROUNDOFF 1e-6			// numerical accuracy for zero in float comparisons
 
+// ZIP loads data
+EXTERN char1024 loaddata_pathname INIT("ziploads.csv");
+EXTERN char32 temperature_name INIT("temperature");
+EXTERN char32 humidity_name INIT("humidity");
+EXTERN char32 solar_name INIT("solar_flux");
+EXTERN char32 wind_name INIT("wind_speed");
+EXTERN char32 rain_name INIT("rainfall");
+EXTERN table *load_data INIT(NULL); // contents of load data file
+typedef struct s_latlon
+{
+	double latitude;
+	double longitude;
+} LATLON;
+EXTERN std::map<std::string,LATLON> *geocodes INIT(NULL); // list of known geocodes
+EXTERN int32 geocode_find INIT(0); // geocode find: <0 = none, 0 = nearest, >0 = exact geocode precision
+EXTERN double maximum_voltage_deviation INIT(0.5); // maximum voltage deviation from 1.0 pu.V before ZIP loads are cut off
+
 /* gld_object class hierarchy -- indent level indicates inheritance */
 #include "powerflow_library.h"
 	#include "line_configuration.h"
@@ -180,11 +199,13 @@ void schedule_deltamode_start(TIMESTAMP tstart);	/* Anticipated time for a delta
 				#include "building.h"
 				#include "industrial.h"
 				#include "public_service.h"
+			#include "zipload.h"
 		#include "meter.h"
 		#include "motor.h"
 		#include "substation.h"
 		#include "triplex_node.h"
 			#include "triplex_load.h"
+				#include "triplex_zipload.h"
 			#include "triplex_meter.h"
 	#include "volt_var_control.h"
 #include "billdump.h"
