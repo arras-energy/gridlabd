@@ -1,0 +1,44 @@
+name: analysis
+
+on:
+  push:
+    branches: [develop]
+  pull_request:
+    branches: [develop]
+
+jobs:
+  
+  pylint:
+
+    runs-on: ubuntu-24.04
+    container:
+      image: ubuntu:noble
+
+    steps:
+
+    - name: Install pylint
+      run: python3 -m pip install pylint
+      
+    - uses: actions/checkout@v4
+
+    - name: Analyse converters
+      run: python3 -m pylint converters/*.py
+
+    - name: Analyse docs
+      run: python3 -m pylint docs/*.py
+
+    - name: Analyse geodata
+      run:  python3 -m pylint geodata/*.py
+
+    - name: Analyse python
+      run:  python3 -m pylint python/*.py
+
+    - name: Analyse runtime
+      run:  python3 -m pylint runtime/*.py
+
+    - name: Analyse tools
+      run:  python3 -m pylint tools/*.py
+
+    - name: Analyse utilities
+      run:  python3 -m pylint utilities/*.py
+
