@@ -48,8 +48,8 @@ jobs:
     - name: Install cppcheck
       run: sudo apt-get install cppcheck
       
-    - name: Check source C/C++
+    - name: Analyse source C/C++
       run: cppcheck source/*.{c,cpp} || true
 
-    - name: Check module C/C++
+    - name: Analyse module C/C++
       run: cppcheck module/*/*.{c,cpp} || true
