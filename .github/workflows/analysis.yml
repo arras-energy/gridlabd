@@ -19,10 +19,10 @@ jobs:
     - name: Setup python
       uses: actions/setup-python@v5
       with:
-        python-version 3.12
+        python-version: '3.12'
 
     - name: Install pylint
-      run: python3 -m pip install pylint
+      run: python3 -m pip install --upgrade pip pylint
       
     - name: Analyse converters
       run: python3 -m pylint converters/*.py
