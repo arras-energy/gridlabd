@@ -10,17 +10,20 @@ jobs:
   
   pylint:
 
-    runs-on: ubuntu-24.04
-    container:
-      image: ubuntu:noble
+    runs-on: ubuntu-latest
 
     steps:
+
+    - uses: actions/checkout@v4
+
+    - name: Setup python
+      uses: actions/setup-python@v5
+      with:
+        python-version 3.12
 
     - name: Install pylint
       run: python3 -m pip install pylint
       
-    - uses: actions/checkout@v4
-
     - name: Analyse converters
       run: python3 -m pylint converters/*.py
 
