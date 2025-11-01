@@ -45,3 +45,11 @@ jobs:
     - name: Analyse utilities
       run:  python3 -m pylint utilities/*.py || true
 
+    - name: Install cppcheck
+      run: sudo apt-get install cppcheck
+      
+    - name: Check source C/C++
+      run: cppcheck source/*.{c,cpp} || true
+
+    - name: Check module C/C++
+      run: cppcheck module/*/*.{c,cpp} || true
