@@ -45,3 +45,24 @@ jobs:
     - name: Analyse utilities
       run:  python3 -m pylint utilities/*.py || true
 
+  cppcheck:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - uses: actions/checkout@v4
+
+    - name: Setup python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install cppcheck
+      run: sudo apt-get install cppcheck
+      
+    - name: Analyse source C/C++
+      run: cppcheck source/*.{c,cpp} || true
+
+    - name: Analyse module C/C++
+      run: cppcheck module/*/*.{c,cpp} || true
