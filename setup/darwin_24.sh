@@ -58,7 +58,7 @@ INSTALL brew link --force m4
 clang -v >/dev/null || error "you have not installed clang. Use 'xcode-select --install' to install command line build tools."
 
 # create /usr/local/opt if needed
-test -d /usr/local/opt ] || sudo mkdir /usr/local/opt
+test -d /usr/local/opt || sudo mkdir /usr/local/opt
 
 # install mysql
 if ! mysql_config --libs >/dev/null 2>&1 ; then
