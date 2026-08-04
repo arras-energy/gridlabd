@@ -46,11 +46,26 @@ if ! "python$PYTHON_VERSION-config" --prefix 1>/dev/null 2>&1 ; then
 fi
 INSTALL "$PYTHON_EXEC" -m pip install --upgrade pip || error "pip update failed"
 
+# setup /usr/local
+test -d /usr/local/bin || sudo mkdir /usr/local/bin
+test -d /usr/local/share || sudo mkdir /usr/local/share
+export PATH=/usr/local/bin:$PATH
+
+# install autoconf 2.72 as required
+INSTALL brew upgrade m4
+INSTALL brew link --force m4
+if [ "$(autoconf --version | head -n 1 | cut -f4 -d' ')" != "2.72" ] ; then
+    (cd /tmp ; curl --retry 5 -sL https://ftp.gnu.org/gnu/autoconf/autoconf-2.72.tar.gz | tar xz )
+    (cd /tmp/autoconf-2.72 ; ./configure ; make ; sudo make install)
+    test "$(autoconf --version | head -n 1 | cut -f4 -d' ')" = "2.72" || error "autoconf installation failed"
+fi
+
 # install required libraries
-INSTALL brew install autoconf libffi zlib tcl-tk mdbtools
+INSTALL brew install libffi zlib tcl-tk mdbtools gdal
 
 # install required tools
 INSTALL brew install automake libtool gnu-sed gawk
+sudo ln -s /opt/homebrew/bin/glibtoolize /usr/local/bin/libtoolize
 
 clang -v >/dev/null || error "you have not installed clang. Use 'xcode-select --install' to install command line build tools."
 
@@ -64,11 +79,4 @@ if ! mysql_config --libs >/dev/null 2>&1 ; then
     if ! mysql_config --libs >/dev/null 2>&1 ; then
         error "Failed to install MySQL with Homebrew."
     fi
-fi
-
-# install autoconf 2.72 as required
-if [ "$(autoconf --version | head -n 1 | cut -f4 -d' ')" != "2.72" ] ; then
-    (cd /tmp ; curl --retry 5 -sL https://ftp.gnu.org/gnu/autoconf/autoconf-2.72.tar.gz | tar xz )
-    (cd /tmp/autoconf-2.72 ; ./configure ; make ; make install)
-    test "$(autoconf --version | head -n 1 | cut -f4 -d' ')" = "2.72" || error "autoconf installation failed"
 fi
