@@ -14,12 +14,12 @@ INSTALL brew -h 1>/dev/null 2>&1 || error "you must install brew first. See http
 
 # setup requires python version if not already installed
 if ! python$PYTHON_VERSION --version 1>/dev/null 2>&1 ; then
-    INSTALL brew install python@$PYTHON_VERSION
+    INSTALL yes | brew install python@$PYTHON_VERSION
     python$PYTHON_VERSION --version || error "python$PYTHON_VERSION installation failed"
 fi
 if ! python$PYTHON_VERSION -m venv -h 1>/dev/null 2>&1 ; then
     printf "installing... "
-    INSTALL brew install python$PYTHON_VERSION-venv
+    INSTALL yes | brew install python$PYTHON_VERSION-venv
     python$PYTHON_VERSION -m venv -h >/dev/null || error "unable to install python$PYTHON_VERSION-venv"
 fi
 
@@ -41,7 +41,7 @@ fi
 
 # install python-config
 if ! "python$PYTHON_VERSION-config" --prefix 1>/dev/null 2>&1 ; then
-    INSTALL brew install python$PYTHON_VERSION-dev
+    INSTALL yes | brew install python$PYTHON_VERSION-dev
     python$PYTHON_VERSION-config --prefix || error "python$PYTHON_VERSION-config installation failed"
 fi
 INSTALL "$PYTHON_EXEC" -m pip install --upgrade pip || error "pip update failed"
