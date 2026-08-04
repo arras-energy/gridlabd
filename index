@@ -1,7 +1,12 @@
+CODE_OF_CONDUCT.md
+COMMITTERS.md
+CONTRIBUTING.md
 COPYRIGHT
+GOVERNANCE.md
 LICENSE
 Makefile.am
 README.md
+SUPPORT.md
 aminclude.mk
 autotest/README.md
 autotest/autotest/R1-12.27-4_reg_output.csv
@@ -739,11 +744,13 @@ docs/Module/Powerflow/Triplex_line_configuration.md
 docs/Module/Powerflow/Triplex_load.md
 docs/Module/Powerflow/Triplex_meter.md
 docs/Module/Powerflow/Triplex_node.md
+docs/Module/Powerflow/Triplex_zipload.md
 docs/Module/Powerflow/Underground_line.md
 docs/Module/Powerflow/Underground_line_conductor.md
 docs/Module/Powerflow/Vfd.md
 docs/Module/Powerflow/Volt_var_control.md
 docs/Module/Powerflow/Voltdump.md
+docs/Module/Powerflow/zipload.md
 docs/Module/Pypower.md
 docs/Module/Pypower/Geodata.md
 docs/Module/Pypower/Load.md
@@ -2348,6 +2355,11 @@ module/powerflow/autotest/test_violation_record.glm
 module/powerflow/autotest/test_zero_OHL_conductor_NR_err.glm
 module/powerflow/autotest/test_zero_TPL_conductor_NR_err.glm
 module/powerflow/autotest/test_zero_UGL_conductor_NR_err.glm
+module/powerflow/autotest/test_ziploads.glm
+module/powerflow/autotest/test_ziploads_A.csv
+module/powerflow/autotest/test_ziploads_ABCN.csv
+module/powerflow/autotest/test_ziploads_B.csv
+module/powerflow/autotest/test_ziploads_C.csv
 module/powerflow/autotest/triplex_meter_reactive_energy_delta.player
 module/powerflow/autotest/triplex_meter_real_energy_delta.player
 module/powerflow/billdump.cpp
@@ -2393,6 +2405,7 @@ module/powerflow/data/extract_resstock.py
 module/powerflow/data/inverter_settings.csv
 module/powerflow/data/resstock_loadshapes.csv
 module/powerflow/data/update_loadshapes.py
+module/powerflow/data/ziploads.csv
 module/powerflow/docs/Building model.ipynb
 module/powerflow/docs/Building validation.ipynb
 module/powerflow/docs/Ductbank model reduction.ipynb
@@ -2488,6 +2501,8 @@ module/powerflow/switch_coordinator.cpp
 module/powerflow/switch_coordinator.h
 module/powerflow/switch_object.cpp
 module/powerflow/switch_object.h
+module/powerflow/table.cpp
+module/powerflow/table.h
 module/powerflow/transformer.cpp
 module/powerflow/transformer.h
 module/powerflow/transformer_configuration.cpp
@@ -2504,6 +2519,8 @@ module/powerflow/triplex_meter.cpp
 module/powerflow/triplex_meter.h
 module/powerflow/triplex_node.cpp
 module/powerflow/triplex_node.h
+module/powerflow/triplex_zipload.cpp
+module/powerflow/triplex_zipload.h
 module/powerflow/underground_line.cpp
 module/powerflow/underground_line.h
 module/powerflow/underground_line_conductor.cpp
@@ -2514,6 +2531,8 @@ module/powerflow/volt_var_control.cpp
 module/powerflow/volt_var_control.h
 module/powerflow/voltdump.cpp
 module/powerflow/voltdump.h
+module/powerflow/zipload.cpp
+module/powerflow/zipload.h
 module/powernet/Makefile.mk
 module/powernet/agent.cpp
 module/powernet/agent.h
@@ -2536,8 +2555,10 @@ module/pypower/autotest/case39.py
 module/pypower/autotest/case4gs.py
 module/pypower/autotest/case57.py
 module/pypower/autotest/case9.py
+module/pypower/autotest/case9dc.py
 module/pypower/autotest/check_case.py
 module/pypower/autotest/controllers.py
+module/pypower/autotest/test_autosize.glm
 module/pypower/autotest/test_case118.glm
 module/pypower/autotest/test_case14.glm
 module/pypower/autotest/test_case14_controller.glm
@@ -2571,12 +2592,19 @@ module/pypower/autotest/test_case39.glm
 module/pypower/autotest/test_case4gs.glm
 module/pypower/autotest/test_case57.glm
 module/pypower/autotest/test_case9.glm
+module/pypower/autotest/test_case9dc.glm
+module/pypower/autotest/test_derating.glm
+module/pypower/autotest/test_derating_powerplant_capacity
+module/pypower/autotest/test_derating_powerplant_capacity.csv
+module/pypower/autotest/test_derating_weather.csv
 module/pypower/autotest/test_shunt_capacitor.glm
 module/pypower/autotest/verify.py
 module/pypower/branch.cpp
 module/pypower/branch.h
 module/pypower/bus.cpp
 module/pypower/bus.h
+module/pypower/dcline.cpp
+module/pypower/dcline.h
 module/pypower/gen.cpp
 module/pypower/gen.h
 module/pypower/gencost.cpp
@@ -3703,9 +3731,11 @@ subcommands/gridlabd-manual
 subcommands/gridlabd-marimo
 subcommands/gridlabd-matrix
 subcommands/gridlabd-model
+subcommands/gridlabd-notebook
 subcommands/gridlabd-openfido
 subcommands/gridlabd-pandas
 subcommands/gridlabd-plot
+subcommands/gridlabd-project
 subcommands/gridlabd-python
 subcommands/gridlabd-require
 subcommands/gridlabd-requirements
@@ -4078,7 +4108,7 @@ tools/autotest/test_group.glm
 tools/autotest/test_group_assets_opt.glm
 tools/autotest/test_group_modify_opt.glm
 tools/autotest/test_group_network_opt.glm
-tools/autotest/test_isone.glm
+tools/autotest/test_isone_opt.glm
 tools/autotest/test_isone_record.csv
 tools/autotest/test_location.glm
 tools/autotest/test_location.txt
@@ -4102,6 +4132,8 @@ tools/autotest/test_network.glm
 tools/autotest/test_noaa_forecast.csv
 tools/autotest/test_noaa_forecast.glm
 tools/autotest/test_noaa_forecast_opt.glm
+tools/autotest/test_noaa_weather.csv
+tools/autotest/test_noaa_weather.glm
 tools/autotest/test_pole_analysis.glm
 tools/autotest/test_pole_analysis_opt.csv
 tools/autotest/test_pole_analysis_opt.glm
@@ -4144,7 +4176,9 @@ tools/find_location.py
 tools/fire_danger.py
 tools/fire_report.py
 tools/fit_filter.py
+tools/forecast.py
 tools/framework.py
+tools/geocode.py
 tools/gldserver.py
 tools/gridlabd-editor.png
 tools/gridlabd-editor.py
@@ -4165,6 +4199,7 @@ tools/modeler.py
 tools/moutils.py
 tools/network.py
 tools/noaa_forecast.py
+tools/noaa_weather.py
 tools/nsrdb_weather.py
 tools/pole_analysis.py
 tools/powerline.py

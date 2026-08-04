@@ -1,0 +1,54 @@
+// module/pypower/autotest/test_derating.glm
+
+#ifexist "../test_derating_weather.csv"
+#define DIR=..
+#endif
+
+clock
+{
+    timezone "GMT0";
+}
+
+module pypower;
+module tape
+{
+    csv_header_type NAME;
+}
+
+object bus
+{
+    object gen
+    {
+        object powerplant
+        {
+            operating_capacity 100 MW;
+            weather weather;
+            Tnominal 15 degC;
+            Tcutoff 45 degC;
+            derating 1 %/degC;
+            status ONLINE;
+        };
+        object recorder
+        {
+            file test_derating_powerplant_capacity.csv;
+            property Pmax,Qmax;
+            interval 0;
+        };
+    };
+}
+
+object weather
+{
+    name weather;
+    Td 10 degC;
+    object player
+    {
+        file ${DIR:-.}/test_derating_weather.csv;
+    };
+}
+
+#set savefile=${modelname/.glm/.json}
+
+#ifexist "../test_derating_powerplant_capacity.csv"
+#on_exit 0 diff ../test_derating_powerplant_capacity.csv test_derating_powerplant_capacity.csv > gridlabd.diff
+#endif

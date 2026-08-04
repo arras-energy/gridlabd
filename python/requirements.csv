@@ -1,5 +1,5 @@
 module,priority,options,default
-address,,,0.1.1
+git+https://github.com/dchassin/pyaddress,,,
 boto3,2,,1.26.115
 boto3,,,1.26.115
 build,,,0.9.0
@@ -19,6 +19,7 @@ geopy,,,2.1.0
 geojson,,,3.2.0
 github,,,
 haversine,,,2.3.0
+herbie-data,,,2025.7.0
 imageio,,,2.31.5
 ipinfo,,,4.2.1
 ipykernel,,,5.5.5
@@ -27,7 +28,7 @@ ipython,3,,8.10.0
 ipython,,,8.10.0
 ipython_genutils,,,0.2.0
 kaleido,,,0.2.1
-marimo,,,0.10.17
+marimo,,,
 matplotlib,2,,3.10.0
 matplotlib_inline,,,0.1.6
 metar,,,1.9.0
@@ -43,7 +44,7 @@ plotly,,,5.24.1
 PyGithub,2,,1.54.1
 pymysql,,,1.0.2
 PYPOWER,,,5.1.16
-pyproj,,,3.4.0
+pyproj,,,3.7.0
 pyrlu,,,0.2.0
 pysolar,,,0.9
 pytz,2,,
