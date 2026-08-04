@@ -47,15 +47,16 @@ fi
 INSTALL "$PYTHON_EXEC" -m pip install --upgrade pip || error "pip update failed"
 
 # install required libraries
-INSTALL brew install autoconf libffi zlib tcl-tk mdbtools
+INSTALL brew install autoconf libffi zlib tcl-tk mdbtools gdal
 
 # install required tools
 INSTALL brew install automake libtool gnu-sed gawk
+ln -s /opt/homebrew/bin/glibtoolize /usr/local/bin/libtoolize
 
 clang -v >/dev/null || error "you have not installed clang. Use 'xcode-select --install' to install command line build tools."
 
-# # update library paths
-# INSTALL ldconfig
+# create /usr/local/opt if needed
+test -d /usr/local/opt ] || sudo mkdir /usr/local/opt
 
 # install mysql
 if ! mysql_config --libs >/dev/null 2>&1 ; then
