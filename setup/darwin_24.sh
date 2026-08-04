@@ -1,4 +1,8 @@
+# for dry-run use "alias INSTALL=echo"
 alias INSTALL=''
+
+# prevent installers from asking questions
+export NONINTERACTIVE=1 
 
 INSTALL error () { echo "ERROR [$(basename $0)]: $*" > /dev/stderr ; exit 1 ; }
 INSTALL PYTHON_VERSION=3.10
