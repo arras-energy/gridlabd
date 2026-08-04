@@ -46,6 +46,13 @@ if ! "python$PYTHON_VERSION-config" --prefix 1>/dev/null 2>&1 ; then
 fi
 INSTALL "$PYTHON_EXEC" -m pip install --upgrade pip || error "pip update failed"
 
+# install autoconf 2.72 as required
+if [ "$(autoconf --version | head -n 1 | cut -f4 -d' ')" != "2.72" ] ; then
+    (cd /tmp ; curl --retry 5 -sL https://ftp.gnu.org/gnu/autoconf/autoconf-2.72.tar.gz | tar xz )
+    (cd /tmp/autoconf-2.72 ; ./configure ; make ; make install)
+    test "$(autoconf --version | head -n 1 | cut -f4 -d' ')" = "2.72" || error "autoconf installation failed"
+fi
+
 # install required libraries
 INSTALL yes | brew install autoconf libffi zlib tcl-tk mdbtools gdal
 
@@ -67,11 +74,4 @@ if ! mysql_config --libs >/dev/null 2>&1 ; then
     if ! mysql_config --libs >/dev/null 2>&1 ; then
         error "Failed to install MySQL with Homebrew."
     fi
-fi
-
-# install autoconf 2.72 as required
-if [ "$(autoconf --version | head -n 1 | cut -f4 -d' ')" != "2.72" ] ; then
-    (cd /tmp ; curl --retry 5 -sL https://ftp.gnu.org/gnu/autoconf/autoconf-2.72.tar.gz | tar xz )
-    (cd /tmp/autoconf-2.72 ; ./configure ; make ; make install)
-    test "$(autoconf --version | head -n 1 | cut -f4 -d' ')" = "2.72" || error "autoconf installation failed"
 fi
