@@ -57,7 +57,7 @@ test -d /usr/local/share || sudo mkdir /usr/local/share
 export PATH=/usr/local/bin:$PATH
 
 # install autoconf 2.72 as required
-INSTALL brew upgrade m4
+INSTALL brew install m4
 INSTALL brew link --force m4
 if [ "$(autoconf --version | head -n 1 | cut -f4 -d' ')" != "2.72" ] ; then
     (cd /tmp ; curl --retry 5 -sL https://ftp.gnu.org/gnu/autoconf/autoconf-2.72.tar.gz | tar xz )
