@@ -3177,6 +3177,7 @@ python/extras/validate_json.py
 python/extras/volt_dump/meter_record.py
 python/extras/volt_dump/voltdump.py
 python/gridlabd_python.py
+python/precompile.py
 python/pstatus.py
 python/pyproject.toml
 python/python.cpp
@@ -3249,6 +3250,7 @@ setup/darwin_21.sh
 setup/darwin_22.sh
 setup/darwin_23.sh
 setup/darwin_24.sh
+setup/darwin_25.sh
 setup/ubuntu_20.sh
 setup/ubuntu_22.sh
 setup/ubuntu_24.sh
