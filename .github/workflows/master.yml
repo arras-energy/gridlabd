@@ -2,9 +2,9 @@ name: master
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -17,7 +17,7 @@ jobs:
       image: ubuntu:noble
     env:
       GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
-      
+
     steps:
     - name: Prep container
       run: |
@@ -47,7 +47,7 @@ jobs:
         path: |
           validate.txt
           validate.tar.gz
-          
+      
   buildMacos14:
 
     runs-on: macos-14
@@ -94,6 +94,51 @@ jobs:
           validate.tar.gz
 
   buildMacos15:
+
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+      # this is to fix GIT not liking owner of the checkout dir
+    - name: Set ownership
+      run: |
+        chown -R $(id -u):$(id -g) $PWD
+        
+    - name: Symlink for libtool
+      run: |
+        ln -s /usr/local/bin/glibtoolize /usr/local/bin/libtoolize
+        ln -s /usr/local/bin/glibtool /usr/local/bin/libtool
+
+    - name: Add libraries to PATH
+      run: |
+        echo "LIBRARY_PATH=$(brew --prefix)/lib:$(brew --prefix)/opt:$(brew --prefix)/include" >> $GITHUB_ENV
+
+    - name: Run Setup
+      run: |
+        sudo mkdir -p /usr/local/opt/gridlabd
+        sudo chmod 2777 /usr/local/opt/gridlabd
+        sh ./setup.sh --local
+        brew install gdal
+        
+    - name: Build Gridlabd
+      run: |
+        sh ./build.sh --system --parallel
+        
+    - name: Validate system
+      run: |
+        gridlabd -D keep_progress=TRUE -D maximum_runtime=1800 -T 0 --validate -D github_actions=yes || ( utilities/save_validation_errors ; false )
+        
+    - name: Upload artifacts on failure
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: validate-result-macos-latest
+        path: |
+          validate.txt
+          validate.tar.gz
+
+  buildMacos26:
 
     runs-on: macos-latest
 
