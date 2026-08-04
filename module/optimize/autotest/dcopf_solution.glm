@@ -1,0 +1,70 @@
+#set randomseed=1
+
+module pypower
+{
+    stop_on_failure FALSE;
+}
+class bus
+{
+    double gen[MW]; // total generation at bus
+    randomvar price[$/MWh]; // cost at bus
+    double Vdc[pu.V]; // DC bus voltage 
+}
+
+#setenv PYTHONPATH=.:..
+#input "${modelname/_opf.glm/_opt.py}" -t pypower
+module optimize
+{
+    cvx_problemdump "${modelname/glm/txt}";
+}
+
+clock
+{
+    timezone "PST+8PDT";
+    starttime "2020-01-01 00:00:00 PST";
+    stoptime "2020-01-07 00:00:00 PST";
+}
+
+modify pp_bus_1.price "type:normal(50,10);refresh:1h;min:0";
+
+module tape
+{
+    csv_header_type NAME;
+}
+
+object recorder
+{
+    parent "pp_bus_1";
+    file "${modelname/_opf.glm/_opf.csv}";
+    property "price,gen";
+    interval -1;
+}
+
+object cvx
+{
+    name "dcopf";
+    event "PRECOMMIT";
+    data "~D=bus:Pd";
+    data "~P=bus:price";
+    variables "v=bus:Vdc;g=bus:gen";
+    objective "cvx.Minimize(P@g)";
+    constraints "L@v-g+D==0";
+    constraints "v[0]==0.0";
+    constraints "g>=0";
+    presolve "G=glm.Network();L=G.L.todense()";
+    postsolve """
+        np.set_printoptions(precision=1,sign=' ',floatmode='fixed',linewidth=None)
+        print(G.names,file=__dump__)
+        print(f'v = {v.value.round(1)}',file=__dump__)
+        print(f'g = {g.value.round(1)} = {g.value.sum():6.1f} MW',file=__dump__)
+        print(f'D = {D.T.value.round(1)} = {D.value.sum():6.1f} MW',file=__dump__)
+    """;
+}
+
+#set savefile=${modelname/glm/json}
+
+#ifexist "../dcopf_solution.glm"
+#on_exit 0 diff ../${modelname/_opf.glm/_opf.csv} ${modelname/_opf.glm/_opf.csv} > gridlabd.diff
+#endif
+
+#on_exit 0 gridlabd plot -i=${modelname/_opf.glm/_opf.csv} --plot:x=gen --plot:y=price --plot:grid --plot:marker=. --plot:linewidth=0 --plot:xlabel="Generation power [MW]" --plot:ylabel="Generation price [$/MWh]" --plot:title="Bus 1"

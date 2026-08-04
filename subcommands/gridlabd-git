@@ -45,7 +45,7 @@ function commit ()
     else
         id="$1"
         shift 1
-        curl "$AUTH" -s "$repos/commits/$id" | gridlabd json-get $*
+        curl --retry 5 "$AUTH" -s "$repos/commits/$id" | gridlabd json-get $*
     fi
 }
 
@@ -56,7 +56,7 @@ function blob ()
     else
         id="$1"
         shift 1
-        curl "$AUTH" -s "$repos/git/blob/$id" | gridlabd json-get $*
+        curl --retry 5 "$AUTH" -s "$repos/git/blob/$id" | gridlabd json-get $*
     fi
 }
 
@@ -67,7 +67,7 @@ function tag ()
     else
         id="$1"
         shift 1
-        curl "$AUTH" -s "$repos/git/tags/$id" | gridlabd json-get $*
+        curl --retry 5 "$AUTH" -s "$repos/git/tags/$id" | gridlabd json-get $*
     fi
 }
 
@@ -76,7 +76,7 @@ function rate ()
     if [ "$1" == "help" ]; then
         echo "Syntax: $command rate <key>"
     else
-        curl "$AUTH" -s "$api/rate_limit" | gridlabd json-get $1
+        curl --retry 5 "$AUTH" -s "$api/rate_limit" | gridlabd json-get $1
     fi
 }
 
@@ -85,7 +85,7 @@ function repo ()
     if [ "$1" == "help" ]; then
         echo "Syntax: $command repo <key>"
     else
-        curl "$AUTH" -s "$api/user/repos" | gridlabd json-get $*
+        curl --retry 5 "$AUTH" -s "$api/user/repos" | gridlabd json-get $*
     fi
 }
 
@@ -106,7 +106,7 @@ function auth ()
         echo "Syntax: $command auth [delete|get <id>|list]"
     elif [ $# -eq 0 ]; then
         if [ ! -f "$GITAUTH" ]; then
-            AUTH=$(curl -u "$GITUSER" -d '{"scopes":["repo","user"], "note":"'$USER'@'${HOSTNAME:-unknown}':gridlabd-git"}' -s $api/authorizations)
+            AUTH=$(curl --retry 5 -u "$GITUSER" -d '{"scopes":["repo","user"], "note":"'$USER'@'${HOSTNAME:-unknown}':gridlabd-git"}' -s $api/authorizations)
             (echo "$AUTH" > "$GITAUTH") || echo $AUTH
             [ -f "$GITAUTH" ] && chmod 400 "$GITAUTH"
         else
@@ -115,18 +115,18 @@ function auth ()
     elif [ "$1" == "delete" ]; then
         if [ -f "$GITAUTH" ]; then
             ID="$(gridlabd-json-get id < $GITAUTH)"
-            REPLY=$(curl -s -u "$GITUSER" -X DELETE "$api/authorizations/$ID") && rm -f "$GITAUTH" || echo $REPLY
+            REPLY=$(curl --retry 5 -sf -u "$GITUSER" -X DELETE "$api/authorizations/$ID") && rm -f "$GITAUTH" || echo $REPLY
         else
             echo "$command: $GITAUTH not found" > /dev/stderr
         fi
     elif [ "$1" == "list" ]; then
-        curl -s -u "$GITUSER" "$api/authorizations"
+        curl --retry 5 -sf -u "$GITUSER" "$api/authorizations"
     elif [ "$1" == "get" -a $# ]; then
         if [ $# -eq 1 ]; then
             ID="$(gridlabd-json-get id < $GITAUTH)"
-            curl -s -u "$GITUSER" "$api/authorizations/$ID"
+            curl --retry 5 -sf -u "$GITUSER" "$api/authorizations/$ID"
         else
-            curl -s -u "$GITUSER" "$api/authorizations/$2"
+            curl --retry 5 -sf -u "$GITUSER" "$api/authorizations/$2"
         fi
     else
         echo "$command: auth syntax error" > /dev/stderr

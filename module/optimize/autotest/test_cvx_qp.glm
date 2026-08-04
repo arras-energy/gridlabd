@@ -1,0 +1,91 @@
+// test_cvx_lp.glm
+
+#set suppress_repeat_messages=FALSE
+#set randomseed=1
+
+clock
+{
+  timezone America/Seattle;
+  starttime "2020-08-01 00:00:00 PST";
+  stoptime "2020-09-01 00:00:00 PST";
+}
+
+module optimize
+{
+  cvx_failure_handling WARN;
+  cvx_problemdump "${modelname/.glm/.txt}";
+}
+
+class input
+{
+  randomvar p0;
+  randomvar p1;
+  randomvar q;
+}
+
+class output
+{
+  double x;
+}
+
+module tape
+{
+  csv_header_type NAME;
+}
+object input:..2
+{
+  parent "quadratic-program";
+  p0 "type:normal(0,1);refresh:1h";
+  p1 "type:normal(0,1);refresh:1h";
+  q "type:normal(0,1);refresh:1h";
+  object recorder
+  {
+    file `${modelname/.glm/.txt}_input_{id}.csv`;
+    property "p0,p1,q";
+    interval -1;
+  };
+}
+
+object output:..2
+{
+  parent "quadratic-program";
+  x 0.0;
+  object recorder
+  {
+    file `${modelname/.glm/.txt}_output_{id}.csv`;
+    property "x";
+    interval -1;
+  };
+}
+
+object cvx
+{
+  name "quadratic-program";
+  event SYNC;
+  data "p=input:p0,input:p1";
+  data "q=input:q";
+  variables "x=output:x";
+  presolve """
+    if not 'P' in dir(): # initial solve
+      np.random.seed(1)
+      G = np.random.randn(1,2)
+      h = np.random.randn(1)
+      A = np.random.randn(1,2)
+      b = np.random.randn(1)
+    P = (p.T @ p)
+  """;
+  objective "Minimize((1/2)*quad_form(x,P) + q.T @ x)";
+  constraints """
+    G @ x <= h,
+    A @ x == b
+    """;
+}
+
+#set savefile=${modelname/.glm/.json}
+
+#ifexist "../${modelname/.glm/.txt}"
+#ifdef APPLE
+#on_exit 0 diff -w -I '^(param_prob:|Problem solved:|Result:|Data:|P:|  )' ../${modelname/.glm/.txt} ${modelname/.glm/.txt} > gridlabd.diff
+#endif
+#endif
+

@@ -1,4 +1,3 @@
-set -x
 alias INSTALL=''
 
 INSTALL error () { echo "ERROR [$(basename $0)]: $*" > /dev/stderr ; exit 1 ; }
@@ -36,7 +35,7 @@ test ! -z "$VIRTUAL_ENV" || error "python venv activation failed"
 
 # upgrade pip if needed
 if ! "$PYTHON_EXEC" -m pip --version 1>/dev/null 2>&1 ; then
-    INSTALL curl -fsL https://bootstrap.pypa.io/get-pip.py | python$PYTHON_VERSION
+    INSTALL curl --retry 5 -fsL https://bootstrap.pypa.io/get-pip.py | python$PYTHON_VERSION
     INSTALL "$PYTHON_EXEC" -m pip --version || error "pip installation failed"
 fi
 
@@ -69,7 +68,7 @@ fi
 
 # install autoconf 2.72 as required
 if [ "$(autoconf --version | head -n 1 | cut -f4 -d' ')" != "2.72" ] ; then
-    (cd /tmp ; curl -sL https://ftpmirror.gnu.org/autoconf/autoconf-2.72.tar.gz | tar xz )
+    (cd /tmp ; curl --retry 5 -sL https://ftp.gnu.org/gnu/autoconf/autoconf-2.72.tar.gz | tar xz )
     (cd /tmp/autoconf-2.72 ; ./configure ; make ; make install)
     test "$(autoconf --version | head -n 1 | cut -f4 -d' ')" = "2.72" || error "autoconf installation failed"
 fi

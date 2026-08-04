@@ -20,12 +20,12 @@ CLASS *cvx::oclass = NULL;
 cvx *cvx::defaults = NULL;
 
 // convenience objects
-PyObject *gld = NULL;
-PyObject *mod_list = NULL;
-PyObject *class_dict = NULL;
-PyObject *global_list = NULL;
-PyObject *object_dict = NULL;
-PyObject *property_type = NULL;
+static PyObject *gld = NULL;
+static PyObject *mod_list = NULL;
+static PyObject *class_dict = NULL;
+static PyObject *global_list = NULL;
+static PyObject *object_dict = NULL;
+static PyObject *property_type = NULL;
 
 //
 // Global variables
@@ -49,12 +49,12 @@ int cvx::PyRun_FormatString(const char *format, ...)
     va_start(ptr,format);
     char *buffer;
     vasprintf(&buffer,format,ptr);
-    gl_verbose("Running python script '%s'",buffer);
+    gl_verbose("Python call: %s",buffer);
     PyObject *result = PyRun_String(buffer,Py_file_input,globals,locals);
     int rc = 0;
     if ( result == NULL )
     {
-        gl_verbose("Python command failed!");
+        gl_verbose("Python call failed!");
         PyErr_Print();
         PyErr_Clear();
         rc = -1;
@@ -144,6 +144,9 @@ cvx::cvx(MODULE *module)
             PT_char1024, "solver_options", get_solver_options_offset(),
                 PT_DESCRIPTION, "solver options to add to problem.solve() arguments",
 
+            PT_double, "update_interval[s]", get_update_interval_offset(),
+                PT_DESCRIPTION, "minimum optimization update interval in seconds",
+
             NULL)<1)
         {
             exception("unable to publish optimize/cvx properties");
@@ -220,6 +223,7 @@ int cvx::create(void)
 
     // setup problem data
     problem.objective = strdup("");
+    problem.enable_dpp = false;
     problem.data = NULL;
     problem.variables = NULL;
     problem.constraints = NULL;
@@ -250,7 +254,7 @@ int cvx::create(void)
         }
 
         // import requested definitions from cvxpy, if any
-        if ( strcmp(imports,"") != 0 && PyRun_FormatString("from cvxpy import %s", (const char*)imports) != 0 )
+        if ( PyRun_FormatString("from cvxpy import %s", strcmp(imports,"") != 0 ? (const char*)imports : "*") != 0 )
         {
             exception("unable to import cvxpy symbols");
         }
@@ -333,7 +337,6 @@ int cvx::init(OBJECT *parent)
                 PyList_Append(defs,PyUnicode_FromString(prop->name));
             }
             PyDict_SetItemString(class_dict,oclass->name,defs);
-            Py_INCREF(defs);
         }
 
         PyObject *module = PyImport_ImportModule("gridlabd.network");
@@ -354,7 +357,7 @@ int cvx::init(OBJECT *parent)
         {
             PyRun_FormatString("global __dump__; __dump__ = open(os.devnull,'w')");
         }
-        else if ( PyRun_FormatString("global __dump__; __dump__ = open('%s','w'); print('Problem dumps starting at t=%lld (%s)\\n',file=__dump__,flush=True);",(const char*)problemdump,gl_globalclock,now.get_string().get_buffer()) < 0 )
+        else if ( PyRun_FormatString("global __dump__; __dump__ = open('%s','w'); print('Problem dumps starting at t=%lld (%s)',file=__dump__,flush=True);",(const char*)problemdump,gl_globalclock,now.get_string().get_buffer()) < 0 )
         {
             exception("unable to open dumpfile '%s'",(const char*)problemdump);
         }
@@ -398,114 +401,132 @@ int cvx::init(OBJECT *parent)
 
 int cvx::precommit(TIMESTAMP t0)
 {
-    current_event = "PRECOMMIT";
+    if ( fabs(update_interval) < 1 || t0%TIMESTAMP(update_interval) == 0 )
+    {        
+        current_event = "PRECOMMIT";
 
-    if ( get_event(OE_PRECOMMIT) && ! update_solution() )
-    {
-        if ( failure_handling == OF_RETRY )
+        if ( get_event(OE_PRECOMMIT) && ! update_solution() )
         {
-            return t0;
+            if ( failure_handling == OF_RETRY )
+            {
+                return t0;
+            }
+            if ( failure_handling == OF_WARN )
+            {
+                warning("optimization failed during precommit event");
+            }
+            return failure_handling != OF_HALT ? 1 : 0;
         }
-        if ( failure_handling == OF_WARN )
-        {
-            warning("optimization failed during precommit event");
-        }
-        return failure_handling != OF_HALT ? 1 : 0;
     }
     return 1;
 }
 
 TIMESTAMP cvx::presync(TIMESTAMP t0)
 {
-    current_event = "PRESYNC";
-
-    if ( get_event(OE_PRESYNC) && ! update_solution() )
+    if ( fabs(update_interval) < 1 || t0%TIMESTAMP(update_interval) == 0 )
     {
-        if ( failure_handling == OF_RETRY )
+        current_event = "PRESYNC";
+
+        if ( get_event(OE_PRESYNC) && ! update_solution() )
         {
-            return t0;
+            if ( failure_handling == OF_RETRY )
+            {
+                return t0;
+            }
+            if ( failure_handling == OF_WARN )
+            {
+                warning("optimization failed during presync event");
+            }
+            return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
         }
-        if ( failure_handling == OF_WARN )
-        {
-            warning("optimization failed during presync event");
-        }
-        return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
     }
-    return TS_NEVER;
+    return fabs(update_interval) < 1 ? TS_NEVER : (TIMESTAMP)((TIMESTAMP(t0/update_interval)+1)*update_interval);
 }
 
 TIMESTAMP cvx::sync(TIMESTAMP t0)
 {
-    current_event = "SYNC";
-
-    if ( get_event(OE_SYNC) && ! update_solution() )
+    if ( fabs(update_interval) < 1 || t0%TIMESTAMP(update_interval) == 0 )
     {
-        if ( failure_handling == OF_RETRY )
+        current_event = "SYNC";
+
+        if ( get_event(OE_SYNC) && ! update_solution() )
         {
-            return t0;
+            if ( failure_handling == OF_RETRY )
+            {
+                return t0;
+            }
+            if ( failure_handling == OF_WARN )
+            {
+                warning("optimization failed during sync event");
+            }
+            return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
         }
-        if ( failure_handling == OF_WARN )
-        {
-            warning("optimization failed during sync event");
-        }
-        return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
     }
-    return TS_NEVER;
+    return fabs(update_interval) < 1 ? TS_NEVER : (TIMESTAMP)((TIMESTAMP(t0/update_interval)+1)*update_interval);
 }
 
 TIMESTAMP cvx::postsync(TIMESTAMP t0)
 {
-    current_event = "POSTSYNC";
-
-    if ( get_event(OE_POSTSYNC) && ! update_solution() )
+    if ( fabs(update_interval) < 1 || t0%TIMESTAMP(update_interval) == 0 )
     {
-        if ( failure_handling == OF_RETRY )
+        current_event = "POSTSYNC";
+
+        if ( get_event(OE_POSTSYNC) && ! update_solution() )
         {
-            return t0;
+            if ( failure_handling == OF_RETRY )
+            {
+                return t0;
+            }
+            if ( failure_handling == OF_WARN )
+            {
+                warning("optimization failed during postsync event");
+            }
+            return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
         }
-        if ( failure_handling == OF_WARN )
-        {
-            warning("optimization failed during postsync event");
-        }
-        return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
     }
-    return TS_NEVER;
+    return fabs(update_interval) < 1 ? TS_NEVER : (TIMESTAMP)((TIMESTAMP(t0/update_interval)+1)*update_interval);
 }
 
 TIMESTAMP cvx::commit(TIMESTAMP t0,TIMESTAMP t1)
 {
-    current_event = "COMMIT";
-
-    if ( get_event(OE_COMMIT) && ! update_solution() )
+    if ( fabs(update_interval) < 1 || t0%TIMESTAMP(update_interval) == 0 )
     {
-        if ( failure_handling == OF_RETRY )
+        current_event = "COMMIT";
+
+        if ( get_event(OE_COMMIT) && ! update_solution() )
         {
-            return t0;
+            if ( failure_handling == OF_RETRY )
+            {
+                return t0;
+            }
+            if ( failure_handling == OF_WARN )
+            {
+                warning("optimization failed during commit event");
+            }
+            return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
         }
-        if ( failure_handling == OF_WARN )
-        {
-            warning("optimization failed during commit event");
-        }
-        return failure_handling != OF_HALT ? TS_NEVER : TS_INVALID;
     }
-    return TS_NEVER;
+    return fabs(update_interval) < 1 ? TS_NEVER : (TIMESTAMP)((TIMESTAMP(t0/update_interval)+1)*update_interval);
 }
 
 int cvx::finalize(void)
 {
-    current_event = "FINALIZE";
-
-    if ( get_event(OE_FINALIZE) && ! update_solution() )
+    if ( fabs(update_interval) < 1 || gl_globalclock%TIMESTAMP(update_interval) == 0 )
     {
-        if ( failure_handling == OF_RETRY )
+        current_event = "FINALIZE";
+
+        if ( get_event(OE_FINALIZE) && ! update_solution() )
         {
-            exception("unable to retry solution on finalize event");
+            if ( failure_handling == OF_RETRY )
+            {
+                exception("unable to retry solution on finalize event");
+            }
+            if ( failure_handling == OF_WARN )
+            {
+                warning("optimization failed during finalize event");
+            }
+            return failure_handling != OF_HALT ? 1 : 0;
         }
-        if ( failure_handling == OF_WARN )
-        {
-            warning("optimization failed during finalize event");
-        }
-        return failure_handling != OF_HALT ? 1 : 0;
     }
     return 1;
 }
@@ -825,8 +846,15 @@ bool cvx::add_data(struct s_problem &problem, const char *spec)
         {
             exception("variable specification '%s' missing expected '='", buffer);
         }
+        if ( item->name[0] == '~' ) // prefix for parameters
+        {
+            item->name++;
+            item->is_parameter = true;
+            problem.enable_dpp = true;
+        }
         item->data = NULL;
         item->list = PyList_New(0);
+        item->columns = item->rows = 0;
         if ( item->list == NULL )
         {
             exception("memory allocation error");
@@ -839,7 +867,7 @@ bool cvx::add_data(struct s_problem &problem, const char *spec)
             {
                 exception("variable '%s' already specified, ignoring duplicate definition",item->name);
             }
-        }
+        }   
 
         // link properties
         char *varspec;
@@ -882,7 +910,7 @@ bool cvx::add_data(struct s_problem &problem, const char *spec)
 void cvx::add_data_class(DATA *item, const char *classname, const char *propname)
 {
     CLASS *oclass = gl_class_get_by_name(classname,NULL);
-    int count = 0;
+    unsigned int count = 0;
     for ( gld_object *obj = gld_object::get_first() ; obj != NULL ; obj = obj->get_next() )
     {
         if ( (CLASS*)(obj->get_oclass()) == oclass )
@@ -905,7 +933,7 @@ void cvx::add_data_class(DATA *item, const char *classname, const char *propname
             ref->ptr = (double*)data.get_addr();
             ref->next = item->data;
             item->data = ref;
-            PyList_Insert(item->list,0,PyFloat_FromDouble(*(ref->ptr)));
+            PyList_Append(item->list,PyFloat_FromDouble(*(ref->ptr)));
             count++;
         }
     }
@@ -913,11 +941,23 @@ void cvx::add_data_class(DATA *item, const char *classname, const char *propname
     {
         warning("class '%s' has no objects",classname);
     }
+    if ( item->rows > 0 )
+    {
+        if ( item->rows != count )
+        {
+            error("class '%s' rows do not match",classname);
+        }
+    }
+    else
+    {
+        item->rows = count;
+    }
+    item->columns++;
 }
 
 void cvx::add_data_group(DATA *item, const char *groupname, const char *propname)
 {
-    int count = 0;
+    unsigned int count = 0;
     for ( OBJECT *obj = gl_object_get_first() ; obj != NULL ; obj = obj->next )
     {
         if ( strcmp(obj->groupid,groupname) == 0 )
@@ -940,7 +980,7 @@ void cvx::add_data_group(DATA *item, const char *groupname, const char *propname
             ref->ptr = (double*)data.get_addr();
             ref->next = item->data;
             item->data = ref;
-            PyList_Insert(item->list,0,PyFloat_FromDouble(*(ref->ptr)));
+            PyList_Append(item->list,PyFloat_FromDouble(*(ref->ptr)));
             count++;
         }
     }
@@ -948,6 +988,18 @@ void cvx::add_data_group(DATA *item, const char *groupname, const char *propname
     {
         warning("group '%s' has no objects",groupname);
     }
+    if ( item->rows > 0 )
+    {
+        if ( item->rows != count )
+        {
+            error("group '%s' rows do not match",groupname);
+        }
+    }
+    else
+    {
+        item->rows = count;
+    }
+    item->columns++;
 }
 
 void cvx::add_data_object(DATA *item, const char *objectname, const char *propname)
@@ -970,12 +1022,55 @@ void cvx::add_data_object(DATA *item, const char *objectname, const char *propna
     ref->ptr = (double*)data.get_addr();
     ref->next = item->data;
     item->data = ref;
-    PyList_Insert(item->list,0,PyFloat_FromDouble(*(ref->ptr)));
+    PyList_Append(item->list,PyFloat_FromDouble(*(ref->ptr)));
+    unsigned int count = 1;
+    if ( item->rows > 0 )
+    {
+        if ( item->rows != count )
+        {
+            error("object '%s' rows do not match",objectname);
+        }
+    }
+    else
+    {
+        item->rows = count;
+    }
+    item->columns++;
 }
 
-void cvx::add_data_global(DATA *item, const char *propname)
+void cvx::add_data_global(DATA *item, const char *globalname)
 {
-    gl_warning("TODO: data item for global '%s'",propname);
+    gld_global data(globalname);
+    if ( ! data.is_valid() )
+    {
+        exception("data item '%s' is not a known global variable",globalname);
+    }
+    if ( data.get_property()->ptype != PT_double )
+    {
+        exception("global variable '%s' is not a real number",globalname);
+    }
+    REFERENCE *ref = new REFERENCE;
+    if ( ref == NULL )
+    {
+        exception("memory allocation error");
+    }
+    ref->ptr = (double*)(data.get_property()->addr);
+    ref->next = item->data;
+    item->data = ref;
+    PyList_Append(item->list,PyFloat_FromDouble(*(ref->ptr)));
+    unsigned int count = 1;
+    if ( item->rows > 0 )
+    {
+        if ( item->rows != count )
+        {
+            error("global '%s' rows do not match",globalname);
+        }
+    }
+    else
+    {
+        item->rows = count;
+    }
+    item->columns++;
 }
 
 //
@@ -1038,7 +1133,7 @@ bool cvx::add_variables(struct s_problem &problem, const char *spec)
         }
         item->primal = NULL;
         item->dual = NULL;
-        item->count = 0;
+        item->columns = item->rows = 0;
 
         // check for duplicate specification
         for ( VARIABLE *var = problem.variables ; var != NULL ; var = var->next )
@@ -1085,75 +1180,100 @@ bool cvx::add_variables(struct s_problem &problem, const char *spec)
     }
 }
 
+void cvx::add_primal(VARIABLE *item, gld_property &data)
+{
+    REFERENCE *ref = new REFERENCE;
+    if ( ref == NULL )
+    {
+        exception("memory allocation error");
+    }
+    ref->ptr = (double*)data.get_addr();
+    ref->next = item->primal;
+    item->primal = ref;
+}
+
+void cvx::add_dual(VARIABLE *item, gld_property &data)
+{
+    REFERENCE *ref = new REFERENCE;
+    if ( ref == NULL )
+    {
+        exception("memory allocation error");
+    }
+    ref->ptr = (double*)data.get_addr();
+    ref->next = item->dual;
+    item->dual = ref;
+}
+
+void cvx::add_variable(VARIABLE *item, OBJECT *obj, const char *primalname,const char *dualname, const char *refname)
+{
+    gld_property data(obj,primalname);
+    if ( ! data.is_valid() )
+    {
+        exception("primal variable '%s' is not a known property of '%s'",primalname,refname);
+    }
+    if ( ! data.is_double() )
+    {
+        exception("primal variable '%s.%s' is not a real number",refname,primalname);
+    }
+    add_primal(item,data);
+    
+    if ( strcmp(dualname,"") != 0 )
+    {
+        gld_property data(obj,dualname);
+        if ( ! data.is_valid() )
+        {
+            exception("dual variable '%s' is not a known property of '%s'",dualname,refname);
+        }
+        if ( ! data.is_double() )
+        {
+            exception("dual variable '%s.%s' is not a real number",refname,dualname);
+        }
+        add_dual(item,data);
+    }
+    else
+    {
+        item->dual = NULL;
+    }
+}
+
 void cvx::add_variable_class(VARIABLE *item, const char *classname, const char *primalname, const char *dualname)
 {
+    unsigned int count = 0;
     CLASS *oclass = gl_class_get_by_name(classname,NULL);
-    for ( gld_object *obj = gld_object::get_first() ; obj != NULL ; obj = obj->get_next() )
+    for ( OBJECT *obj = gl_object_get_first() ; obj != NULL ; obj = obj->next )
     {
-        if ( (CLASS*)(obj->get_oclass()) == oclass )
+        if ( obj->oclass == oclass )
         {
-            gld_property primal_data(obj,primalname);
-            if ( ! primal_data.is_valid() )
-            {
-                exception("primal variable '%s' is not a known property of class '%s'",primalname,classname);
-            }
-            if ( ! primal_data.is_double() )
-            {
-                exception("primal variable '%s.%s' is not a real number",classname,primalname);
-            }
-            
-            REFERENCE *primal = new REFERENCE;
-            if ( primal == NULL )
-            {
-                exception("memory allocation error");
-            }
-            primal->ptr = (double*)primal_data.get_addr();
-            primal->next = item->primal;
-            item->primal = primal;
-
-            if ( strcmp(dualname,"") != 0 )
-            {
-                gld_property dual_data(obj,dualname);
-                if ( ! dual_data.is_valid() )
-                {
-                    exception("dual variable '%s' is not a known property of class '%s'",dualname,classname);
-                }
-                if ( ! dual_data.is_double() )
-                {
-                    exception("dual variable '%s.%s' is not a real number",classname,dualname);
-                }
-
-                REFERENCE *dual = new REFERENCE;
-                if ( dual == NULL )
-                {
-                    exception("memory allocation error");
-                }
-                dual->ptr = (double*)dual_data.get_addr();
-                dual->next = item->dual;
-                item->dual = dual;
-            }
-            else
-            {
-                item->dual = NULL;
-            }
-            item->count++;
+            add_variable(item,obj,primalname,dualname,classname);
+            count++;
         }
     }
-    if ( item->count == 0 )
+    if ( count == 0 )
     {
         warning("class '%s' has no objects",classname);
     }
+    if ( item->rows > 0 )
+    {
+        if ( item->rows != count )
+        {
+            error("class '%s' rows do not match",classname);
+        }
+    }
+    else
+    {
+        item->rows = count;
+    }
+    item->columns++;
 }
 
 void cvx::add_variable_group(VARIABLE *item, const char *groupname, const char *primalname, const char *dualname)
 {
-    int count = 0;
+    unsigned int count = 0;
     for ( OBJECT *obj = gl_object_get_first() ; obj != NULL ; obj = obj->next )
     {
         if ( strcmp(obj->groupid,groupname) == 0 )
         {
-            // TODO: link property to list
-            gl_warning("TODO: item %d group '%s' object '%s' primal '%s' dual '%s'",count,groupname,get_object(obj)->get_name(),primalname,dualname);
+            add_variable(item,obj,primalname,dualname,groupname);
             count++;
         }
     }
@@ -1161,16 +1281,55 @@ void cvx::add_variable_group(VARIABLE *item, const char *groupname, const char *
     {
         warning("group '%s' has no objects",groupname);
     }
+    if ( item->rows > 0 )
+    {
+        if ( item->rows != count )
+        {
+            error("group '%s' rows do not match",groupname);
+        }
+    }
+    else
+    {
+        item->rows = count;
+    }
+    item->columns++;
 }
 
 void cvx::add_variable_object(VARIABLE *item, const char *objectname, const char *primalname, const char *dualname)
 {
-    gl_warning("TODO: object '%s' primal '%s' dual '%s'",objectname,primalname,dualname);
+    OBJECT *obj = (OBJECT*)get_object(objectname);
+    add_variable(item,obj,primalname,dualname,objectname);
+    unsigned int count = 1;
+    if ( item->rows > 0 )
+    {
+        if ( item->rows != count )
+        {
+            error("object '%s' rows do not match",objectname);
+        }
+    }
+    else
+    {
+        item->rows = count;
+    }
+    item->columns++;
 }
 
 void cvx::add_variable_global(VARIABLE *item, const char *primalname, const char *dualname)
 {
-    gl_warning("TODO: global primal '%s' dual '%s'",primalname,dualname);
+    add_variable(item,NULL,primalname,dualname,"global");
+    unsigned int count = 1;
+    if ( item->rows > 0 )
+    {
+        if ( item->rows != count )
+        {
+            error("global '%s' rows do not match",primalname);
+        }
+    }
+    else
+    {
+        item->rows = count;
+    }
+    item->columns++;
 }
 
 //
@@ -1238,14 +1397,18 @@ bool cvx::update_solution(void)
     const char *optname = (const char *)get_name();
     bool rc = true;
 
-    verbose("updating problem");
+    verbose("updating solution");
     PyObject *cvx = PyDict_GetItemString(globals,"__cvx__");
     PyObject *objprob = PyDict_GetItemString(cvx,optname);
     PyObject *probdata = PyDict_GetItemString(objprob,"data");
+
+    bool newprob = ( get_event() == OE_INIT );
     if ( probdata == NULL )
     {
+        verbose("no existing problem data found for '%s', creating that dict now",optname);
         probdata = PyDict_New();
         PyDict_SetItemString(objprob,"data",probdata);
+        newprob = true;
     }
 
     if ( PyRun_FormatString("__cvx__['%s']['event'] = '%s'",optname,current_event) == -1 )
@@ -1256,37 +1419,156 @@ bool cvx::update_solution(void)
 
     // copy data from objects
     Py_ssize_t pos = 0;
+    unsigned int n_changed = 0;
     for ( DATA *item = problem.data ; item != NULL ; item = item->next, pos++ )
     {
         bool changed = false;
-        Py_ssize_t ndx = PyList_Size(item->list)-1;
-        for ( REFERENCE *ref = item->data ; ref != NULL ; ref=ref->next, ndx-- )
+        Py_ssize_t ndx = 0;
+        for ( REFERENCE *ref = item->data ; ref != NULL ; ref=ref->next, ndx++ )
         {
             double value = *(ref->ptr);
             if ( value != PyFloat_AsDouble(PyList_GET_ITEM(item->list,ndx)) )
             {
                 changed = true;
-                PyList_SetItem(item->list,ndx,PyFloat_FromDouble(value));
+                n_changed++;
+                if ( newprob || item->is_parameter || ! problem.enable_dpp )
+                {
+                    PyList_SetItem(item->list,ndx,PyFloat_FromDouble(value));
+                }
             }
-        }        
+        }
+        if ( ndx != PyList_Size(item->list) )
+        {
+            status = SS_ERROR;
+            exception("%s size mismatch (%d found, %d required)",item->name,ndx,PyList_Size(item->list));
+        }
+
+        PyDict_SetItemString(globals,item->name,item->list);
+        char dataref[1024];
+        char shape[256] = "-1"; // default shape is simple vector
+        if ( item->columns > 1 )
+        {
+            snprintf(shape,sizeof(shape),"(-1,%d)",item->columns);
+        }
+        snprintf(dataref,sizeof(dataref)-1,"__cvx__['%s']['data']['%s']",optname,item->name);
         if ( changed )
         {
-            PyDict_SetItemString(probdata,item->name,item->list);
-            PyDict_SetItemString(globals,item->name,item->list);
+            verbose("data '%s' has changed",item->name);
+            if ( problem.enable_dpp )
+            {
+                verbose("DPP problem (problem.enable_dpp=true for item->name %s --> %s)",item->name,dataref);
+                if ( newprob )
+                {
+                    verbose("new problem requires creation of CVX objects");
+                    if ( PyRun_FormatString("%s=np.reshape(np.array(%s),%s)",item->name,item->name,shape) == -1 )
+                    {
+                        status = SS_ERROR;
+                        exception("unable to convert %s to a numpy array",item->name);
+                    }    
+                    PyDict_SetItemString(probdata,item->name,item->list);
+                    if ( item->is_parameter )
+                    {
+                        verbose("%s is a parameter",item->name);
+                        if ( PyRun_FormatString(
+                            "%s = %s = Parameter(%s.shape,value=%s,name='%s');"
+                            "# DPP parameter creation",
+                            dataref, item->name, item->name, item->name, item->name) == -1 )
+                        {
+                            status = SS_ERROR;
+                            exception("unable to define parameter '%s'",item->name);
+                        }
+                    }
+                    else
+                    {
+                        verbose("%s is a constant",item->name);
+                        if ( PyRun_FormatString(
+                            "%s = %s = Constant(%s,name='%s');"
+                            "# DPP constant constant",
+                            dataref, item->name, item->name, item->name) == -1 )
+                        {
+                            status = SS_ERROR;
+                            exception("unable to define constant '%s'",item->name);
+                        }
+                    }
+                }
+                else if ( item->is_parameter )
+                {
+                    verbose("DPP parameter '%s' update",item->name);
+                    if ( PyRun_FormatString(
+                        "global %s; "
+                        "%s.value = %s = np.reshape(np.array(%s),%s);"
+                        "# DPP parameter update",
+                        item->name,
+                        dataref, item->name, item->name, shape) == -1 )
+                    {
+                        status = SS_ERROR;
+                        exception("unable to update parameter '%s'",item->name);
+                    }
+                }
+                else
+                {
+                    warning("constant '%s' has changed while DPP is enabled",item->name);
+                }
+            }
+            else
+            {
+                verbose("DCP problem data changed (problem.enable_dpp=false for item->name %s --> %s)\n",item->name,dataref);
+                PyDict_SetItemString(probdata,item->name,item->list);
+                if ( PyRun_FormatString(
+                    "global %s; "
+                    "%s = np.reshape(np.array(%s),%s);"
+                    "# DCP data update",
+                    item->name,
+                    item->name, item->name, shape) == -1 )
+                {
+                    status = SS_ERROR;
+                    exception("unable to update data '%s'",item->name);
+                }
+            }
         }
-    }
-
-    // set up variables
-    for ( VARIABLE *item = problem.variables ; item != NULL ; item = item->next )
-    {
-        if ( PyRun_FormatString("%s = cvx.Variable(%ld)",item->name,item->count) == -1 )
+        else if ( ! problem.enable_dpp )
         {
-            status = SS_INVALID;
-            exception("unable to create CVX variable '%s'",item->name);
+            verbose("DCP problem data created (problem.enable_dpp=false for item->name %s --> %s)\n",item->name,dataref);
+            PyDict_SetItemString(probdata,item->name,item->list);
+            if ( PyRun_FormatString(
+                "global %s; "
+                "%s = np.reshape(np.array(%s),%s);"
+                "# DCP data create",
+                item->name,
+                item->name, item->name, shape) == -1 )
+            {
+                status = SS_ERROR;
+                exception("unable to create data '%s'",item->name);
+            }
         }
         else
         {
-            verbose("variable '%s' created with length %ld",item->name,item->count);
+            verbose("'%s' is unchanged",item->name);
+        }
+    }
+    if ( ! newprob && n_changed == 0 )
+    {
+        verbose("no data has changed, skipping problem solve and reusing last solution");
+        return true;
+    }
+
+    if ( newprob || ! problem.enable_dpp )
+    {
+        // set up variables
+        for ( VARIABLE *item = problem.variables ; item != NULL ; item = item->next )
+        {
+            if ( PyRun_FormatString(
+                "%s = Variable(%ld,name='%s')",
+                item->name,item->rows,item->name
+                ) == -1 )
+            {
+                status = SS_INVALID;
+                exception("unable to create CVX variable '%s'",item->name);
+            }
+            else
+            {
+                verbose("variable '%s' created with shape (%ld,%ld)",item->name,item->rows,item->columns);
+            }
         }
     }
 
@@ -1297,61 +1579,88 @@ bool cvx::update_solution(void)
         exception("presolve script failed");
     }
 
-    // set objective
-    if ( PyRun_FormatString("__cvx__['%s']['objective'] = %s",optname,problem.objective) == -1 )
+    if ( newprob || ! problem.enable_dpp )
     {
-        status = SS_INVALID;
-        exception("objective specification '%s' is invalid",problem.objective);
-    }
-
-    // update constraints
-    char buffer[1024];
-    if ( PyRun_FormatString("__cvx__['%s']['constraints'] = [%s]",optname,constraints(buffer,sizeof(buffer)-1)>0?buffer:"") == -1 )
-    {
-        status = SS_INVALID;
-        exception("constraints specification '[%s]' is invalid",buffer);
-    }
-
-    // create problem
-    if ( PyRun_FormatString("__cvx__['%s']['problem'] = cvx.Problem(__cvx__['%s']['objective'],__cvx__['%s']['constraints'])",optname,optname,optname) == -1 )
-    {
-        if ( strcmp(on_failure,"") != 0 )
+        verbose("Constructing objective, constraints, and problem");
+        
+        // set objective
+        if ( PyRun_FormatString("__cvx__['%s']['objective'] = %s",optname,problem.objective) == -1 )
         {
-            PyRun_FormatString(on_failure);
+            status = SS_INVALID;
+            exception("objective specification '%s' is invalid",problem.objective);
         }
-        status = SS_INVALID;
-        exception("problem construction failed");
+
+        // update constraints
+        char buffer[1024];
+        if ( PyRun_FormatString("__cvx__['%s']['constraints'] = [%s]",optname,constraints(buffer,sizeof(buffer)-1)>0?buffer:"") == -1 )
+        {
+            status = SS_INVALID;
+            exception("constraints specification '[%s]' is invalid",buffer);
+        }
+
+        // create problem
+        if ( PyRun_FormatString("__cvx__['%s']['problem'] = Problem(__cvx__['%s']['objective'],__cvx__['%s']['constraints'])",optname,optname,optname) == -1 )
+        {
+            if ( strcmp(on_failure,"") != 0 )
+            {
+                PyRun_FormatString(on_failure);
+            }
+            status = SS_INVALID;
+            exception("problem construction failed");
+        }
     }
 
     // dump problem if requested
     if ( strcmp(problemdump,"") != 0 )
     {
         gld_clock now;
-        PyRun_FormatString("print('*** Problem \\'%s\\' at t=%lld (%s) ***\\n',file=__dump__)",optname,gl_globalclock,now.get_string().get_buffer());
-        PyRun_FormatString("print('Data:',__cvx__['%s']['data'],file=__dump__)",optname);
-        PyRun_FormatString("print('Objective:',__cvx__['%s']['objective'],file=__dump__)",optname);
-        PyRun_FormatString("print('Contraints:',__cvx__['%s']['constraints'],file=__dump__)",optname);
+        if ( PyRun_FormatString("print('*** Problem \\'%s\\' at t=%lld (%s) ***\\n',file=__dump__)",optname,gl_globalclock,now.get_string().get_buffer()) == -1
+            || PyRun_FormatString("print('Data:',{n:(m.value.tolist() if hasattr(m,'value') else m) for n,m in __cvx__['%s']['data'].items()},file=__dump__)",optname) == -1
+            || PyRun_FormatString("print('Objective:',__cvx__['%s']['objective'],file=__dump__)",optname) == -1
+            || PyRun_FormatString("print('Contraints:',__cvx__['%s']['constraints'],file=__dump__)",optname) == -1 )
+        {
+            exception("problem dump preamble failed");
+        }
+
     }
 
     // solve problem
-    if ( PyRun_FormatString("__cvx__['%s']['value'] = __cvx__['%s']['problem'].solve(%s)",optname,optname,(const char*)solver_options) == -1 )
+    if ( PyRun_FormatString(
+        "try: __cvx__['%s']['value'],__cvx__['%s']['result'] = __cvx__['%s']['problem'].solve(%s),None\n"
+        "except Exception as err: __cvx__['%s']['value'],__cvx__['%s']['result'] = None,{'status':'FAILED','error':err}",
+        optname,optname,optname,(const char*)solver_options,
+        optname,optname) == -1 )
     {
         if ( strcmp(problemdump,"") != 0 )
         {
-            // PyRun_FormatString("print('\\n'.join([f'{x}: {y}' for x,y in __problem__.get_problem_data(__problem__.solver_stats.solver_name)[0].items()]),file=__dump__,flush=True)");
             PyRun_FormatString("print('Problem rejected',file=__dump__,flush=True)");
         }
         if ( strcmp(on_exception,"") != 0 )
         {
             PyRun_FormatString(on_exception);
         }
-        status = SS_INVALID;
-        exception("problem solve failed");
+        status = SS_FAILED;
+        switch (failure_handling)
+        {
+        case OF_HALT:
+            error("problem failed");
+            break;
+        case OF_WARN:
+            warning("problem failed");
+            break;
+        case OF_IGNORE:
+            verbose("problem failed");
+            break;
+        default:
+            status = SS_ERROR;
+            exception("invalid handling (failure_handling=%ld) for %s problem",failure_handling,this->value>0?"infeasible":"unbounded");
+            break;
+        }
     }
 
-    // dump results
+    // dump problem
     if ( strcmp(problemdump,"") != 0 && 
-        PyRun_FormatString("print('\\n'.join([f'{x}: {y}' for x,y in __cvx__['%s']['problem'].get_problem_data(__cvx__['%s']['problem'].solver_stats.solver_name)[0].items()]),file=__dump__)",optname,optname) == -1 )
+        PyRun_FormatString("print('\\n'.join([f'{x}: {y}' for x,y in __cvx__['%s']['problem'].get_problem_data(None)[0].items()]),file=__dump__)",optname,optname) == -1 )
     {
         status = SS_ERROR;
         exception("problem dump failed");
@@ -1359,12 +1668,23 @@ bool cvx::update_solution(void)
 
     // extract value, if any
     PyObject *value = PyDict_GetItemString(objprob,"value");
-    this->value = PyFloat_AsDouble(value);
+    PyObject *result = PyDict_GetItemString(objprob,"result");
+
+    if ( result == Py_None )
+    {
+        this->value = PyFloat_AS_DOUBLE(value);
+    }
+    else
+    {
+        this->value = QNAN;
+    }
     if ( ! isfinite(this->value) )
     {
+        const char *statusmsg = "unknown status";
         if ( this->value < 0 )
-        {            
+        {
             status = SS_UNBOUNDED;
+            statusmsg = "unbounded";
             if ( strcmp(problemdump,"") != 0 )
             {
                 PyRun_FormatString("print('Problem is unbounded\\n',file=__dump__,flush=True)");
@@ -1374,32 +1694,46 @@ bool cvx::update_solution(void)
                 PyRun_FormatString(on_unbounded);
             }
         }
-        else
+        else if ( this->value > 0 )
         {
             status = SS_INFEASIBLE;
+            statusmsg = "infeasible";
             if ( strcmp(problemdump,"") != 0 )
             {
-                PyRun_FormatString("print('Problem is infeasible\\n,file=__dump__,flush=True)");
+                PyRun_FormatString("print('Problem is infeasible\\n',file=__dump__,flush=True)");
             }
             if ( strcmp(on_infeasible,"") != 0 )
             {
                 PyRun_FormatString(on_infeasible);
             }
         }
+        else
+        {
+            status = SS_FAILED;
+            statusmsg = "failed";
+            if ( strcmp(problemdump,"") != 0 )
+            {
+                PyRun_FormatString("print('Problem solution failed (\\n',__cvx__['%s']['result'],'\\n',file=__dump__,flush=True)",optname);
+            }
+            if ( strcmp(on_failure,"") != 0 )
+            {
+                PyRun_FormatString(on_failure);
+            }            
+        }    
         switch (failure_handling)
         {
         case OF_HALT:
-            error("problem is %s",this->value>0?"infeasible":"unbounded");
+            error("problem %s",statusmsg);
             break;
         case OF_WARN:
-            warning("problem is %s",this->value>0?"infeasible":"unbounded");
+            warning("problem %s",statusmsg);
             break;
         case OF_IGNORE:
-            verbose("ignoring %s problem",this->value>0?"infeasible":"unbounded");
+            verbose("ignoring %s problem",statusmsg);
             break;
         default:
             status = SS_ERROR;
-            exception("invalid handling (failure_handling=%ld) for %s problem",failure_handling,this->value>0?"infeasible":"unbounded");
+            exception("invalid handling (failure_handling=%ld) for %s problem",failure_handling,statusmsg);
             break;
         }
         rc = false;
@@ -1408,15 +1742,26 @@ bool cvx::update_solution(void)
     {
         if ( strcmp(problemdump,"") != 0 )
         {
-            PyRun_FormatString("print('Problem solved: objective value is','{0:.6g}'.format(__cvx__['%s']['problem'].value),file=__dump__,flush=True)",optname);
+            PyRun_FormatString("print('Problem solved: objective value is',__cvx__['%s']['problem'].value,file=__dump__,flush=True)",optname);
         }
 
-        // TODO: replace this with a direct call to value.tolist()
         char buffer[65536];
-        int len = snprintf(buffer,sizeof(buffer)-1,"__cvx__['%s']['result'] = {",optname);
+        const char *status_string[] = {
+            "INIT",
+            "READY",
+            "OPTIMAL",
+            "INACCURATE",
+            "INFEASIBLE",
+            "UNBOUNDED",
+            "INVALID",
+            "ERROR",
+            "FAILED",
+        };
+        // TODO: replace this with a direct call to value.tolist()
+        int len = snprintf(buffer,sizeof(buffer)-1,"__cvx__['%s']['result'] = {'status':'%s',",optname,status_string[status]);
         for ( VARIABLE *item = problem.variables ; item != NULL ; item = item->next )
         {
-            len += snprintf(buffer+len,sizeof(buffer)-len-1,"'%s':%s.value.tolist() if not %s.value is None else [],",
+            len += snprintf(buffer+len,sizeof(buffer)-len-1,"'%s':%s.value.round(12).tolist()[-1::-1] if not %s.value is None else [],",
                 item->name,item->name,item->name);
         }
         len += snprintf(buffer+len,sizeof(buffer)-len-1,"%s","}\n");
@@ -1435,17 +1780,16 @@ bool cvx::update_solution(void)
         PyObject *result = PyDict_GetItemString(PyDict_GetItemString(cvx,optname),"result");
         for ( VARIABLE *item = problem.variables ; item != NULL ; item = item->next )
         {
-            if ( item->dual != NULL )
-            {
-                warning("TODO: dual values not copied back to object %s",item->name);
-            }
             Py_ssize_t ndx = 0;
             PyObject *var = PyDict_GetItemString(result,item->name);
             for ( REFERENCE *prop = item->primal ; prop != NULL ; prop = prop->next, ndx++ )
             {
-                *(prop->ptr) = PyFloat_AsDouble(PyList_GetItem(var,ndx));
+                *(prop->ptr) = PyFloat_AS_DOUBLE(PyList_GET_ITEM(var,ndx));
             }
-
+            for ( REFERENCE *prop = item->dual ; prop != NULL ; prop = prop->next, ndx++ )
+            {
+                *(prop->ptr) = PyFloat_AS_DOUBLE(PyList_GET_ITEM(var,ndx));
+            }
         }
         if ( strcmp(problemdump,"") != 0 )
         {

@@ -1,9 +1,8 @@
 // test_cvx.glm
 
 #set suppress_repeat_messages=FALSE
-//#option verbose
-//#option debug
 #set randomseed=1
+
 clock
 {
     timezone America/Seattle;
@@ -13,20 +12,14 @@ clock
 
 module optimize
 {
-//    message_flags VERBOSE;
     cvx_failure_handling WARN;
-    cvx_imports Variable,sum_squares,Minimize;
     cvx_problemdump "test_cvx.txt";
 }
 
 class test
 {
-    randomvar A0;
-    randomvar A1;
-    randomvar A2;
-    randomvar A3;
-    randomvar b0;
-    randomvar b1;
+    randomvar A;
+    randomvar b;
     double x;
     double y;
     double mu;
@@ -45,18 +38,14 @@ object test:..3
     groupid "test_group";
     latitude 37.5;
     longitude -122.5;
-    A0 "type:normal(0,1);refresh:1h";
-    A1 "type:normal(0,1);refresh:1h";
-    A2 "type:normal(0,1);refresh:1h";
-    A3 "type:normal(0,1);refresh:1h";
-    b0 "type:normal(0,1);refresh:1h";
-    b1 "type:normal(0,1);refresh:1h";
+    A "type:normal(0,1);refresh:1h";
+    b "type:normal(0,1);refresh:1h";
     x 0.0;
     y 0.0;
     object recorder
     {
         file `test_cvx_{id}.csv`;
-        property "A0,x,y";
+        property "A,b,x,y";
         interval -1;
     };
 }
@@ -104,7 +93,7 @@ object cvx
     name "problem-x";
     event INIT;
     variables "x=test:x";
-    data "A=test:A0"; // ,test.A1,test.A2,test.A3;b1=test.b1;b2=test.b2";
+    data "A=test:A";
     objective "Minimize(sum_squares(A@x))";
     constraints "x >= 1";
 }
@@ -112,20 +101,20 @@ object cvx
 object cvx 
 {
     parent "problem-x";
-    name "problem-y";
+    name "problem-y-dpp";
     event SYNC;
-    data "A=test:A1";
+    data "~A=test:A;~b=test:b"; // parameter syntax
     variables "y=test:y";
-    objective "Minimize(sum_squares(A@y))";
+    objective "Minimize(sum_squares(A@y-b))";
     constraints "y >= 1";
 }
 
 #set savefile=${modelname/.glm/.json}
 
 // This test does not work on linux platforms for some unknown reason
-#ifdef APPLE
 #ifexist "../test_cvx.txt"
-#on_exit 0 diff -w -I '^(param_prob:|Problem solved:|Result:|Data:|  )' ../test_cvx.txt test_cvx.txt > gridlabd.diff
+#ifdef APPLE
+#on_exit 0 diff -w -I '^(param_prob: |P: |Problem solved: |Data: |Result: |  )' ../test_cvx.txt test_cvx.txt > gridlabd.diff
 #endif
 #endif
 
