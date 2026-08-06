@@ -29,6 +29,9 @@ powerplant::powerplant(MODULE *module)
 			PT_char32, "city", get_city_offset(),
 				PT_DESCRIPTION, "City in which powerplant is located",
 			
+			PT_char32, "county", get_county_offset(),
+				PT_DESCRIPTION, "County in which powerplant is located",
+			
 			PT_char32, "state", get_state_offset(),
 				PT_DESCRIPTION, "State in which powerplant is located",
 			
@@ -59,6 +62,7 @@ powerplant::powerplant(MODULE *module)
 			    PT_KEYWORD, "CT", (set)GT_COMBUSTIONTURBINE,
 			    PT_KEYWORD, "PV", (set)GT_PHOTOVOLTAIC,
 			    PT_KEYWORD, "CC", (set)GT_COMBINEDCYCLE,
+			    PT_KEYWORD, "CS", (set)GT_CONCENTRATEDSOLAR,
 				PT_DESCRIPTION, "Generator type",
 
 			PT_set, "fuel", get_fuel_offset(), 
@@ -122,11 +126,11 @@ powerplant::powerplant(MODULE *module)
 			PT_char256, "controller", get_controller_offset(),
 				PT_DESCRIPTION, "controller python function name",
 
-			PT_double, "startup_cost[$/MW]", get_startup_cost_offset(),
-				PT_DESCRIPTION, "generator startup cost ($/MW)",
+			PT_double, "startup_cost[$]", get_startup_cost_offset(),
+				PT_DESCRIPTION, "generator startup cost ($)",
 
-			PT_double, "shutdown_cost[$/MW]", get_shutdown_cost_offset(),
-				PT_DESCRIPTION, "generator shutdown cost ($/MW)",
+			PT_double, "shutdown_cost[$]", get_shutdown_cost_offset(),
+				PT_DESCRIPTION, "generator shutdown cost ($)",
 
 			PT_double, "fixed_cost[$/h]", get_fixed_cost_offset(),
 				PT_DESCRIPTION, "generator fixed cost ($/h)",
@@ -158,6 +162,18 @@ powerplant::powerplant(MODULE *module)
 			PT_double, "Qg[MW]", get_Qg_offset(),
 				PT_DESCRIPTION, "generator actual reactive power output (MW)",
 
+			PT_double, "Tnominal[degC]", get_Tnominal_offset(),
+				PT_DESCRIPTION, "powerplant nominal operating temperature (degC)",
+
+			PT_double, "derating[pu/degC]", get_derating_offset(),
+				PT_DESCRIPTION, "powerplant temperature derating constant (pu/degC)",
+
+			PT_double, "Tcutoff[degC]", get_Tcutoff_offset(),
+				PT_DESCRIPTION, "powerplant cutoff temperature (degC)",
+
+			PT_object, "weather", get_weather_offset(),
+				PT_DESCRIPTION, "weather object",
+				
 			NULL) < 1 )
 		{
 				throw "unable to publish powerplant properties";
@@ -173,6 +189,7 @@ int powerplant::create(void)
 	last_t = 0;
 	last_Sm = 0;
 	gen_cf = 1.0;
+	weather_src = NULL;
 
 	return 1; // return 1 on success, 0 on failure
 }
@@ -180,41 +197,43 @@ int powerplant::create(void)
 int powerplant::init(OBJECT *parent_hdr)
 {
 	gen *parent = (gen*)get_parent();
-	if ( parent ) 
+	if ( parent == NULL ) 
 	{
-		if ( parent->isa("gen","pypower") )
+		error("powerplant must have a bus or gen parent");
+		return 0;
+	}
+	if ( parent->isa("gen","pypower") )
+	{
+		is_dynamic = TRUE;
+		parent->add_powerplant(this);
+		if ( get_storage_capacity() > 0 )
 		{
-			is_dynamic = TRUE;
-			parent->add_powerplant(this);
-			if ( get_storage_capacity() > 0 )
-			{
-				warning("energy storage devices cannot be dynamically dispatchable (parent is a generator)");
-			}
+			warning("energy storage devices cannot be dynamically dispatchable (parent is a generator)");
 		}
-		else if ( parent->isa("bus","pypower") )
-		{
-			is_dynamic = FALSE;
-		}
-		else
-		{
-			error("parent '%s' is not a pypower bus or gen object",get_parent()->get_name());
-			return 0;
-		}
+	}
+	else if ( parent->isa("bus","pypower") )
+	{
+		is_dynamic = FALSE;
+	}
+	else
+	{
+		error("parent '%s' is not a pypower bus or gen object",get_parent()->get_name());
+		return 0;
+	}
 
-		// look for gencost object that corresponds to this generator (if any)
-		for ( OBJECT *obj = gl_object_get_first() ; obj != NULL ; obj = obj->next)
+	// look for gencost object that corresponds to this generator (if any)
+	for ( OBJECT *obj = gl_object_get_first() ; obj != NULL ; obj = obj->next)
+	{
+		if ( gl_object_isa(obj,"gencost","pypower") )
 		{
-			if ( gl_object_isa(obj,"gencost","pypower") )
+			costobj = OBJECTDATA(obj,gencost);
+			if ( costobj->get_parent() == parent )
 			{
-				costobj = OBJECTDATA(obj,gencost);
-				if ( costobj->get_parent() == parent )
-				{
-					break; // got it
-				}
-				else
-				{
-					costobj = NULL; // forget about it!
-				}
+				break; // got it
+			}
+			else
+			{
+				costobj = NULL; // forget about it!
 			}
 		}
 	}
@@ -269,7 +288,7 @@ int powerplant::init(OBJECT *parent_hdr)
 	PyDict_SetItemString(py_kwargs,"substation_2",PyUnicode_FromString(get_substation_2()));
 	Py_complex z = {get_S().Re(), get_S().Im()};
 	PyDict_SetItemString(py_kwargs,"S",PyComplex_FromCComplex(z));
-	if ( get_parent() && get_parent()->isa("bus","pypower") )
+	if ( get_parent()->isa("bus","pypower") )
 	{
 		bus *parent = (bus*)get_parent();
 		PyDict_SetItemString(py_kwargs,"Vm",PyFloat_FromDouble(parent->get_Vm()));
@@ -300,6 +319,33 @@ int powerplant::init(OBJECT *parent_hdr)
 		}
 	default:
 		break;
+	}
+
+	// check derating
+	if ( get_weather() != NULL && derating != 0 && Tcutoff != 0 )
+	{
+		weather_src = OBJECTDATA(get_weather(),class weather);
+		verbose("linking powerplant performance to '%s.Td'",get_object(get_weather())->get_name());
+		if ( ! weather_src->isa("weather","pypower") )
+		{
+			error("object '%s' is not a pypower weather object",get_object(get_weather())->get_name());
+			return 0;
+		}
+		if ( Tnominal >= Tcutoff )
+		{
+			error("Tcutoff is not greater than Tnominal");
+			return 0;
+		}
+		if ( derating < 0 )
+		{
+			error("derating must be non-negative");
+			return 0;
+		}
+		if ( derating*(Tcutoff-Tnominal) > 1.0 )
+		{
+			warning("derating cutoff is actually %.1lf degC not %.1lf",1/derating+Tnominal,Tcutoff);
+		}
+
 	}
 
 	return 1; // return 1 on success, 0 on failure, 2 on retry later
@@ -380,6 +426,25 @@ TIMESTAMP powerplant::precommit(TIMESTAMP t0)
 	}
 	last_t = t0;
 
+	// powerplant derating (if any)
+	pmax = operating_capacity;
+	if ( weather_src != NULL && weather_src->get_Td() > Tnominal )
+	{
+		if ( weather_src->get_Td() > Tcutoff )
+		{
+			pmax = 0.0;
+		}
+		else
+		{
+			pmax *= 1 - ( weather_src->get_Td() - Tnominal ) * derating;
+			if ( pmax < 0 )
+			{
+				pmax = 0;
+			}
+		}
+		verbose("powerplant rating at %.1lf degC is %.1lf MW",weather_src->get_Td(),pmax);
+	}
+
 	// post costs
 	if ( costobj != NULL )
 	{
@@ -406,7 +471,7 @@ TIMESTAMP powerplant::presync(TIMESTAMP t0)
 		gen *parent = (gen*)get_parent();
 		parent->add_Pg(Pg);
 		parent->add_Qg(Qg);
-		parent->add_Pmax(operating_capacity);
+		parent->add_Pmax(pmax);
 	}
 	else // bus parent
 	{

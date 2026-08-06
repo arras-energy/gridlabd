@@ -132,7 +132,6 @@ int gen::create(void)
 		throw "maximum gen entities exceeded";
 	}
 
-	extern double base_MVA;
 	cost = NULL;
 	plant_count = 0;
 	bus = 0; // flag for unset
@@ -207,7 +206,7 @@ void gen::add_Qg(double reactive)
 void gen::add_Pmax(double capacity)
 {
 	Pmax += capacity;
-	Qmax = Pmax/default_reactive_power_fraction; 
+	Qmax = Pmax*default_reactive_power_fraction; 
 	Qmin = -Qmax;
 }
 

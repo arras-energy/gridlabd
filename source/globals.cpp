@@ -1174,7 +1174,7 @@ DEPRECATED const char *global_range(char *buffer, int size, const char *name)
 		delim = ' ';
 	}
 	int len = 0;
-	char temp[size+100];
+	char *temp = new char[size+100];
 	for ( double value = start ; value <= stop ; value += step )
 	{
 		if ( len > 0 )
@@ -1191,7 +1191,9 @@ DEPRECATED const char *global_range(char *buffer, int size, const char *name)
 			break;
 		}
 	}
-	return strncpy(buffer,temp,len+1);
+	strncpy(buffer,temp,size-1);
+	delete[] temp;
+	return buffer;
 }
 
 DEPRECATED const char *global_python(char *buffer, int size, const char *command)
@@ -1507,14 +1509,14 @@ DEPRECATED const char *global_findfile(char *buffer, int size, const char *spec)
 
 DEPRECATED const char *global_filename(char *buffer, int size, const char *spec)
 {
-	char var[size+1];
+	char *var = new char[size+1];
 	if ( spec[0] != '$' )
 	{
-		strncpy(var,spec,sizeof(var)-1);
+		strncpy(var,spec,size);
 	}
-	else if ( global_getvar(spec+1,var,sizeof(var)-1) == NULL )
+	else if ( global_getvar(spec+1,var,size) == NULL )
 	{
-		output_error("global_filename(buffer=%x,size=%d,spec='%s'): global '%s' is not found");
+		output_error("global_filename(buffer=%x,size=%d,spec='%s'): global '%s' is not found",buffer,size,spec);
 		return NULL;
 	}
 	char *dir = strrchr(var,'/');
@@ -1532,19 +1534,20 @@ DEPRECATED const char *global_filename(char *buffer, int size, const char *spec)
 	{
 		*ext = '\0';
 	}
+	delete[] var;
 	return buffer;
 }
 
 DEPRECATED const char *global_filepath(char *buffer, int size, const char *spec)
 {
-	char var[size+1];
+	char *var = new char[size+1];
 	if ( spec[0] != '$' )
 	{
-		strncpy(var,spec,sizeof(var)-1);
+		strncpy(var,spec,size);
 	}
-	else if ( global_getvar(spec+1,var,sizeof(var)-1) == NULL )
+	else if ( global_getvar(spec+1,var,size) == NULL )
 	{
-		output_error("global_filename(buffer=%x,size=%d,spec='%s'): global '%s' is not found");
+		output_error("global_filename(buffer=%x,size=%d,spec='%s'): global '%s' is not found",buffer,size,spec);
 		return NULL;
 	}
 	char *dir = strrchr(var,'/');
@@ -1557,19 +1560,20 @@ DEPRECATED const char *global_filepath(char *buffer, int size, const char *spec)
 	{
 		strcpy(buffer,".");
 	}
+	delete[] var;
 	return buffer;
 }
 
 DEPRECATED const char *global_filetype(char *buffer, int size, const char *spec)
 {
-	char var[size+1];
+	char *var = new char[size+1];
 	if ( spec[0] != '$' )
 	{
-		strncpy(var,spec,sizeof(var)-1);
+		strncpy(var,spec,size);
 	}
-	else if ( global_getvar(spec+1,var,sizeof(var)-1) == NULL )
+	else if ( global_getvar(spec+1,var,size) == NULL )
 	{
-		output_error("global_filename(buffer=%x,size=%d,spec='%s'): global '%s' is not found");
+		output_error("global_filename(buffer=%x,size=%d,spec='%s'): global '%s' is not found",buffer,size,spec);
 		return NULL;
 	}
 	char *dir = strrchr(var,'/');
@@ -1582,6 +1586,7 @@ DEPRECATED const char *global_filetype(char *buffer, int size, const char *spec)
 	{
 		strcpy(buffer,"");
 	}
+	delete[] var;
 	return buffer;
 }
 
@@ -1620,7 +1625,7 @@ DEPRECATED const char *global_findobj(char *buffer, int size, const char *spec)
 
 static const char geocode_decodemap[] = "0123456789bcdefghjkmnpqrstuvwxyz";
 static const unsigned char *geocode_encodemap = NULL;
-const char *geocode_encode(char *buffer, int len, double lat, double lon, int resolution=12)
+const char *geocode_encode(char *buffer, int len, double lat, double lon, int resolution)
 {
 	if ( len < resolution+1 )
 	{
@@ -1682,7 +1687,7 @@ const char *geocode_encode(char *buffer, int len, double lat, double lon, int re
 	return buffer;
 }
 
-DEPRECATED const char *geocode_decode(char *buffer, int size, const char *code)
+const char *geocode_decode(char *buffer, int size, const char *code, double *latitude, double *longitude)
 {
 	double lat_err = 90, lon_err = 180;
 	double lat_interval[] = {-lat_err,lat_err};
@@ -1732,21 +1737,33 @@ DEPRECATED const char *geocode_decode(char *buffer, int size, const char *code)
 		spec = c+1;
 	}
 	int res = -(int)log10(lat_err);
+	double lat = (lat_interval[0] + lat_interval[1])/2;
+	double lon = (lon_interval[0] + lon_interval[1])/2;
+
+	if ( latitude != NULL )
+	{
+		*latitude = lat;
+	}
+	if ( longitude != NULL )
+	{
+		*longitude = lon;
+		if ( latitude == NULL )
+		{
+			return "";
+		}
+	}
+
 	if ( spec == NULL )
 	{
-		return snprintf(buffer,size,"%.*lf,%.*lf",
-			res,(lat_interval[0] + lat_interval[1])/2,
-			res,(lon_interval[0] + lon_interval[1])/2) < size ? buffer : NULL;
+		return snprintf(buffer,size,"%.*lf,%.*lf",res,lat,res,lon) < size ? buffer : NULL;
 	}
 	else if ( strcmp(spec,"lat") == 0 )
 	{
-		return snprintf(buffer,size,"%.*lf",
-			res,(lat_interval[0] + lat_interval[1])/2) < size ? buffer : NULL;
+		return snprintf(buffer,size,"%.*lf",res,lat) < size ? buffer : NULL;
 	}
 	else if ( strcmp(spec,"lon") == 0 )
 	{
-		return snprintf(buffer,size,"%.*lf",
-			res,(lon_interval[0] + lon_interval[1])/2) < size ? buffer : NULL;
+		return snprintf(buffer,size,"%.*lf",res,lon) < size ? buffer : NULL;
 	}
 	else 
 	{
@@ -1790,15 +1807,16 @@ DEPRECATED const char *global_pid(char *buffer, int size)
 
 DEPRECATED const char * global_random(char *buffer, int size, const char *spec=NULL)
 {
-	static double last=0;
+	static double last_r = 0;
+	static unsigned int64 last_i = 0;
 	static enum {LK_NONE, LK_INTEGER, LK_DOUBLE} last_kind = LK_NONE;
 
 	// uniform unit random
 	if ( spec == NULL )
 	{
-		last = randunit(&global_randomstate);
+		last_r = randunit(&global_randomstate);
 		last_kind = LK_DOUBLE;
-		snprintf(buffer,size,"%lg",last);
+		snprintf(buffer,size,"%lg",last_r);
 		return buffer;
 	}
 
@@ -1811,10 +1829,10 @@ DEPRECATED const char * global_random(char *buffer, int size, const char *spec=N
 			snprintf(buffer,size,"%u",global_randomseed);
 			break;
 		case LK_INTEGER:
-			snprintf(buffer,size,"%llu",*(unsigned int64*)&last);
+			snprintf(buffer,size,"%llu",last_i);
 			break;
 		case LK_DOUBLE:
-			snprintf(buffer,size,"%lg",last);
+			snprintf(buffer,size,"%lg",last_r);
 			break;
 		default:
 			output_error("global_random(spec='%s'): internal state error (last_kind=%ld)",spec,(int)last_kind);
@@ -1834,16 +1852,16 @@ DEPRECATED const char * global_random(char *buffer, int size, const char *spec=N
 			+ (((unsigned int64)randwarn(&global_randomstate))<<32)
 			+ (((unsigned int64)randwarn(&global_randomstate))<<48);
 		rn &= mask;
-		*(unsigned int64*)&last = rn;
+		last_i = rn;
 		last_kind = LK_INTEGER;
 		snprintf(buffer,size,"%llu",rn);
 		return buffer;
 	}
 
 	// random distribution
-	if ( random_from_string(spec,&last) )
+	if ( random_from_string(spec,&last_r) )
 	{
-		snprintf(buffer,size,"%lg",last);
+		snprintf(buffer,size,"%lg",last_r);
 		last_kind = LK_DOUBLE;
 		return buffer;
 	}

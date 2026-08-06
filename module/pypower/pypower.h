@@ -11,8 +11,11 @@
 
 #include "gridlabd.h"
 
+#define MAXENT 100000 // maximum number of bus/branch/gen/gencost entities supported
+
 #include "bus.h"
 #include "branch.h"
+#include "dcline.h"
 #include "gen.h"
 #include "gencost.h"
 #include "geodata.h"
@@ -24,7 +27,5 @@
 #include "shunt.h"
 #include "transformer.h"
 #include "weather.h"
-
-#define MAXENT 100000 // maximum number of bus/branch/gen/gencost entities supported
 
 #endif

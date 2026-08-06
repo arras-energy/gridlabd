@@ -77,7 +77,7 @@ int geodata::init(OBJECT *parent)
 		return 0;
 	}
 	char *next=NULL, *last=NULL;
-	char buffer[strlen(get_target())+1];
+	char *buffer = new char[strlen(get_target())+1];
  	strcpy(buffer,get_target());
 	while ( (next=strtok_r(next?NULL:buffer,",",&last)) != NULL )
 	{
@@ -99,6 +99,7 @@ int geodata::init(OBJECT *parent)
 			if ( oclass == NULL )
 			{
 				error("class '%s' is not valid",classname);
+				delete[] buffer;
 				return 0;
 			}
 
@@ -112,6 +113,7 @@ int geodata::init(OBJECT *parent)
 						if ( ! add_target(obj,propname) )
 						{
 							error("unable to find property '%s' in object '%s'",propname,(const char*)(get_object(obj)->get_name()));
+							delete[] buffer;
 							return 0;
 						}
 					}
@@ -128,6 +130,7 @@ int geodata::init(OBJECT *parent)
 			if ( obj == NULL )
 			{
 				error("object '%s' not found",objname);
+				delete[] buffer;
 				return 0;
 			}
 			if ( ! isnan(obj->latitude) && ! isnan(obj->longitude) )
@@ -135,6 +138,7 @@ int geodata::init(OBJECT *parent)
 				if ( ! add_target(obj,propname) )
 				{
 					error("unable to find property '%s' in object '%s'",propname,objname);
+					delete[] buffer;
 					return 0;
 				}
 			}
@@ -146,10 +150,11 @@ int geodata::init(OBJECT *parent)
 		else
 		{
 			error("target '%s' is not valid",next);
+			delete[] buffer;
 			return 0;
 		}
 	}
-
+	delete[] buffer;
 	return 1;
 }
 

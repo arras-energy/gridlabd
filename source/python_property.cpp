@@ -106,10 +106,11 @@ PyObject *python_property_str ( PyObject * self ) ///< Python **gridlabx.object*
     {
         size = object_get_value(pyprop->obj,pyprop->prop,NULL,0);
     }
-    char buffer[size+2];
+    char *buffer = new char[size+2];
     object_get_value(pyprop->obj,pyprop->prop,buffer,size+1);
     PyObject *str = PyUnicode_FromFormat("%s",buffer);
     Py_INCREF(str);
+    delete[] buffer;
     return str;
 }
 
@@ -237,14 +238,17 @@ PyObject *python_property_get_initial(PyObject *self, PyObject *args, PyObject *
         return python_property_str(self);
     }
     int len = spec->to_initial(NULL,0,addr,pyprop->prop);
-    char buffer[len+2];
+    char *buffer = new char[len+2];
     memset(buffer,0,len+2);
     if ( spec->to_initial(buffer,len+1,addr,pyprop->prop) < 0 )
     {
         PyErr_SetString(PyExc_Exception,"unable to obtain property initializer");
+        delete[] buffer;
         return NULL;
     }
-    return PyUnicode_FromFormat("%s",buffer);
+    PyObject * result = PyUnicode_FromFormat("%s",buffer);
+    delete[] buffer;
+    return result;
 }
 
 static PyObject *set_to_python(set items, PROPERTY *prop)

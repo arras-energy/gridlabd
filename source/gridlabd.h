@@ -455,10 +455,18 @@ inline DEPRECATED void GL_THROW(const char *format, ...)
 
 /*	Define: gl_error
 
-	Outputs a message to the warning stream when <global_quiet> is <FALSE>.	
+	Outputs a message to the error stream when <global_quiet> is <FALSE>.	
 	See <output_error>.
  */
  #define gl_error (*callback->output_error)
+
+/*	Define: gl_exception
+
+	Outputs a message to the exception stream when <global_quiet> is <FALSE>
+	and pass the exception to the current exception handler.	
+	See <output_exception>.
+ */
+ #define gl_exception (*callback->exception.throw_exception)
 
 /*	Define: gl_debug
 
@@ -1556,6 +1564,12 @@ inline size_t nextpow2(size_t x)
 #define gl_forecast_save DEPRECATED (*callback->forecast.save)
 /**@}*/
 
+///////////////
+// Geocoding //
+///////////////
+
+#define gl_geocode_encode DEPRECATED (*callback->geocode.encode)
+#define gl_geocode_decode DEPRECATED (*callback->geocode.decode)
 
 /******************************************************************************
  * Init/Sync/Create catchall macros
@@ -2872,6 +2886,17 @@ public:
 
 	// Method: get_longitude
 	inline double get_longitude(void) { return my()->longitude; };
+
+	// Method: get_distance
+	inline double get_distance(gld_object *to, bool km=false)
+	{
+		double flat = my()->latitude*PI/180;
+		double flon = my()->longitude*PI/180;
+		double tlat = to->get_latitude()*PI/180;
+		double tlon = to->get_longitude()*PI/180;
+		double radius = km ? 6371.0 : 3958.8; // km or miles
+		return 2*radius*asin(sqrt((1-cos(flat-tlat)+cos(flat)*cos(tlat)*(1-cos(flon-tlon)))/2));		
+	}
 
 	// Method: get_in_svc
 	inline TIMESTAMP get_in_svc(void) { return my()->in_svc; };
