@@ -43,7 +43,7 @@ jobs:
       uses: actions/upload-artifact@v4
       if: failure()
       with:
-        name: validate-result
+        name: validate-result-ubuntu24
         path: |
           validate.txt
           validate.tar.gz
@@ -133,7 +133,7 @@ jobs:
       uses: actions/upload-artifact@v4
       if: failure()
       with:
-        name: validate-result-macos-latest
+        name: validate-result-macos15
         path: |
           validate.txt
           validate.tar.gz
@@ -178,7 +178,7 @@ jobs:
       uses: actions/upload-artifact@v4
       if: failure()
       with:
-        name: validate-result-macos-latest
+        name: validate-result-macos26
         path: |
           validate.txt
           validate.tar.gz
