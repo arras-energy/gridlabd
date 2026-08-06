@@ -1,9 +1,5 @@
-# for dry-run use "alias INSTALL=echo"
+set -x
 alias INSTALL=''
-
-# prevent installers from asking questions
-export NONINTERACTIVE=1
-export HOMEBREW_NO_ASK=1 
 
 INSTALL error () { echo "ERROR [$(basename $0)]: $*" > /dev/stderr ; exit 1 ; }
 INSTALL PYTHON_VERSION=3.10
@@ -19,12 +15,12 @@ INSTALL brew -h 1>/dev/null 2>&1 || error "you must install brew first. See http
 
 # setup requires python version if not already installed
 if ! python$PYTHON_VERSION --version 1>/dev/null 2>&1 ; then
-    INSTALL yes | brew install python@$PYTHON_VERSION
+    INSTALL brew install python@$PYTHON_VERSION
     python$PYTHON_VERSION --version || error "python$PYTHON_VERSION installation failed"
 fi
 if ! python$PYTHON_VERSION -m venv -h 1>/dev/null 2>&1 ; then
     printf "installing... "
-    INSTALL yes | brew install python$PYTHON_VERSION-venv
+    INSTALL brew install python$PYTHON_VERSION-venv
     python$PYTHON_VERSION -m venv -h >/dev/null || error "unable to install python$PYTHON_VERSION-venv"
 fi
 
@@ -40,47 +36,32 @@ test ! -z "$VIRTUAL_ENV" || error "python venv activation failed"
 
 # upgrade pip if needed
 if ! "$PYTHON_EXEC" -m pip --version 1>/dev/null 2>&1 ; then
-    INSTALL curl --retry 5 -fsL https://bootstrap.pypa.io/get-pip.py | python$PYTHON_VERSION
+    INSTALL curl -fsL https://bootstrap.pypa.io/get-pip.py | python$PYTHON_VERSION
     INSTALL "$PYTHON_EXEC" -m pip --version || error "pip installation failed"
 fi
 
 # install python-config
 if ! "python$PYTHON_VERSION-config" --prefix 1>/dev/null 2>&1 ; then
-    INSTALL yes | brew install python$PYTHON_VERSION-dev
+    INSTALL brew install python$PYTHON_VERSION-dev
     python$PYTHON_VERSION-config --prefix || error "python$PYTHON_VERSION-config installation failed"
 fi
 INSTALL "$PYTHON_EXEC" -m pip install --upgrade pip || error "pip update failed"
 
-# setup /usr/local
-test -d /usr/local/bin || sudo mkdir /usr/local/bin
-test -d /usr/local/share || sudo mkdir /usr/local/share
-export PATH=/usr/local/bin:$PATH
-
-# install autoconf 2.72 as required
-INSTALL brew install m4
-INSTALL brew link --force m4
-if [ "$(autoconf --version | head -n 1 | cut -f4 -d' ')" != "2.72" ] ; then
-    (cd /tmp ; curl --retry 5 -sL https://ftp.gnu.org/gnu/autoconf/autoconf-2.72.tar.gz | tar xz )
-    (cd /tmp/autoconf-2.72 ; ./configure ; make ; sudo make install)
-    test "$(autoconf --version | head -n 1 | cut -f4 -d' ')" = "2.72" || error "autoconf installation failed"
-fi
-
 # install required libraries
-INSTALL brew install libffi zlib tcl-tk mdbtools gdal
+INSTALL brew install autoconf libffi zlib pkg-config xz gdbm tcl-tk mdbtools
 
 # install required tools
 INSTALL brew install automake libtool gnu-sed gawk
-sudo ln -s /opt/homebrew/bin/glibtoolize /usr/local/bin/libtoolize
 
 clang -v >/dev/null || error "you have not installed clang. Use 'xcode-select --install' to install command line build tools."
 
-# create /usr/local/opt if needed
-test -d /usr/local/opt || sudo mkdir /usr/local/opt
+# # update library paths
+# INSTALL ldconfig
 
 # install mysql
 if ! mysql_config --libs >/dev/null 2>&1 ; then
     printf "Installing MySQL... "
-    brew yes | install mysql
+    brew install mysql
     if ! mysql_config --libs >/dev/null 2>&1 ; then
         error "Failed to install MySQL with Homebrew."
     fi

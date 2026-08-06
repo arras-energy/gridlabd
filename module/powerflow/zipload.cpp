@@ -367,7 +367,7 @@ table *get_load_data(void)
 		}
 		else
 		{
-			gl_warning("get_load_data() file '%s' contains invalid geocode %s",(const char*)loaddata_pathname,geocode);
+			gl_warning("get_load_data() file '%s' contains invalid geocode %s",(const char*)loaddata_pathname,geocode->to_string().c_str());
 		}
 	}
 	return load_data;	

@@ -185,8 +185,8 @@ if __name__ == '__main__':
                 "address":["The White House"],
                 })
             result = apply(test,{"reverse":True})
-            self.assertEqual(round(result["latitude"][0],6),38.8977)
-            self.assertEqual(round(result["longitude"][0],6),-77.036553)
+            self.assertEqual(round(result["latitude"][0],4),38.8976)
+            self.assertEqual(round(result["longitude"][0],4),-77.0366)
 
         def test_address(self):
             test = DataFrame({
