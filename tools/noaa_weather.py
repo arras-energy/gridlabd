@@ -93,7 +93,8 @@ class NOAAWeather:
                     usecols=["DATE"]+list(self.DATACOLUMNS),
                     index_col=["DATE"],sep="|",
                     parse_dates=["DATE"],
-                    low_memory=False,
+                    low_memory=True,
+                    dtype=float,
                     ).rename(self.DATACOLUMNS,axis=1)
                 if fill:
                     self.data.ffill(inplace=True)
