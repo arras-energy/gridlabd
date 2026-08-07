@@ -120,7 +120,7 @@ jobs:
         sudo mkdir -p /usr/local/opt/gridlabd
         sudo chmod 2777 /usr/local/opt/gridlabd
         sh ./setup.sh --local
-        brew install gdal
+        brew install gdal mysql
         
     - name: Build Gridlabd
       run: |
