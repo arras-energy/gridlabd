@@ -14,10 +14,10 @@ jobs:
 
     steps:
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@main
 
     - name: Setup python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@main
       with:
         python-version: '3.12'
 
@@ -51,10 +51,10 @@ jobs:
 
     steps:
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@main
 
     - name: Setup python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@main
       with:
         python-version: '3.12'
 
