@@ -130,7 +130,7 @@ jobs:
       run: |
         sh ./build.sh --upload --release
 
-buildMacos26FastS3:
+  buildMacos26FastS3:
 
     runs-on: macos-26
     environment: Integration
