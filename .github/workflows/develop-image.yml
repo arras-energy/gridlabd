@@ -15,7 +15,7 @@ jobs:
     environment: Integration
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@main
 
       # this is to fix GIT not liking owner of the checkout dir
     - name: Set ownership
@@ -23,7 +23,7 @@ jobs:
         chown -R $(id -u):$(id -g) $PWD
 
     - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@main
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
         role-session-name: developWebsiteSyncWorkflow
@@ -48,7 +48,7 @@ jobs:
     environment: Integration
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@main
 
       # this is to fix GIT not liking owner of the checkout dir
     - name: Set ownership
@@ -56,7 +56,7 @@ jobs:
         chown -R $(id -u):$(id -g) $PWD
 
     - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@main
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
         role-session-name: developImagesMacos14Update
@@ -92,7 +92,7 @@ jobs:
     environment: Integration
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@main
 
       # this is to fix GIT not liking owner of the checkout dir
     - name: Set ownership
@@ -100,7 +100,7 @@ jobs:
         chown -R $(id -u):$(id -g) $PWD
 
     - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@main
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
         role-session-name: developImagesMacos15Update
@@ -130,13 +130,13 @@ jobs:
       run: |
         sh ./build.sh --upload --release
 
-buildMacos26FastS3:
+  buildMacos26FastS3:
 
     runs-on: macos-26
     environment: Integration
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@main
 
       # this is to fix GIT not liking owner of the checkout dir
     - name: Set ownership
@@ -144,7 +144,7 @@ buildMacos26FastS3:
         chown -R $(id -u):$(id -g) $PWD
 
     - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@main
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
         role-session-name: developImagesMacos15Update
@@ -195,10 +195,10 @@ buildMacos26FastS3:
         unzip awscliv2.zip
         ./aws/install
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@main
 
     - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@main
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
         role-session-name: developImagesUbuntu22Update
@@ -238,7 +238,7 @@ buildMacos26FastS3:
         unzip awscliv2.zip
         ./aws/install
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@main
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
