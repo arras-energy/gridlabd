@@ -40,9 +40,6 @@ class NOAAWeather:
         "relative_humidity": "humidity[%]",
         "visibility": "visibility[miles]",
         "pressure_3hr_change": "pressure_change[mbar/3h]",
-        "sky_cover_1": "SKY1",
-        "sky_cover_2": "SKY2",
-        "sky_cover_3": "SKY3",
         }
     STATIONCOLUMNS = {
         "LATITUDE": "Y[deg]",
@@ -101,9 +98,6 @@ class NOAAWeather:
                     self.data.bfill(inplace=True)
                 if dropna:
                     self.data.dropna(axis=1,inplace=True)
-                # self.data["skycover[%]"] = [max(self.CLOUDS[x.split(":",2)[0]],self.CLOUDS[y.split(":",2)[0]],self.CLOUDS[z.split(":",2)[0]]) 
-                #     for x,y,z in zip(self.data.SKY1.values,self.data.SKY2.values,self.data.SKY3.values)]
-                self.data.drop(["SKY1","SKY2","SKY3"],axis=1,inplace=True)
                 self.data.to_csv(pathname,index=True,header=True)
             except urllib.error.HTTPError as err:
                 if app.DEBUG:
