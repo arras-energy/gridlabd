@@ -15,7 +15,7 @@ jobs:
     environment: Integration
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@main
 
       # this is to fix GIT not liking owner of the checkout dir
     - name: Set ownership
@@ -23,7 +23,7 @@ jobs:
         chown -R $(id -u):$(id -g) $PWD
 
     - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@main
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
         role-session-name: developWebsiteSyncWorkflow
@@ -48,7 +48,7 @@ jobs:
     environment: Integration
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@main
 
       # this is to fix GIT not liking owner of the checkout dir
     - name: Set ownership
@@ -56,7 +56,7 @@ jobs:
         chown -R $(id -u):$(id -g) $PWD
 
     - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@main
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
         role-session-name: developImagesMacos14Update
@@ -76,7 +76,7 @@ jobs:
         sudo mkdir -p /usr/local/opt/gridlabd
         sudo chmod 2777 /usr/local/opt/gridlabd
         sh ./setup.sh --local
-        brew install gdal
+        (export HOMEBREW_NO_ASK=1 ; brew install gdal)
         
     - name: Build Gridlabd
       run: |
@@ -92,7 +92,7 @@ jobs:
     environment: Integration
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@main
 
       # this is to fix GIT not liking owner of the checkout dir
     - name: Set ownership
@@ -100,7 +100,7 @@ jobs:
         chown -R $(id -u):$(id -g) $PWD
 
     - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@main
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
         role-session-name: developImagesMacos15Update
@@ -120,7 +120,51 @@ jobs:
         sudo mkdir -p /usr/local/opt/gridlabd
         sudo chmod 2777 /usr/local/opt/gridlabd
         sh ./setup.sh --local
-        brew install gdal
+        (export HOMEBREW_NO_ASK=1 ; brew install gdal)
+        
+    - name: Build Gridlabd
+      run: |
+        sh ./build.sh --system --parallel
+        
+    - name: Deploy to S3
+      run: |
+        sh ./build.sh --upload --release
+
+  buildMacos26FastS3:
+
+    runs-on: macos-26
+    environment: Integration
+
+    steps:
+    - uses: actions/checkout@main
+
+      # this is to fix GIT not liking owner of the checkout dir
+    - name: Set ownership
+      run: |
+        chown -R $(id -u):$(id -g) $PWD
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@main
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE }}
+        role-session-name: developImagesMacos15Update
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Symlink for libtool
+      run: |
+        ln -s /usr/local/bin/glibtoolize /usr/local/bin/libtoolize
+        ln -s /usr/local/bin/glibtool /usr/local/bin/libtool
+
+    - name: Add libraries to PATH
+      run: |
+        echo "LIBRARY_PATH=$(brew --prefix)/lib:$(brew --prefix)/opt:$(brew --prefix)/include" >> $GITHUB_ENV
+
+    - name: Run Setup
+      run: |
+        sudo mkdir -p /usr/local/opt/gridlabd
+        sudo chmod 2777 /usr/local/opt/gridlabd
+        sh ./setup.sh --local
+        (export HOMEBREW_NO_ASK=1; brew install gdal mysql)
         
     - name: Build Gridlabd
       run: |
@@ -151,10 +195,10 @@ jobs:
         unzip awscliv2.zip
         ./aws/install
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@main
 
     - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@main
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
         role-session-name: developImagesUbuntu22Update
@@ -194,7 +238,7 @@ jobs:
         unzip awscliv2.zip
         ./aws/install
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@main
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4

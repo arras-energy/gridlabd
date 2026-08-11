@@ -18,7 +18,7 @@ jobs:
     environment: Integration
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@main
 
       # this is to fix GIT not liking owner of the checkout dir
     - name: Set ownership
@@ -26,7 +26,7 @@ jobs:
         chown -R $(id -u):$(id -g) $PWD
 
     - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@main
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
         role-session-name: masterWebsiteSyncWorkflow
@@ -51,7 +51,7 @@ jobs:
     environment: Integration
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@main
 
       # this is to fix GIT not liking owner of the checkout dir
     - name: Set ownership
@@ -59,7 +59,7 @@ jobs:
         chown -R $(id -u):$(id -g) $PWD
 
     - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@main
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
         role-session-name: masterImagesMacos14Update
@@ -99,7 +99,7 @@ jobs:
     environment: Integration
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@main
 
       # this is to fix GIT not liking owner of the checkout dir
     - name: Set ownership
@@ -107,7 +107,7 @@ jobs:
         chown -R $(id -u):$(id -g) $PWD
 
     - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@main
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
         role-session-name: masterImagesMacos15Update

@@ -19,12 +19,12 @@ INSTALL brew -h 1>/dev/null 2>&1 || error "you must install brew first. See http
 
 # setup requires python version if not already installed
 if ! python$PYTHON_VERSION --version 1>/dev/null 2>&1 ; then
-    INSTALL brew install python@$PYTHON_VERSION
+    INSTALL yes | brew install python@$PYTHON_VERSION
     python$PYTHON_VERSION --version || error "python$PYTHON_VERSION installation failed"
 fi
 if ! python$PYTHON_VERSION -m venv -h 1>/dev/null 2>&1 ; then
     printf "installing... "
-    INSTALL brew install python$PYTHON_VERSION-venv
+    INSTALL yes | brew install python$PYTHON_VERSION-venv
     python$PYTHON_VERSION -m venv -h >/dev/null || error "unable to install python$PYTHON_VERSION-venv"
 fi
 
@@ -46,7 +46,7 @@ fi
 
 # install python-config
 if ! "python$PYTHON_VERSION-config" --prefix 1>/dev/null 2>&1 ; then
-    INSTALL brew install python$PYTHON_VERSION-dev
+    INSTALL yes | brew install python$PYTHON_VERSION-dev
     python$PYTHON_VERSION-config --prefix || error "python$PYTHON_VERSION-config installation failed"
 fi
 INSTALL "$PYTHON_EXEC" -m pip install --upgrade pip || error "pip update failed"
@@ -74,13 +74,13 @@ sudo ln -s /opt/homebrew/bin/glibtoolize /usr/local/bin/libtoolize
 
 clang -v >/dev/null || error "you have not installed clang. Use 'xcode-select --install' to install command line build tools."
 
-# # update library paths
-# INSTALL ldconfig
+# create /usr/local/opt if needed
+test -d /usr/local/opt || sudo mkdir /usr/local/opt
 
 # install mysql
 if ! mysql_config --libs >/dev/null 2>&1 ; then
     printf "Installing MySQL... "
-    brew install mysql
+    brew yes | install mysql
     if ! mysql_config --libs >/dev/null 2>&1 ; then
         error "Failed to install MySQL with Homebrew."
     fi

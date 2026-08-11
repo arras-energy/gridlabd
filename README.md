@@ -43,11 +43,16 @@ Arras Energy is a multi-purpose electric power system infrastructure modeling an
         climate
         loads
         generators
-        solvers
         optimizers
         revenue
         reliability
       end
+    end
+    gridlabd <--> Solvers
+    subgraph Solvers
+        powerflow
+        pypower
+        cvxpy
     end
     gridlabd --> Outputs
     subgraph Outputs

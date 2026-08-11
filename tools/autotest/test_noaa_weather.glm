@@ -1,5 +1,5 @@
 // This test is disabled on github actions because of high memory requirements that github cannot satisfy on the default runners
-#if ${github_actions} != yes
+#ifndef github_actions
 
 #python -m gridlabd.noaa_weather KSFO -y=2020 --output=test_noaa_weather.csv
 
