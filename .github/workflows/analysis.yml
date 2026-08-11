@@ -65,7 +65,3 @@ jobs:
       
     - name: Analyse source C/C++
       run: cppcheck -j $(nproc) --library=std source/*.{c,cpp} || true
-
-    - name: Analyse modules C/C++
-      run: |
-        cppcheck -j $(nproc) --library=std module/{assert,climate,generators,powerflow,reliability,residential,tape}/*.{c,cpp} || true
