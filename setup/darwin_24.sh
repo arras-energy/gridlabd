@@ -80,7 +80,7 @@ test -d /usr/local/opt || sudo mkdir /usr/local/opt
 # install mysql
 if ! mysql_config --libs >/dev/null 2>&1 ; then
     printf "Installing MySQL... "
-    brew yes | install mysql
+    brew install mysql
     if ! mysql_config --libs >/dev/null 2>&1 ; then
         error "Failed to install MySQL with Homebrew."
     fi
