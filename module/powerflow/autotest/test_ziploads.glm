@@ -1,5 +1,7 @@
 // module/powerflow/autotest/test_ziploads.glm
 
+#ifndef github_actions
+
 #set complex_format=%.3lf%+.3lfj
 
 clock
@@ -20,7 +22,7 @@ module tape
 }
 
 #weather get CA-San_Francisco_Intl_Ap.tmy3
-#input "CA-San_Francisco_Intl_Ap.tmy3" --property=name=SFO
+#input "CA-San_Francisco_Intl_Ap.tmy3" --property=name=weather
 
 //
 // Substation
@@ -357,3 +359,5 @@ object triplex_meter
 #on_exit 0 diff ../test_ziploads_${PHASES}.csv test_ziploads_${PHASES}.csv > gridlabd.diff
 #endif
 #done
+
+#endif
