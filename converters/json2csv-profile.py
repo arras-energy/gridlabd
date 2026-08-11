@@ -15,7 +15,6 @@ def convert(input_file,output_file=None, options={}):
 	with open(input_file,"r") as f :
 		data = json.load(f)
 		assert(data['application']=='gridlabd')
-		assert(data['version'] >= '4.2.0')
 	
 	def find(objects,property,value):
 		result = []
