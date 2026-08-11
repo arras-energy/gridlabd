@@ -60,7 +60,7 @@ jobs:
       run: sudo apt-get install cppcheck
       
     - name: Analyse source C/C++
-      run: cppcheck -j 4 --library=std source/*.{c,cpp} || true
+      run: cppcheck -j $(nproc) --library=std source/*.{c,cpp} || true
 
     - name: Analyse module C/C++
-      run: cppcheck -j 4 --library=std module/*/*.{c,cpp} || true
+      run: cppcheck -j $(nproc) --library=std module/*/*.{c,cpp} || true
