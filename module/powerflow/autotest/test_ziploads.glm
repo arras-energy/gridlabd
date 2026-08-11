@@ -20,7 +20,7 @@ module tape
 }
 
 #weather get CA-San_Francisco_Intl_Ap.tmy3
-#input "CA-San_Francisco_Intl_Ap.tmy3" --property=name=weather
+#input "CA-San_Francisco_Intl_Ap.tmy3" --property=name=SFO
 
 //
 // Substation
