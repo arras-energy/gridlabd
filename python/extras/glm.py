@@ -5,7 +5,6 @@ class GLM :
 			with open(filename,'r') as fh :
 				data = json.load(fh)
 			assert(data['application']=='gridlabd')
-			assert(data['version'] >= '4.0.0')
 			self.version = data['version']
 			self.modules = data['modules']
 			self.classes = data['classes']
