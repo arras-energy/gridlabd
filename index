@@ -14,9 +14,6 @@ build-aux/python3.sh
 build-aux/version.sh
 build.sh
 configure.ac
-doxygen/README.md
-doxygen/footer.html
-doxygen/gridlabd.conf
 geodata/Makefile.mk
 geodata/README.md
 geodata/autotest/test_datasets.glm
