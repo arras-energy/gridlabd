@@ -1,7 +1,0 @@
-#ifexists "../dcopf_solution.glm"
-#define DIR=..
-#else
-#define DIR=.
-#endif
-
-#include "${DIR}/dcopf_solution.glm"
