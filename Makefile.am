@@ -77,14 +77,9 @@ check-target:
 include $(top_srcdir)/third_party/Makefile.mk
 include $(top_srcdir)/source/Makefile.mk
 include $(top_srcdir)/runtime/Makefile.mk
-# include $(top_srcdir)/tools/Makefile.mk
 include $(top_srcdir)/utilities/Makefile.mk
 include $(top_srcdir)/python/Makefile.mk
-# include $(top_srcdir)/geodata/Makefile.mk
 include $(top_srcdir)/subcommands/Makefile.mk
-
-# approved modules
-# include $(top_srcdir)/module/Makefile.mk
 
 BUILT_SOURCES += python-requirements
 
@@ -176,21 +171,6 @@ help:
 	@echo "  aws-image-default - Upload AWS install image as default for this platform"
 	@wcho "  aws-install       - Upload AWS install script"
 	@echo ""
-	@echo "Documentation targets:"
-	@echo "  html                 - Generate all html documentation"
-	@echo "  module-html          - Generate module documentation (only if doxygen was found"
-	@echo "                         by ./configure)"
-	@echo "  developer-html       - Generate developer documentation (only if natural-docs was"
-	@echo "                         found by ./configure)"
-	@echo "  troubleshooting-html - Generate troubleshooting documentation (only if gawk was"
-	@echo "                         was found by ./configure)"
-	@echo ""
-	@echo "Data targets:"
-	@echo "  index        - Download all indexes from data archives"
-	@echo "  weather      - Download the weather data index from the weather archive"
-	@echo "  library      - Download the library index from the library archive"
-	@echo "  template     - Download the template index from the template archive"
-	@echo ""
 	@echo "Developer targets (may require special tools):"
 	@echo "  clean-wc   - Recursively remove all files and directories not under"
 	@echo "               revision control (will prompt to confirm first)"
@@ -236,7 +216,6 @@ check-local validate:
 	@(export LD_LIBRARY_PATH=.:$${LD_LIBRARY_PATH:-${libdir}}; ${bindir}/gridlabd -D keep_progress=TRUE --validate -D keep_progress=TRUE || (utilities/save_validation_output;exit 1))
 
 clean-local: python-clean
-	@rm -rf $(top_srcdir)/documents/html
 	@rm -rf $(top_srcdir)/validate.txt
 	@rm -f $(top_srcdir)/gridlabd.spec
 	@rm -f $(top_srcdir)/gridlabd.bin origin.txt
@@ -272,7 +251,6 @@ distclean-local: python-clean
 	@rm -f $(top_srcdir)/gridlabd.spec
 	@rm -f $(top_srcdir)/gridlabd.bin origin.txt
 	@rm -rf $(top_srcdir)/build
-	@rm -rf $(top_srcdir)/documents/html
 	@rm -f $(top_srcdir)/validate.txt
 
 libtool: $(LIBTOOL_DEPS)
@@ -309,24 +287,3 @@ $(prefix)/src:
 index: weather library template
 	@echo Updating file index...
 	@git ls-files | grep -v '^\.' | grep -v '/\.' > index
-
-html-local: module-html developer-html troubleshooting-html
-	@mkdir -p $(prefix)/share/doc/developer
-	@cp $(top_srcdir)/documents/index.html $(prefix)/share/doc/index.html
-	@cp -R $(top_srcdir)/documents/html/* $(prefix)/share/doc/
-	@cp -R $(top_srcdir)/source/html/* $(prefix)/share/doc/developer/
-
-module-html:
-	@mkdir -p $(top_srcdir)/documents/html/modules
-	@doxygen $(top_srcdir)/doxygen/gridlabd.conf
-
-developer-html: # TODO
-	@(cd $(top_srcdir)/source/html ; natural_docs . ; cd - > /dev/null )
-
-troubleshooting-html:
-	@mkdir -p $(top_srcdir)/documents/html/troubleshooting/
-	@(cd $(top_srcdir) ; gawk -f utilities/troubleshooting.awk */*.cpp > $(top_srcdir)/documents/html/troubleshooting/index.html )
-
-documents/gridlabd.pdf: documents/gridlabd.glm
-	(cd documents ; $(DESTDIR)$(bindir)/gridlabd gridlabd.glm | echo "WARNING: unable to update documents/gridlabd.pdf")
-	test -f documents/gridlabd.md && pandoc -V geometry:landscape documents/gridlabd.md -o documents/gridlabd.pdf
