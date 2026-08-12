@@ -49,7 +49,6 @@ def main():
 		else : 
 			error(f"{opt}={arg} is not a valid option")
 
-
 	convert(ifile=filename_json,ofile=filename_glm,json_type=json_type,noclock=clockflag,ignore_globals=ignored_globals_list)
 
 def convert(ifile,ofile,json_type="gridlabd",noclock=False,ignore_globals=None) :
@@ -73,9 +72,6 @@ def convert(ifile,ofile,json_type="gridlabd",noclock=False,ignore_globals=None) 
 			assert(data['data year']=='2016')
 		else :
 			assert(data['application']=='gridlabd')
-			assert(data['version'] >= '4.0.0')
-		# print(data['classes'].keys())
-		
 
 	with open(ofile, "w") as fw : 
 		fw.write(f"// JSON to GLM Converter Output\n")

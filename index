@@ -573,6 +573,7 @@ docs/Home.md
 docs/Install/Amazon_EC2.md
 docs/Install/Docker.md
 docs/Install/Gridlabd_rc.md
+docs/Install/SINGULARITY.md
 docs/Install/Windows.md
 docs/Install/macOS.md
 docs/Makefile.mk
@@ -1099,6 +1100,7 @@ docs/Tools/Modeler.md
 docs/Tools/Moutils.md
 docs/Tools/Network.md
 docs/Tools/Noaa_forecast.md
+docs/Tools/Noaa_weather.md
 docs/Tools/Nsrdb_weather.md
 docs/Tools/Powerline.md
 docs/Tools/Powerplant.md
@@ -3291,6 +3293,7 @@ setup/darwin_21.sh
 setup/darwin_22.sh
 setup/darwin_23.sh
 setup/darwin_24.sh
+setup/darwin_25.sh
 setup/rhel_10-x86_64.sh
 setup/rhel_8-x86_64.sh
 setup/rhel_9-x86_64.sh
@@ -4129,9 +4132,6 @@ tools/autotest/test_moutils.glm
 tools/autotest/test_moutils.json
 tools/autotest/test_moutils.png
 tools/autotest/test_network.glm
-tools/autotest/test_noaa_forecast.csv
-tools/autotest/test_noaa_forecast.glm
-tools/autotest/test_noaa_forecast_opt.glm
 tools/autotest/test_noaa_weather.csv
 tools/autotest/test_noaa_weather.glm
 tools/autotest/test_pole_analysis.glm

@@ -68,7 +68,6 @@ for opt, arg in opts:
 with open(filename_json,"r") as f :
 	data = json.load(f)
 	assert(data['application']=='gridlabd')
-	assert(data['version'] >= '4.2.0')
 
 if output_type == 'csvplot':
 
