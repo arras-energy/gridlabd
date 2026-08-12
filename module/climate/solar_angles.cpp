@@ -305,8 +305,8 @@ double SolarAngles::azimuth(
     return acos( rs );
 }
 
-//Most additions below here are from the NREL Solar Position algorithm 2.0
-//http://rredc.nrel.gov/solar/codesandalgorithms/solpos/aboutsolpos.html
+//Most additions below here are from the NLR Solar Position algorithm 2.0
+//http://rredc.nlr.gov/solar/codesandalgorithms/solpos/aboutsolpos.html
 //Perez model function at the end (perez_tilt) extracted from referenced paper
 /*============================================================================
 *    Contains:
