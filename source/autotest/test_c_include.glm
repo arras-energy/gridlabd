@@ -20,24 +20,25 @@ clock {
 class noise {
 	double source; // deterministic source
 	double signal; // destination for the noisy signal
-	intrinsic sync(TIMESTAMP t0, TIMESTAMP t1)
+	intrinsic presync(TIMESTAMP t0, TIMESTAMP t1)
 	{
 		// This provides the main noise source input.
 		// You can source this from either the clock (t0)
 		// or the elasping simulation time (t0-starttime)
 		// or some other deterministic source you like.
-		source = (double)t0; 
-		signal = source +(double)rand()/RAND_MAX;
-		return t0+1; // update signal every second
+		source += (double)rand() / RAND_MAX - 0.5; // random walk
+		signal = source + ( (double)rand() / RAND_MAX - 0.5 ) / 10; // noise added
+		return t0+10; // update signal every 10 seconds
 	};
 }
 
 // record the output
 object noise 
 {
+	source 100;
+	name "noise";
 	on_init "python:recorder.init";
-	on_postsync "python:recorder.update";
-	on_finalize "python:recorder.finish";
+	on_commit "python:recorder.update";
 }
 
 #ifexist "../test_c_include.csv"
