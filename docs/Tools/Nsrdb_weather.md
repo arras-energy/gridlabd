@@ -83,7 +83,7 @@ interval = 60 # sample interval, may be 30 or 60 minutes
 utc = False # timestamps in UTC
 email="gridlabd@gmail.com" # credential email
 verbose = False # verbose output enable
-server = "https://developer.nrel.gov/api/solar/nsrdb_psm3_download.csv" # NSRDB server URL
+server = "https://developer.nlr.gov/api/solar/nsrdb_psm3_download.csv" # NSRDB server URL
 cachedir = "/usr/local/share/gridlabd/weather" # local NSRDB cache folder
 attributes = 'ghi,dhi,dni,cloud_type,dew_point,air_temperature,surface_albedo,wind_speed,wind_direction,solar_zenith_angle' # NSRDB fields to download
 credential_file = f"{os.getenv('HOME')}/.nsrdb/credentials.json" # local credential file location
@@ -122,7 +122,7 @@ cannot be changed.
 
 ## Credentials
 
-You must obtain an API key from https://developer.nrel.gov/signup/.  Save the key
+You must obtain an API key from https://developer.nlr.gov/signup/.  Save the key
 in the credentials file, which is by default `$HOME/.nsrdb/credentials.json`.
 
 You can run this process in a semi-automated manner using the command
@@ -155,4 +155,4 @@ bash$ gridlabd gridlabd.nsrdb_weather -y=2014,2015 -p=45.62,-122.70 -c=test.csv 
 
 # See also
 
-* [https://nsrdb.nrel.gov/data-sets/api-instructions.html]
+* [https://nsrdb.nlr.gov/data-sets/api-instructions.html]
