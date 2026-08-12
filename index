@@ -14,16 +14,6 @@ build-aux/python3.sh
 build-aux/version.sh
 build.sh
 configure.ac
-docker/Dockerfile
-docker/Dockerfile.lambda
-docker/README.md
-docker/build.sh
-docker/gridlabd.sh
-docker/hooks/build
-docker/packer/Dockerfile.dev.ul
-docker/packer/Dockerfile.prod.ul
-docker/packer/prod.pkr.hcl
-docker/packer/templateDevelop.pkr.hcl
 docs/About Us.md
 docs/Cloud/AWS.md
 docs/Cloud/CircleCI.md

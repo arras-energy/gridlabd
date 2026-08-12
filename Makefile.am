@@ -77,14 +77,11 @@ check-target:
 include $(top_srcdir)/third_party/Makefile.mk
 include $(top_srcdir)/source/Makefile.mk
 include $(top_srcdir)/runtime/Makefile.mk
-# include $(top_srcdir)/converters/Makefile.mk
 # include $(top_srcdir)/tools/Makefile.mk
-# include $(top_srcdir)/cloud/Makefile.mk
 include $(top_srcdir)/utilities/Makefile.mk
 include $(top_srcdir)/python/Makefile.mk
 # include $(top_srcdir)/geodata/Makefile.mk
 include $(top_srcdir)/subcommands/Makefile.mk
-# include $(top_srcdir)/docs/Makefile.mk
 
 # approved modules
 # include $(top_srcdir)/module/Makefile.mk
@@ -95,7 +92,7 @@ BUILT_SOURCES += python-requirements
 # Post install report
 #
 
-install-exec-hook: | index docs
+install-exec-hook: | index
 	@cp ${top_srcdir}/{COPYRIGHT,LICENSE} $(prefix)
 	@echo ""
 	@echo "Install complete. Here are some useful commands now:"
@@ -333,6 +330,3 @@ troubleshooting-html:
 documents/gridlabd.pdf: documents/gridlabd.glm
 	(cd documents ; $(DESTDIR)$(bindir)/gridlabd gridlabd.glm | echo "WARNING: unable to update documents/gridlabd.pdf")
 	test -f documents/gridlabd.md && pandoc -V geometry:landscape documents/gridlabd.md -o documents/gridlabd.pdf
-
-docs_toc:
-	utilities/regen_toc >'docs/User manual/0 - Cover/1 - Contents.md'
