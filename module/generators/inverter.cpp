@@ -3453,7 +3453,7 @@ TIMESTAMP inverter::sync(TIMESTAMP t0, TIMESTAMP t1)
 			}
 			else if (four_quadrant_control_mode == FQM_VOLT_VAR_FREQ_PWR) {
 				// start Ab add
-				// Jason Bank, jason.bank@nrel.gov		8/26/2013
+				// Jason Bank, jason.bank@nlr.gov		8/26/2013
 				// use voltage control input with lookup table values to determine what Qo should be then update Po according to:
 				// Po = (Pi * eff) - Qo * (1 - eff)/eff		Inverter real output power including conversion losses for generating Qo
 				// Ab note Jason originally only had Po = (Pi * eff) - Qo * (1 - eff); actually think losses should be proportional to S, but will leave for later
