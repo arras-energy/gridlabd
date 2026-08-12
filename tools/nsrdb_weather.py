@@ -70,7 +70,7 @@ The module uses several parameters to control its behavior.
     utc = False # timestamps in UTC
     email="gridlabd@gmail.com" # credential email
     verbose = False # verbose output enable
-    server = "https://developer.nrel.gov/api/solar/nsrdb_psm3_download.csv" # NSRDB server URL
+    server = "https://developer.nlr.gov/api/solar/nsrdb_psm3_download.csv" # NSRDB server URL
     cachedir = "/usr/local/opt/gridlabd/<version>/share/gridlabd/weather" # local NSRDB cache folder
     attributes = 'ghi,dhi,dni,cloud_type,dew_point,air_temperature,surface_albedo,wind_speed,wind_direction,solar_zenith_angle' # NSRDB fields to download
     credential_file = f"{os.getenv('HOME')}/.nsrdb/credentials.json" # local credential file location
@@ -104,7 +104,7 @@ cannot be changed.
 
 CREDENTIALS
 
-You must obtain an API key from https://developer.nrel.gov/signup/.  Save the key
+You must obtain an API key from https://developer.nlr.gov/signup/.  Save the key
 in the credentials file, which is by default `$HOME/.nsrdb/credentials.json`.
 
 You can run this process in a semi-automated manner using the command
@@ -137,7 +137,7 @@ The following command downloads the CSV data and creates a GLM file with the dat
 
 SEE ALSO
 
-* [https://nsrdb.nrel.gov/data-sets/api-instructions.html]
+* [https://nsrdb.nlr.gov/data-sets/api-instructions.html]
 """
 
 import sys, os, json, requests, pandas, numpy, datetime, math
@@ -150,7 +150,7 @@ utc = False
 email = None # by default this will be the first key in the credentials file
 interpolate_time = None
 interpolate_method = 'linear'
-server = "https://developer.nrel.gov/api/solar/nsrdb_psm3_download.csv"
+server = "https://developer.nlr.gov/api/solar/nsrdb_psm3_download.csv"
 cachedir = f"{GLD_ETC}/gridlabd/weather"
 attributes = 'ghi,dhi,dni,cloud_type,dew_point,air_temperature,surface_albedo,wind_speed,wind_direction,solar_zenith_angle,relative_humidity,surface_pressure'
 credential_file = f"{os.getenv('HOME')}/.nsrdb/credentials.json"
@@ -582,7 +582,7 @@ if __name__ == "__main__":
                 email = value
                 addkey("PASTE_YOUR_APIKEY_HERE")
             import webbrowser
-            webbrowser.open("https://developer.nrel.gov/signup/")
+            webbrowser.open("https://developer.nlr.gov/signup/")
             print(f"use `gridlabd nsrdb_weather --apikey=<your-apikey>` to set your api key")
         elif token == "--apikey":
             if not getemail():
