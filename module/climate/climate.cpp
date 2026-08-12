@@ -226,7 +226,7 @@ EXPORT int64 calc_solar_ideal_shading_position_radians(OBJECT *obj, double tilt,
 	be held in memory for future use.  This also sets the file pointer used for
 	later reads.
 
-	http://rredc.nrel.gov/solar/pubs/tmy2/tab3-2.html
+	http://rredc.nlr.gov/solar/pubs/tmy2/tab3-2.html
  @{
  **/
 int tmy2_reader::open(const char *file)
