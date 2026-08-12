@@ -60,7 +60,7 @@ GLM:
 
 # Description
 
-The climate object contains data from the [National Renewable Energy Laboratory Typical Meteorological Year weather archive](https://rredc.nrel.gov/solar/old_data/nsrdb/1991-2005/tmy3/).  TMY data is a collection of "typical" weather months assembled into a complete year.  It does not represent a single year and is therefore not suitable for simulation where actual weather data is required.  
+The climate object contains data from the [National Laboratory of the Rockies Typical Meteorological Year weather archive](https://rredc.nlr.gov/solar/old_data/nsrdb/1991-2005/tmy3/).  TMY data is a collection of "typical" weather months assembled into a complete year.  It does not represent a single year and is therefore not suitable for simulation where actual weather data is required.  
 
 ## Properties
 

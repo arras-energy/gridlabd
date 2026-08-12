@@ -52,8 +52,8 @@ public:
 	double elevation(short day_of_yr, double latitude, double sol_time);
 	double azimuth(short day_of_yr, double latitude, double sol_time);
 
-	//Most additions below here are from the NREL Solar Position algorithm 2.0
-	//http://rredc.nrel.gov/solar/codesandalgorithms/solpos/aboutsolpos.html
+	//Most additions below here are from the NLR Solar Position algorithm 2.0
+	//http://rredc.nlr.gov/solar/codesandalgorithms/solpos/aboutsolpos.html
 	//Perez model function at the end (perez_tilt) extracted from referenced paper
 	struct s_solpos_trigdata //used to pass calculated values locally
 		{
@@ -192,7 +192,7 @@ public:
 		double sbwid;      /* I:             Shadow-band width (cm) */
 		double sbrad;      /* I:             Shadow-band radius (cm) */
 		double sbsky;      /* I:             Shadow-band sky factor */
-		double solcon;     /* I:             Solar constant (NREL uses 1367 W/sq m) */
+		double solcon;     /* I:             Solar constant (NLR uses 1367 W/sq m) */
 		double ssha;       /* T:  S_SRHA     Sunset(/rise) hour angle, degrees */
 		double sretr;      /* O:  S_SRSS     Sunrise time, minutes from midnight,
 											local, WITHOUT refraction */
