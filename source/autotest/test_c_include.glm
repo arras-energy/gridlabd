@@ -1,5 +1,10 @@
 // test whether ticket:114 is fixed
 
+#set pythonpath=..:.
+module recorder;
+
+#set randomseed=1
+
 #set module_compiler_flags=VERBOSE|DEBUG|KEEPWORK|CLEAN
 #set force_compile=1
 #include <math.h>
@@ -22,17 +27,19 @@ class noise {
 		// or the elasping simulation time (t0-starttime)
 		// or some other deterministic source you like.
 		source = (double)t0; 
-		signal = (double)rand()/RAND_MAX;
+		signal = source +(double)rand()/RAND_MAX;
 		return t0+1; // update signal every second
 	};
 }
 
 // record the output
-module tape;
-object noise {
-	object recorder {
-		property source,signal;
-		file output.csv;
-		interval -1;
-	};
+object noise 
+{
+	on_init "python:recorder.init";
+	on_postsync "python:recorder.update";
+	on_finalize "python:recorder.finish";
 }
+
+#ifexist "../test_c_include.csv"
+#on_exit 0 diff ../test_c_include.csv test_c_include.csv > gridlabd.diff
+#endif
