@@ -14,9 +14,6 @@ build-aux/python3.sh
 build-aux/version.sh
 build.sh
 configure.ac
-documents/Powell et al, Fast Solutions in Power Systems Simulation through Coupling with a Data Driven Power Flow Model for Voltage Estimation (2019).pdf
-documents/gridlabd.glm
-documents/index.html
 doxygen/README.md
 doxygen/footer.html
 doxygen/gridlabd.conf
