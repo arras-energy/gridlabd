@@ -1870,6 +1870,37 @@ DEPRECATED const char * global_random(char *buffer, int size, const char *spec=N
 	return NULL;
 }
 
+DEPRECATED const char * global_get(char *buffer, size_t buflen, const char *name)
+{
+	char oname[256];
+	char *pname;
+
+	strncpy(oname,name,sizeof(oname)-1);
+	oname[sizeof(oname)-1] = '\0';
+
+	pname = strchr(oname,'.');
+	if ( pname == NULL )
+	{
+		output_error("global_get(name='%s'): missing property name",name);
+		return NULL;
+	}
+	*pname++ = '\0';
+
+	OBJECT *obj = object_find_name(oname);
+	if ( obj == NULL )
+	{
+		output_error("global_get(name='%s'): object '%s' not found",name,oname);
+		return NULL;
+	}
+
+	if ( object_get_value_by_name(obj,pname,buffer,buflen-1) == 0 )
+	{
+		output_error("global_get(name='%s'): property '%s' not found",name,pname);
+		return NULL;		
+	}
+	return buffer;
+}
+
 /** Get the value of a global variable in a safer fashion
 	@return a \e char * pointer to the buffer holding the buffer where we wrote the data,
 		\p NULL if insufficient buffer space or if the \p name was not found.
@@ -2006,6 +2037,12 @@ const char *GldGlobals::getvar(const char *name, char *buffer, size_t size)
 		{
 			return global_random(buffer,size,name+7);
 		}
+	}
+	if ( strncmp(name,"GET ",4) == 0 )
+	{
+		const char *p = name + 4;
+		while ( isspace(*p) ) p++;
+		return global_get(buffer,size,p);
 	}
 
   /* expansions */
