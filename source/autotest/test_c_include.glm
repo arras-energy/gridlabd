@@ -1,8 +1,5 @@
 // test whether ticket:114 is fixed
 
-#set pythonpath=..:.
-module recorder;
-
 #set randomseed=1
 
 #set module_compiler_flags=VERBOSE|DEBUG|KEEPWORK|CLEAN
@@ -32,15 +29,21 @@ class noise {
 	};
 }
 
+#ifexist "../tape.glm"
+#define DIR=..
+#on_exit 0 diff ../test_c_include.csv test_c_include.csv > gridlabd.diff
+#endif
+
+#include "${DIR:-.}/tape.glm"
+
 // record the output
 object noise 
 {
 	source 100;
 	name "noise";
-	on_init "python:recorder.init";
-	on_commit "python:recorder.update";
+	object recorder 
+	{
+		file "test_c_include.csv";
+		property "source,signal";
+	};
 }
-
-#ifexist "../test_c_include.csv"
-#on_exit 0 diff ../test_c_include.csv test_c_include.csv > gridlabd.diff
-#endif

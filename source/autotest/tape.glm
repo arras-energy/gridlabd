@@ -1,0 +1,16 @@
+// recorder.glm
+
+#set pythonpath=..:.
+module tape;
+
+class recorder
+{
+	char1024 property;
+	char1024 file;
+	double interval[s];
+	int16 flush;
+
+	on_init "python:tape.init";
+	on_commit "python:tape.update";
+}
+
