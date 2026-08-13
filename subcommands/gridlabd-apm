@@ -4,12 +4,7 @@ exec "$GLD_BIN/python3" "$0" "$@"
 # Syntax: gridlabd-apm [OPTIONS ...] COMMAND PACKAGE
 __doc__="""GridLAB-D Arras package manager
 
-Syntax: gridlabd apm [OPTIONS ...]
-
-Options
--------
-
-    See `pip` for a list of valid options
+Syntax: gridlabd apm COMMAND [ARGUMENTS ...]
 
 Commands
 --------
@@ -24,32 +19,62 @@ Description
 Example
 -------
 
-  $ gridlabd apm install converters 
+The following command install the converters.
+
+    gridlabd apm install converters
 """
 
 import os
 import sys
 import gridlabd_subcommand as gls
 
-try:
-    args = [x for x in sys.argv if not x.startswith("-")]
-    options = [x for x in sys.argv[1:] if x.startswith("-")]
+def main(argv:list[str]=None):
 
+    if argv is None:
+        argv = sys.argv
+
+    options = [x for x in argv[1:] if x.startswith("-")]
+    for option in options:
+
+        match option:
+
+            case "_":
+
+                raise gls.SubcommandSyntaxError(f"{option=} is invalid")
+
+    args = [x for x in argv if not x.startswith("-")]
     gls.check_syntax(__doc__,args=args,nargs=2)
-
     command = args[1]
     packages = args[2:]
 
-    for package in packages:
-        os.system(f"curl -L https://github.com/arras-energy/{package}/raw/refs/heads/master/install.sh | sh")
+    match command:
 
-except gls.SubcommandSyntaxError as err:
+        case "help":
 
-    print(err,file=sys.stderr)
-    sys.exit(gls.E_SYNTAX)
+            print(__doc__)
 
-except:
+        case "install":
+        
+            for package in packages:
+                os.system(f"curl -sL https://github.com/arras-energy/{package}/raw/refs/heads/master/install.sh | sh")
+        
+        case "_":
+        
+            raise gls.SubcommandSyntaxError(f"{command=} is invalid")
 
-    e_type,e_value,_ = sys.exc_info()
-    print(f"EXCEPTION [gridlabd-apm]: {e_type} {e_value}",file=sys.stderr)
-    sys.exit(gls.E_EXCEPTION)
+if __name__ == '__main__':
+    
+    try:
+
+        main()
+
+    except gls.SubcommandSyntaxError as err:
+
+        print(err,file=sys.stderr)
+        sys.exit(gls.E_SYNTAX)
+
+    except:
+
+        e_type,e_value,_ = sys.exc_info()
+        print(f"EXCEPTION [gridlabd-apm]: {e_type} {e_value}",file=sys.stderr)
+        sys.exit(gls.E_EXCEPTION)
