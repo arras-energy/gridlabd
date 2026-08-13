@@ -14,15 +14,11 @@ class test
     on_finalize "python:test_class_event_handler.test_finalize";
 }
 
-module assert;
-
 object test
 {
     n "0";
-    object assert
-    {
-        target "n";
-        value "0123456";
-        relation "==";
-    };
 }
+
+#set savefile=${modelname/glm/json}
+
+#on_exit 0 test "$(gridlabd json-get objects test:0 n < ${modelname/glm/json})" == "01234567"
