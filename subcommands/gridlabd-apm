@@ -14,7 +14,7 @@ Options
 Commands
 --------
 
-    See `pip` for a list of valid commands
+    - `install PACKAGE [...]`   install package(s)
 
 Description
 -----------
@@ -29,30 +29,27 @@ Example
 
 import os
 import sys
-import gridlabd_subcommand as gld
+import gridlabd_subcommand as gls
 
 try:
     args = [x for x in sys.argv if not x.startswith("-")]
     options = [x for x in sys.argv[1:] if x.startswith("-")]
 
-    gld.check_syntax(__doc__,args=args,nargs=2)
+    gls.check_syntax(__doc__,args=args,nargs=2)
 
     command = args[1]
-    packages = args[2:] if len(args) > 1 else None
-
-    if packages is None:
-        os.system(f"python3 -m pip {' '.join(options)} {' '.join(args)}")
+    packages = args[2:]
 
     for package in packages:
-        os.system(f"python3 -m pip {' '.join(options)} {command} git+https://github.com/arras-energy/{package}")
+        os.system(f"curl -L https://github.com/arras-energy/{package}/raw/refs/heads/master/install.sh | sh")
 
-except gld.SubcommandSyntaxError as err:
+except gls.SubcommandSyntaxError as err:
 
     print(err,file=sys.stderr)
-    sys.exit(gld.E_SYNTAX)
+    sys.exit(gls.E_SYNTAX)
 
 except:
 
     e_type,e_value,_ = sys.exc_info()
     print(f"EXCEPTION [gridlabd-apm]: {e_type} {e_value}",file=sys.stderr)
-    sys.exit(gld.E_EXCEPTION)
+    sys.exit(gls.E_EXCEPTION)
