@@ -9,7 +9,12 @@ Syntax: gridlabd apm COMMAND [ARGUMENTS ...]
 Commands
 --------
 
-    - `install PACKAGE [...]`   install package(s)
+    - `install PACKAGE [...]`:  install package(s)
+
+Options
+-------
+
+    - `--verbose`:  enable verbose output
 
 Description
 -----------
@@ -28,8 +33,29 @@ import os
 import sys
 import gridlabd_subcommand as gls
 
-def main(argv:list[str]=None):
+SOURCE = "https://raw.githubusercontent.com/arras-energy/{package}/refs/heads/master/install.sh"
+"""Source URL for packages"""
 
+VERBOSE = False
+"""Enable verbose output"""
+
+DEBUG = False
+"""Enable traceback on exceptions"""
+
+QUIET = False
+"""Enable suppression of all unnecessary output"""
+
+WARNING = True
+"""Enable warning output"""
+
+def main(argv:list[str]=None):
+    """Main installer for Arras Package Manager (APM)
+
+    Arguments
+    ---------
+
+    - `argv`: installer command arguments (see `gridlabd-apm`)
+    """
     if argv is None:
         argv = sys.argv
 
@@ -37,6 +63,26 @@ def main(argv:list[str]=None):
     for option in options:
 
         match option:
+
+            case "--debug":
+
+                global DEBUG
+                DEBUG = True
+
+            case "--quiet":
+
+                global QUIET
+                QUIET = True
+
+            case "--verbose":
+
+                global VERBOSE
+                VERBOSE = True
+
+            case "--warning":
+
+                global WARNING
+                WARNING = True
 
             case "_":
 
@@ -56,7 +102,10 @@ def main(argv:list[str]=None):
         case "install":
         
             for package in packages:
-                os.system(f"curl -sL https://github.com/arras-energy/{package}/raw/refs/heads/master/install.sh | sh")
+                url = SOURCE.format(package=package)
+                redir = "" if VERBOSE else "1>/dev/null 2>&1"
+                if os.system(f"curl -sL {url} | sh {redir}"):
+                    print(f"ERROR [gridlabd-apm]: {package=} install failed")
         
         case "_":
         
@@ -70,11 +119,16 @@ if __name__ == '__main__':
 
     except gls.SubcommandSyntaxError as err:
 
-        print(err,file=sys.stderr)
+        if not QUIET:
+            print(err,file=sys.stderr)
         sys.exit(gls.E_SYNTAX)
 
     except:
 
         e_type,e_value,_ = sys.exc_info()
         print(f"EXCEPTION [gridlabd-apm]: {e_type} {e_value}",file=sys.stderr)
-        sys.exit(gls.E_EXCEPTION)
+
+        if DEBUG:
+            raise
+        else:
+            sys.exit(gls.E_EXCEPTION)
