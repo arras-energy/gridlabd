@@ -1,10 +1,4 @@
-module tape;
-module climate; 
-module assert;
-
-//#option server
-//#set global_dumpfile = 1
-//= "test_clock_json.json"
+// Test script dump of clock to json
 
 clock {
 	timezone EST+5EDT;
@@ -14,19 +8,12 @@ clock {
 
 class test {
 	double test_var;
-};
-
- class climate {
- 	randomvar clouds;
- } 
-
-object climate{
-	clouds "type:weibull(0.5,0.5); min:0.0; max:1.0; refresh:1h;";
 }
 
 object test {
-	name Test;	
-};
+	test_var 1.23;
+}
 
-script on_term gridlabd:dump ../test_clock.json;
-//script on_term "python test_clock_json.py";
+script on_term gridlabd:dump test_clock_json.json;
+
+#on_exit 0 test "$(gridlabd json-get globals clock value < test_clock_json.json)" == "$(gridlabd json-get globals starttime value < test_clock_json.json)"
