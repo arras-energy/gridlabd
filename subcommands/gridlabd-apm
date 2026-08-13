@@ -1,0 +1,58 @@
+''':'
+exec "$GLD_BIN/python3" "$0" "$@"
+:' '''
+# Syntax: gridlabd-apm [OPTIONS ...] COMMAND PACKAGE
+__doc__="""GridLAB-D Arras package manager
+
+Syntax: gridlabd apm [OPTIONS ...]
+
+Options
+-------
+
+    See `pip` for a list of valid options
+
+Commands
+--------
+
+    See `pip` for a list of valid commands
+
+Description
+-----------
+
+  The Arras package manager maintain Arras Energy packages used by gridlabd.
+
+Example
+-------
+
+  $ gridlabd apm install converters 
+"""
+
+import os
+import sys
+import gridlabd_subcommand as gld
+
+try:
+    args = [x for x in sys.argv if not x.startswith("-")]
+    options = [x for x in sys.argv[1:] if x.startswith("-")]
+
+    gld.check_syntax(__doc__,args=args,nargs=2)
+
+    command = args[1]
+    packages = args[2:] if len(args) > 1 else None
+
+    if packages is None:
+        os.system(f"python3 -m pip {' '.join(options)} {' '.join(args)}")
+
+    for package in packages:
+        os.system(f"python3 -m pip {' '.join(options)} {command} git+https://github.com/arras-energy/gridlabd-{package}")
+
+except gld.SubcommandSyntaxError as err:
+
+    print(err,file=sys.stderr)
+    sys.exit(gld.E_SYNTAX)
+
+except:
+
+    e_type,e_value,_ = sys.exc_info()
+    print(f"EXCEPTION [gridlabd-apm]: {e_type} {e_value}",file=sys.stderr)
+    sys.exit(gld.E_EXCEPTION)

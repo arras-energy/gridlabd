@@ -259,11 +259,15 @@ source/autotest/ica_test.csv
 source/autotest/loader_variables_include.glm
 source/autotest/modify.csv
 source/autotest/plotxy.py
+source/autotest/recorder.py
 source/autotest/save_randomseed
 source/autotest/save_randomstate
 source/autotest/t_mass.csv
+source/autotest/tape.glm
+source/autotest/tape.py
 source/autotest/test_aws_help.glm
 source/autotest/test_bare_class.glm
+source/autotest/test_c_include.csv
 source/autotest/test_c_include.glm
 source/autotest/test_ceus_converter.glm
 source/autotest/test_class_event_handler.glm
@@ -311,6 +315,7 @@ source/autotest/test_findfile.glm
 source/autotest/test_for.glm
 source/autotest/test_geocode.glm
 source/autotest/test_git_help.glm
+source/autotest/test_global_get.glm
 source/autotest/test_global_python.glm
 source/autotest/test_global_shell.glm
 source/autotest/test_global_unit_convert.glm
@@ -382,6 +387,8 @@ source/autotest/test_random.glm
 source/autotest/test_random_correlation.glm
 source/autotest/test_random_global.glm
 source/autotest/test_range.glm
+source/autotest/test_recorder.csv
+source/autotest/test_recorder.glm
 source/autotest/test_require.glm
 source/autotest/test_require_err.glm
 source/autotest/test_require_pandas.glm
@@ -399,6 +406,7 @@ source/autotest/test_schedule_xform_external.glm
 source/autotest/test_script.glm
 source/autotest/test_script_err.glm
 source/autotest/test_script_event.glm
+source/autotest/test_script_event.txt
 source/autotest/test_script_oncommit.glm
 source/autotest/test_script_onfinalize.glm
 source/autotest/test_script_onpostsync.glm

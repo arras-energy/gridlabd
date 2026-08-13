@@ -1,4 +1,5 @@
 bin_SCRIPTS += subcommands/gridlabd-assert
+bin_SCRIPTS += subcommands/gridlabd-apm
 bin_SCRIPTS += subcommands/gridlabd-aws
 bin_SCRIPTS += subcommands/gridlabd-building
 bin_SCRIPTS += subcommands/gridlabd-check
@@ -35,3 +36,5 @@ bin_SCRIPTS += subcommands/gridlabd-trace
 bin_SCRIPTS += subcommands/gridlabd-validate
 bin_SCRIPTS += subcommands/gridlabd-version
 bin_SCRIPTS += subcommands/gridlabd-weather
+
+bin_SCRIPTS += subcommands/gridlabd_subcommand.py
