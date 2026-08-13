@@ -8597,6 +8597,11 @@ bool GldLoader::load_import(const char *from, char *to, int len)
 	snprintf(converter_name,sizeof(converter_name)-1,"%s2glm.py",ext);
 	if ( find_file(converter_name, NULL, R_OK, converter_path, sizeof(converter_path)) == NULL )
 	{
+		// try installing the converters
+		system("gridlabd apm install converters");
+	}
+	if ( find_file(converter_name, NULL, R_OK, converter_path, sizeof(converter_path)) == NULL )
+	{
 		output_error("load_import(from='%s',...): converter %s2glm.py not found", from, ext);
 		return false;
 	}

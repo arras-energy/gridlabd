@@ -44,7 +44,7 @@ try:
         os.system(f"python3 -m pip {' '.join(options)} {' '.join(args)}")
 
     for package in packages:
-        os.system(f"python3 -m pip {' '.join(options)} {command} git+https://github.com/arras-energy/gridlabd-{package}")
+        os.system(f"python3 -m pip {' '.join(options)} {command} git+https://github.com/arras-energy/{package}")
 
 except gld.SubcommandSyntaxError as err:
 

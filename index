@@ -657,6 +657,7 @@ subcommands/autotest/test_plot.png
 subcommands/autotest/test_subcommand_check.glm
 subcommands/autotest/test_subcommand_check_err.glm
 subcommands/autotest/test_timezone.glm
+subcommands/gridlabd-apm
 subcommands/gridlabd-assert
 subcommands/gridlabd-aws
 subcommands/gridlabd-building
@@ -694,6 +695,7 @@ subcommands/gridlabd-trace
 subcommands/gridlabd-validate
 subcommands/gridlabd-version
 subcommands/gridlabd-weather
+subcommands/gridlabd_subcommand.py
 third_party/CBLAS/Makefile.mk
 third_party/CBLAS/caxpy.c
 third_party/CBLAS/ccopy.c
