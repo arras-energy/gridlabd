@@ -104,6 +104,8 @@ def main(argv:list[str]=None):
             for package in packages:
                 url = SOURCE.format(package=package)
                 redir = "" if VERBOSE else "1>/dev/null 2>&1"
+                if VERBOSE:
+                    print(f"VERBOSE [gridlabd-apm]: downloading {package=} from {url=}",file=sys.stderr)
                 if os.system(f"curl -sL {url} | sh {redir}"):
                     print(f"ERROR [gridlabd-apm]: {package=} install failed")
         
