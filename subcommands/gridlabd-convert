@@ -22,6 +22,12 @@ import sys, os
 import importlib
 from importlib import util
 
+# install converters is necessary
+try:
+	import converters
+except ModuleNotFoundError:
+	assert os.system("gridlabd apm install converters") == 0, "unable to install converters"
+
 MODPATH = os.getenv("GLD_ETC")
 if not MODPATH:
 	MODPATH = "/usr/local/share/gridlabd"
