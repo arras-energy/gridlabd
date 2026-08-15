@@ -135,6 +135,13 @@ AS_IF([test "x$1" = "xshell"],
   [shift 1; $SHELL $@; exit $?],
   [])
 
+AS_IF([test ! -d "${PYTHON_LIB}/converters"],
+  [curl -sL https://raw.githubusercontent.com/arras-energy/converters/refs/heads/master/install.sh | sh],
+  [])
+AS_IF([test ! -d "${PYTHON_LIB}/tools"],
+  [curl -sL https://raw.githubusercontent.com/arras-energy/tools/refs/heads/master/install.sh | sh],
+  [])
+
 AS_IF([test -f "${GLD_ETC}/$1.py"],
   [export PYTHONPATH="${GLD_ETC%/*}"; python3 -m "gridlabd.$@" ; exit $?],
   [])

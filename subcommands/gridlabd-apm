@@ -108,6 +108,8 @@ def main(argv:list[str]=None):
                     print(f"VERBOSE [gridlabd-apm]: downloading {package=} from {url=}",file=sys.stderr)
                 if os.system(f"curl -sL {url} | sh {redir}"):
                     print(f"ERROR [gridlabd-apm]: {package=} install failed")
+                elif os.system(f"python3 -m {package}.__init__"):
+                    print(f"ERROR [gridlabd-apm]: {package=} init failed")
         
         case "_":
         
