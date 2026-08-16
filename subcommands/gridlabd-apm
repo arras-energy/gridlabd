@@ -33,20 +33,64 @@ import os
 import sys
 import gridlabd_subcommand as gls
 
+gls.EXENAME = "gridlabd-apm"
+
 SOURCE = "https://raw.githubusercontent.com/arras-energy/{package}/refs/heads/master/install.sh"
 """Source URL for packages"""
 
-VERBOSE = False
-"""Enable verbose output"""
+# TODO: replace this with a search of the arras-energy repos
+EXTENSIONS = [
+    "converters",
+    "tools",
+    ]
+"""List of supported python extension packages"""
 
-DEBUG = False
-"""Enable traceback on exceptions"""
+# TODO: replace this with a search of the arras-energy/modules repo
+MODULES = [
+    "assert",
+    "behavior",
+    "commercial",
+    "climate",
+    "generators",
+    "industrial",
+    "influxdb",
+    "market",
+    "mysql",
+    "optimize",
+    "powerflow",
+    "pypower"
+    "reliability",
+    "residential",
+    "resilience",
+    "revenue",
+    "tape",
+    "tape_file",
+    "tariff",
+    ]
 
-QUIET = False
-"""Enable suppression of all unnecessary output"""
+def extension(name:str):
+    """Install a python extension for Arras Energy
 
-WARNING = True
-"""Enable warning output"""
+    Arguments
+    ---------
+
+    - `package`: the package repository name
+    """
+    url = SOURCE.format(package=name)
+    redir = "" if gls.VERBOSE else "1>/dev/null 2>&1"
+    gls.verbose(f"downloading extension '{name}' from {url=}",file=sys.stderr)
+    if os.system(f"""curl -sL -H "Cache-Control: no-cache, no-store, must-revalidate" {url}" | sh {redir}"""):
+        gls.error(f"extension '{name}' install failed")
+    elif os.system(f"python3 -m {name}.__init__"):
+        gls.error(f"extension '{name}' init failed")
+
+def module(name:str):
+
+    url = SOURCE.format(package="gridlabd-modules")
+    redir = "" if gls.VERBOSE else "1>/dev/null 2>&1"
+    gls.verbose(f"building module '{name}' from {url=}",file=sys.stderr)
+    if os.system(f"""curl -sL -H "Cache-Control: no-cache, no-store, must-revalidate" "{url}" | sh -s {name} {redir}"""):
+        gls.error(f"module '{name}' install failed")
 
 def main(argv:list[str]=None):
     """Main installer for Arras Package Manager (APM)
@@ -66,54 +110,54 @@ def main(argv:list[str]=None):
 
             case "--debug":
 
-                global DEBUG
-                DEBUG = True
+                gls.DEBUG = True
 
             case "--quiet":
 
-                global QUIET
-                QUIET = True
+                gls.ERROR = False
 
             case "--verbose":
 
-                global VERBOSE
-                VERBOSE = True
+                gls.VERBOSE = True
 
             case "--warning":
 
-                global WARNING
-                WARNING = True
+                gls.WARNING = True
 
             case "_":
 
-                raise gls.SubcommandSyntaxError(f"{option=} is invalid")
+                gls.exception(ValueError,f"{option=} is invalid")
 
     args = [x for x in argv if not x.startswith("-")]
     gls.check_syntax(__doc__,args=args,nargs=2)
     command = args[1]
-    packages = args[2:]
+    items = args[2:]
 
     match command:
 
         case "help":
 
-            print(__doc__)
+            gls.output(__doc__)
 
         case "install":
         
-            for package in packages:
-                url = SOURCE.format(package=package)
-                redir = "" if VERBOSE else "1>/dev/null 2>&1"
-                if VERBOSE:
-                    print(f"VERBOSE [gridlabd-apm]: downloading {package=} from {url=}",file=sys.stderr)
-                if os.system(f"curl -sL {url} | sh {redir}"):
-                    print(f"ERROR [gridlabd-apm]: {package=} install failed")
-                elif os.system(f"python3 -m {package}.__init__"):
-                    print(f"ERROR [gridlabd-apm]: {package=} init failed")
+            if not items:
+
+                gls.exception(ValueError,"no install items specified")
+
+            for item in items:
+                if item in EXTENSIONS:
+                    extension(item)
+
+                elif item in MODULES:
+                    module(item)
+
+                else:
+                    gls.exception(ValueError,f"'{item}' is not a valid package or module")
         
         case "_":
         
-            raise gls.SubcommandSyntaxError(f"{command=} is invalid")
+            gls.exception(ValueError,f"{command=} is invalid")
 
 if __name__ == '__main__':
     
@@ -123,16 +167,17 @@ if __name__ == '__main__':
 
     except gls.SubcommandSyntaxError as err:
 
-        if not QUIET:
-            print(err,file=sys.stderr)
-        sys.exit(gls.E_SYNTAX)
+        gls.error(err,exitcode=gls.E_SYNTAX)
+
+    except SystemExit as err:
+
+        sys.exit(err)
 
     except:
 
         e_type,e_value,_ = sys.exc_info()
-        print(f"EXCEPTION [gridlabd-apm]: {e_type} {e_value}",file=sys.stderr)
-
-        if DEBUG:
+        if gls.DEBUG:
             raise
         else:
-            sys.exit(gls.E_EXCEPTION)
+            gls.exception(e_type,e_value)
+        sys.exit(gls.E_EXCEPTION)
