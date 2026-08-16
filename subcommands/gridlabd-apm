@@ -79,7 +79,7 @@ def extension(name:str):
     url = SOURCE.format(package=name)
     redir = "" if gls.VERBOSE else "1>/dev/null 2>&1"
     gls.verbose(f"downloading extension '{name}' from {url=}",file=sys.stderr)
-    if os.system(f"""curl -sL -H "Cache-Control: no-cache, no-store, must-revalidate" {url}" | sh {redir}"""):
+    if os.system(f"""curl -sL -H "Cache-Control: no-cache, no-store, must-revalidate" "{url}" | sh {redir}"""):
         gls.error(f"extension '{name}' install failed")
     elif os.system(f"python3 -m {name}.__init__"):
         gls.error(f"extension '{name}' init failed")

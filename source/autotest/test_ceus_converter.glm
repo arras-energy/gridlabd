@@ -1,23 +1,22 @@
-clock {
-    timezone US/CA/Los Angeles;
-    starttime '2018-01-01 00:00:00 PST';
-    stoptime '2019-01-01 00:00:00 PST';
+class ceus
+{
+    char1024 filename;
+    double floor_area[sf];
+    double total_real_power[W];
+    double total_reactive_power[W];
+    complex total_power_A[W];
+    complex total_power_B[W];
+    complex total_power_C[W];
 }
 
-module tape;
+#ifexist ../test_ceus_converter.json
+#define DIR=..
+#on_exit 0 test "$(gridlabd json-get objects building floor_area < test_ceus_converter.json)" == "15000 sf"
+#else
+#define DIR=.
+#endif
 
-module powerflow;
-module commercial;
-object meter {
-    name main;
-    bustype SWING;
-    nominal_voltage 120.0;
-    phases ABCN;
-#input "../ceus.csv" -f ceus -t ceus -p name=building -p floor_area=15000sf
-    object recorder {
-        file test_ceus_converter.csv;
-        property measured_power_A,measured_power_B,measured_power_C,measured_real_power,measured_reactive_power;
-        interval 1h;
-    };
-}
+#input "${DIR}/test_ceus_converter_opt.csv" -f ceus -t ceus -p name=building -p floor_area=15000sf
+
+#set savefile=test_ceus_converter.json
 
