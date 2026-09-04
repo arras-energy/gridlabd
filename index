@@ -294,9 +294,9 @@ source/autotest/test_core_63_schedule.csv
 source/autotest/test_core_63_schedule.glm
 source/autotest/test_core_63_schedule.player
 source/autotest/test_core_64_schedule_err.glm
+source/autotest/test_core_player_schedule_1.csv
 source/autotest/test_core_player_schedule_1.glm
-source/autotest/test_core_player_schedule_1.player
-source/autotest/test_core_player_schedule_2.player
+source/autotest/test_core_player_schedule_2.csv
 source/autotest/test_core_schedules_boolean_err.glm
 source/autotest/test_core_schedules_nonzero_err.glm
 source/autotest/test_core_schedules_positive_err.glm
