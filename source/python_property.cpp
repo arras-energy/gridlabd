@@ -164,6 +164,7 @@ int python_property_create (
     }
 
     const char *name = NULL;
+    GLOBALVAR *globalvar = NULL;
     if ( object_info != NULL && PyLong_Check(object_info) )
     {
         pyprop->obj = object_find_by_id(PyLong_AsLong(object_info));
@@ -172,9 +173,11 @@ int python_property_create (
     {
         name = PyUnicode_AsUTF8(object_info);
         pyprop->obj = object_find_name(name);
-        if ( pyprop->obj == NULL && global_find(name) != NULL )
+        globalvar = global_find(name);
+        if ( pyprop->obj != NULL && globalvar != NULL )
         {
-            pyprop->obj = NULL;
+            PyErr_SetString(PyExc_Exception,"global variable and object share the same name");
+            return -2;
         }
     }
     else
@@ -183,15 +186,11 @@ int python_property_create (
         return -2;
     }
 
-    if ( name != NULL && pyprop->obj == NULL )
+    if ( globalvar != NULL )
     {
-        GLOBALVAR *pvar = global_find(name);
-        if ( pvar != NULL )
-        {
-            pyprop->prop = pvar->prop;
-        }
+        pyprop->prop = globalvar->prop;
     }
-    if ( pyprop->obj == NULL )
+    else if ( pyprop->obj != NULL )
     {
         if ( property_name == NULL )
         {
