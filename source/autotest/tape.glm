@@ -10,7 +10,16 @@ class recorder
 	double interval[s];
 	int16 flush;
 
-	on_init "python:tape.init";
-	on_commit "python:tape.update";
+	on_init "python:tape.recorder_init";
+	on_commit "python:tape.recorder_update";
 }
 
+class player
+{
+	char1024 property;
+	char1024 file;
+	int32 loop;
+
+	on_init "python:tape.player_init";
+	on_precommit "python:tape.player_update";
+}

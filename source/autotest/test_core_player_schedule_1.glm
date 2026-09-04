@@ -4,43 +4,38 @@
 
 #set minimum_timestep=1;
 
-module residential{
-	implicit_enduses NONE;
-}
-module tape;
-class player{
-	double value;	
-}
-module assert;
+#ifexist "../tape.glm"
+#define DIR=..
+#endif
 
-clock{
+#include "${DIR:-.}/tape.glm"
+
+clock
+{
 	timezone PST+8PDT;
 	starttime '2000-01-01 00:00:00';
 	stoptime '2000-01-03 02:00:00';
 }
-object player{
-	name cool_stp;
-	file "../test_core_player_schedule_1.player";
+
+object player
+{
+	name source;
+	file "${DIR:-.}/test_core_player_schedule_1.csv";
+	property x;
 	loop 2;
 };
-object house{
-	heating_setpoint 60;
-	cooling_setpoint cool_stp.value*1+3.572;
-	object recorder{
-		property heating_setpoint;
-		file "transform_check.csv";
-		interval -1;
-		limit 55;
-	};
-	object double_assert{
-		target cooling_setpoint;
-		status ASSERT_TRUE;
-		within 1e-6;
-		object player{
-			property value;
-			file "../test_core_player_schedule_2.player";
-			loop 2;
-		};
+
+class test
+{
+	double x;
+}
+
+object test
+{
+	object recorder
+	{
+		property x;
+		file "test_core_player_schedule_2.csv";
 	};
 }
 

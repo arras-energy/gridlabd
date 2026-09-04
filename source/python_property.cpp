@@ -185,9 +185,13 @@ int python_property_create (
 
     if ( name != NULL && pyprop->obj == NULL )
     {
-        pyprop->prop = global_find(name)->prop;
+        GLOBALVAR *pvar = global_find(name);
+        if ( pvar != NULL )
+        {
+            pyprop->prop = pvar->prop;
+        }
     }
-    else
+    if ( pyprop->obj == NULL )
     {
         if ( property_name == NULL )
         {

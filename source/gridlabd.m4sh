@@ -136,10 +136,10 @@ AS_IF([test "x$1" = "xshell"],
   [])
 
 AS_IF([test ! -d "${PYTHON_LIB}/converters"],
-  [curl -sL https://raw.githubusercontent.com/arras-energy/converters/refs/heads/master/install.sh | sh],
+  [curl -sL -H "Cache-Control: no-cache, no-store, must-revalidate"  https://raw.githubusercontent.com/arras-energy/converters/refs/heads/master/install.sh | sh],
   [])
 AS_IF([test ! -d "${PYTHON_LIB}/tools"],
-  [curl -sL https://raw.githubusercontent.com/arras-energy/tools/refs/heads/master/install.sh | sh],
+  [curl -sL -H "Cache-Control: no-cache, no-store, must-revalidate"  https://raw.githubusercontent.com/arras-energy/tools/refs/heads/master/install.sh | sh],
   [])
 
 AS_IF([test -f "${GLD_ETC}/$1.py"],

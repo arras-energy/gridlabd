@@ -244,7 +244,6 @@ source/Project.txt
 source/README.md
 source/aggregate.cpp
 source/aggregate.h
-source/autotest/ceus.csv
 source/autotest/check_correlation.py
 source/autotest/check_dotted_name.py
 source/autotest/check_json.py
@@ -270,6 +269,8 @@ source/autotest/test_bare_class.glm
 source/autotest/test_c_include.csv
 source/autotest/test_c_include.glm
 source/autotest/test_ceus_converter.glm
+source/autotest/test_ceus_converter_opt.csv
+source/autotest/test_ceus_converter_opt.glm
 source/autotest/test_class_event_handler.glm
 source/autotest/test_class_event_handler.py
 source/autotest/test_clock_json.glm
@@ -285,9 +286,11 @@ source/autotest/test_complex_format.glm
 source/autotest/test_config.glm
 source/autotest/test_config_prefix.glm
 source/autotest/test_config_relax.glm
+source/autotest/test_core_4blocks_schedule.csv
 source/autotest/test_core_4blocks_schedule.glm
 source/autotest/test_core_4blocks_schedule.player
 source/autotest/test_core_5blocks_schedule_err.glm
+source/autotest/test_core_63_schedule.csv
 source/autotest/test_core_63_schedule.glm
 source/autotest/test_core_63_schedule.player
 source/autotest/test_core_64_schedule_err.glm

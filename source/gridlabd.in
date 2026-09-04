@@ -407,11 +407,11 @@ fi
 
 if test ! -d "${PYTHON_LIB}/converters"
 then :
-  curl -sL https://raw.githubusercontent.com/arras-energy/converters/refs/heads/master/install.sh | sh
+  curl -sL -H "Cache-Control: no-cache, no-store, must-revalidate" https://raw.githubusercontent.com/arras-energy/converters/refs/heads/master/install.sh | sh
 fi
 if test ! -d "${PYTHON_LIB}/tools"
 then :
-  curl -sL https://raw.githubusercontent.com/arras-energy/tools/refs/heads/master/install.sh | sh
+  curl -sL -H "Cache-Control: no-cache, no-store, must-revalidate" https://raw.githubusercontent.com/arras-energy/tools/refs/heads/master/install.sh | sh
 fi
 
 if test -f "${GLD_ETC}/$1.py"
