@@ -48,6 +48,7 @@ dist_pkgdata_DATA += runtime/triplex_meter_r.png
 dist_pkgdata_DATA += runtime/tzinfo.txt
 dist_pkgdata_DATA += runtime/unitfile.txt
 
-dist_pkgdata_DATA += runtime/gld_types.py
-dist_pkgdata_DATA += runtime/gld_timestamp.py
-dist_pkgdata_DATA += runtime/gld_tzinfo.py
+dist_pkgdata_DATA += runtime/pandas.glm
+dist_pkgdata_DATA += runtime/pandas.py
+# dist_pkgdata_DATA += runtime/gld_timestamp.py
+# dist_pkgdata_DATA += runtime/gld_tzinfo.py
