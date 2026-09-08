@@ -6,21 +6,20 @@ import math
 from collections import namedtuple
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
-import pytz
 from datetime import datetime, timezone
 import re
 import pandas as pd
-
-sys.path.insert(0,os.environ["GLD_ETC"])
-from gld_types import TIMESTAMP
 
 recorder = None
 player = None
 stream = None
 
+MODULE_NAME = os.path.basename(__file__)
+
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S %Z"
 DATETIME_SHORT = "%Y-%m-%d %H:%M:%S"
 TIMEZONE_LOCALE = None
+
 options = namedtuple("options",["verbose","warning"])(sys.stderr,sys.stderr)
 
 #
@@ -29,7 +28,7 @@ options = namedtuple("options",["verbose","warning"])(sys.stderr,sys.stderr)
 
 def on_init(t):
     
-    _verbose(f"initializing at {TIMESTAMP(t)}")
+    _verbose(f"initializing at {t}")
     global recorder
     recorder = {}
 
@@ -133,13 +132,6 @@ def player_init(obj,t):
     assert file != "", f"{file=} is not valid"
     if not file in stream:
         stream[file] = pd.read_csv(file,header=None if properties else 0)
-        if file.endswith(".player"):
-            stream[file] = _player_to_dataframe(
-                stream[file],
-                properties=properties,
-                dtformat=dtformat,
-                loop=loop
-                )
 
     # setup player
     player[obj] = {
@@ -208,7 +200,7 @@ def _verbose(*args,**kwargs):
     if options.verbose:
         if not "file" in kwargs:
             kwargs["file"] = options.verbose
-        print(f"VERBOSE  [{gldcore.get_global('clock')}] (tape.py):", *args,**kwargs)
+        print(f"VERBOSE  [{gldcore.get_global('clock')}] ({MODULE_NAME}):", *args,**kwargs)
 
 def _warning(*args,**kwargs):
     """Output a warning message
@@ -221,106 +213,10 @@ def _warning(*args,**kwargs):
     if options.warning:
         if not "file" in kwargs:
             kwargs["file"] = options.warning
-        print(f"WARNING  [{gldcore.get_global('clock')}] (tape.py): ", *args,**kwargs)
+        print(f"WARNING  [{gldcore.get_global('clock')}] ({MODULE_NAME}): ", *args,**kwargs)
 
 def _timestamp_to_str(t):
-    t = TIMESTAMP(t)
-    return f"{t=} <{t:%Y-%m-%d %H:%M:%S %Z}>"
-
-def _todatetimetz(
-    x:list[str],
-    offset:dict[str,str],
-    default_timezone:ZoneInfo,
-    ) -> datetime:
-    """Convert datetime/timezone tuple to a tz-aware datetime
-
-    Arguments
-    ---------
-    - `x`: (date,time) or (date,time,tz) tuple
-    - `offset`: timezone ISO offsets to use when tz is present
-    - `default_timezone`: default timezone info to use if tz is missing
-
-    Returns
-    -------
-    - `datetime`: datetime value localized to utc
-    """
-    dt = " ".join(x[:2])
-    if len(x) > 2: # tz is provided
-        return datetime.fromisoformat(dt + offset[x[2]])
-
-    # no tz provided -- use default tzinfo
-    dt = datetime.strptime(dt,DATETIME_SHORT)
-    dt = dt.replace(tzinfo=default_timezone)
-
-    # _verbose(f"_todatetimetz({x=},{offset=},{default_timezone=}) -> {dt} <{dt.timestamp()}>")
-
-    return dt
-
-def _localize(dt,tz):
-
-    # get global timezone locale info
-    global TIMEZONE_LOCALE
-    if TIMEZONE_LOCALE is None:
-        TIMEZONE_LOCALE = gldcore.get_global("timezone_locale")
-    tz_data = re.match("([A-Z]+)([+-]?[0-9]+)([A-Z]+)",TIMEZONE_LOCALE).groups()
-    assert len(tz_data) >= 2, "global timezone_locale missing tzoffset"
-    default_timezone = ZoneInfo(TIMEZONE_LOCALE)
-
-    std,tzoffset,dst = tz_data[0],math.modf(-float(tz_data[1])),tz_data[2] if len(tz_data) > 2 else None
-    offsets = {
-        "UTC": "+00:00",
-        std: f"{int(tzoffset[1]):+03}:{abs(int(tzoffset[0])*100):02}",
-        dst: f"{int(tzoffset[1]+1):+03}:{abs(int(tzoffset[0])*100):02}",
-        }
-
-    t = [x.split() for x in dt]
-
-    t = [_todatetimetz(x,offsets,default_timezone) for x in t]
-    ts = pd.DatetimeIndex(t,tz=default_timezone)
-    return ts.tz_convert(tz)
-
-def _player_to_dataframe(player,
-    properties=None,
-    dtformat=None,
-    loop=None,
-    ):
-    """Convert a player file into a normalized source dataframe
-
-    Arguments
-    ---------
-    - `player`: player dataframe
-    - `properties`: property name for players with no column headings
-    - `dtformat`: alternate date/time format
-    - `resample`
-
-    Returns
-    -------
-    - `pandas.DataFrame`: normalize source dataframe
-    """
-    if not dtformat:
-        dtformat = DATETIME_FORMAT
-
-    df = player.copy()
-    df.columns = ["timestamp"] + properties
-    df.timestamp = _localize(df.timestamp,timezone.utc)
-
-    starttime = gldcore.get_global("starttime")
-    starttime = datetime.strptime(starttime,dtformat).replace(tzinfo=timezone.utc)
-    leadup = df[df.timestamp<starttime]
-    df.drop(leadup.index[:-1],inplace=True)
-    df.loc[leadup.index[-1],"timestamp"] = starttime
-    df.sort_values("timestamp",inplace=True)
-    df.reset_index(inplace=True,drop=True) # renumber from 0
-
-    if loop: # repeat data
-        dt = df.loc[len(df)-1,"timestamp"] - df.loc[0,"timestamp"]
-        result = [df]
-        for n in range(loop):
-            result.append(result[-1].loc[1:].copy())
-            result[-1].loc[:,"timestamp"] += dt
-        df = pd.concat(result).sort_values("timestamp").reset_index(drop=True)
-
-    return df
+    return datetime.fromtimestamp(t).strftime("%Y-%m-%d %H:%M:%S %Z")
 
 if __name__ == '__main__':
     import os

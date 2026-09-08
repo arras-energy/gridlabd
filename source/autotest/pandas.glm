@@ -1,7 +1,7 @@
 // recorder.glm
 
 #set pythonpath=..:.
-module tape;
+module pandas;
 
 class recorder
 {
@@ -10,8 +10,8 @@ class recorder
 	double interval[s];
 	int16 flush;
 
-	on_init "python:tape.recorder_init";
-	on_commit "python:tape.recorder_commit";
+	on_init "python:pandas.recorder_init";
+	on_commit "python:pandas.recorder_commit";
 }
 
 class player
@@ -21,6 +21,6 @@ class player
 	int32 loop;
 	char32 dtformat;
 
-	on_init "python:tape.player_init";
-	on_precommit "python:tape.player_precommit";
+	on_init "python:pandas.player_init";
+	on_precommit "python:pandas.player_precommit";
 }
