@@ -220,4 +220,4 @@ def _timestamp_to_str(t):
 
 if __name__ == '__main__':
     import os
-    os.system("cd test_core_player_schedule_1 ; gridlabd.bin test_core_player_schedule_1.glm")
+    os.system("gridlabd pandas.glm")
