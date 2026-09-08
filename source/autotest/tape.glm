@@ -11,7 +11,7 @@ class recorder
 	int16 flush;
 
 	on_init "python:tape.recorder_init";
-	on_commit "python:tape.recorder_update";
+	on_commit "python:tape.recorder_commit";
 }
 
 class player
@@ -19,7 +19,8 @@ class player
 	char1024 property;
 	char1024 file;
 	int32 loop;
+	char32 dtformat;
 
 	on_init "python:tape.player_init";
-	on_precommit "python:tape.player_update";
+	on_precommit "python:tape.player_precommit";
 }

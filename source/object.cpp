@@ -2138,10 +2138,14 @@ STATUS object_precommit(OBJECT *obj, TIMESTAMP t1)
 	{
 		long long t2 = TS_NEVER;
 		int rc = object_event(obj,obj->events.precommit?obj->events.precommit:obj->oclass->events.precommit,&t2);
-		if ( rc != 0 || t2 < t1 )
+		if ( rc != 0 || fabs(t2) < t1 )
 		{
 			output_error("object %s:%d precommit at ts=%d event handler failed with code %d (retval=%lld)",obj->oclass->name,obj->id,global_starttime,rc,t2);
 			rv = FAILED;
+		}
+		else
+		{
+			rv = SUCCESS;
 		}
 	}
 	object_profile(obj,OPI_PRECOMMIT,t);
