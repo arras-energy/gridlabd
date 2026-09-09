@@ -373,7 +373,23 @@ PyObject *python_property_set_value(PyObject *self, PyObject *args, PyObject *kw
         if ( count <= 0 )
         {
             char msg[1024];
-            snprintf(msg,1023,"unable to read property from string '%-.32s%s'",str,size>32?"...":"");
+            if ( pyprop->prop->name == NULL )
+            {
+                snprintf(msg,1023,"unable to read property '%s:%d.%s' from string '%-.32s%s'",
+                    pyprop->obj->oclass->name,
+                    pyprop->obj->id,
+                    pyprop->prop->name,
+                    str,
+                    size>32?"...":"");
+            }
+            else
+            {
+                snprintf(msg,1023,"unable to read property '%s.%s' from string '%-.32s%s'",
+                    pyprop->obj->name,
+                    pyprop->prop->name,
+                    str,
+                    size>32?"...":"");
+            }
             PyErr_SetString(PyExc_Exception,msg);
             return NULL;
         }
