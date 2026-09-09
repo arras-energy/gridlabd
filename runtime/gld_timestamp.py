@@ -56,7 +56,6 @@ class TIMESTAMP(int):
                 TIMEZONE_LOCALE = gldcore.get_global("timezone_locale")
             try:
                 default_timezone = ZoneInfo(TIMEZONE_LOCALE)
-                print(default_timezone.tzname(),default_timezone.utcoffset())
             except _common.ZoneInfoNotFoundError:
                 tz_data = list(re.match(r"([A-Z]+)([+-]?[0-9\.]+)?([A-Z]+)?",TIMEZONE_LOCALE).groups())
                 if tz_data[0] == "UTC":
