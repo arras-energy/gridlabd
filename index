@@ -183,7 +183,6 @@ runtime/eula.htm
 runtime/favicon.ico
 runtime/feeder.py
 runtime/file_dialog.htm
-runtime/gld_output.py
 runtime/gld_pandas.py
 runtime/gld_timestamp.py
 runtime/gld_types.py

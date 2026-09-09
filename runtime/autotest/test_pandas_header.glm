@@ -20,7 +20,15 @@ clock
 
 class test
 {
+	bool b;
+	enumeration {a=0,b=1,c=2} e;
+	set {none=0,a=1,b=2,c=4} f;
+	int16 i;
+	int32 j;
+	int64 k;
 	double x;
+	complex z;
+	string s;
 }
 
 object test
@@ -33,7 +41,7 @@ object test
 	object recorder
 	{
 		file "test_pandas_header_out.csv";
-		property "x";
+		property "b,e,f,i,j,k,x,z,s";
 		timezone "America/Los_Angeles";
 		dtformat "%Y-%m-%d %H:%M:%S %Z";
 	};

@@ -21,6 +21,7 @@ clock
 class test
 {
 	double x;
+	double y;
 }
 
 object test
@@ -29,12 +30,12 @@ object test
 	{
 		file "${DIR}/test_pandas_noheader.csv";
 		timezone "America/Los_Angeles";
-		property "x";
+		property "x,y";
 	};
 	object recorder
 	{
 		file "test_pandas_noheader_out.csv";
-		property "x";
+		property "x,y";
 		interval -1;
 	};
 }

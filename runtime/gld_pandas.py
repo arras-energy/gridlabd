@@ -58,18 +58,25 @@ def recorder_init(obj:str,t:int) -> int:
     parent = gldcore.get_value(obj,"parent")
     properties = gldcore.get_value(obj,"property").split(",")
     file = gldcore.get_value(obj,"file")
-    assert file != "", f"{file=} is not valid"
+    assert file != "", f"{obj=} {file=} is not valid"
     file = open(file,"w")
     interval = int(gldcore.get_value(obj,"interval").split()[0])
     if interval > 0:
         gldcore.set_value(obj,"heartbeat",f"{interval:.0f}")
     timezone = gldcore.get_value(obj,"timezone")
     dtformat = gldcore.get_value(obj,"dtformat")
+    source = {}
+    for prop in properties:
+        try:
+            source[prop] = gldcore.property(parent,prop)
+        except Exception as err:
+            e_type, e_value, _ = sys.exc_info()
+            raise e_type(f"{obj}.properties: '{prop}' {e_value}") from err
 
     recorder[obj] = {
         "file": file,
         "interval": interval,
-        "source": {x:gldcore.property(parent,x) for x in properties},
+        "source": source,
         "last": None,
         "timezone": ZoneInfo(timezone) if timezone else None,
         "dtformat": dtformat if dtformat else None,
@@ -145,8 +152,14 @@ def player_init(obj,t):
 
     if not properties:
         properties = data.columns[1:].tolist()
-    assert properties, "no properties specified"
-    source = {x:gldcore.property(parent,x) for x in properties}
+    assert properties, f"{obj=} no properties specified"
+    source = {}
+    for prop in properties:
+        try:
+            source[prop] = gldcore.property(parent,prop)
+        except Exception as err:
+            e_type, e_value, _ = sys.exc_info()
+            raise e_type(f"{obj}.properties: '{prop}' {e_value}") from err
 
     try:
         timezone = gldcore.get_value(obj,"timezone")
