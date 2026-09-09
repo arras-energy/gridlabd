@@ -259,7 +259,7 @@ void incdir_init(const char *name,const char *value)
 {
 	if ( name == NULL )
 	{
-		snprintf(global_incdir,sizeof(global_incdir)-1,"%s",value?value:getenv("GLD_INC"));
+		snprintf(global_incdir,sizeof(global_incdir)-1,"%s:%s",value?value:getenv("GLD_INC"),getenv("GLD_ETC"));
 	}
 	else
 	{
