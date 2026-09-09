@@ -196,8 +196,7 @@ def player_precommit(obj,t):
 
     # update time has arrived
     for src,prop in this["source"].items():
-        for item in data[1:]:
-            prop.set_value(item)
+        prop.set_value(str(data[src]))
 
     # move to next row
     row += 1
