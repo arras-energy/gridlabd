@@ -25,6 +25,7 @@ static PyObject *gridlabd_output(PyObject *self, PyObject *args);
 static PyObject *gridlabd_debug(PyObject *self, PyObject *args);
 static PyObject *gridlabd_warning(PyObject *self, PyObject *args);
 static PyObject *gridlabd_error(PyObject *self, PyObject *args);
+static PyObject *gridlabd_verbose(PyObject *self, PyObject *args);
 
 static PyObject *gridlabd_reset(PyObject *self, PyObject *args);
 static PyObject *gridlabd_command(PyObject *self, PyObject *args);
@@ -89,6 +90,7 @@ static PyMethodDef module_methods[] = {
     {"debug", gridlabd_debug, METH_VARARGS, "Output a debug message"},
     {"warning", gridlabd_warning, METH_VARARGS, "Output a warning message"},
     {"error", gridlabd_error, METH_VARARGS, "Output an error message"},
+    {"verbose", gridlabd_verbose, METH_VARARGS, "Output an verbose message"},
     // simulation control
     {"reset", gridlabd_reset, METH_VARARGS, "Reset the simulation to initial conditions"},
     {"command", gridlabd_command, METH_VARARGS, "Send a command argument to the GridLAB-D instance"},
@@ -295,6 +297,20 @@ static PyObject *gridlabd_error(PyObject *self, PyObject *args)
 
 }
 
+static PyObject *gridlabd_verbose(PyObject *self, PyObject *args)
+{
+    char *text;
+    if ( ! PyArg_ParseTuple(args,"s",&text) )
+    {
+        return gridlabd_exception("missing text argument");
+    }
+    else
+    {
+        return PyLong_FromLong(output_verbose("%s",text));
+    }
+
+}
+
 static PyObject *gridlabd_traceback(const char *context=NULL)
 {
     if ( context ) output_error("traceback context is '%s'",context);
@@ -394,6 +410,9 @@ PyMODINIT_FUNC PyInit_gldcore(void)
     PyModule_AddObject(this_module,"STOP",PyLong_FromLong(global_stoptime));
     PyModule_AddObject(this_module,"NEVER",PyLong_FromLong(TS_NEVER));
     PyModule_AddObject(this_module,"INVALID",PyLong_FromLong(TS_INVALID));
+    PyModule_AddObject(this_module,"INIT_FAILED",PyLong_FromLong(0));
+    PyModule_AddObject(this_module,"INIT_OK",PyLong_FromLong(1));
+    PyModule_AddObject(this_module,"INIT_DEFER",PyLong_FromLong(2));
     PyModule_AddObject(this_module,"__title__",Py_BuildValue("s", PACKAGE_NAME));
 
     // add types
@@ -2154,8 +2173,8 @@ extern "C" void on_term(void)
     return;
 }
 
-// dispatch to python module event handler - return 0 on failure, non-zero on success
-int python_event(OBJECT *obj, const char *function, long long *p_retval)
+// dispatch to python module event handler
+STATUS python_event(OBJECT *obj, const char *function, long long *p_retval)
 {
     char objname[64];
     if ( obj->name )
@@ -2167,7 +2186,7 @@ int python_event(OBJECT *obj, const char *function, long long *p_retval)
     if ( sscanf(function,"%[^.].%[^\n]",modname,method) < 2 )
     {
         output_error("python_event(obj='%s',function='%s') has an invalid function (expected 'module.method')",objname,function);
-        return 0;
+        return FAILED;
     }
 
     Py_ssize_t n;
@@ -2185,14 +2204,14 @@ int python_event(OBJECT *obj, const char *function, long long *p_retval)
     if ( mod == NULL )
     {
         output_error("python_event(obj='%s',function='%s') module %s is not found",objname,function,modname);
-        return 0;
+        return FAILED;
     }
 
     PyObject *dict = PyModule_GetDict(mod);
     if ( dict == NULL || ! PyDict_Check(dict) )
     {
         output_error("module does not have a namespace dict");
-        return 0;
+        return FAILED;
     }
     PyObject *call = PyDict_GetItemString(dict,method);
     if ( call )
@@ -2219,19 +2238,19 @@ int python_event(OBJECT *obj, const char *function, long long *p_retval)
                     {
                         output_error("python %s(%s) did not return an integer value as expected",function,objname);
                         Py_DECREF(result);
-                        return 0;
+                        return FAILED;
                     }
                 }
                 else if ( PyErr_Occurred() )
                 {
                     output_error("python %s(%s) raised an exception",function,objname);
                     gridlabd_traceback(function);
-                    return 0;
+                    return FAILED;
                 }
                 else
                 {
                     output_error("python %s(%s) returned NULL without setting an error",function,objname);
-                    return 0;
+                    return FAILED;
                 }
             }
             if ( result )
@@ -2239,18 +2258,18 @@ int python_event(OBJECT *obj, const char *function, long long *p_retval)
                 Py_DECREF(result);
             }
             IN_MYCONTEXT output_debug("python_event(obj='%s',function='%s') -> *p_retval = %lld",objname,function,*p_retval);
-            return 1;
+            return SUCCESS;
         }
         else
         {
             output_error("%s is not callable",function);
-            return 0;
+            return FAILED;
         }
     }
     else
     {
         output_error("%s method not found",function);
-        return 0;
+        return FAILED;
     }
 }
 static int python_import_file(const char *file)

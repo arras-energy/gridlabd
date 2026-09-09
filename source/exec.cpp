@@ -1279,7 +1279,7 @@ STATUS GldExec::init_all(void)
 
 
 /*
- *	STATUS precommit(t0)
+ *	TIMESTAMP precommit(t0)
  *		This callback function allows an object to perform actions at the beginning
  *		of a timestep, before the sync process.  This callback is only triggered
  *		once per timestep, and will not fire between iterations.
@@ -1288,9 +1288,9 @@ STATUS GldExec::init_all(void)
 /**************************************************************************
  ** PRECOMMIT ITERATOR
  **************************************************************************/
-STATUS GldExec::precommit_all(TIMESTAMP t0)
+TIMESTAMP GldExec::precommit_all(TIMESTAMP t0)
 {
-	STATUS rv=SUCCESS;
+	TIMESTAMP t2 = TS_NEVER;
 	static int first=1;
 	/* TODO implement this multithreaded */
 	static SIMPLELINKLIST *precommit_list = NULL;
@@ -1328,7 +1328,8 @@ STATUS GldExec::precommit_all(TIMESTAMP t0)
 			OBJECT *obj = (OBJECT*)item->data;
 			if ((obj->in_svc <= t0 && obj->out_svc >= t0) && (obj->in_svc_micro >= obj->out_svc_micro))
 			{
-				if ( object_precommit(obj, t0)==FAILED )
+				TIMESTAMP t1 = object_precommit(obj,t0);
+				if ( t1 == TS_INVALID || fabs(t1) < fabs(t0) )
 				{
 					char name[64];
 					output_error("object %s precommit failed", object_name(obj,name,sizeof(name)-1));
@@ -1336,8 +1337,11 @@ STATUS GldExec::precommit_all(TIMESTAMP t0)
 						The precommit function of the named object has failed.  Make sure that the object's
 						requirements for precommit'ing are satisfied and try again.  (likely internal state aberations)
 					 */
-					rv=FAILED;
-					break;
+					return TS_INVALID;
+				}
+				if ( fabs(t1) < fabs(t2) )
+				{
+					t2 = t1;
 				}
 			}
 		}
@@ -1350,9 +1354,21 @@ STATUS GldExec::precommit_all(TIMESTAMP t0)
 			by a more detailed message that explains why it failed.  Follow
 			the guidance for that message and try again.
 		 */
-		rv=FAILED;
+		t2 = TS_INVALID;
 	}
-	return ( rv && module_precommitall(t0) ) ? SUCCESS : FAILED;
+	if ( t2 != TS_INVALID )
+	{
+		TIMESTAMP t1 = module_precommitall(t0);
+		if ( t1 == TS_INVALID || fabs(t1) < fabs(t0) )
+		{
+			return TS_INVALID;
+		}
+		if ( fabs(t1) < fabs(t2) )
+		{
+			t2 = t1;
+		}
+	}
+	return t2;
 }
 
 /**************************************************************************
@@ -2248,7 +2264,6 @@ void GldExec::create_lockdata(int nObjRankList)
 STATUS GldExec::exec_start(void)
 {
 	int64 passes = 0, tsteps = 0;
-	int pc_rv = 0; // precommit return value
 	STATUS fnl_rv = FAILED; // finalize all return value
 	time_t started_at = realtime_now(); // for profiler
 	int j, k;
@@ -2665,11 +2680,12 @@ STATUS GldExec::exec_start(void)
 					throw("script precommit failure");
 				}
 			
-				pc_rv = precommit_all(global_clock);
-				if ( SUCCESS != pc_rv )
+				TIMESTAMP pc_t = precommit_all(global_clock);
+				if ( pc_t == TS_INVALID )
 				{
 					throw("precommit failure");
 				}
+				sync_set(NULL,pc_t,false);
 			}
 			iObjRankList = -1;
 

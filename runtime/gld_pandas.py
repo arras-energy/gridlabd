@@ -12,10 +12,6 @@ import re
 import pandas as pd
 
 from gld_timestamp import TIMESTAMP
-from gld_output import verbose, warning
-import gld_output
-
-gld_output.options.modulename = os.path.basename(__file__)
 
 recorder = None
 player = None
@@ -67,15 +63,19 @@ def recorder_init(obj:str,t:int) -> int:
     interval = int(gldcore.get_value(obj,"interval").split()[0])
     if interval > 0:
         gldcore.set_value(obj,"heartbeat",f"{interval:.0f}")
+    timezone = gldcore.get_value(obj,"timezone")
+    dtformat = gldcore.get_value(obj,"dtformat")
 
     recorder[obj] = {
         "file": file,
         "interval": interval,
         "source": {x:gldcore.property(parent,x) for x in properties},
         "last": None,
+        "timezone": ZoneInfo(timezone) if timezone else None,
+        "dtformat": dtformat if dtformat else None,
     }
     file.write(",".join(["timestamp"]+properties)+"\n")
-    return 0
+    return gldcore.INIT_OK
 
 def recorder_commit(obj:str,t:int) -> int:
     """Update a recorder
@@ -98,12 +98,16 @@ def recorder_commit(obj:str,t:int) -> int:
             value = str(prop)
             row.append(f'"{value}"' if ',' in value else value)
         last = recorder[obj]["last"]
-        verbose(f"{row=} {last=}")
         if interval >= 0 or row != last:
             recorder[obj]["last"] = list(row)
-            row.insert(0,datetime.fromtimestamp(t,tz=timezone.utc).isoformat())
+            tz = recorder[obj]["timezone"];
+            ts = datetime.fromtimestamp(t,tz=tz if tz else timezone.utc)
+            fmt = recorder[obj]["dtformat"]
+            row.insert(0,ts.strftime(fmt) if fmt else ts.isoformat())
             recorder[obj]["file"].write(",".join(row)+"\n")
-    return ( t // interval + 1 ) * interval if interval > 0 else gldcore.NEVER
+    return ( t // interval + 1 ) * interval \
+        if interval > 0 \
+        else gldcore.NEVER
 
 #
 # PLAYER
@@ -157,7 +161,7 @@ def player_init(obj,t):
         "source": source,
         }
 
-    return 0
+    return gldcore.INIT_OK
 
 def player_precommit(obj,t):
     """Update a player

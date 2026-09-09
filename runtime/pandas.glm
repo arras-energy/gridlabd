@@ -7,9 +7,11 @@ module gld_pandas;
 
 class recorder
 {
-	char1024 property;
-	char1024 file;
+	string property;
+	string file;
 	double interval[s];
+	string timezone;
+	string dtformat;
 
 	on_init "python:gld_pandas.recorder_init";
 	on_commit "python:gld_pandas.recorder_commit";
@@ -17,9 +19,9 @@ class recorder
 
 class player
 {
-	char1024 property;
-	char1024 file;
-	char32 timezone;
+	string property;
+	string file;
+	string timezone;
 
 	on_init "python:gld_pandas.player_init";
 	on_precommit "python:gld_pandas.player_precommit";

@@ -25,9 +25,3 @@ class GridlabdZoneInfo(zoneinfo.ZoneInfo):
 
 	def tzoffset(self,dt):
 		return timedelta(hours=self.info[1])
-
-
-if __name__ == '__main__':
-	
-	tz = GridlabdZoneInfo("PST+8PDT")
-	print(tz.tzname(None),tz.tzoffset(None))

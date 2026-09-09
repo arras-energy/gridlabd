@@ -1953,14 +1953,15 @@ TIMESTAMP _object_sync(OBJECT *obj, /**< the object to synchronize */
 	return obj->valid_to;
 }
 
-int object_event(OBJECT *obj, char *event, long long *p_retval=NULL)
+// object_event
+STATUS object_event(OBJECT *obj, char *event, long long *p_retval=NULL)
 {
 	char function[1024];
 	if ( sscanf(event,"python:%s",function) ==  1 )
 	{
 		// implemented in gldcore/link/python/python.cpp
-		extern int python_event(OBJECT *obj, const char *, long long *);
-		int rv = python_event(obj,function,p_retval) ? 0 : -1;
+		extern STATUS python_event(OBJECT *obj, const char *, long long *);
+		STATUS rv = python_event(obj,function,p_retval);
 		IN_MYCONTEXT output_debug("python_event() returns %d, *p_retval = %lld",rv, *p_retval);
 		return rv;
 	}
@@ -1978,7 +1979,7 @@ int object_event(OBJECT *obj, char *event, long long *p_retval=NULL)
 		else
 			snprintf(buffer,sizeof(buffer)-1,"%s:%d",obj->oclass->name,obj->id);
 		setenv("OBJECT",buffer,1);
-		return my_instance->subcommand("%s",event);
+		return my_instance->subcommand("%s",event) == 0 ? SUCCESS : FAILED;
 	}
 }
 
@@ -1998,7 +1999,7 @@ TIMESTAMP object_sync(OBJECT *obj, /**< the object to synchronize */
 {
 	clock_t t = (clock_t)exec_clock();
 	TIMESTAMP t2=TS_NEVER;
-	int rc = 0;
+	STATUS rc = SUCCESS;
 	const char *passname[]={"NOSYNC","PRESYNC","SYNC","INVALID","POSTSYNC"};
 	char *event = NULL;
 	if ( obj->oclass->sync != NULL )
@@ -2054,7 +2055,7 @@ TIMESTAMP object_sync(OBJECT *obj, /**< the object to synchronize */
 		char dt2[64]="(invalid)"; if ( t2!=TS_INVALID ) convert_from_timestamp(absolute_timestamp(t2),dt2,sizeof(dt2)); else strcpy(dt2,"ERROR");
 		IN_MYCONTEXT output_debug("object %s:%d pass %s sync to %s -> %s %s", obj->oclass->name, obj->id, pass<0||pass>4?"(invalid)":passname[pass], dt1, is_soft_timestamp(t2)?"SOFT":"HARD", dt2);
 	}
-	if ( rc != 0 )
+	if ( rc == FAILED )
 	{
 		output_error("object %s:%d pass %s at ts=%d event handler failed with code %d",obj->oclass->name,obj->id,pass<0||pass>4?"(invalid)":passname[pass],ts,rc);
 		return TS_ZERO;
@@ -2079,7 +2080,7 @@ TIMESTAMP object_heartbeat(OBJECT *obj)
 /** Initialize an object.  This should not be called until
 	all objects that are needed are created
 
-	@return 1 on success; 0 on failure
+	@return 1 on success; 0 on failure, 2 to defer
  **/
 int object_init(OBJECT *obj) /**< the object to initialize */
 {
@@ -2087,18 +2088,21 @@ int object_init(OBJECT *obj) /**< the object to initialize */
 	int rv = 1;
 	obj->clock = global_starttime;
 	if ( obj->oclass->init != NULL )
+	{
 		rv = (int)(*(obj->oclass->init))(obj, obj->parent);
+	}
 	if ( rv == 1 && obj->events.init != NULL )
 	{
 		long long ok = 0;
-		int rc = object_event(obj,obj->events.init?obj->events.init:obj->oclass->events.init,&ok);
-		if ( rc != 0 || ok == 1 )
+		STATUS rc = object_event(obj,obj->events.init?obj->events.init:obj->oclass->events.init,&ok);
+		if ( rc == FAILED || ok > 2 || ok < 0 )
 		{
-			output_error("object %s:%d init at ts=%d event handler failed with code %d (retval=%lld)",obj->oclass->name,obj->id,global_starttime,rc,ok);
+		 	output_error("object %s:%d init at ts=%d event handler failed with code %d (retval=%lld)",obj->oclass->name,obj->id,global_starttime,rc,ok);
+		 	rv = 0;
 		}
-		else if ( ok == 2 )
+		else
 		{
-			rv = 2;
+			rv = (int)ok;
 		}
 	}
 	object_profile(obj,OPI_INIT,t);
@@ -2116,43 +2120,56 @@ int object_init(OBJECT *obj) /**< the object to initialize */
 	calculations that are performed by other objects in precommit, since there
 	is no order
 
-	The return value is if the function successfully completed.
+	The return value is the next desired update.
  **/
-STATUS object_precommit(OBJECT *obj, TIMESTAMP t1)
+TIMESTAMP object_precommit(OBJECT *obj, TIMESTAMP t1)
 {
-	clock_t t = (clock_t)exec_clock();
-	STATUS rv = SUCCESS;
 	if ( (global_validto_context&VTC_PRECOMMIT) == VTC_PRECOMMIT )
 	{
-		return rv;
+		return TS_NEVER;
 	}
-	if ( obj->oclass->precommit != NULL )
+
+	clock_t t = (clock_t)exec_clock();
+	TIMESTAMP rv = 0;
+	if ( obj->events.precommit != NULL )
 	{
-		rv = (STATUS)(*(obj->oclass->precommit))(obj, t1);
-	}
-	if ( rv == 1 )
-	{ 
-		// if 'old school' or no precommit callback,
-		rv = SUCCESS;
-	}
-	if ( rv == 1 && obj->events.precommit != NULL )
-	{
-		long long t2 = TS_NEVER;
-		int rc = object_event(obj,obj->events.precommit?obj->events.precommit:obj->oclass->events.precommit,&t2);
-		if ( rc != 0 || fabs(t2) < t1 )
+		TIMESTAMP t2 = TS_NEVER;
+		STATUS rc = object_event(obj,obj->events.precommit?obj->events.precommit:obj->oclass->events.precommit,&t2);
+		if ( rc == FAILED || t2 == TS_INVALID )
 		{
 			output_error("object %s:%d precommit at ts=%d event handler failed with code %d (retval=%lld)",obj->oclass->name,obj->id,global_starttime,rc,t2);
-			rv = FAILED;
+			rv = TS_INVALID;
 		}
 		else
 		{
-			rv = SUCCESS;
+			rv = t2;
+		}
+	}
+	if ( rv == 0 ) // pass through to class precommit (if any)
+	{
+		if (  obj->oclass->precommit != NULL )
+		{
+			long long rc = (*(obj->oclass->precommit))(obj, t1);
+			if ( rc == 0 || rc == 1 )
+			{ 
+				// if 'old school' or no precommit callback,
+				static TIMESTAMP ts[] = {TS_INVALID,TS_NEVER};
+				rv = ts[rc];
+			}
+			else
+			{
+				rv = (TIMESTAMP)rc;
+			}
+		}	
+		else
+		{
+			rv = TS_NEVER;
 		}
 	}
 	object_profile(obj,OPI_PRECOMMIT,t);
-	if ( global_debug_output>0 )
+	if ( global_debug_output > 0 )
 	{
-		IN_MYCONTEXT output_debug("object %s:%d precommit -> %s", obj->oclass->name, obj->id, rv?"ok":"failed");
+		IN_MYCONTEXT output_debug("object %s:%d precommit -> %lld", obj->oclass->name, obj->id, rv);
 	}
 	return rv;
 }
@@ -2176,8 +2193,8 @@ TIMESTAMP object_commit(OBJECT *obj, TIMESTAMP t1, TIMESTAMP t2)
 	} 
 	if ( obj->events.commit != NULL )
 	{
-		int rc = object_event(obj,obj->events.commit?obj->events.commit:obj->oclass->events.commit,&rv);
-		if ( rc != 0 || rv == TS_INVALID )
+		STATUS rc = object_event(obj,obj->events.commit?obj->events.commit:obj->oclass->events.commit,&rv);
+		if ( rc == FAILED || rv == TS_INVALID )
 		{
 			output_error("object %s:%d commit at ts=%d event handler failed with code %d (retval=%lld)",obj->oclass->name,obj->id,global_starttime,rc,rv);
 			rv = TS_INVALID;

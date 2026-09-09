@@ -34,6 +34,8 @@ object test
 	{
 		file "test_pandas_header_out.csv";
 		property "x";
+		timezone "America/Los_Angeles";
+		dtformat "%Y-%m-%d %H:%M:%S %Z";
 	};
 }
 
