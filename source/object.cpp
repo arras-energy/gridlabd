@@ -2065,13 +2065,14 @@ TIMESTAMP object_sync(OBJECT *obj, /**< the object to synchronize */
 TIMESTAMP object_heartbeat(OBJECT *obj)
 {
 	clock_t t = (clock_t)exec_clock();
-	TIMESTAMP t1 = obj->oclass->heartbeat ? obj->oclass->heartbeat(obj) : TS_NEVER;
+	unsigned long long dt = obj->oclass->heartbeat ? obj->oclass->heartbeat(obj) : obj->heartbeat;
+	TIMESTAMP t1 = dt > 0 && dt < TS_NEVER ? TIMESTAMP((global_clock/dt+1)*dt) : TS_NEVER;
 	object_profile(obj,OPI_HEARTBEAT,t);
-		if ( global_debug_output>0 )
-		{
-			char dt[64]="(invalid)"; convert_from_timestamp(absolute_timestamp(t1),dt,sizeof(dt));
-			IN_MYCONTEXT output_debug("object %s:%d heartbeat -> %s %s", obj->oclass->name, obj->id, is_soft_timestamp(t1)?"(SOFT)":"(HARD)", dt);
-		}
+	if ( global_debug_output>0 )
+	{
+		char dt[64]="(invalid)"; convert_from_timestamp(absolute_timestamp(t1),dt,sizeof(dt));
+		IN_MYCONTEXT output_debug("object %s:%d heartbeat -> %s %s", obj->oclass->name, obj->id, is_soft_timestamp(t1)?"(SOFT)":"(HARD)", dt);
+	}
 	return t1;
 }
 

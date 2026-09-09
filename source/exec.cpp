@@ -1666,10 +1666,17 @@ TIMESTAMP GldExec::sync_heartbeats(void)
 {
 	TIMESTAMP t1 = TS_NEVER;
 	unsigned int n;
+	// fprintf(stderr,"n_object_heartbeats = %lld\n",(int64)n_object_heartbeats);
 	for ( n=0 ; n<n_object_heartbeats ; n++ )
 	{
+		// fprintf(stderr,"object_heartbeats[%d].heartbeat = %lld\n",n,object_heartbeats[n]->heartbeat);
 		TIMESTAMP t2 = object_heartbeat(object_heartbeats[n]);
-		if ( absolute_timestamp(t2) < absolute_timestamp(t1) ) t1 = t2;
+		// fprintf(stderr,"t2 = %lld\n",t2);
+		if ( t1 == TS_NEVER || absolute_timestamp(t2) < absolute_timestamp(t1) )
+		{
+			t1 = t2;
+		}
+		// fprintf(stderr,"t1 = %lld\n",t1);
 	}
 
 	/* heartbeats are always soft updates */
