@@ -4,11 +4,11 @@
 
 #set minimum_timestep=1;
 
-#ifexist "../tape.glm"
+#ifexist "../pandas.glm"
 #define DIR=..
 #endif
 
-#include "${DIR:-.}/tape.glm"
+#include "${DIR:-.}/pandas.glm"
 
 clock
 {
@@ -17,14 +17,6 @@ clock
 	stoptime '2000-01-03 02:00:00';
 }
 
-object player
-{
-	name source;
-	file "${DIR:-.}/test_core_player_schedule_1.csv";
-	property x;
-	loop 2;
-};
-
 class test
 {
 	double x;
@@ -32,6 +24,13 @@ class test
 
 object test
 {
+	object player
+	{
+		name source;
+		file "${DIR:-.}/test_core_player_schedule_1.csv";
+		property x;
+		loop 2;
+	};
 	object recorder
 	{
 		property x;

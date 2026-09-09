@@ -29,12 +29,12 @@ class noise {
 	};
 }
 
-#ifexist "../tape.glm"
+#ifexist "../pandas.glm"
 #define DIR=..
 #on_exit 0 diff ../test_c_include.csv test_c_include.csv > gridlabd.diff
 #endif
 
-#include "${DIR:-.}/tape.glm"
+#include "${DIR:-.}/pandas.glm"
 
 // record the output
 object noise 

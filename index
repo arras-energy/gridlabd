@@ -168,6 +168,7 @@ requirements.txt
 runtime/Makefile.mk
 runtime/README.md
 runtime/about.htm
+runtime/autotest/test_pandas.glm
 runtime/capacitor_b.png
 runtime/capacitor_g.png
 runtime/capacitor_k.png
@@ -177,6 +178,9 @@ runtime/eula.htm
 runtime/favicon.ico
 runtime/feeder.py
 runtime/file_dialog.htm
+runtime/gld_timestamp.py
+runtime/gld_types.py
+runtime/gld_tzinfo.py
 runtime/gnuplot.conf
 runtime/gridlabd.cnf
 runtime/gridlabd.conf
@@ -200,6 +204,8 @@ runtime/node_b.png
 runtime/node_g.png
 runtime/node_k.png
 runtime/node_r.png
+runtime/pandas.glm
+runtime/pandas.py
 runtime/regulator_b.png
 runtime/regulator_g.png
 runtime/regulator_k.png
@@ -262,8 +268,6 @@ source/autotest/recorder.py
 source/autotest/save_randomseed
 source/autotest/save_randomstate
 source/autotest/t_mass.csv
-source/autotest/tape.glm
-source/autotest/tape.py
 source/autotest/test_aws_help.glm
 source/autotest/test_bare_class.glm
 source/autotest/test_c_include.csv
@@ -296,6 +300,7 @@ source/autotest/test_core_63_schedule.player
 source/autotest/test_core_64_schedule_err.glm
 source/autotest/test_core_player_schedule_1.csv
 source/autotest/test_core_player_schedule_1.glm
+source/autotest/test_core_player_schedule_1.player
 source/autotest/test_core_player_schedule_2.csv
 source/autotest/test_core_schedules_boolean_err.glm
 source/autotest/test_core_schedules_nonzero_err.glm

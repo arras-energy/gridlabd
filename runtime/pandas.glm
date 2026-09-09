@@ -1,26 +1,26 @@
-// recorder.glm
+// pandas.glm
+//
+// Include this GLM file to enable pandas players and recorders
+//
 
-#set pythonpath=..:.
-module pandas;
+module gld_pandas;
 
 class recorder
 {
 	char1024 property;
 	char1024 file;
 	double interval[s];
-	int16 flush;
 
-	on_init "python:pandas.recorder_init";
-	on_commit "python:pandas.recorder_commit";
+	on_init "python:gld_pandas.recorder_init";
+	on_commit "python:gld_pandas.recorder_commit";
 }
 
 class player
 {
 	char1024 property;
 	char1024 file;
-	int32 loop;
-	char32 dtformat;
+	char32 timezone;
 
-	on_init "python:pandas.player_init";
-	on_precommit "python:pandas.player_precommit";
+	on_init "python:gld_pandas.player_init";
+	on_precommit "python:gld_pandas.player_precommit";
 }
