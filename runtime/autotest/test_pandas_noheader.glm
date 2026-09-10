@@ -30,6 +30,7 @@ object test
 	{
 		file "${DIR}/test_pandas_noheader.csv";
 		timezone "America/Los_Angeles";
+		options "{'header':None,'names':['timestamp','x','y']}";
 		property "x,y";
 	};
 	object recorder

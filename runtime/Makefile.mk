@@ -54,3 +54,4 @@ dist_pkgdata_DATA += runtime/gld_pandas.py
 
 dist_pkgdata_DATA += runtime/gld_timestamp.py
 dist_pkgdata_DATA += runtime/gld_tzinfo.py
+dist_pkgdata_DATA += runtime/gld_utilities.py

@@ -12,6 +12,7 @@ class recorder
 	double interval[s];
 	string timezone;
 	string dtformat;
+	bool flush;
 
 	on_init "python:gld_pandas.recorder_init";
 	on_commit "python:gld_pandas.recorder_commit";
@@ -22,6 +23,7 @@ class player
 	string property;
 	string file;
 	string timezone;
+	python options;
 
 	on_init "python:gld_pandas.player_init";
 	on_precommit "python:gld_pandas.player_precommit";

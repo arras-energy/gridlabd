@@ -13,9 +13,8 @@
 
 clock
 {
-	timezone "PST+8PDT";
-	starttime "2000-01-01 00:00:00 PST";
-	stoptime "2000-01-02 00:00:00 PST";
+	starttime "2000-01-01 00:00:00 UTC";
+	stoptime "2000-01-02 00:00:00 UTC";
 }
 
 class test
@@ -33,14 +32,35 @@ class test
 
 object test
 {
+	// this test read all the data columns
+	name "test_1";
+	object player
+	{
+		file "${DIR}/test_pandas_header.csv";
+		//timezone "America/Los_Angeles";
+	};
+	object recorder
+	{
+		file "test_pandas_header_out_1.csv";
+		property "b,e,f,i,j,k,x,z,s";
+		timezone "America/Los_Angeles";
+		dtformat "%Y-%m-%d %H:%M:%S %Z";
+	};
+}
+
+object test
+{
+	// this test ignore two data columns
+	name "test_2";
 	object player
 	{
 		file "${DIR}/test_pandas_header.csv";
 		timezone "America/Los_Angeles";
+		property "b,i,j,k,x,z,s";
 	};
 	object recorder
 	{
-		file "test_pandas_header_out.csv";
+		file "test_pandas_header_out_2.csv";
 		property "b,e,f,i,j,k,x,z,s";
 		timezone "America/Los_Angeles";
 		dtformat "%Y-%m-%d %H:%M:%S %Z";
@@ -48,5 +68,6 @@ object test
 }
 
 #ifexists "../test_pandas_header_out.csv"
-#on_exit 0 diff "../test_pandas_header_out.csv" "test_pandas_header_out.csv" > gridlabd.diff
+#on_exit 0 diff "../test_pandas_header_out_1.csv" "test_pandas_header_out_1.csv" > gridlabd.diff
+#on_exit 0 diff "../test_pandas_header_out_1.csv" "test_pandas_header_out_2.csv" >> gridlabd.diff
 #endif
