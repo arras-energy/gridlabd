@@ -186,8 +186,8 @@ import re
 
 import pandas as pd
 
-from gld_utilities import MutableData, name_unit, value_unit
-from gld_timestamp import TIMESTAMP
+from glm_utilities import MutableData, name_unit, value_unit
+from glm_timestamp import TIMESTAMP
 
 recorder:dict = None
 """Active recorder objects in GridLAB-D"""

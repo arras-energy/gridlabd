@@ -172,6 +172,12 @@ runtime/autotest/test_pandas_header.csv
 runtime/autotest/test_pandas_header.glm
 runtime/autotest/test_pandas_header_out_1.csv
 runtime/autotest/test_pandas_header_out_2.csv
+runtime/autotest/test_pandas_header_units.csv
+runtime/autotest/test_pandas_header_units.glm
+runtime/autotest/test_pandas_header_units_out.csv
+runtime/autotest/test_pandas_inline_units.csv
+runtime/autotest/test_pandas_inline_units.glm
+runtime/autotest/test_pandas_inline_units_out.csv
 runtime/autotest/test_pandas_noheader.csv
 runtime/autotest/test_pandas_noheader.glm
 runtime/autotest/test_pandas_noheader_out.csv

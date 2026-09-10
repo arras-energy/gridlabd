@@ -3,7 +3,7 @@
 // Include this GLM file to enable pandas players and recorders
 //
 
-module gld_pandas;
+module glm_pandas;
 
 class recorder
 {
@@ -15,8 +15,8 @@ class recorder
 	enumeration {NONE=0,INLINE=1,HEADER=2} units;
 	bool flush;
 
-	on_init "python:gld_pandas.recorder_init";
-	on_commit "python:gld_pandas.recorder_commit";
+	on_init "python:glm_pandas.recorder_init";
+	on_commit "python:glm_pandas.recorder_commit";
 }
 
 class player
@@ -26,6 +26,6 @@ class player
 	string timezone;
 	python options;
 
-	on_init "python:gld_pandas.player_init";
-	on_precommit "python:gld_pandas.player_precommit";
+	on_init "python:glm_pandas.player_init";
+	on_precommit "python:glm_pandas.player_precommit";
 }

@@ -6,13 +6,16 @@ from datetime import timedelta
 import zoneinfo
 import warnings
 
-with open(os.path.join(os.environ["GLD_ETC"],"tzinfo.txt"),"r") as fh:
-	TZINFO = [x.split(";")[0].rstrip() for x in fh.read().split("\n") if not x.strip().startswith(";")]
-	print(TZINFO)
+TZINFO = None
 
 class GridlabdZoneInfo(zoneinfo.ZoneInfo):
 
 	def __init__(self,tz):
+
+		global TZINFO
+		if TZINFO is None:
+			with open(os.path.join(os.environ["GLD_ETC"],"tzinfo.txt"),"r") as fh:
+				TZINFO = [x.split(";")[0].rstrip() for x in fh.read().split("\n") if not x.strip().startswith(";")]
 
 		try:
 			super().__init__(tz)
