@@ -46,61 +46,61 @@ units specified by the class.
 
 *Simple player*:
 
-    In this example, the file `test_player.csv` contains this data.
+In this example, the file `test_player.csv` contains this data.
 
-        timestamp,x,y
-        2000-01-01 00:00:00,60,0
-        2000-01-01 01:00:00,61,1
-        2000-01-01 02:00:00,62,2
-        2000-01-01 04:00:00,64,3
-        2000-01-01 05:00:00,65,4
-        2000-01-01 10:00:00,64,5
-        2000-01-01 11:00:00,63,6
-        2000-01-01 12:00:00,62,7
-        2000-01-01 13:00:00,61,8
-        2000-01-01 14:00:00,60,9
+    timestamp,x,y
+    2000-01-01 00:00:00,60,0
+    2000-01-01 01:00:00,61,1
+    2000-01-01 02:00:00,62,2
+    2000-01-01 04:00:00,64,3
+    2000-01-01 05:00:00,65,4
+    2000-01-01 10:00:00,64,5
+    2000-01-01 11:00:00,63,6
+    2000-01-01 12:00:00,62,7
+    2000-01-01 13:00:00,61,8
+    2000-01-01 14:00:00,60,9
 
 
-    Use the following to update the properties `x` and `y` in an object of class
-    `test` from data in the file `test_player.csv`.
+Use the following to update the properties `x` and `y` in an object of class
+`test` from data in the file `test_player.csv`.
 
-        object example
+    object example
+    {
+        object player
         {
-            object player
-            {
-                file "test_player.csv";
-            };
-        }
+            file "test_player.csv";
+        };
+    }
 
 *Player missing timezones*:
 
-    If you need to specify the timezone for the timestamp use the following.
+If you need to specify the timezone for the timestamp use the following.
 
-        object example
+    object example
+    {
+        object player
         {
-            object player
-            {
-                file "test_player.csv";
-                timezone "America/Los_Angeles";
-            };
-        }
+            file "test_player.csv";
+            timezone "America/Los_Angeles";
+        };
+    }
 
-    Note that only timezones supported by Python `zoneinfo` module are supported.
+Note that only timezones supported by Python `zoneinfo` module are supported.
 
 *Player missing header row*:
 
-    The next example illustrates how to read data from the same CSV file when it
-    has no header to provide the property names.
+The next example illustrates how to read data from the same CSV file when it
+has no header to provide the property names.
 
-        object example
+    object example
+    {
+        object player
         {
-            object player
-            {
-                file "test_player.csv";
-                options "{'header':None,'names':['timestamp','x','y']}";
-                property "x,y";
-            };
-        }
+            file "test_player.csv";
+            options "{'header':None,'names':['timestamp','x','y']}";
+            property "x,y";
+        };
+    }
 
 Recorders
 ---------
@@ -124,9 +124,17 @@ The following properties are supported by recorders.
   one of the values changes.
 
 - `timezone`: the timezone of the timestamps to write the data file.
-  The default is UTC.
+  The default timezone is UTC.
 
 - `dtformat`: the date/time format to use when writing timestamps.
+
+- `units`: specifies whether and how units information is include. The
+  default is `None`, which does not include any units information in the
+  output. If `INLINE` is specified, the units are included with the value
+  is each cell. If `HEADER` is specified, the units are included as part
+  of the column names, e.g., `name[unit]`.
+
+- `flush`: specifies whether the output buffer is flushed with each write.
 
 
 The following examples illustrate how to use a recorder for the same GLM class
@@ -166,8 +174,6 @@ property.
         timezone "America/Los_Angeles";
         dtformat "%Y-%m-%d %H:%M:%S %Z";
     };
-
-
 """
 
 import os
@@ -180,7 +186,7 @@ import re
 
 import pandas as pd
 
-from gld_utilities import MutableData
+from gld_utilities import MutableData, name_unit, value_unit
 from gld_timestamp import TIMESTAMP
 
 recorder:dict = None
@@ -253,6 +259,7 @@ def recorder_init(obj:str,t:int) -> int:
     dtformat = gldcore.get_value(obj,"dtformat")
     flush = gldcore.get_value(obj,"flush")
     source = {}
+    units = gldcore.get_value(obj,"units")
     for prop in properties:
         try:
             source[prop] = gldcore.property(parent,prop)
@@ -263,15 +270,29 @@ def recorder_init(obj:str,t:int) -> int:
     this = {
         "file": file,
         "interval": interval,
+        "parent": parent,
         "source": source,
         "last": None,
         "timezone": ZoneInfo(timezone) if timezone else None,
         "dtformat": dtformat if dtformat else None,
         "flush": flush,
+        "units": units,
     }
     recorder[obj] = MutableData(**this)
 
-    file.write(",".join(["timestamp"]+properties)+"\n")
+    header = ["timestamp"]
+    if units != "HEADER":
+        header.extend(properties)
+    else:
+        pclass = gldcore.get_class(gldcore.get_object(parent)["class"])
+        for name in properties:
+            try:
+                unit = pclass[name]["unit"]
+            except:
+                unit = None
+            header.append(f"{name}[{unit}]" if unit else name)
+    file.write(",".join(header)+"\n")
+
 
     return gldcore.INIT_OK
 
@@ -292,6 +313,9 @@ def recorder_commit(obj:str,t:int) -> int:
         row = []
         for var,prop in this.source.items():
             value = str(prop)
+            if this.units != "INLINE":
+                value,_ = value_unit(value)
+            value = str(value)
             row.append(f'"{value}"' if ',' in value else value)
         if this.interval >= 0 or row != this.last:
             this.last = list(row)
@@ -352,9 +376,11 @@ def player_init(obj,t):
     assert properties, f"{obj=} no properties specified"
 
     source = {}
+    unit = {}
     for prop in properties:
         try:
-            source[prop] = gldcore.property(parent,prop)
+            name,unit[prop] = name_unit(prop)
+            source[prop] = gldcore.property(parent,name)
         except Exception as err:
             e_type, e_value, _ = sys.exc_info()
             raise e_type(f"{obj}.properties: '{prop}' {e_value}") from err
@@ -370,6 +396,7 @@ def player_init(obj,t):
         "data": data,
         "row": 0,
         "source": source,
+        "unit": unit,
         "timestamp": None
         }
     player[obj] = MutableData(**this)
@@ -408,7 +435,11 @@ def player_precommit(obj,t):
 
     # update time has arrived
     for src,prop in this.source.items():
-        prop.set_value(str(data[src]))
+        if this.unit[src] is None:
+            value = str(data[src])
+        else:
+            value = f"{data[src]} {this.unit[src]}"
+        prop.set_value(value)
 
     # move to next row
     this.row += 1

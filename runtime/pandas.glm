@@ -12,6 +12,7 @@ class recorder
 	double interval[s];
 	string timezone;
 	string dtformat;
+	enumeration {NONE=0,INLINE=1,HEADER=2} units;
 	bool flush;
 
 	on_init "python:gld_pandas.recorder_init";
