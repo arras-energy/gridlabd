@@ -170,7 +170,8 @@ runtime/README.md
 runtime/about.htm
 runtime/autotest/test_pandas_header.csv
 runtime/autotest/test_pandas_header.glm
-runtime/autotest/test_pandas_header_out.csv
+runtime/autotest/test_pandas_header_out_1.csv
+runtime/autotest/test_pandas_header_out_2.csv
 runtime/autotest/test_pandas_noheader.csv
 runtime/autotest/test_pandas_noheader.glm
 runtime/autotest/test_pandas_noheader_out.csv
@@ -187,6 +188,7 @@ runtime/gld_pandas.py
 runtime/gld_timestamp.py
 runtime/gld_types.py
 runtime/gld_tzinfo.py
+runtime/gld_utilities.py
 runtime/gnuplot.conf
 runtime/gridlabd.cnf
 runtime/gridlabd.conf
