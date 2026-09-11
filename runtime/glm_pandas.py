@@ -1,5 +1,12 @@
 """GridLAB-D Pandas Module
 
+The `pandas` module load the `player` and `recorder` runtime classes and the
+supporting Python module `glm_pandas.py`, which are used to read and write
+CSV files. To load the `pandas` runtime classes, add the following line to
+your GLM file.
+
+    #include "pandas.glm"
+
 Players
 -------
 
@@ -333,7 +340,7 @@ def recorder_commit(obj:str,t:int) -> int:
 # PLAYER
 #
 
-def player_init(obj,t):
+def player_init(obj:str,t:int) -> int:
     """Initialize a player
 
     Arguments
@@ -403,7 +410,7 @@ def player_init(obj,t):
 
     return gldcore.INIT_OK
 
-def player_precommit(obj,t):
+def player_precommit(obj:str,t:int) -> int:
     """Update a player
 
     Arguments

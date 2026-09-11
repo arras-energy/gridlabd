@@ -50,6 +50,7 @@ dist_pkgdata_DATA += runtime/unitfile.txt
 
 # GLM language support
 dist_pkgdata_DATA += runtime/glm.py
+dist_pkgdata_DATA += runtime/glm_syntax.py
 
 # runtime support
 dist_pkgdata_DATA += runtime/glm_timestamp.py

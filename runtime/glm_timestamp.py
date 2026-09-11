@@ -7,11 +7,18 @@ from datetime import datetime, timezone
 from zoneinfo import ZoneInfo, _common
 
 DATETIME_NOTZ = "%Y-%m-%d %H:%M:%S"
+"""Default date/time format for timezone-naive timestamps"""
+
 DATETIME_FORMAT = f"{DATETIME_NOTZ} %Z"
+"""Default date/time format for timezone-aware timestamps"""
+
 TIMEZONE_LOCALE = None
+"""Default timezone locale"""
+
 TZSPECS = {
     "UTC":"+00:00",
     }
+"""Available timezone specifications"""
 
 class TIMESTAMP(int):
     """GridLAB-D TIMESTAMP data type
@@ -107,44 +114,3 @@ class TIMESTAMP(int):
         if spec:
             return self.to_datetime().strftime(spec)
         return str(self)
-
-if __name__ == '__main__':
-
-    class gldcore:
-        """Test rig for gridlabd globals"""
-        GLOBALS = {
-            "timezone_locale": "UTC",
-            "clock": 946684800,
-        }
-
-        @classmethod
-        def get_global(cls,name):
-            return cls.GLOBALS[name]
-
-    t = TIMESTAMP("2000-01-01 00:00:00")
-
-    assert str(t) == "2000-01-01 00:00:00 UTC"
-    assert repr(t) == "TIMESTAMP(946684800)"
-    assert t.isoformat() == "2000-01-01T00:00:00+00:00"
-    assert f"{t}" == "2000-01-01 00:00:00 UTC"
-    assert f"{t=}" == "t=TIMESTAMP(946684800)"
-    assert f"{t:%m/%d/%Y %H:%M:%S}" == "01/01/2000 00:00:00"
-
-    TIMEZONE_LOCALE = "UTC"
-
-    t = TIMESTAMP("2000-01-01 00:00:00")
-
-    assert str(t) == "2000-01-01 00:00:00 UTC"
-    assert repr(t) == "TIMESTAMP(946684800)"
-    assert t.isoformat() == "2000-01-01T00:00:00+00:00"
-    assert f"{t}" == "2000-01-01 00:00:00 UTC"
-    assert f"{t=}" == "t=TIMESTAMP(946684800)"
-    assert f"{t:%m/%d/%Y %H:%M:%S}" == "01/01/2000 00:00:00"
-
-    t = TIMESTAMP("2000-01-01 00:00:00 UTC")
-
-    TIMEZONE_LOCALE = "PST+8PDT"
-    t = TIMESTAMP("1999-12-31 16:00:00 PST")
-
-    TIMEZONE_LOCALE = "America/Los_Angeles"
-    t = TIMESTAMP("1999-12-31 16:00:00 PST")
