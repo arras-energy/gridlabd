@@ -192,6 +192,7 @@ runtime/feeder.py
 runtime/file_dialog.htm
 runtime/glm.py
 runtime/glm_pandas.py
+runtime/glm_syntax.py
 runtime/glm_timestamp.py
 runtime/glm_tzinfo.py
 runtime/glm_utilities.py

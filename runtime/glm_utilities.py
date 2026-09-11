@@ -112,9 +112,10 @@ def value_unit(s:str,autotype=False,nofail=False):
     Caveat
     ------
 
-    If there is error converting the value to complex or float, then
-    the value is returned as a string. Use `nofail=True` to raise
-    the exception instead.
+    If there is error converting the value to complex or float, then the value
+    is always returned as a string rather than returned as a float or double
+    when `autotype` is `True`. Use `nofail=True` to raise the exception
+    instead.
     """
     def _autotype(s):
         try:
@@ -122,7 +123,7 @@ def value_unit(s:str,autotype=False,nofail=False):
             if z.imag == 0:
                 return z.real if autotype else f"{z.real:g}"
             return z if autotype else f"{z.real:g}{z.imag:+g}j"
-        except:
+        except ValueError:
             if nofail:
                 raise
             return s

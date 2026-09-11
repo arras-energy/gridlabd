@@ -17,6 +17,14 @@ TIMEZONE_LOCALE = None
 
 TZSPECS = {
     "UTC":"+00:00",
+    "EDT":"-04:00",
+    "EST":"-05:00",
+    "CDT":"-05:00",
+    "CST":"-06:00",
+    "MDT":"-06:00",
+    "MST":"-07:00",
+    "PDT":"-07:00",
+    "PST":"-08:00",
     }
 """Available timezone specifications"""
 
