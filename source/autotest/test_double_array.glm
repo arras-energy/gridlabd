@@ -25,8 +25,8 @@
 //#setenv include=${MSVC86}/VC/include;${MSVC86}/VC/include/sys;${MSVC}/VC/include;${MSVC}/VC/include/sys
 //#setenv lib=${SystemRoot}/system32;${MSVC}/VC/lib;${MSVC}/VC/Lib/amd64;${MSVC86}/VC/PlatformSDK/Lib/amd64;${MSVC86}/VC/lib;${MSVC86}/VC/lib/amd64;${MSVC86}/VC/PlatformSDK/Lib
 
-module assert;
-module tape;
+#include "assert.glm"
+#include "pandas.glm"
 
 clock {
 	timezone "US/WA/Seattle";
@@ -126,14 +126,14 @@ object test {
 	C "1 0";
 	D "0";
 	object assert {
-		target output;
-		relation inside;
+		target "output";
+		relation "IN";
 		lower 0.0;
 		upper 12.5;
 	};
 	object recorder {
-		property input,output,x1,x2;
-		file test_double_array_3.csv;
+		property "input,output,x1,x2";
+		file "test_double_array_3.csv";
 		interval 1;
 	};
 }	

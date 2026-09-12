@@ -1,6 +1,6 @@
 // pandas.glm
 //
-// Include this GLM file to enable pandas players and recorders
+// Include this GLM file to load player and recorder classes
 //
 
 module glm_pandas;

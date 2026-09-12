@@ -1,0 +1,24 @@
+// assert.glm
+//
+// Include this GLM file to load assert class
+//
+
+module glm_pandas;
+
+class assert
+{
+    enumeration {INIT=0,TRUE=1,FALSE=2,ERROR=3} status;
+    string target;
+    set {EQ=0,LT=1,LE=2,GT=3,GE=4,NE=5,IN=6,NI=7} relation;
+    string value;
+    double within;
+    double lower;
+    double upper;
+    string group;
+    timestamp start;
+    timestamp stop;
+    double hold[s];
+
+    on_init "python:glm_assert.assert_init";
+    on_commit "python:glm_assert.assert_commit";
+}

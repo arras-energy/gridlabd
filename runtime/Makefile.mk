@@ -58,6 +58,7 @@ dist_pkgdata_DATA += runtime/glm_tzinfo.py
 dist_pkgdata_DATA += runtime/glm_utilities.py
 
 # runtime modules
+dist_pkgdata_DATA += runtime/glm_assert.py
+dist_pkgdata_DATA += runtime/assert.glm
 dist_pkgdata_DATA += runtime/glm_pandas.py
 dist_pkgdata_DATA += runtime/pandas.glm
-
