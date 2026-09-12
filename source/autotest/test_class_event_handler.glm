@@ -1,4 +1,4 @@
-#set pythonpath=..:.
+#set pythonpath=..:.:${pythonpath}
 
 module test_class_event_handler;
 

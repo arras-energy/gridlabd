@@ -2080,37 +2080,33 @@ TIMESTAMP object_heartbeat(OBJECT *obj)
 /** Initialize an object.  This should not be called until
 	all objects that are needed are created
 
-	@return 1 on success; 0 on failure, 2 to defer
+	@return 0 on failure, 1 on success, 2 to defer
  **/
 int object_init(OBJECT *obj) /**< the object to initialize */
 {
 	clock_t t = (clock_t)exec_clock();
-	int rv = 1;
+	long long rv = INIT_OK; // default to success
 	obj->clock = global_starttime;
 	if ( obj->oclass->init != NULL )
 	{
+		// call the class init handler
 		rv = (int)(*(obj->oclass->init))(obj, obj->parent);
 	}
-	if ( rv == 1 && obj->events.init != NULL )
+	if ( rv == INIT_OK && obj->events.init != NULL )
 	{
-		long long ok = 0;
-		STATUS rc = object_event(obj,obj->events.init?obj->events.init:obj->oclass->events.init,&ok);
-		if ( rc == FAILED || ok > 2 || ok < 0 )
+		STATUS rc = object_event(obj,obj->events.init?obj->events.init:obj->oclass->events.init,&rv);
+		if ( rc == FAILED || ( rv != INIT_FAILED && rv != INIT_OK && rv != INIT_DEFER ) )
 		{
-		 	output_error("object %s:%d init at ts=%d event handler failed with code %d (retval=%lld)",obj->oclass->name,obj->id,global_starttime,rc,ok);
-		 	rv = 0;
-		}
-		else
-		{
-			rv = (int)ok;
+		 	output_error("object %s:%d init at ts=%d event handler failed with code %d (retval=%lld)",obj->oclass->name,obj->id,global_starttime,rc,rv);
+		 	rv = INIT_FAILED;
 		}
 	}
 	object_profile(obj,OPI_INIT,t);
-	if ( global_debug_output>0 )
+	if ( global_debug_output > 0 )
 	{
 		IN_MYCONTEXT output_debug("object %s:%d init -> %s", obj->oclass->name, obj->id, rv?"ok":"failed");
 	}
-	return rv;
+	return (int)rv;
 }
 
 /** Run events that should only occur at the start of a timestep.
@@ -2219,7 +2215,8 @@ STATUS object_finalize(OBJECT *obj)
 {
 	clock_t t = (clock_t)exec_clock();
 	STATUS rv = SUCCESS;
-	if(obj->oclass->finalize != NULL){
+	if ( obj->oclass->finalize != NULL )
+	{
 		rv = (STATUS)(*(obj->oclass->finalize))(obj);
 	}
 	if(rv == 1){ // if 'old school' or no finalize callback,
@@ -2228,10 +2225,10 @@ STATUS object_finalize(OBJECT *obj)
 	if ( obj->events.finalize != NULL )
 	{
 		long long rv = 0;
-		int rc = object_event(obj,obj->events.finalize?obj->events.finalize:obj->oclass->events.finalize,&rv);
-		if ( rc != 0 )
+		STATUS rc = object_event(obj,obj->events.finalize?obj->events.finalize:obj->oclass->events.finalize,&rv);
+		if ( rc != SUCCESS )
 		{
-			output_error("object %s:%d precommit at ts=%d event handler failed with code %d",obj->oclass->name,obj->id,global_starttime,rc);
+			output_error("object %s:%d finalize at ts=%d event handler failed with code %d",obj->oclass->name,obj->id,global_starttime,rc);
 			rv = FAILED;
 		}
 	}

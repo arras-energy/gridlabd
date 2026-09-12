@@ -25,6 +25,11 @@
 #include "transform.h"
 #include "enduse.h"
 
+// init event handler return values
+#define INIT_FAILED 0
+#define INIT_OK     1
+#define INIT_DEFER  2 // request deferred initialization
+
 /* this must match property_type list in object.c */
 typedef unsigned int OBJECTRANK; /**< Object rank number */
 typedef unsigned short OBJECTSIZE; /** Object data size */
