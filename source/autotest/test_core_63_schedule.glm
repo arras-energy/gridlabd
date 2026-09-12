@@ -107,11 +107,7 @@ schedule value {
 		45-59 23 * * * 89.6825;
 }
 
-#ifexist "../tape.glm"
-#include "../tape.glm"
-#else
-#include "tape.glm"
-#endif
+#include "pandas.glm"
 
 class test
 {
