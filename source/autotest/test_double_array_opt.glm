@@ -12,18 +12,8 @@
 // Test 3: X(0) = [ 0 ; 1 ], U(k) = [ 1 ] for k>=0
 //
 
-#print ${workdir}
-#set tmp=.
-#setenv GRIDLABD=../../../core
-//#set include=c:/gridlabd/ticket/910/core
-// these are used to allow debugging of runtime class in MSVC
-//#setenv MSVC=c:/program files/microsoft visual studio 8
-//#setenv MSVC86=c:/program files (x86)/microsoft visual studio 8
-//#define use_msvc=TRUE
-//#define force_compile=1
-//#setenv path=${MSVC}/Common7/IDE;${MSVC}/VC/bin
-//#setenv include=${MSVC86}/VC/include;${MSVC86}/VC/include/sys;${MSVC}/VC/include;${MSVC}/VC/include/sys
-//#setenv lib=${SystemRoot}/system32;${MSVC}/VC/lib;${MSVC}/VC/Lib/amd64;${MSVC86}/VC/PlatformSDK/Lib/amd64;${MSVC86}/VC/lib;${MSVC86}/VC/lib/amd64;${MSVC86}/VC/PlatformSDK/Lib
+#set debug=TRUE
+#set verbose=TRUE
 
 #include "assert.glm"
 #include "pandas.glm"
@@ -74,8 +64,8 @@ object test {
 	C "1 0";
 	D "0";
 	object assert {
-		target output;
-		relation inside;
+		target "output";
+		relation IN;
 		lower 0.0;
 		upper 12.5;
 	};
@@ -100,8 +90,8 @@ object test {
 	C "1 0";
 	D "0";
 	object assert {
-		target output;
-		relation inside;
+		target "output";
+		relation IN;
 		lower 0.0;
 		upper 12.5;
 	};
