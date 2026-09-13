@@ -269,6 +269,7 @@ def recorder_init(obj:str,t:int) -> int:
     units = gldcore.get_value(obj,"units")
     for prop in properties:
         fromobj,name = prop.split(":",1) if ":" in prop else (parent,prop)
+        assert name, f"no source property specified"
         try:
             source[prop] = gldcore.property(fromobj,name)
         except Exception as err:
@@ -388,6 +389,7 @@ def player_init(obj:str,t:int) -> int:
     for prop in properties:
         name,unit[prop] = name_unit(prop)
         fromobj,name = name.split(":",1) if ":" in prop else (parent,name)
+        assert name, f"no target property specified"
         try:
             source[prop] = gldcore.property(parent,name)
         except Exception as err:

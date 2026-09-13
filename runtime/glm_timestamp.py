@@ -66,38 +66,18 @@ class TIMESTAMP(int):
         
         if isinstance(t,str):
 
-            global TIMEZONE_LOCALE
-            if TIMEZONE_LOCALE is None:
-                TIMEZONE_LOCALE = gldcore.get_global("timezone_locale")
-            try:
-                default_timezone = ZoneInfo(TIMEZONE_LOCALE)
-            except _common.ZoneInfoNotFoundError:
-                tz_data = list(re.match(r"([A-Z]+)([+-]?[0-9\.]+)?([A-Z]+)?",TIMEZONE_LOCALE).groups())
-                if tz_data[0] == "UTC":
-                    if tz_data[1] is None:
-                        tz_data[1] = 0.0
-                    assert float(tz_data[1]) == 0.0, "UTC can only have offset 0"
-                    assert tz_data[2] is None, "UTC cannot have summer time"
-                else:
-                    tz_data[1] = float(tz_data[1])
-                std,tzoffset,dst = tz_data
-
-            dtz = t.split()
+            dtz = t.split(" ",2)
             match len(dtz):
                 case 1:
-                    dtz.extend(["00:00:00",TZSPECS[TIMEZONE_LOCALE]])
+                    t = datetime.strptime(f"{dtz[0]} 00:00:00",DATETIME_NOTZ).tz_localize(ZoneInfo(TIMEZONE_LOCALE))
                 case 2:
-                    dtz.append(TZSPECS[TIMEZONE_LOCALE])
+                    t = datetime.strptime(f"{dtz[0]} {dtz[1]}",DATETIME_NOTZ).tz_localize(ZoneInfo(TIMEZONE_LOCALE))
                 case 3:
-                    dtz[2] = TZSPECS[TIMEZONE_LOCALE]
+                    print(f"{dtz=}",file=sys.stderr)
+                    t = datetime.strptime(f"{dtz[0]} {dtz[1]}{TZSPECS[dtz[2]]}",DATETIME_NOTZ+"%z")
                 case _:
                     raise ValueError(f"{t=} is not formatted correctly")
-            t = f"{dtz[0]}T{dtz[1]}{dtz[2]}"
-            return super().__new__(cls,datetime.fromisoformat(t).timestamp())
-
-        if t is None:
-            
-            return TIMESTAMP(gldcore.get_global("clock"))
+            return super().__new__(cls,t.timestamp())
         
         raise TypeError(f"{t=} is an invalid TIMESTAMP")
 

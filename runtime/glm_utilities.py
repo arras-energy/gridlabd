@@ -1,5 +1,6 @@
 """GridLAB-D utilities"""
 
+from datetime import datetime
 from dataclasses import dataclass
 from typing import Any
 
@@ -82,7 +83,11 @@ def name_unit(s:str) -> tuple[str,str]:
         return [v,u[:-1]]
     return [s,None]
 
-def value_unit(s:str,autotype=False,nofail=False):
+def value_unit(
+    s:str,
+    autotype=False,
+    nofail=False,
+    ):
     """Split a string into a value and its units
 
     For 
@@ -133,4 +138,51 @@ def value_unit(s:str,autotype=False,nofail=False):
         v,u = w.split(" ",1)
         return _autotype(v),u
     return _autotype(s),None
+
+def autotype(
+    x:str,
+    allow=[int,float,complex,datetime,str],
+    nodefault:bool=False
+    ) -> int|float|complex|datetime|str:
+    """Automatically change type of GridLAB-D data
+
+    Arguments
+    ---------
+
+    Returns
+    -------
+    - `int`:
+    - `float`:
+    - `complex`:
+    - `datetime`:
+    - `str`:
+    """
+    if int in allow:
+        try:
+            return int(x)
+        except ValueError:
+            pass
+
+    if float in allow:
+        try:
+            return float(x)
+        except ValueError:
+            pass
+
+    if complex in allow:
+        try:
+            return complex(x)
+        except ValueError:
+            pass
+
+    if datetime in allow:
+        try:
+            return datetime.fromisoformat(x)
+        except ValueError:
+            return x
+
+    if nodefault:
+        raise ValueError(f"autotype({repr(x)}) failed")
+
+    return str(x)
 
