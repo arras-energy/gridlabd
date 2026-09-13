@@ -73,7 +73,6 @@ class TIMESTAMP(int):
                 case 2:
                     t = datetime.strptime(f"{dtz[0]} {dtz[1]}",DATETIME_NOTZ).tz_localize(ZoneInfo(TIMEZONE_LOCALE))
                 case 3:
-                    print(f"{dtz=}",file=sys.stderr)
                     t = datetime.strptime(f"{dtz[0]} {dtz[1]}{TZSPECS[dtz[2]]}",DATETIME_NOTZ+"%z")
                 case _:
                     raise ValueError(f"{t=} is not formatted correctly")
