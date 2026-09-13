@@ -1875,9 +1875,7 @@ static PyObject *gridlabd_pstatus(PyObject *self, PyObject *args)
 /////////////////////
 // module interface
 /////////////////////
-static const char *modname = NULL;
-static PyObject *modlist = NULL;
-static MODULE python_module;
+static PyObject *moddict = NULL;
 static PyObject *python_init = NULL;
 static PyObject *python_precommit = NULL;
 static PyObject *python_presync = NULL;
@@ -2189,18 +2187,7 @@ STATUS python_event(OBJECT *obj, const char *function, long long *p_retval)
         return FAILED;
     }
 
-    Py_ssize_t n;
-    PyObject *mod = NULL;
-    if ( modlist != NULL )
-    {
-        for ( n = 0 ; n < PyList_Size(modlist) ; n++ )
-        {
-            mod = PyList_GetItem(modlist,n);
-            if ( strcmp(PyModule_GetName(mod),modname) == 0 )
-                break;
-            mod = NULL;
-        }
-    }
+    PyObject *mod = PyDict_GetItemString(PyModule_GetDict(this_module),modname);
     if ( mod == NULL )
     {
         output_error("python_event(obj='%s',function='%s') module %s is not found",objname,function,modname);
@@ -2210,7 +2197,7 @@ STATUS python_event(OBJECT *obj, const char *function, long long *p_retval)
     PyObject *dict = PyModule_GetDict(mod);
     if ( dict == NULL || ! PyDict_Check(dict) )
     {
-        output_error("module does not have a namespace dict");
+        output_error("module %s does not have a namespace dict",modname);
         return FAILED;
     }
     PyObject *call = PyDict_GetItemString(dict,method);
@@ -2321,6 +2308,36 @@ int python_module_setvar(const char *varname, const char *value)
 
 MODULE *python_module_load(const char *file, int argc, const char *argv[])
 {
+    // extract module name from file pathname
+    const char *basename = strrchr(file,'/');
+    if ( basename == NULL )
+    {
+        basename = file;
+    }
+    char modname[1024];
+    strncpy(modname,basename,sizeof(modname)-1);
+    char *ext = strchr(modname,'.');
+    if ( ext != NULL )
+    {
+        *ext = '\0';
+    }
+
+    // first time load
+    if ( moddict == NULL )
+    {
+        // allocate dict of load python modules
+        moddict = PyDict_New();
+    }
+
+    // find module address if already loaded
+    PyObject *modaddr = PyDict_GetItemString(moddict,file);
+    if ( modaddr != NULL )
+    {
+        // return module address
+        return (MODULE*)PyLong_AsLong(modaddr);
+    }
+
+    // locate module source file
     char filename[1024];
     char pathname[1024];
     snprintf(filename,sizeof(filename)-1,"%s.py",file);
@@ -2331,80 +2348,66 @@ MODULE *python_module_load(const char *file, int argc, const char *argv[])
         errno = ENOENT;
         return NULL;
     }
+
+    // load module from source
     IN_MYCONTEXT output_verbose("loading module '%s'",filename);
     extern PyObject *python_embed_import(const char *module, const char *path);
     PyObject *mod = python_embed_import(file,global_pythonpath);
 
-    if ( mod == NULL)
-    {
-        output_error("%s: python module import failed",pathname);
-        return (MODULE*)gridlabd_traceback(pathname);
-    }
-
+    // check if module loaded ok
     if ( ! PyModule_Check(mod) )
     {
         output_error("object is not a python module");
         return NULL;
     }
 
-    if ( modlist == NULL )
-    {
-        modlist = PyList_New(0);
-        modname = strdup(file);
-    }
-    else
-    {
-        output_error("python module '%s' already loaded, '%s' cannot be loaded in its place",modname,file);
-        return NULL;
-    }
-    int n;
-    for ( n = 0 ; n < PyList_Size(modlist) ; n++ )
-    {
-        if ( PyList_GetItem(modlist,n) == mod )
-        {
-            return &python_module;
-        }
-    }
-
-    // TODO: link module to core
-    strcpy(python_module.name,file);
-    python_module.oclass = NULL;
-    python_module.major = global_version_major;
-    python_module.minor = global_version_minor;
-    python_module.getvar = NULL;
-    python_module.setvar = python_module_setvar;
-    python_module.import_file = python_import_file;
-    python_module.export_file = NULL;
-    python_module.check = NULL;
+    // TODO: link module to cor
+    MODULE *python_module = new MODULE;
+    strcpy(python_module->name,file);
+    python_module->oclass = NULL;
+    python_module->major = global_version_major;
+    python_module->minor = global_version_minor;
+    python_module->getvar = NULL;
+    python_module->setvar = python_module_setvar;
+    python_module->import_file = python_import_file;
+    python_module->export_file = NULL;
+    python_module->check = NULL;
     /* deltamode */
-    python_module.deltadesired = NULL;
-    python_module.preupdate = NULL;
-    python_module.interupdate = NULL;
-    python_module.deltaClockUpdate = NULL;
-    python_module.postupdate = NULL;
+    python_module->deltadesired = NULL;
+    python_module->preupdate = NULL;
+    python_module->interupdate = NULL;
+    python_module->deltaClockUpdate = NULL;
+    python_module->postupdate = NULL;
     /* clock hook*/
-    python_module.clockupdate = NULL;
-    python_module.cmdargs = NULL;
-    python_module.kmldump = NULL;
-    python_module.test = NULL;
-    python_module.subload = NULL;
-    python_module.globals = NULL;
-    python_module.term = NULL;
-    python_module.stream = NULL;
-    python_module.next = NULL;
+    python_module->clockupdate = NULL;
+    python_module->cmdargs = NULL;
+    python_module->kmldump = NULL;
+    python_module->test = NULL;
+    python_module->subload = NULL;
+    python_module->globals = NULL;
+    python_module->term = NULL;
+    python_module->stream = NULL;
+    python_module->next = NULL;
 #define GET_CALLBACK(X) (get_callback(mod,file,#X,"on_"#X,&python_##X) ? on_##X : NULL)
-    python_module.on_init = GET_CALLBACK(init);
-    python_module.on_precommit = GET_CALLBACK(precommit);
-    python_module.on_presync = GET_CALLBACK(presync);
-    python_module.on_sync = GET_CALLBACK(sync);
-    python_module.on_postsync = GET_CALLBACK(postsync);
-    python_module.on_commit = GET_CALLBACK(commit);
-    python_module.on_term = GET_CALLBACK(term);
+    python_module->on_init = GET_CALLBACK(init);
+    python_module->on_precommit = GET_CALLBACK(precommit);
+    python_module->on_presync = GET_CALLBACK(presync);
+    python_module->on_sync = GET_CALLBACK(sync);
+    python_module->on_postsync = GET_CALLBACK(postsync);
+    python_module->on_commit = GET_CALLBACK(commit);
+    python_module->on_term = GET_CALLBACK(term);
 
-    PyList_Append(modlist,mod);
-    PyModule_AddObject(mod,"gldcore",this_module);
+    PyDict_SetItemString(moddict,file,PyLong_FromLong((int64)python_module));
+    if ( PyModule_AddObject(this_module,modname,mod) )
+    {
+        throw_exception("unable to add %s to gldcore module",modname);
+    }
+    if ( PyModule_AddObject(mod,"gldcore",this_module) )
+    {
+        throw_exception("unable to add gldcore to %d module",modname);
+    }
 
-    return &python_module;
+    return python_module;
 }
 
 //
@@ -2430,7 +2433,7 @@ static PyObject *gridlabd_module(PyObject *self, PyObject *args)
     {
         output_message("python module '%s' already loaded", name);
     }
-    return PyLong_FromLong(PyList_Size(modlist)-1);
+    return PyLong_FromLong(PyDict_Size(moddict) > 0 ? 0 : -1);
 }
 
 //
