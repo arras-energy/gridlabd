@@ -268,11 +268,12 @@ def recorder_init(obj:str,t:int) -> int:
     source = {}
     units = gldcore.get_value(obj,"units")
     for prop in properties:
+        fromobj,name = prop.split(":",1) if ":" in prop else (parent,prop)
         try:
-            source[prop] = gldcore.property(parent,prop)
+            source[prop] = gldcore.property(fromobj,name)
         except Exception as err:
             e_type, e_value, _ = sys.exc_info()
-            raise e_type(f"{obj}.properties: '{prop}' {e_value}") from err
+            raise e_type(f"{obj}.properties: '{fromobj}.{name}' {e_value}") from err
 
     this = {
         "file": file,
@@ -385,12 +386,13 @@ def player_init(obj:str,t:int) -> int:
     source = {}
     unit = {}
     for prop in properties:
+        name,unit[prop] = name_unit(prop)
+        fromobj,name = name.split(":",1) if ":" in prop else (parent,name)
         try:
-            name,unit[prop] = name_unit(prop)
             source[prop] = gldcore.property(parent,name)
         except Exception as err:
             e_type, e_value, _ = sys.exc_info()
-            raise e_type(f"{obj}.properties: '{prop}' {e_value}") from err
+            raise e_type(f"{obj}.properties: '{parent}.{name}' {e_value}") from err
 
     try:
         timezone = gldcore.get_value(obj,"timezone")
