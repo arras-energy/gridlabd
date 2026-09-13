@@ -3,7 +3,7 @@
 // Include this GLM file to load assert class
 //
 
-module glm_pandas;
+module glm_assert;
 
 class assert
 {
