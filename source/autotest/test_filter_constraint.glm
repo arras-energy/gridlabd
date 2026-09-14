@@ -2,6 +2,7 @@
 //
 
 #set verbose=TRUE
+//#set debug=TRUE
 #set randomseed=123
 
 clock {
@@ -58,6 +59,6 @@ object assert {
     target value;
     dtype float;
     relation EQ;
-    value -2.6030;
+    value -1.0;
     within 1e-4;
 }

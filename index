@@ -278,6 +278,8 @@ source/autotest/hello.c
 source/autotest/ica_test.csv
 source/autotest/loader_variables_include.glm
 source/autotest/modify.csv
+source/autotest/noise_source.c
+source/autotest/noise_source.csv
 source/autotest/plotxy.py
 source/autotest/recorder.py
 source/autotest/save_randomseed
@@ -320,10 +322,11 @@ source/autotest/test_deferred_init.py
 source/autotest/test_deferred_name_resolution.glm
 source/autotest/test_deltamode_err.glm
 source/autotest/test_deltamode_house_player.csv
-source/autotest/test_double_array.glm
+source/autotest/test_double_array_opt.glm
 source/autotest/test_dump.glm
 source/autotest/test_duplication_function_err.glm
 source/autotest/test_exec_mainloop.glm
+source/autotest/test_external_noise_source.csv
 source/autotest/test_external_null_source.glm
 source/autotest/test_filter_constraint.csv
 source/autotest/test_filter_constraint.glm
