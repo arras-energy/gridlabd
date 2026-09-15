@@ -1,0 +1,38 @@
+// test_assert_exc.glm
+
+#set suppress_repeat_messages=FALSE
+
+#include "assert.glm"
+
+class test
+{
+    bool b;
+    int16 i;
+    int32 j;
+    int64 k;
+    string s;
+    timestamp t;
+    double x;
+    complex z;
+}
+
+object test
+{
+    b TRUE;
+    i 1;
+    j 10;
+    k 100;
+    s "abc";
+    t "2020-01-01 00:00:00+00:00";
+    x 1.23;
+    z 4.56+7.89j;
+
+    // test bool
+    object assert
+    {
+        target b;
+        relation NE;
+        value TRUE;
+        on_failure EXCEPTION;
+    };
+}

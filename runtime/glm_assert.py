@@ -329,7 +329,7 @@ def assert_commit(obj,t):
                     case "ERROR":
                         gldcore.error(f"{obj=} {check=} {result=} failed at {t=}")
                     case "EXCEPTION":
-                        gldcore.exception(f"{obj=} {check=} {result=} failed at {t=}")
+                        raise Exception(f"{obj=} {check=} {result=} failed at {t=}")
                     case "WARNING":
                         gldcore.warning(f"{obj=} {check=} {result=} failed at {t=}")
                     case "IGNORE":
