@@ -55,7 +55,8 @@ Properties
 - `on_failure`: Specifies the handling of failed assertions.
     - `ERROR`: Failure causes the simulation to halt (default).
     - `WARNING`: Failure causes a warning message only.
-    - `EXCEPTION`: Failure raises an exception.
+    - `EXCEPTION`: Failure raises a Python exception. (Note that this 
+      results in a GridLAB-D error, not a GridLAB-D exception.)
     - `IGNORE`: Failures are ignored.
 
 Example
@@ -341,8 +342,10 @@ def assert_commit(obj,t):
                 gldcore.verbose(f"{obj=} {check=} {result=} passed at {t=}")
         except:
             e_type,e_value,_ = sys.exc_info()
-            gldcore.error(f"{obj=} exception {e_type.__name__}({e_value}) caught")
             check.status = "ERROR"
+            gldcore.exception(f"{obj=} exception {e_type.__name__}({e_value}) caught")
+            if check.on_failure == "EXCEPTION":
+                raise
         gldcore.set_value(obj,"status",check.status)
 
     return gldcore.NEVER
