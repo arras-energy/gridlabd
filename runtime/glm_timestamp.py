@@ -5,6 +5,10 @@ import sys
 import re
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo, _common
+try:
+    import gldcore
+except:
+    pass
 
 DATETIME_NOTZ = "%Y-%m-%d %H:%M:%S"
 """Default date/time format for timezone-naive timestamps"""
@@ -66,6 +70,12 @@ class TIMESTAMP(int):
         
         if isinstance(t,str):
 
+            if t == "NEVER":
+                return super().__new__(cls,gldcore.NEVER)
+
+            if t == "INVALID":
+                return super().__new__(cls,gldcore.INVALID)
+
             dtz = t.split(" ",2)
             match len(dtz):
                 case 1:
@@ -94,7 +104,14 @@ class TIMESTAMP(int):
 
     def __repr__(self):
         """Show a TIMESTAMP in Python form"""
-        return f'TIMESTAMP({int(self)})'
+        t = int(self)
+        match t:
+            case gldcore.NEVER:
+                return "TIMESTAMP('NEVER')"
+            case gldcore.INVALID:
+                return "TIMESTAMP('INVALID')"
+            case _:
+                return f"TIMESTAMP({t})"
 
     def __format__(self,spec=None):
         """Format a TIMESTAMP"""

@@ -1,0 +1,434 @@
+// test_assert.glm
+
+#set suppress_repeat_messages=FALSE
+
+#include "assert.glm"
+
+class test
+{
+    bool b;
+    int16 i;
+    int32 j;
+    int64 k;
+    string s;
+    timestamp t;
+    double x;
+    complex z;
+}
+
+object test
+{
+    b TRUE;
+    i 1;
+    j 10;
+    k 100;
+    s "abc";
+    t "2020-01-01 00:00:00+00:00";
+    x 1.23;
+    z 4.56+7.89j;
+
+    // test bool
+    object assert
+    {
+        target b;
+        relation EQ;
+        value TRUE;
+    };
+    object assert
+    {
+        target b;
+        relation NE;
+        value FALSE;
+    };
+
+    // test int16
+    object assert
+    {
+        target i;
+        relation EQ;
+        value 1;
+    };
+    object assert
+    {
+        target i;
+        relation NE;
+        value 2;
+    };
+    object assert
+    {
+        target i;
+        relation LE;
+        value 1;
+    };
+    object assert
+    {
+        target i;
+        relation LE;
+        value 2;
+    };
+    object assert
+    {
+        target i;
+        relation GT;
+        value 0;
+    };
+    object assert
+    {
+        target i;
+        relation GE;
+        value 0;
+    };
+    object assert
+    {
+        target i;
+        relation GE;
+        value 1;
+    };
+
+    // test int32
+    object assert
+    {
+        target j;
+        relation EQ;
+        value 10;
+    };
+    object assert
+    {
+        target j;
+        relation NE;
+        value 20;
+    };
+    object assert
+    {
+        target j;
+        relation LE;
+        value 10;
+    };
+    object assert
+    {
+        target j;
+        relation LE;
+        value 20;
+    };
+    object assert
+    {
+        target j;
+        relation GT;
+        value 0;
+    };
+    object assert
+    {
+        target j;
+        relation GE;
+        value 0;
+    };
+    object assert
+    {
+        target j;
+        relation GE;
+        value 10;
+    };
+
+    // test int64
+    object assert
+    {
+        target k;
+        relation EQ;
+        value 100;
+    };
+    object assert
+    {
+        target k;
+        relation NE;
+        value 200;
+    };
+    object assert
+    {
+        target k;
+        relation LE;
+        value 100;
+    };
+    object assert
+    {
+        target k;
+        relation LE;
+        value 200;
+    };
+    object assert
+    {
+        target k;
+        relation GT;
+        value 0;
+    };
+    object assert
+    {
+        target k;
+        relation GE;
+        value 0;
+    };
+    object assert
+    {
+        target k;
+        relation GE;
+        value 100;
+    };
+
+    // string
+    object assert
+    {
+        target s;
+        relation EQ;
+        value "abc";
+    };
+    object assert
+    {
+        target s;
+        relation NE;
+        value "xyz";
+    };
+    object assert
+    {
+        target s;
+        relation LT;
+        value "abcd";
+    };
+    object assert
+    {
+        target s;
+        relation LE;
+        value "abc";
+    };
+    object assert
+    {
+        target s;
+        relation LE;
+        value "abcd";
+    };
+    object assert
+    {
+        target s;
+        relation GT;
+        value "ab";
+    };
+    object assert
+    {
+        target s;
+        relation GE;
+        value "abc";
+    };
+    object assert
+    {
+        target s;
+        relation GE;
+        value "ab";
+    };
+    object assert
+    {
+        target s.upper;
+        relation EQ;
+        value "ABC";
+    };
+    object assert
+    {
+        target s.strip;
+        relation EQ;
+        value "abc";
+    };
+
+    // timestamp
+    object assert
+    {
+        target t;
+        relation EQ;
+        value "2020-01-01 00:00:00+00:00";
+    };
+    object assert
+    {
+        target t;
+        relation NE;
+        value "2020-01-01 00:00:00+08:00";
+    };
+    object assert
+    {
+        target t;
+        relation LT;
+        value "2020-01-01 00:00:00-08:00";
+    };
+    object assert
+    {
+        target t;
+        relation LE;
+        value "2020-01-01 00:00:00-08:00";
+    };
+    object assert
+    {
+        target t;
+        relation LE;
+        value "2020-01-01 00:00:00+00:00";
+    };
+    object assert
+    {
+        target t;
+        relation GT;
+        value "2020-01-01 00:00:00+08:00";
+    };
+    object assert
+    {
+        target t;
+        relation GE;
+        value "2020-01-01 00:00:00+08:00";
+    };
+    object assert
+    {
+        target t;
+        relation LE;
+        value "2020-01-01 00:00:00+00:00";
+    };
+    object assert
+    {
+        target t;
+        relation IN;
+        lower "2020-01-01 00:00:00+08:00";
+        upper "2020-01-01 00:00:00-08:00";
+    };
+    object assert
+    {
+        target t;
+        relation NI;
+        lower "2020-01-01 00:00:00-08:00";
+        upper "2020-01-01 00:00:00+08:00";
+    };
+
+    // double
+    object assert
+    {
+        target x;
+        relation EQ;
+        value 1.23;
+    };
+    object assert
+    {
+        target x;
+        relation EQ;
+        value 1.239;
+        within 0.01;
+    };
+    object assert
+    {
+        target x;
+        relation EQ;
+        value 1.221;
+        within 0.01;
+    };
+    object assert
+    {
+        target x;
+        relation NE;
+        value 1.229;
+    };
+    object assert
+    {
+        target x;
+        relation NE;
+        value 1.22;
+        within 0.01;
+    };
+    object assert
+    {
+        target x;
+        relation LT;
+        value 1.24;
+    };
+    object assert
+    {
+        target x;
+        relation LE;
+        value 1.23;
+    };
+    object assert
+    {
+        target x;
+        relation GT;
+        value 1.22;
+    };
+    object assert
+    {
+        target x;
+        relation GE;
+        value 1.23;
+    };
+    object assert
+    {
+        target x;
+        relation IN;
+        lower 1.22;
+        upper 1.24;
+    };
+    object assert
+    {
+        target x;
+        relation NI;
+        lower 1.21;
+        upper 1.22;
+    };
+    object assert
+    {
+        target x;
+        relation NI;
+        lower 1.24;
+        upper 1.25;
+    };
+
+    // complex
+    object assert
+    {
+        target z.real;
+        relation EQ;
+        value 4.56;
+    };
+    object assert
+    {
+        target z.imag;
+        relation EQ;
+        value 7.89;
+    };
+    object assert
+    {
+        target z.mag;
+        relation EQ;
+        value 9.113;
+        within 0.01;
+    };
+    object assert
+    {
+        target z.arg;
+        relation EQ;
+        value 0.524;
+        within 0.01;
+    };
+    object assert
+    {
+        target z.ang;
+        relation EQ;
+        value 30.03;
+        within 0.01;
+    };
+
+    // ignore failure
+    object assert
+    {
+        target b;
+        relation EQ;
+        value FALSE;
+        on_failure IGNORE;
+    };
+
+    // warn failure
+    object assert
+    {
+        target b;
+        relation EQ;
+        value FALSE;
+        on_failure WARNING;
+    };
+}

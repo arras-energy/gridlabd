@@ -45,6 +45,7 @@ class MutableData:
         - `list`: list of data item tuples
         """
         return [(x,getattr(self,x)) for x in dir(self) if not x.startswith("_") and not callable(getattr(self,x))]
+    
     def asdict(self) -> dict:
         """Return data as a dict
 

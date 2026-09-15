@@ -7,17 +7,18 @@ module glm_assert;
 
 class assert
 {
-    enumeration {INIT=0,TRUE=1,FALSE=2,ERROR=3,WAITING=4,STOPPED=5} status;
     string target;
-    set {EQ=0,LT=1,LE=2,GT=3,GE=4,NE=5,IN=6,NI=7} relation;
+    enumeration {EQ=0,LT=1,LE=2,GT=3,GE=4,NE=5,IN=6,NI=7} relation;
     string value;
     string dtype;
     double within;
-    double lower;
-    double upper;
-    string group;
+    string lower;
+    string upper;
+    //string group;
     timestamp start;
     timestamp stop;
+    enumeration {INIT=0,TRUE=1,FALSE=2,ERROR=3,WAITING=4,STOPPED=5} status;
+    enumeration {ERROR=0,WARNING=1,EXCEPTION=2,IGNORE=3} on_failure;
 
     on_init "python:glm_assert.assert_init";
     on_commit "python:glm_assert.assert_commit";

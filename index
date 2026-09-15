@@ -169,6 +169,7 @@ runtime/Makefile.mk
 runtime/README.md
 runtime/about.htm
 runtime/assert.glm
+runtime/autotest/README.md
 runtime/autotest/test_pandas_header.csv
 runtime/autotest/test_pandas_header.glm
 runtime/autotest/test_pandas_header_out_1.csv
@@ -330,7 +331,9 @@ source/autotest/test_external_noise_source.csv
 source/autotest/test_external_null_source.glm
 source/autotest/test_filter_constraint.csv
 source/autotest/test_filter_constraint.glm
+source/autotest/test_filter_delay.csv
 source/autotest/test_filter_delay.glm
+source/autotest/test_filter_second.csv
 source/autotest/test_filter_second.glm
 source/autotest/test_findfile.glm
 source/autotest/test_for.glm
