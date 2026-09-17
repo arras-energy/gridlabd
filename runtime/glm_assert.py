@@ -182,6 +182,9 @@ def _timestamp(s):
 def _python(s):
     return eval(s)
 
+def _string(s):
+    return str(s)
+
 def assert_init(obj,t):
     """Assert commit event handler
 
@@ -214,6 +217,7 @@ def assert_init(obj,t):
     try:
         dtype = globals()[f"_{dtype}"]
     except KeyError:
+        gldcore.warning(f"{obj=} {dtype=} not found, defaulting to `str`",file=sys.stderr)
         dtype = str
 
     glm_timestamp.TIMEZONE_LOCALE = gldcore.get_global("timezone_locale")
@@ -285,11 +289,20 @@ def assert_init(obj,t):
 
     if not obj in _checklist:
         _checklist[obj] = []
+    if prop[0]:
+        prop = gldcore.property(*prop)
+    else:
+        class _get_global:
+            def __init__(self,name):
+                self.name = name
+            def get_value(self):
+                return gldcore.get_global(self.name)["value"]
+        prop = _get_global(prop[1])
     _checklist[obj].append(MutableData(
         test=test,
         start=glm_timestamp.TIMESTAMP(start),
         stop=gldcore.NEVER if stop == 0 else glm_timestamp.TIMESTAMP(stop),
-        prop=gldcore.property(*prop),
+        prop=prop,
         dtype=dtype,
         ttype=ttype,
         value=value,

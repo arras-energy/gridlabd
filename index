@@ -171,8 +171,8 @@ runtime/about.htm
 runtime/assert.glm
 runtime/autotest/README.md
 runtime/autotest/test_assert.glm
-runtime/autotest/test_assert_err.glm
-runtime/autotest/test_assert_exc.glm
+runtime/autotest/test_assert_err_1.glm
+runtime/autotest/test_assert_err_2.glm
 runtime/autotest/test_pandas_header.csv
 runtime/autotest/test_pandas_header.glm
 runtime/autotest/test_pandas_header_out_1.csv

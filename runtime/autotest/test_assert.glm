@@ -32,6 +32,7 @@ object test
     {
         target b;
         relation EQ;
+        //dtype bool;
         value TRUE;
     };
     object assert
@@ -417,6 +418,7 @@ object test
     // ignore failure
     object assert
     {
+        name "ignore-expected";
         target b;
         relation EQ;
         value FALSE;
@@ -426,6 +428,7 @@ object test
     // warn failure
     object assert
     {
+        name "warning-expected";
         target b;
         relation EQ;
         value FALSE;
