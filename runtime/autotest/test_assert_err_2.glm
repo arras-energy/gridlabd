@@ -33,6 +33,7 @@ object test
         target b;
         relation NE;
         value TRUE;
+        // this causes a Python exception, which bypasses the gridlabd output streams
         on_failure EXCEPTION;
     };
 }
