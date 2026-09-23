@@ -1,0 +1,13 @@
+// $Id: test_global_unit_convert.glm 4738 2014-07-03 00:55:39Z dchassin $
+
+#include "assert.glm"
+
+global double test_double[degF] 0.0 degC;
+
+object assert 
+{
+    target "test_double";
+    relation EQ;
+    dtype float;
+    value 0.0;
+}

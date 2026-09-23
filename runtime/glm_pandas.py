@@ -186,6 +186,8 @@ property.
 import os
 import sys
 import math
+import numpy as np
+import scipy as sp
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 from datetime import datetime, timezone
@@ -193,14 +195,17 @@ import re
 
 import pandas as pd
 
-from glm_utilities import MutableData, name_unit, value_unit
-from glm_timestamp import TIMESTAMP
+from glm_utilities import MutableData, name_unit, value_unit, find_objects
+from glm_timestamp import TIMESTAMP, DATETIME_FORMAT
 
 recorder:dict = None
 """Active recorder objects in GridLAB-D"""
 
 player:dict = None
 """Active player objects in GridLAB-D"""
+
+collector:dict = None
+"""Active collector objects in GridLAB-D"""
 
 #
 # GLOBAL EVENT HANDLERS
@@ -224,6 +229,9 @@ def on_init(t:int) -> int:
     global player
     player = {}
 
+    global collector
+    collector = {}
+
     return gldcore.INIT_OK
 
 def on_term(t:int):
@@ -236,107 +244,10 @@ def on_term(t:int):
     for this in recorder.values():
         this.file.close()
 
+    for this in collector.values():
+        this.file.close()
+
     return None
-
-#
-# RECORDER CLASS EVENT HANDLERS
-#
-
-def recorder_init(obj:str,t:int) -> int:
-    """Initialize a recorder
-
-    Arguments
-    ---------
-    - `obj`: object name
-    - `t`: initial timestamp
-
-    Returns
-    -------
-    - `int`: 0 on success, non-zero on failure
-    """
-    parent = gldcore.get_value(obj,"parent")
-    properties = gldcore.get_value(obj,"property").split(",")
-    file = gldcore.get_value(obj,"file")
-    assert file != "", f"{obj=} {file=} is not valid"
-    file = open(file,"w")
-    interval = int(gldcore.get_value(obj,"interval").split()[0])
-    if interval > 0:
-        gldcore.set_value(obj,"heartbeat",f"{interval:.0f}")
-    timezone = gldcore.get_value(obj,"timezone")
-    dtformat = gldcore.get_value(obj,"dtformat")
-    flush = gldcore.get_value(obj,"flush")
-    source = {}
-    units = gldcore.get_value(obj,"units")
-    for prop in properties:
-        fromobj,name = prop.split(":",1) if ":" in prop else (parent,prop)
-        assert name, f"no source property specified"
-        try:
-            source[prop] = gldcore.property(fromobj,name)
-        except Exception as err:
-            e_type, e_value, _ = sys.exc_info()
-            raise e_type(f"{obj}.properties: '{fromobj}.{name}' {e_value}") from err
-
-    this = {
-        "file": file,
-        "interval": interval,
-        "parent": parent,
-        "source": source,
-        "last": None,
-        "timezone": ZoneInfo(timezone) if timezone else None,
-        "dtformat": dtformat if dtformat else None,
-        "flush": flush,
-        "units": units,
-    }
-    recorder[obj] = MutableData(**this)
-
-    header = ["timestamp"]
-    if units != "HEADER":
-        header.extend(properties)
-    else:
-        pclass = gldcore.get_class(gldcore.get_object(parent)["class"])
-        for name in properties:
-            try:
-                unit = pclass[name]["unit"]
-            except:
-                unit = None
-            header.append(f"{name}[{unit}]" if unit else name)
-    file.write(",".join(header)+"\n")
-
-
-    return gldcore.INIT_OK
-
-def recorder_commit(obj:str,t:int) -> int:
-    """Update a recorder
-
-    Arguments
-    ---------
-    - `obj`: object name
-    - `t`: current timestamp
-
-    Returns
-    -------
-    - `int`: next timestamp
-    """
-    this = recorder[obj]
-    if this.interval <= 0 or t % this.interval == 0: # time to sample values
-        row = []
-        for var,prop in this.source.items():
-            value = str(prop)
-            if this.units != "INLINE":
-                value,_ = value_unit(value)
-            value = str(value)
-            row.append(f'"{value}"' if ',' in value else value)
-        if this.interval >= 0 or row != this.last:
-            this.last = list(row)
-            ts = datetime.fromtimestamp(t,tz=this.timezone if this.timezone else timezone.utc)
-            fmt = this.dtformat
-            row.insert(0,ts.strftime(fmt) if fmt else ts.isoformat())
-            this.file.write(",".join(row)+"\n")
-            if this.flush:
-                this.file.flush()
-    return ( t // this.interval + 1 ) * this.interval \
-        if this.interval > 0 \
-        else gldcore.NEVER
 
 #
 # PLAYER
@@ -459,3 +370,248 @@ def player_precommit(obj:str,t:int) -> int:
         return -tnext
     except KeyError:
         return gldcore.NEVER
+
+#
+# RECORDER CLASS EVENT HANDLERS
+#
+
+def recorder_init(obj:str,t:int) -> int:
+    """Initialize a recorder
+
+    Arguments
+    ---------
+    - `obj`: object name
+    - `t`: initial timestamp
+
+    Returns
+    -------
+    - `int`: 0 on success, non-zero on failure
+    """
+    parent = gldcore.get_value(obj,"parent")
+
+    properties = gldcore.get_value(obj,"property").split(",")
+    
+    file = gldcore.get_value(obj,"file")
+    assert file != "", f"{obj=} {file=} is not valid"
+    file = open(file,"w")
+    
+    interval = int(gldcore.get_value(obj,"interval").split()[0])
+    if interval > 0:
+        gldcore.set_value(obj,"heartbeat",f"{interval:.0f}")
+    
+    timezone = gldcore.get_value(obj,"timezone")
+    
+    dtformat = gldcore.get_value(obj,"dtformat")
+    
+    flush = gldcore.get_value(obj,"flush")
+
+    units = gldcore.get_value(obj,"units")
+
+    limit = gldcore.get_value(obj,"limit")
+    if limit:
+        limit = int(limit)
+
+    source = {}
+    for prop in properties:
+        fromobj,name = prop.split(":",1) if ":" in prop else (parent,prop)
+        assert name, f"no source property specified"
+        try:
+            source[prop] = gldcore.property(fromobj,name)
+        except Exception as err:
+            e_type, e_value, _ = sys.exc_info()
+            raise e_type(f"{obj}.properties: '{fromobj}.{name}' {e_value}") from err
+
+    this = {
+        "file": file,
+        "interval": interval,
+        "parent": parent,
+        "source": source,
+        "last": None,
+        "timezone": ZoneInfo(timezone) if timezone else None,
+        "dtformat": dtformat if dtformat else None,
+        "flush": flush,
+        "units": units,
+        "limit": limit,
+        "count": 0,
+    }
+    recorder[obj] = MutableData(**this)
+
+    header = ["timestamp"]
+    if units != "HEADER":
+        header.extend(properties)
+    else:
+        pclass = gldcore.get_class(gldcore.get_object(parent)["class"])
+        for name in properties:
+            try:
+                unit = pclass[name]["unit"]
+            except:
+                unit = None
+            header.append(f"{name}[{unit}]" if unit else name)
+    file.write(",".join(header)+"\n")
+
+    return gldcore.INIT_OK
+
+def recorder_commit(obj:str,t:int) -> int:
+    """Update a recorder
+
+    Arguments
+    ---------
+    - `obj`: object name
+    - `t`: current timestamp
+
+    Returns
+    -------
+    - `int`: next timestamp
+    """
+    this = recorder[obj]
+    if ( this.interval <= 0 or t % this.interval == 0 ) and ( this.limit == 0 or this.count < this.limit ): # time to sample values
+        row = []
+        for var,prop in this.source.items():
+            value = str(prop)
+            if this.units != "INLINE":
+                value,_ = value_unit(value)
+            value = str(value)
+            row.append(f'"{value}"' if ',' in value else value)
+        if this.interval >= 0 or row != this.last:
+            this.last = list(row)
+            ts = datetime.fromtimestamp(t,tz=this.timezone if this.timezone else timezone.utc)
+            fmt = this.dtformat
+            row.insert(0,ts.strftime(fmt) if fmt else ts.isoformat())
+            this.file.write(",".join(row)+"\n")
+            if this.flush:
+                this.file.flush()
+            this.count += 1
+    return ( t // this.interval + 1 ) * this.interval \
+        if this.interval > 0 \
+        else gldcore.NEVER
+
+#
+# COLLECTOR
+#
+
+_allobjects = None
+_aggregators = {
+    "len": len, "count": len, 
+    "sum": np.sum, "prod": np.prod,
+    "min": np.min, "max": np.max, 
+    "argmin": np.argmin, "argmax": np.argmax,
+    "mean": np.mean, "avg": np.mean, "average": np.mean,
+    "std": np.std, "stdev": np.std, 
+    "var":np.var, 
+    "skew": sp.stats.skew,
+    "kurt": sp.stats.kurtosis,
+    }
+
+def collector_init(obj,t):
+    """Initialize a collector
+
+    Arguments
+    ---------
+    - `obj`: object name
+    - `t`: initial timestamp
+
+    Returns
+    -------
+    - `int`: 0 on success, non-zero on failure
+    """
+
+    group = gldcore.get_value(obj,"group")
+    assert group, f"group is missing"
+
+    properties = gldcore.get_value(obj,"property")
+    assert properties, f"property is missing"
+
+    file = gldcore.get_value(obj,"file")
+    assert file, f"file is missing"
+
+    interval = int(gldcore.get_value(obj,"interval").split()[0])
+    if interval > 0:
+        gldcore.set_value(obj,"heartbeat",f"{interval:.0f}")
+
+    timezone = gldcore.get_value(obj,"timezone")
+    if not timezone:
+        timezone = "UTC"
+
+    dtformat = gldcore.get_value(obj,"dtformat")
+    if dtformat:
+        dtformat = DATETIME_FORMAT
+
+    units = gldcore.get_value(obj,"units")
+    assert units in ["NONE","INLINE","HEADER"], f"{units=} is invalid";
+    
+    flush = gldcore.get_value(obj,"flush")
+    assert flush in ["TRUE","FALSE"], f"{flush=} is invalid"
+    flush = ( flush == "TRUE" )
+
+    limit = gldcore.get_value(obj,"limit")
+    if limit:
+        limit = int(limit)
+
+    global _allobjects
+    if _allobjects is None:
+        _allobjects = {x:gldcore.get_object(x) for x in gldcore.get("objects")}
+    collection = find_objects(group,_allobjects)
+
+    # compile aggregators
+    aggregator = []
+    gldcore.verbose(f"{obj} compiling aggregators for {collection=}")
+    for prop,aggr in [x.split(".") for x in properties.split(",")]:
+        sources = [gldcore.property(x,prop) for x in collection]
+        for x,y in zip(collection,sources):
+            assert isinstance(y.get_value(),(int,float,complex)), f"{x}.{y.get_name()} is not a number"
+        assert aggr in _aggregators, f"'{aggr}' is not a valid aggregator for property '{prop}'"
+        aggregator.append((_aggregators[aggr],sources))
+        gldcore.verbose(f"{obj} {prop=},{aggr=} ok")
+
+    fh = open(file,"w")
+    fh.write(f"timestamp,{properties}\n")
+
+    global collector
+    collector[obj] = MutableData(**{
+        "file": fh,
+        "interval": interval,
+        "aggregator": aggregator,
+        "last": None,
+        "timezone": ZoneInfo(timezone) if timezone else None,
+        "dtformat": dtformat if dtformat else None,
+        "flush": flush,
+        "limit": limit,
+        "count": 0,
+    })
+
+    return gldcore.INIT_OK
+
+def collector_commit(obj,t):
+    """Update a collector
+
+    Arguments
+    ---------
+    - `obj`: object name
+    - `t`: current timestamp
+
+    Returns
+    -------
+    - `int`: next timestamp
+    """
+    global _allobjects
+    if not _allobjects is None:
+        _allobjects = None
+
+    this = collector[obj]
+    if ( this.interval <= 0 or t % this.interval == 0 ) and ( this.limit == 0 or this.count < this.limit ): # time to sample values
+        row = []
+        for aggr,sources in this.aggregator:
+            value = aggr([x.get_value() for x in sources])
+            row.append(str(value))
+        if this.interval >= 0 or row != this.last:
+            this.last = list(row)
+            ts = datetime.fromtimestamp(t,tz=this.timezone if this.timezone else timezone.utc)
+            fmt = this.dtformat
+            row.insert(0,ts.strftime(fmt) if fmt else ts.isoformat())
+            this.file.write(",".join(row)+"\n")
+            if this.flush:
+                this.file.flush()
+            this.count += 1
+    return ( t // this.interval + 1 ) * this.interval \
+        if this.interval > 0 \
+        else gldcore.NEVER

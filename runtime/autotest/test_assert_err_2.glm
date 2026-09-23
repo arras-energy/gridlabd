@@ -30,6 +30,7 @@ object test
     // test bool
     object assert
     {
+        name "exception-expected";
         target b;
         relation NE;
         value TRUE;

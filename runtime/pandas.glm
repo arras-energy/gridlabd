@@ -14,6 +14,7 @@ class recorder
 	string dtformat;
 	enumeration {NONE=0,INLINE=1,HEADER=2} units;
 	bool flush;
+	int32 limit;
 
 	on_init "python:glm_pandas.recorder_init";
 	on_commit "python:glm_pandas.recorder_commit";
@@ -28,4 +29,20 @@ class player
 
 	on_init "python:glm_pandas.player_init";
 	on_precommit "python:glm_pandas.player_precommit";
+}
+
+class collector
+{
+	string group;
+	string property;
+	string file;
+	double interval[s];
+	string timezone;
+	string dtformat;
+	enumeration {NONE=0,INLINE=1,HEADER=2} units;
+	bool flush;
+	int32 limit;
+
+	on_init "python:glm_pandas.collector_init";
+	on_commit "python:glm_pandas.collector_commit";
 }

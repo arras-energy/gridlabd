@@ -104,6 +104,12 @@ def _double(s):
     except:
         raise ValueError(f"{repr(s)} is not a valid GridLAB-D double value")
 
+def _float(s):
+    try:
+        return float(s)
+    except:
+        raise ValueError(f"{repr(s)} is not a valid GridLAB-D double value")
+
 class _Complex(complex):
     """Complex object that supports additional parts besides `real` and `imag`"""
     def __new__(cls,x,y=0):

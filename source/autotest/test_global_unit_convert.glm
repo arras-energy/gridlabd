@@ -4,8 +4,6 @@
 
 global double test_double[degF] 0.0 degC;
 
-#print ${test_double}
-
 object assert 
 {
 	target "test_double";
@@ -19,10 +17,33 @@ global complex test_complex[V] 12+1j kV; // default 0+0j unit kVA description "T
 
 object assert 
 {
-	target "test_complex";
+	target "test_complex.real";
 	relation EQ;
-	dtype complex;
-	value 12000+0d;
-	within 100.0;
+	dtype float;
+	value 12000;
+}
+
+object assert 
+{
+	target "test_complex.imag";
+	relation EQ;
+	dtype float;
+	value 1000;
+}
+
+object assert 
+{
+	target "test_complex.abs";
+	relation EQ;
+	dtype float;
+	value 1000;
+}
+
+object assert 
+{
+	target "test_complex.ang";
+	relation EQ;
+	dtype float;
+	value 1000;
 }
 
