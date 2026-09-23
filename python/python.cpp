@@ -1392,6 +1392,10 @@ static PyObject *gridlabd_get_object(PyObject *self, PyObject *args)
     {
         PyDict_SetItemString(data,"class",obj->oclass->name);
     }
+    else
+    {
+        PyDict_SetItemString(data,"class","");
+    }
     if ( obj->parent != NULL )
     {
         if ( obj->parent->name == NULL )
@@ -1409,32 +1413,53 @@ static PyObject *gridlabd_get_object(PyObject *self, PyObject *args)
     {
         PyDict_SetItemString(data,"latitude",obj->latitude);
     }
+    else
+    {
+        PyDict_SetItemString(data,"latitude",QNAN);
+    }
     if ( ! isnan(obj->longitude) )
     {
         PyDict_SetItemString(data,"longitude",obj->longitude);
     }
-    if ( obj->groupid[0] != '\0' )
+    else
     {
-        PyDict_SetItemString(data,"groupid",(const char*)obj->groupid);
+        PyDict_SetItemString(data,"longitude",QNAN);
     }
+    PyDict_SetItemString(data,"groupid",(const char*)obj->groupid);
     PyDict_SetItemString(data,"rank",(unsigned long long)obj->rank);
     char buffer[1024];
     if ( convert_from_timestamp(obj->clock,buffer,sizeof(buffer)) )
     {
         PyDict_SetItemString(data,"clock",buffer);
     }
-    if ( obj->valid_to > TS_ZERO && obj->valid_to < TS_NEVER )
+    else
+    {
+        PyDict_SetItemString(data,"clock","INVALID");
+    }
+    if ( obj->valid_to > TS_ZERO && obj->valid_to <= TS_NEVER )
     {
         PyDict_SetItemString(data,"valid_to",(unsigned long long)(obj->valid_to));
+    }
+    else
+    {
+        PyDict_SetItemString(data,"valid_to",(unsigned long long)(TS_INVALID));
     }
     PyDict_SetItemString(data,"schedule_skew",(int)obj->schedule_skew);
     if ( obj->in_svc > TS_ZERO && obj->in_svc < TS_NEVER )
     {
         PyDict_SetItemString(data,"in",(unsigned long long)(obj->in_svc));
     }
+    else
+    {
+        PyDict_SetItemString(data,"in",(unsigned long long)(TS_INVALID));
+    }
     if ( obj->out_svc > TS_ZERO && obj->out_svc < TS_NEVER )
     {
         PyDict_SetItemString(data,"out",(unsigned long long)(obj->out_svc));
+    }
+    else
+    {
+        PyDict_SetItemString(data,"out",(unsigned long long)(TS_INVALID));
     }
     PyDict_SetItemString(data,"rng_state",(unsigned long long)(obj->rng_state));
     PyDict_SetItemString(data,"heartbeat",(unsigned long long)(obj->heartbeat));

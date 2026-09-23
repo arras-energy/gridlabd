@@ -37,9 +37,9 @@ object collector
 	limit 10;
 	interval 3600;
 	dtformat "%Y-%m-%d %H:%M:%S";
-	file "test_groupid.csv";
+	file "${modelname/.glm/.csv}";
 }
 
-#ifexists "../test_groupid.csv"
-#on_exit 0 diff ../test_groupid.csv test_groupid.csv > gridlabd.diff
+#ifexists "../${modelname/.glm/.csv}"
+#on_exit 0 diff ../${modelname/.glm/.csv} ${modelname/.glm/.csv} > gridlabd.diff
 #endif

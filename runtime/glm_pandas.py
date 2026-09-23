@@ -554,7 +554,7 @@ def collector_init(obj,t):
 
     # compile aggregators
     aggregator = []
-    gldcore.verbose(f"{obj} compiling aggregators for {collection=}")
+    gldcore.verbose(f"{obj} compiling aggregators")
     for prop,aggr in [x.split(".") for x in properties.split(",")]:
         sources = [gldcore.property(x,prop) for x in collection]
         for x,y in zip(collection,sources):

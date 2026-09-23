@@ -346,7 +346,9 @@ source/autotest/test_global_get.glm
 source/autotest/test_global_python.glm
 source/autotest/test_global_shell.glm
 source/autotest/test_global_unit_convert.glm
+source/autotest/test_global_unit_convert_err.glm
 source/autotest/test_global_var_expansion.glm
+source/autotest/test_groupid.csv
 source/autotest/test_groupid.glm
 source/autotest/test_groupid_noclass.glm
 source/autotest/test_guid.glm
