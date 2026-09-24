@@ -1,4 +1,6 @@
-module assert;
+// test the @ syntax for inheriting a property value from another object
+
+#include "assert.glm"
 
 class test
  {
@@ -15,7 +17,7 @@ class test
      x @test1;
      object assert{
         target x;
-        relation "==";
+        relation EQ;
         value 8.88;
      };
  }
