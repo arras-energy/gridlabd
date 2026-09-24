@@ -32,7 +32,8 @@ Every simulation needs a `clock` block that sets the timezone and the
 start/stop times:
 
 ```c
-clock {
+clock
+{
      timezone "EST+5EDT";
      starttime "2024-01-01 00:00:00";
      stoptime "2024-01-02 00:00:00";
@@ -46,9 +47,10 @@ Modules give GridLAB-D its capabilities. For a basic distribution model you'll
 typically need at least the `powerflow` module:
 
 ```c
-module powerflow {
+module powerflow
+{
      solver_method NR;   // Newton-Raphson solver
-};
+}
 
 module tape;   // enables players and recorders for input/output
 ```
@@ -64,7 +66,8 @@ electrical properties as configuration objects. For example, a simple
 overhead line configuration:
 
 ```c
-object line_configuration {
+object line_configuration
+{
      name "lc_conf_1";
      conductor_A "obj_conductor";
      conductor_B "obj_conductor";
@@ -85,7 +88,8 @@ Objects are the heart of a GLM file. Every object has a `class` (e.g., `node`,
 syntax is:
 
 ```c
-object CLASS {
+object CLASS
+{
      name "NAME";
      property_1 value_1;
      property_2 value_2;
@@ -96,7 +100,8 @@ object CLASS {
 **Example: A node**
 
 ```c
-object node {
+object node
+{
      name "node_1";
      phases ABCN;
      nominal_voltage 7200;
@@ -106,7 +111,8 @@ object node {
 **Example: A line connecting two nodes**
 
 ```c
-object overhead_line {
+object overhead_line
+{
      name "line_1";
      phases ABCN;
      from node_1;
@@ -119,7 +125,8 @@ object overhead_line {
 **Example: A load**
 
 ```c
-object load {
+object load
+{
      name "load_1";
      parent "node_2";
      phases ABCN;
@@ -142,7 +149,8 @@ Getting Data In and Out
     the simulation:
 
 ```c
-object player {
+object player
+{
      parent "load_1";
      property "constant_power_A";
      file "load_data.csv";
@@ -152,7 +160,8 @@ object player {
 - **Recorders** capture a property's value over time and write it to a file:
 
 ```c
-object recorder {
+object recorder
+{
      parent "node_2";
      property "voltage_A";
      file "voltage_output.csv";
@@ -166,37 +175,43 @@ Putting It All Together
 A minimal complete GLM file looks like this:
 
 ```c
-clock {
+clock
+{
      timezone "EST+5EDT";
      starttime "2024-01-01 00:00:00";
      stoptime "2024-01-01 01:00:00";
 }
 
-module powerflow {
+module powerflow
+{
      solver_method NR;
-};
+}
 module tape;
 
-object node {
+object node
+{
      name "node_1";
      phases ABCN;
      bustype SWING;
      nominal_voltage 7200;
 }
 
-object node {
+object node
+{
      name "node_2";
      phases ABCN;
      nominal_voltage 7200;
 }
 
-object overhead_line_conductor {
+object overhead_line_conductor
+{
      name "olc_1";
      geometric_mean_radius 0.0244;
      resistance 0.306;
 }
 
-object line_spacing {
+object line_spacing
+{
      name "ls_1";
      distance_AB 2.5;
      distance_BC 2.5;
@@ -206,7 +221,8 @@ object line_spacing {
      distance_CN 5.0;
 }
 
-object line_configuration {
+object line_configuration
+{
      name "lc_1";
      conductor_A olc_1;
      conductor_B olc_1;
@@ -215,7 +231,8 @@ object line_configuration {
      spacing "ls_1";
 }
 
-object overhead_line {
+object overhead_line
+{
      name "line_1";
      phases ABCN;
      from "node_1";
@@ -224,7 +241,8 @@ object overhead_line {
      configuration "lc_1";
 }
 
-object load {
+object load
+{
      name "load_1";
      parent "node_2";
      phases ABCN;
@@ -234,7 +252,8 @@ object load {
      constant_power_C 50000+20000j;
 }
 
-object recorder {
+object recorder
+{
      parent "node_2";
      property "voltage_A";
      file voltage_output.csv;
@@ -263,14 +282,18 @@ Tips for Beginners
 - **Complex numbers** for power and impedance use the `a+bj` format
     (e.g., `50000+20000j` for real + reactive power).
 
-- **One SWING bus is required** — this is your reference/slack bus, usually
+- **Include units** for real and complex values to ensure that units are
+    consistent with internal module units and conversion are performed
+    automatically as needed.
+
+- **A SWING bus is required** — this is your reference/slack bus, usually
     where the substation or source connects (set with `bustype SWING`).
 
 - **Comment liberally** with `//` — models built from taxonomy feeders or
     generators can get very large.
 
 - **Use `#include`** to split large models into multiple files, e.g.
-    `#include "configurations.glm";`.
+    `#include "configurations.glm"`.
 
 - **Validate incrementally** — build up your model in small pieces (a couple
     of nodes and a line first) and run it often rather than writing hundreds
@@ -279,13 +302,38 @@ Tips for Beginners
 Where to Go Next
 ----------------
 
-- The official GridLAB-D documentation and wiki cover the full object/class
-  reference for each module.
+- The online [GridLAB-D documentation](https://docs.gridlabd.us/) covers the
+  full object/class reference for each module.
 
-- PNNL's taxonomy feeder models are a great way to study realistic, full-scale
+- The [taxonomy feeder models](https://github.com/arras-energy/gridlabd-models/) are a great way to study realistic, full-scale
   GLM files once you're comfortable with the basics.
 
 - Explore modules like `residential` (houses, HVAC, appliances) and `climate`
   (weather-driven simulations) once you're comfortable with the core
-  `powerflow` objects shown here.
+  `powerflow` objects used in the taxonomy feeder models.
 """
+
+import os
+import sys
+import json
+import shutil
+import tempfile
+
+class GLM(dict):
+     """Basic GLM file parser"""
+     def __init__(self,glmfile:str):
+          """Compile a GLM file as a dict object
+
+          Arguments
+          ---------
+          - `glmfile`: the GLM file name to compile
+          """
+          assert glmfile.endswith(".glm"), f"{glmfile=} must have a '.glm' extension"
+          with tempfile.TemporaryDirectory() as tmp:
+               jsonfile = os.path.join(tmp,os.path.basename(glmfile.replace(".glm",".json")))
+               assert os.system(f"gridlabd -C {glmfile} -o {jsonfile}") == 0, f"JSON conversion failed"
+               with open(jsonfile,"r") as fh:
+                    data = json.load(fh)
+                    assert data["application"] == "gridlabd", f"{glmfile} is not a GridLAB-D GLM file"
+                    super().__init__(data)
+          shutil.rmtree(tmp,ignore_errors=True)
