@@ -34,6 +34,7 @@ object test
 script on_term gridlabd:dump test_iso_datetime.json;
 
 #ifexist "../test_iso_datetime.py"
-#on_exit 0 python3 ../test_iso_datetime.py
+#define DIR=..
 #endif
 
+#on_exit 0 python3 ${DIR:-.}/test_iso_datetime.py
