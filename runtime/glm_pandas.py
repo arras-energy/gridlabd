@@ -181,6 +181,45 @@ property.
         timezone "America/Los_Angeles";
         dtformat "%Y-%m-%d %H:%M:%S %Z";
     };
+
+Collectors
+----------
+
+Collector objects are very similar to recorders, except that they employ
+aggregators to collect data from multiple objects as specified by the Boolean
+expression in the `group` property. Group expression are any valid Python
+expression that evaluates to a `bool` value based on the properties of the
+object. For example, the following evaluates whether an object's class and group ID
+matches a specified value.
+
+    group "class=='test' and groupid=='A'"
+
+Note that the expression to determine whether an object part of the collection
+is only evaluated once during initialization.
+
+Properties must include aggregators in the form `PROPERTY.AGGREGATOR`. The following
+aggregators are supported
+
+- `len`: the number of objects in the collection
+- `count`: same as `len`
+- `sum`: sum of the values of the property
+- `prod`: product of the values of the property
+- `min`: minimum value of the property
+- `max`: maximum value of the property 
+- `argmin`: index of the minimum value of the property (based on the order in which 
+  the objects are defined)
+- `argmax`: index of the maximum value of the property (based on the order in which 
+  the objects are defined)
+- `mean`: mean value of the property
+- `avg`: same as `mean`
+- `average`: same as `mean`
+- `std`: standard deviation value of the property
+- `stdev`: same as `std`
+- `var`: variance of the property
+- `skew`: skewness of the property,
+- `kurt`: kurtosis of the property,
+
+These aggregators are evaluated every time the `interval` elapses.
 """
 
 import os
