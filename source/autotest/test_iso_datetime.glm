@@ -1,6 +1,5 @@
-module tape;
-module climate; 
-module assert;
+#include "pandas.glm"
+#include "assert.glm"
 
 #set dateformat=ISO8601
 
@@ -26,5 +25,6 @@ object test {
 	name Test;	
 };
 
-script on_term gridlabd:dump test_clock.json;
-#on_exit 0 $GLD_BIN/python3 ../test_iso_datetime.py
+script on_term gridlabd:dump ${modelname/.glm/.json};
+
+#on_exit 0 $GLD_BIN/python3 ${modelname/.glm/.py}
