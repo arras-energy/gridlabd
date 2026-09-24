@@ -1,14 +1,19 @@
-#set savefile=output.json
-
 clock {
 	timezone "US/CA/Los Angeles";
 	starttime '2000-01-01 00:00:00';
 	stoptime '2001-01-01 00:00:00';
 }
 
-module residential;
-object house:..2 {
-	air_temperature 74;
-	heating_setpoint 70;
-	cooling_setpoint 72;
+class test
+{
+	double x;
 }
+
+object test 
+{
+	x 1.23;
+}
+
+#set savefile=test_json.json
+
+#on_exit 0 test "$(gridlabd json-get objects test:0 x < test_json.json)" == "1.23"
