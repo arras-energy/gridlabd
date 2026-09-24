@@ -53,6 +53,7 @@ dist_pkgdata_DATA += runtime/glm.py
 dist_pkgdata_DATA += runtime/glm_syntax.py
 
 # runtime support
+dist_pkgdata_DATA += runtime/glm_command.py
 dist_pkgdata_DATA += runtime/glm_timestamp.py
 dist_pkgdata_DATA += runtime/glm_tzinfo.py
 dist_pkgdata_DATA += runtime/glm_utilities.py

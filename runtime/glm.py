@@ -273,14 +273,16 @@ If everything is set up correctly, GridLAB-D will run the simulation and write
 Tips for Beginners
 ------------------
 
-- **Indentation isn't required** but keep it consistent — GLM files get long
+- **Indentation isn't required** but keep it consistent. GLM files get long
     fast, and readability matters.
 
-- **Names must be unique** across the whole model; reference other objects by
+- **Names must be unique** across the whole model. Reference other objects by
     name (as in `from`, `to`, `parent`, `configuration`).
 
-- **Complex numbers** for power and impedance use the `a+bj` format
-    (e.g., `50000+20000j` for real + reactive power).
+- **Complex numbers** for power and impedance use the `<real>+<imaginary>i` or
+    `<real>+<imaginary>j` format (e.g., `50000+20000j`), but
+    `<magnitude>+<angle>d` or `<magnitude>+<angle>r` for voltages and
+    currents.
 
 - **Include units** for real and complex values to ensure that units are
     consistent with internal module units and conversion are performed
@@ -289,13 +291,18 @@ Tips for Beginners
 - **A SWING bus is required** — this is your reference/slack bus, usually
     where the substation or source connects (set with `bustype SWING`).
 
-- **Comment liberally** with `//` — models built from taxonomy feeders or
-    generators can get very large.
+- **Comment liberally** with `//` because people like comments.
 
 - **Use `#include`** to split large models into multiple files, e.g.
-    `#include "configurations.glm"`.
+    
+         #include "configurations.glm"
+         #include "network.glm"
+         #include "generators.glm"
+         #include "loads.glm"
+         #include "players.glm"
+         #include "recorders.glm"
 
-- **Validate incrementally** — build up your model in small pieces (a couple
+- **Validate incrementally** by building up your model in small pieces (a couple
     of nodes and a line first) and run it often rather than writing hundreds
     of lines before testing.
 
@@ -318,22 +325,126 @@ import sys
 import json
 import shutil
 import tempfile
+import warnings
 
-class GLM(dict):
-     """Basic GLM file parser"""
-     def __init__(self,glmfile:str):
-          """Compile a GLM file as a dict object
+from glm_command import glm_command
+
+__all__ = ["GLMCompileException","GLM"] # specify what pdoc will publish
+
+class GLMCompileException(Exception):
+     """General GLM exception handler
+
+     Attributes
+     ----------
+     - `exitcode`: the exit code (integer)
+     - `output`: a list of output lines
+     - `errors`: a list of error messages
+     """
+     def __init__(self,msg,exitcode,output,errors):
+
+          self.output = exitcode
+          """A list of output lines from the GLM compiler"""
+          
+          self.errors = output
+          """A list of output errors from the GLM compiler"""
+          
+          self.exitcode = errors
+          """The compiler exit code as an integer (0 is success, non-zero is failed)"""
+          
+          super().__init__(msg)
+
+class GLM:
+     """Basic GLM compiler
+
+     Attributes
+     ----------
+     - `application`: always `"gridlabd"`
+     - `version`: gridlabd version
+     - `globals`: list of globals defined in the model
+     - `classes`: list of classes defined in the model
+     - `filter`: filter objects (optional)
+     - `header`: header property definitions
+     - `modules`: modules loaded in the model
+     - `objects`: objects defined in the model
+     - `schedules`: schedules defined in the model (optional)
+     - `types`: data types used by the model
+     """
+     def __init__(self,
+          glmfile:str,
+          on_error:str='exception',
+          define:dict[str,str]=None):
+          """Compile a GLM file
 
           Arguments
           ---------
           - `glmfile`: the GLM file name to compile
+          - `on_error`: error handling
+            - `"ignore"`: the error is ignored and `exitcode` is set
+            - `"warning"`: a warning is output and `exitcod` is set
+            - `"exception"`: a GLMCompileException exception is raised (default)
+          - `define`: global variable definitions
           """
+          self.output = None
+          """A list of output lines from the GLM compiler"""
+          
+          self.errors = None
+          """A list of output errors from the GLM compiler"""
+          
+          self.exitcode = None
+          """The compiler exit code as an integer (0 is success, non-zero is failed)"""
+
+          assert on_error in ["ignore","exception","warning"]
           assert glmfile.endswith(".glm"), f"{glmfile=} must have a '.glm' extension"
-          with tempfile.TemporaryDirectory() as tmp:
-               jsonfile = os.path.join(tmp,os.path.basename(glmfile.replace(".glm",".json")))
-               assert os.system(f"gridlabd -C {glmfile} -o {jsonfile}") == 0, f"JSON conversion failed"
-               with open(jsonfile,"r") as fh:
-                    data = json.load(fh)
-                    assert data["application"] == "gridlabd", f"{glmfile} is not a GridLAB-D GLM file"
-                    super().__init__(data)
-          shutil.rmtree(tmp,ignore_errors=True)
+          try:
+               with tempfile.TemporaryDirectory() as tmp:
+                    jsonfile = os.path.join(tmp,os.path.basename(glmfile.replace(".glm",".json")))
+                    args = ["-C",glmfile,"-o",jsonfile]
+                    for key,value in (define if define else {}).items():
+                         args = ["-D",f"{key}={value}"] + args
+                    result = glm_command(*args)
+                    
+                    self.output = result.stdout.split("\n")
+                    self.errors = result.stderr.split("\n")
+                    self.exitcode = result.returncode
+                    if self.exitcode == 0:
+                         with open(jsonfile,"r") as fh:
+                              data = json.load(fh)
+                              assert data["application"] == "gridlabd", f"{glmfile} is not a GridLAB-D GLM file"
+                              for key,value in [(x,y) for x,y in data.items() if x not in ["application"]]:
+                                   setattr(self,key,value)
+                    elif on_error != "ignore":
+                         msg = f"{glmfile=} compile failed (exitcode {self.exitcode}), see `output` and `errors` for details"
+                         if on_error == "exception":
+                              raise GLMCompileException(msg,self.exitcode,self.output,self.errors)
+                         warnings.warn(msg)
+          except:
+               raise
+          finally:
+               shutil.rmtree(tmp,ignore_errors=True)
+
+# Included for dev testing purposes only -- do not uncomment for releases
+if __name__ == '__main__':
+
+     # this should work
+     glm = GLM("autotest/test_assert.glm",define={"verbose":"TRUE"})
+     assert len(glm.objects) > 0, "no object loaded"
+     assert glm.errors[-2] == "   ... exit code 0"
+
+     # this should fail with an exception
+     try:
+          glm = GLM("autotest/test_assert1.glm")
+     except GLMCompileException:
+          pass
+
+     # this should fail with a warning
+     with warnings.catch_warnings(record=True) as wf:
+          glm = GLM("autotest/test_assert1.glm",on_error="warning")
+
+          # verify the warning
+          assert str(wf[0].message) == "glmfile='autotest/test_assert1.glm' compile failed (exitcode 5), see `output` and `errors` for details"
+
+     # this should fail with an exception
+     try:
+          glm = GLM("autotest/test_assert1.glm",on_error="exception")
+     except GLMCompileException:
+          pass

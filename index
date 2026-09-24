@@ -350,6 +350,7 @@ source/autotest/test_global_unit_convert_err.glm
 source/autotest/test_global_var_expansion.glm
 source/autotest/test_groupid.csv
 source/autotest/test_groupid.glm
+source/autotest/test_groupid_noclass.csv
 source/autotest/test_groupid_noclass.glm
 source/autotest/test_guid.glm
 source/autotest/test_help.glm
@@ -361,7 +362,6 @@ source/autotest/test_include_subcommand.glm
 source/autotest/test_include_subcommand.txt
 source/autotest/test_inherit.glm
 source/autotest/test_inline_global_replacement.glm
-source/autotest/test_inline_plc.glm
 source/autotest/test_inline_python.glm
 source/autotest/test_iso_datetime.glm
 source/autotest/test_iso_datetime.py

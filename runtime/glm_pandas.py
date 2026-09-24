@@ -143,6 +143,8 @@ The following properties are supported by recorders.
 
 - `flush`: specifies whether the output buffer is flushed with each write.
 
+- `limit`: maximum number of records to output before stopping recorder
+
 
 The following examples illustrate how to use a recorder for the same GLM class
 used in the player examples.
@@ -187,15 +189,15 @@ Collectors
 
 Collector objects are very similar to recorders, except that they employ
 aggregators to collect data from multiple objects as specified by the Boolean
-expression in the `group` property. Group expression are any valid Python
+expression in the `group` property. Group expressions are any valid Python
 expression that evaluates to a `bool` value based on the properties of the
 object. For example, the following evaluates whether an object's class and group ID
 matches a specified value.
 
     group "class=='test' and groupid=='A'"
 
-Note that the expression to determine whether an object part of the collection
-is only evaluated once during initialization.
+Note that the expression is only evaluated once during initialization by the
+`glm_pandas.collector_init`.
 
 Properties must include aggregators in the form `PROPERTY.AGGREGATOR`. The following
 aggregators are supported
@@ -219,7 +221,11 @@ aggregators are supported
 - `skew`: skewness of the property,
 - `kurt`: kurtosis of the property,
 
-These aggregators are evaluated every time the `interval` elapses.
+Aggregators are evaluated every time the `interval` elapses by the
+`glm_pandas.collector_commit` event handler. Except for `len` and `count` the
+values of the property must be number-like, e.g., `int`, `double`,
+`randomvar`, or a complex part. When calculating aggregates, the computations
+are performed in the internal units of the property.
 """
 
 import os
