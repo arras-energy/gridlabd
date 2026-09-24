@@ -42,4 +42,3 @@ script on_term gridlabd:dump test_iso_datetime.json;
 #endif
 
 #on_exit 0 python3 ${DIR:-.}/test_iso_datetime.py
-
