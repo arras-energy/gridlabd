@@ -1,28 +1,43 @@
-module tape;
-module climate; 
-module assert;
-#define STARTTIME="2000-01-30T00:00:00-05:00"
-#define STOPTIME="2000-01-30T00:01:00-05:00"
-clock {
+// verify that clock can read ISO format timestamps
+
+#define STARTTIME=2000-01-01T00:00:00-05:00
+#define STOPTIME=2000-01-02T00:02:00-05:00
+
+#include "pandas.glm"
+#include "assert.glm"
+
+#set dateformat=ISO8601
+
+clock 
+{
 	timezone "EST+5EDT";
 	starttime "${STARTTIME}";
 	stoptime "${STOPTIME}";
 }
 
-class test {
+class test 
+{
 	double test_var;
 };
 
-class climate {
+class climate 
+{
  	randomvar clouds;
 } 
 
-object climate{
+object climate
+{
 	clouds "type:weibull(0.5,0.5); min:0.0; max:1.0; refresh:1h;";
 }
 
-object test {
+object test 
+{
 	name Test;	
 };
 
-script on_term gridlabd:dump test_clock.json;
+script on_term gridlabd:dump test_iso_datetime.json;
+
+#ifexist "../test_iso_datetime.py"
+#on_exit 0 python3 ../test_iso_datetime.py
+#endif
+
