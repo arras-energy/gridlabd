@@ -5,25 +5,33 @@
 // Test fails if the maximum covariance error exceeds 0.4%.
 // Test also generates a plot of the correlated variables generated, FYI.
 
+#include "pandas.glm"
+
 clock {
     starttime '2020-01-01 00:00:00';
     stoptime '2020-01-02 00:00:00';
 }
-class example {
+
+class example 
+{
     randomvar x;
     randomvar y;
 }
-module tape
+
+object example 
 {
-    csv_data_only 1;
-}
-object example {
     x "type:normal(0.0,1.0); min:-3.0; max:+3.0; refresh:1s;";
     y "type:normal(0.0,0.1); min:-3.0; max:+3.0; refresh:1s; correlation:x*-0.9;";
-    object recorder {
+    object recorder 
+    {
         property "x,y";
-        file "example.csv";
+        file "test_random_correlation.csv";
         interval -1;
     };
 }
-#on_exit 0 $GLD_BIN/python3 ../check_correlation.py example.csv 0.975 -0.878 0.800 0.004 && $GLD_BIN/python3 ../plotxy.py example.csv example.png 'x=1,y=2,style=".",grid=True'
+
+#ifexists "../test_random_correlation.py"
+#define DIR=..
+#endif
+
+#on_exit 0 $GLD_BIN/python3 ${DIR:-.}/test_random_correlation.py
