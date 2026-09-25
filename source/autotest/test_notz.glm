@@ -1,3 +1,5 @@
+#set randomseed=1
+
 clock {
 	starttime '2001-01-01 0:00:00';
 	stoptime '2001-01-02 0:00:00';
@@ -6,12 +8,20 @@ clock {
 class test {
 	randomvar x;
 }
-module tape;
-object test {
+
+#include "pandas.glm"
+
+object test 
+{
 	x "type:normal(0,1); refresh:60";
-	object recorder {
+	object recorder 
+	{
 		property x;
 		interval 1h;
-		file test_x.csv;
+		file "test_notz.csv";
 	};
 }
+
+#ifexist "../test_notz.csv";
+#on_exit 0 diff ../test_notz.csv test_notz.csv > gridlabd.diff
+#endif
