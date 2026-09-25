@@ -401,12 +401,18 @@ def player_precommit(obj:str,t:int) -> int:
         return this.timestamp
 
     # update time has arrived
+    values = []
     for src,prop in this.source.items():
         if this.unit[src] is None:
             value = str(data[src])
         else:
             value = f"{data[src]} {this.unit[src]}"
         prop.set_value(value)
+        values.append(value)
+    try: # set optional 'value' if user has added it to the class
+        gldcore.set_value(obj,"value",",".join(values))
+    except Exception as err:
+        pass
 
     # move to next row
     this.row += 1
