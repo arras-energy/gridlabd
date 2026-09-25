@@ -110,6 +110,15 @@ def _float(s):
     except:
         raise ValueError(f"{repr(s)} is not a valid GridLAB-D double value")
 
+def _loadshape(s):
+    return _float(s)
+
+def _randomvar(s):
+    return _float(s)
+
+def _enduse(s):
+    return _float(s)
+
 class _Complex(complex):
     """Complex object that supports additional parts besides `real` and `imag`"""
     def __new__(cls,x,y=0):
@@ -187,6 +196,21 @@ def _timestamp(s):
 
 def _python(s):
     return eval(s)
+
+def _char8(s):
+    return str(s)
+
+def _char32(s):
+    return str(s)
+
+def _char256(s):
+    return str(s)
+
+def _char1024(s):
+    return str(s)
+
+def _object(s):
+    return str(s)
 
 def _string(s):
     return str(s)
