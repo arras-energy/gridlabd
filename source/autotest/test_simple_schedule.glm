@@ -1,23 +1,29 @@
 // test schedule transforms
 
-module residential {
-	default_outdoor_temperature 70.5;
-	implicit_enduses NONE;
-}
-module assert;
+#include "pandas.glm"
 
-clock {
+clock 
+{
 	timezone PST+8PDT;
 	starttime '2009-01-01 0:00:00 PST';
 	stoptime '2009-01-08 0:00:00 PST';
 }
 
-class house {
+class house 
+{
 	loadshape occupancy;
 }
 
-object house {
+object house 
+{
 	occupancy "type: scheduled; weekdays: MTWRF; on-time: 7<8~1<9; off-time: 17";
-	// don't really have an idea about an assert to use here
+	object recorder
+	{
+		file "test_simple_schedule.csv";
+		property occupancy;
+	};
 }
 
+#ifexists "../test_simple_schedule.csv"
+#on_exit 0 diff ../test_simple_schedule.csv test_simple_schedule.csv > gridlabd.diff
+#endif
