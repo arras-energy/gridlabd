@@ -2,8 +2,22 @@
 // Test of quoted value parsing
 //
 
-module climate;
-
-object climate {
-	name "valid" "invalid";
+class test
+{
+	char32 value;
 }
+
+object test
+{
+	value "front" "back";
+}
+
+object test
+{
+	value """front" "back""";
+}
+
+#write test_quoted_value.json
+
+#on_exit 0 test "$(gridlabd json-get objects test:0 value < test_quoted_value.json)" == 'front back'
+#on_exit 0 test "$(gridlabd json-get objects test:1 value < test_quoted_value.json)" == 'front" "back'
