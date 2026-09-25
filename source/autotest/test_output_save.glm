@@ -1,3 +1,4 @@
+#include "pandas.glm"
 
 clock 
 {
@@ -6,10 +7,14 @@ clock
     stoptime "2021-01-01 00:00:00 PST";
 }
 
-module residential;
-module tape;
+class house
+{
+    randomvar air_temperature[degF];
+}
+
 object house
 {
+    air_temperature "type:uniform(72,74); refresh:1h";
     object recorder
     {
         file "test_output_save.csv";
@@ -19,3 +24,7 @@ object house
 }
 
 #output "test_output_save.png"
+
+#ifexist "../test_output_save.png"
+#on_exit 0 diff ../test_output_save.png test_output_save.png > gridlabd.diff
+#endif
