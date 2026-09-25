@@ -25,6 +25,4 @@ object house
 
 #output "test_output_save.png"
 
-#ifexist "../test_output_save.png"
-#on_exit 0 diff ../test_output_save.png test_output_save.png > gridlabd.diff
-#endif
+#assert -f test_output_save.png
