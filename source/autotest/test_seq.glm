@@ -1,11 +1,16 @@
-clock {
+clock 
+{
 	starttime '2000-01-01 00:00:00';
 	stoptime '2000-01-02 00:00:00';
 }
 
-module residential;
+class house
+{
+	double x;
+}
 global int32 SEQ_A 0;
-object house:..10 {
+object house:..10 
+{
 	name `House_{SEQ_A:INC}`;
 }
 #print ${SEQ_A} houses created.
