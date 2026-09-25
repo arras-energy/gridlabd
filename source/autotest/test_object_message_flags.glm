@@ -1,17 +1,23 @@
 #set output_message_context=NONE // silence the core
 #set verbose=TRUE // enable verbose
-#set debug=TRUE // enable debug
+#options redirect verbose:test_object_message_flags.txt 
 
 clock {
 	starttime '2000-01-01 00:00:00';
 	stoptime '2000-01-02 00:00:00';
 }
-module residential {
-	message_flags VERBOSE|DEBUG;
+
+class test
+{
+	randomvar x;
 }
 
-object house {
-	flags VERBOSE|DEBUG;
-	name house1;
+object test {
+	name "test_object";
+	x "type:normal(0,1); refresh:1h";
+	flags VERBOSE;
 }
 
+#ifexist "../test_object_message_flags.txt"
+#on_exit 0 diff ../test_object_message_flags.txt test_object_message_flags.txt > gridlabd.diff
+#endif
