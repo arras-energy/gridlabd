@@ -1,5 +1,7 @@
 // test_assert_exc.glm
 
+#print NOTE: this test should raise an unintercepted exception from object 'exception-expected'
+
 #set suppress_repeat_messages=FALSE
 
 #include "assert.glm"
