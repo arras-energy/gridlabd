@@ -25,4 +25,4 @@ def test_init(obj,t):
     gldcore.set_bool(b,True)
     assert gldcore.get_bool(b) == True, f"bool test failed"
 
-    return 0
+    return gldcore.INIT_OK
