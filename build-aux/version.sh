@@ -16,7 +16,7 @@
 ##   --system        the system name, e.g., ubuntu_22
 ##   --sysspec       the system specification, e.g., ubuntu_22-x86_64
 ##   --bucket        the s3 bucket for the install file uploads
-##   --python        the python version, e.g., 3.10
+##   --python        the python version, e.g., 3.12
 ##   --parse INSTALL parses an install name into its constituents
 ##   --docker        the docker tag name, e.g., 4.3.1-230701-master-ubuntu_22-x86_64
 ##   --origin        the origin of the source code, e.g., arras-energy/gridlabd/master
@@ -25,7 +25,7 @@
 ## It is assumed that this script is run from the top-level srcdir.
 #
 EXE=$0
-PYV=3.10
+PYV=3.12
 TOP=$(cd $(dirname $EXE)/.. 1>/dev/null; pwd)
 FIL="${TOP}/source/version.h"
 MAJ=`sed -En 's/#define REV_MAJOR ([0-9]+).*/\1/p' $FIL | tr -d '\n'`

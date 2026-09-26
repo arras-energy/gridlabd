@@ -6,7 +6,7 @@ export NONINTERACTIVE=1
 export HOMEBREW_NO_ASK=1 
 
 INSTALL error () { echo "ERROR [$(basename $0)]: $*" > /dev/stderr ; exit 1 ; }
-INSTALL PYTHON_VERSION=3.10
+INSTALL PYTHON_VERSION=3.12
 INSTALL PYTHON_VENV=${HOME:-/tmp}/.gridlabd
 INSTALL PYTHON_EXEC=$PYTHON_VENV/bin/python$PYTHON_VERSION
 INSTALL PYTHON_CONFIG=$PYTHON_VENV/bin/python${PYTHON_VERSION}-config
@@ -85,3 +85,7 @@ if ! mysql_config --libs >/dev/null 2>&1 ; then
         error "Failed to install MySQL with Homebrew."
     fi
 fi
+
+# make sure python version is available through /usr/local/bin
+ln -sf $(which python$PYTHON_VERSION) /usr/local/bin/python3
+ln -sf $(which python$PYTHON_VERSION-config) /usr/local/bin/python3-config

@@ -47,7 +47,7 @@ m4_define([pkgorigin],sbuild_m4_esyscmd_s([git rev-parse --abbrev-ref HEAD]))
 
 # Set minimum autoconf version, cannot be conditional
 # Build.sh will handle validation of later version for Darwin 23 and later
-AC_PREREQ([2.71])
+AC_PREREQ([2.72])
 AC_INIT([pkgname],[pkgversion],[gridlabd@gmail.com],[pkg])
 AC_CONFIG_SRCDIR([source/gridlabd.h])
 AC_CONFIG_HEADERS([source/config.h])
@@ -598,7 +598,7 @@ DOCDIR=$DSTDIR/share/doc/gridlabd
 # Python virtual environment check
 #
 
-PYTHON_REQ=3.10
+PYTHON_REQ=3.12
 
 if test "x$VIRTUAL_ENV" = "x"; then
   if test -f $HOME/.gridlabd/bin/activate; then

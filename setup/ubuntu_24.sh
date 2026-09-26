@@ -1,7 +1,7 @@
 alias INSTALL=''
 
 INSTALL error () { echo "ERROR [$(basename $0)]: $*" > /dev/stderr ; exit 1 ; }
-INSTALL PYTHON_VERSION=3.10
+INSTALL PYTHON_VERSION=3.12
 INSTALL PYTHON_VENV=${HOME:-/tmp}/.gridlabd
 INSTALL PYTHON_EXEC=$PYTHON_VENV/bin/python$PYTHON_VERSION
 INSTALL PYTHON_CONFIG=$PYTHON_VENV/bin/python${PYTHON_VERSION}-config
@@ -75,6 +75,6 @@ if [ "$(autoconf --version | head -n 1 | cut -f4 -d' ')" != "2.72" ] ; then
     test "$(autoconf --version | head -n 1 | cut -f4 -d' ')" = "2.72" || error "autoconf installation failed"
 fi
 
-# make sure python3.10 is available through /usr/local/bin
-ln -sf $(which python3.10) /usr/local/bin/python3
-ln -sf $(which python3.10-config) /usr/local/bin/python3-config
+# make sure python version is available through /usr/local/bin
+ln -sf $(which python$PYTHON_VERSION) /usr/local/bin/python3
+ln -sf $(which python$PYTHON_VERSION-config) /usr/local/bin/python3-config

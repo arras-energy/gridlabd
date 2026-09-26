@@ -8,7 +8,7 @@
 # set -x # enable command echo
 
 # required versions
-PYTHONVER=3.10.18 
+PYTHONVER=3.12 
 M4VER=1.4.20
 AUTOCONFVER=2.72
 AUTOMAKEVER=1.18

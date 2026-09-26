@@ -7,6 +7,7 @@ CensusData,,,
 cfo,,,
 control,,,
 cvxpy,,,
+contourpy,,,1.2.0
 docker,,,
 elevation,,,
 Fiona,,,
@@ -33,10 +34,10 @@ matplotlib,2,,
 matplotlib_inline,,,
 metar,,,
 networkx,,,
-numpy,2,,
-numpy,,,
+numpy,2,,1.26.4
+numpy,,,1.26.4
 openpyxl,,,
-pandas,,,
+pandas,,,2.1.4
 pandas_access,,,
 pdocs
 Pillow,2,,
@@ -52,7 +53,7 @@ pytz,2,,
 pytz,,,
 rasterio,,,
 scikit-learn,2,,
-scipy,,,
+scipy,,,1.12.0
 setuptools,1,--upgrade --no-cache-dir,
 Shapely,,,
 simplekml,,,
