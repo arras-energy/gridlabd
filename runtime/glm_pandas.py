@@ -385,16 +385,16 @@ def player_precommit(obj:str,t:int) -> int:
     - `int`: next timestamp
     """
     this = player[obj]
+
     try:
+        # advance to requested timestamp
+        while TIMESTAMP(int(this.data.loc[this.row].timestamp.timestamp())) < t:
+            this.row += 1
         data = this.data.loc[this.row]
     except KeyError:
         return gldcore.NEVER
 
     this.timestamp = TIMESTAMP(int(data.timestamp.timestamp()))
-
-    # update time was missed
-    if this.timestamp < t:
-        gldcore.warning(f"missed timestamp {this.timestamp}>")
 
     # update time is in the future
     if this.timestamp > t:

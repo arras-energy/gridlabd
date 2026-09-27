@@ -1,9 +1,6 @@
 #loaddata -s=CA -r=1 -v=2023 -w=ACTUAL -y=2018 -b=MEDIUMOFFICE -e=heating -f=electricity,natural_gas -t=1H -a=10000 -o=${modelname/.glm/.csv}
 
-module tape
-{
-    csv_header_type NAME;
-}
+#include "pandas.glm"
 
 clock 
 {
@@ -22,16 +19,17 @@ object test
 {
     object player 
     {
-        file ${modelname/.glm/.csv};
+        file "${modelname/.glm/.csv}";
     };
     object recorder
     {
         file "${modelname/.glm/_out.csv}";
         property "electricity,natural_gas";
-        interval -1;
+        interval 0;
     };
 }
 
 #ifexist ../${modelname/.glm/_out.csv}
-#on_exit 0 diff ../${modelname/.glm/_out.csv} ${modelname/.glm/_out.csv} > gridlabd.diff
+#on_exit 0 diff ../${modelname/.glm/.csv} ${modelname/.glm/.csv} > gridlabd.diff
+#on_exit 0 diff ../${modelname/.glm/_out.csv} ${modelname/.glm/_out.csv} >> gridlabd.diff
 #endif
