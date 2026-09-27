@@ -42,6 +42,9 @@ if ! "$PYTHON_EXEC" -m pip --version 1>/dev/null 2>&1 ; then
     INSTALL "$PYTHON_EXEC" -m pip --version || error "pip installation failed"
 fi
 
+# install setuptools
+INSTALL $PYTHON_EXEC -m pip install --upgrade setuptools
+
 # check gdal
 if ! gdal-config --version 1>/dev/null 2>&1 ; then
     apt-get install libgdal-dev -y
