@@ -247,27 +247,462 @@ which should output `2`.
 
 ## Module
 
-TODO
+```c
+module NAME;
+```
+
+The module load directive is used to load a GridLAB-D or Python modules into
+the solver framework. Modules provide classes and event handlers.
+
+If the module name is a Python module, it will be loaded in the core
+environment, which automatically imports the `gldcore` module. 
 
 ## Object
 
-TODO
+```c
+object [MODULE.]CLASS[:..COUNT|:FIRST..LAST]
+{
+  PROPERTY_1 VALUE_1;
+  PROPERTY_2 VALUE_2;
+  ...
+  PROPERTY_N VALUE_N;
+  [NESTED_OBJECTS ...]
+}
+```
+
+The object directive is used to instantiate one or more objects in a GridLAB-D
+model.
+
+To instantiate a single object:
+
+```c
+object [MODULE.]CLASS
+{
+  ...
+}
+```
+
+To instantiate multiple objects:
+
+```c
+object [MODULE.]CLASS[:..COUNT]
+{
+  ...
+}
+```
+
+To instantiate multiple objects with a specified range of object ids:
+
+```c
+object [MODULE.]CLASS[:FIRST..LAST]
+{
+  ...
+}
+```
+
+To instantiate an object with nested objects:
+
+```c
+object [MODULE.]CLASS
+{
+  ...
+  object [MODULE.]CLASS
+  {
+    ...
+  };
+}
+```
+
+### Caveat
+
+When nesting objects, it is often necessary to refer to properties of the
+parent object. The backtic syntax is used to embed properties in strings,
+e.g.,
+
+```c
+class test 
+{
+  char32 output;
+}
+
+object test
+{
+  object test 
+  {
+    name "my_test";
+    output `id_{id}`; 
+  };
+}
+```
+
+To run this example, use the following commands:
+
+```
+shell% gridlabd /tmp/test.glm -o /tmp/test.json 
+shell% gridlabd json-get objects my_test output </tmp/test.json
+id_1
+```
 
 ## Schedule
 
-TODO
+```c
+schedule <schedule-name> 
+{
+    [normal;]
+    [weighted;]
+    [absolute;]
+    [nonzero;]
+    [positive;]
+    [boolean;]
+    [interpolate;]
+    <minutes> <hours> <days> <months> <weekdays> <value>[;] [// <GLM comment>]
+    <minutes> <hours> <days> <months> <weekdays> <value>[;] [# <schedule comment>]
+    <minutes> <hours> <days> <months> <weekdays> <value>[;] [[/<minutes> <hours> <days> <months> <weekdays> <value>;] <...>]
+    <...>
+}
+```
+
+-or-
+
+```c
+schedule <schedule-name> 
+{
+    [normal;]
+    [weighted;]
+    [absolute;]
+    [nonzero;]
+    [positive;]
+    [boolean;]
+    [interpolate;]
+    <blockname> {
+    <minutes> <hours> <days> <months> <weekdays> <value>[;] [// <GLM comment>]
+    <minutes> <hours> <days> <months> <weekdays> <value>[;] [# <schedule comment>]
+    <minutes> <hours> <days> <months> <weekdays> <value>[;] [[/<minutes> <hours> <days> <months> <weekdays> <value>;] <...>]
+    <...>
+}
+```
+
+Schedules are used to defined a value that changes over time in a pre-defined
+manner. All times in schedules are considered in local time, including
+timezone offset and daylight-saving/summer time offsets. Schedule are used by
+loadshapes properties and by transforms to apply the current value to other
+property types.
+
+The general form of a simple schedule entry
+
+```c
+schedule my_schedule 
+{
+    <minutes> <hours> <days> <months> <weekdays> <value>[;] [// <GLM comment>]
+    <minutes> <hours> <days> <months> <weekdays> <value>[;] [# <schedule comment>]
+    <minutes> <hours> <days> <months> <weekdays> <value>[;] [[/<minutes> <hours> <days> <months> <weekdays> <value>;] <...>]
+}
+```
+
+The schedule directive can contain either a simple schedule, such as
+
+```x
+schedule officehours 
+{
+    * 8-17 * * 1-5 # M-F 8a to 5p
+}
+```
+
+or a complex schedule with multiple blocks, such as
+
+```c
+schedule officehours 
+{
+    weekdays {
+        * 8-16 * * 1-5 # Monday through Friday, 8am to 5pm
+    }
+    weekends {
+        * 9-11,13-15 * * 6 # Saturdays, 9am-noon and 1pm to 4pm
+    }
+}
+```
+
+If you want to provide values for each time interval, they can be listed after
+the time specification, such as
+
+```c
+schedule tou_price 
+{
+    * 21-8 * * 1-5 35 # weekdays 9pm-9am, $35
+    * 9-20 * * 1-5 135 # weekdays 9am-9pm, $135
+    * * * * 6-0 35 # weekends, $35
+}
+```
+
+Omitted values on schedule items take on the default value of 1. Omitted times
+in the schedule take on the default value of 0.
+
+### Options
+
+#### Normalization
+
+Some schedules need to be normalized before they are used, depending on the
+application (e.g., loadshapes). When normalization takes place it is done
+separately over each block. The (optionally weighted) sum of the values given
+within the block is the normalization coefficient --- each value in the block
+is divided by the sum of all the values in the block. Some applications may
+need the signed sum and others may use the sum of the absolute values.
+
+When weighting is used it is based on the fraction of minutes over which the
+value applies with respect to the total minutes over which the block applies.
+Only minutes that are explicitly listed in the block are count---omitted
+times (which are associated with the value 0.0) are ignored. If you wish to
+have the value 0 counted in the weighting, you must include the times for
+which it applies as well.
+
+Normalization is controlled using the following options
+
+* `normal` : enables normalization so that all values in each block are
+  divided by the sum of the values in the block.
+
+* `absolute` : normalization sums uses absolute values instead signed values.
+  Its inclusion implies normal.
+
+* `weighted` : normalization sums uses time-weighted values instead of simple
+  values. Its inclusion implies normal.
+
+Normalization options should be provided in-line, such as
+
+```c
+schedule demand 
+{
+    weighted;
+    * 21-8 * * 1-5 1.2 # weekdays 9pm-9am, weeknights
+    * 9-20 * * 1-5 1.5 # weekdays 9am-9pm, weekdays
+    * * * * 6-0    0.8 # weekends, holidays
+}
+```
+
+which enables normalization using time-weighted values.
+
+#### Nonzero
+
+The nonzero flag can be used to ensure that the schedule does not contain any
+undefined or zero values:
+
+```c
+schedule demand 
+{
+    nonzero;
+    * 21-8 * * 1-5 1.2 # weekdays 9pm-9am, weeknights
+    * 9-20 * * 1-5 1.5 # weekdays 9am-9pm, weekdays
+    * * * * 6-0    0.8 # weekends, holidays
+}
+```
+
+#### Positive
+
+The positive flag can be used to ensure that the schedule does not contain any
+negative values:
+
+```c
+schedule demand 
+{
+    positive;
+    * 21-8 * * 1-5 1.2 # weekdays 9pm-9am, weeknights
+    * 9-20 * * 1-5 1.5 # weekdays 9am-9pm, weekdays
+    * * * * 6-0    0.8 # weekends, holidays
+}
+```
+
+#### Boolean
+
+The boolean flag can be used to ensure that the schedule contains on 0 or 1
+values:
+
+```c
+schedule demand 
+{
+    boolean;
+    * 21-8 * * 1-5 1 # weekdays 9pm-9am, weeknights
+    * 9-20 * * 1-5 1 # weekdays 9am-9pm, weekdays
+    * * * * 6-0    0 # weekends, holidays
+}
+```
+
+#### Absolute
+
+The absolute flag can be used to ensure that the schedule normalization uses
+only positive magnitudes:
+
+```c
+schedule demand 
+{
+    absolute;
+    * 21-8 * * 1-5 1.2 # weekdays 9pm-9am, weeknights
+    * 9-20 * * 1-5 1.5 # weekdays 9am-9pm, weekdays
+    * * * * 6-0    0.8 # weekends, holidays
+}
+```
+
+#### Interpolation
+
+The interpolate flag can be used to ensure that values used are interpolated
+linearly for times between schedule changes. Warning: use of this option may
+cause answers to vary depending on when objects update.
+
+### Caveats
+
+There may be no more than 4 blocks, and each block may not contain more than
+63 distinct non-zero values. Although you may have more than 64 schedule
+entries in a block, the number of distinct values cannot exceed 64, and zero
+is always a value. If you have defined more than 63 distinct values, you can
+either limit the resolution over the dynamic range, or you can use a orphaned
+player (i.e., having no parent) as a source instead.
+
+There are some notable differences from the cron syntax:
+
+1. The alternate use of day and weekday is not supported. If both day and
+weekday are not *, they are considered as day AND weekday rather than OR.
+
+2. The step by syntax (using /) is not supported.
+
+3. The special keywords (e.g., \@hourly, \@daily) are not supported.
+
+4. The weekday 7 refers to holidays, which can occur any day of the week.
+Holidays are not supported yet, but will be someday.
+
+Because all times are considered in local time, there is a possibility that
+scheduled changes during on the daylight-savings/summer time (DST) shifts
+could result in a missing or duplicate value. For example, scheduling an
+event at 2am the night DST ends may result in a duplicate value. The solution
+is to schedule the event either before or after am so the ambiguity is
+resolved internally as appropriate. Similarly, scheduling an event at 2am the
+night DST starts could result in a gap in the schedule, a problem also
+resolved by scheduling the event either before or after 2am so the gap is
+automatically filled by the schedule compiler.
 
 ## Script
 
-TODO
+```c
+script command;
+script on_create command;
+script on_init command;
+script on_precommit command;
+script on_presync command;
+script on_sync command;
+script on_postsync command;
+script on_commit command;
+script on_term command;
+script export global-name;
+```
+
+### Description
+
+The script directives cause external commands to be executed. The simulation
+will wait for the command to exit. If the exit code is non-zero, the
+simulation will immediately terminate with the exit code returned by the
+script.
+
+Loader scripts (those without event specifications) are loaded one at a time
+in the order in which they are encountered by the loader.
+
+Event scripts may be run in parallel if the threadcount is greater than 1.
+
+`export`: The variable listed is exported to the shell's environment before
+script are executed.
+
+Note: The syntax for accessing a variable is dependent on the shell being used to interpret the script commands. For example, DOS uses the %name% syntax whereas bash uses the $name syntax.
+
+`on_create`: The script is executed after all objects have been created and
+before the first object is initialized.
+
+`on_init`: The script is executed after all objects have been initialized and
+before the first sync event.
+
+`on_[pre]commit`: The script is executed before/after committing a clock
+step.
+
+`on_[pre|post]sync`: The script is executed after the specified clock
+synchronization pass has been completed.
+
+`on_term`: The script is executed when the simulation terminates.
+
+### Caveat
+
+* Platform independence
+
+  - In the current implementation, scripts are interpreted by the platform's native shell command processor (e.g., DOS for MS Windows, bash for linux and Mac). This means GLM files that use scripts are not normally portable from one platform to another.
+
+  - On most platforms you can specify the shell to use by preceding the command with the name of the shell, e.g. script python my_script.py.
+
+  - Provided you include the shell command in the your PATH environment. If platform independent scripts are desired, care should be take to only use those shell features that are platform independent. See the shell's documentation for details.
+
+* Asynchronous calls
+
+  - On MS Windows platform the DOS shell interprets the start command as a request for asynchronous execution of the script. On Linux/Mac platforms, a trailing & causes asynchronous execution of the script. If a script request is repeated before the previous copy if done (e.g., on_sync), this can result in many copies of the script running concurrently and the system becoming bogged down with multiple copies of the same process.
+
+* Variable expansion
+
+  - Variable names are interpreted when the script command is parsed by the GLM rather than when it is executed. It is currently not possible to update the value of a variable when the script is executed. As a result, the following directive will not work as expected script on_sync echo ${clock} because the value of the clock is interpreted when the directive is encountered (when clock contains the start time) and not when the script is executed. You must use the export option to export variables to scripts. The correct syntax for the above example is
+```
+    script export clock;
+    script on_sync echo $clock; // linux/mac variable expansion syntax
+```
 
 # General
 
-TODO
-
 ## Collection
 
-TODO
+<property><comparison><value> [{and|AND|;} ... ] 
+Description
+Several objects use collections as a property to help find objects that satisfy certain criteria. Collections are typically built at initialization, although that can be run at any during a simulation if needed.
+
+A collection is specified as string with one or more filtering elements. For example,
+
+  class=house
+would collect all the objects that are of class house.
+
+Only properties that are invariant during a simulation may be used in a collection. The following properties are supported:
+
+id
+class
+isa
+module
+groupid
+rank
+parent
+insvc
+name
+latitude
+longitude
+clock
+insvc
+outsvc
+flags
+The following operators are supported:
+
+AND (can also be written as "and" or ";")
+Search criteria
+Object searches are usually expressed using a search criteria, such as
+
+object class { 
+  group "<property> <comparison> <value>";  
+  // ..  
+}
+where class is the class of object that uses the group property (e.g., collector, histogram), property is the object property name to match against (e.g., name, class, parent), comparison is the comparison operator (e.g., ==, <, !~), and value the value to match against.
+
+Operators
+!= : Not equal, e.g., property!=value
+<= : Less than or equal, e.g., property<=value
+>= : Greater than or equal, e.g., property>=value
+!~ : Not like, e.g., property!pattern
+= : Equal
+Caveats
+The OR operator is not supported at this time.
+
+Multiple search criteria can be indicated using and/or as appropriate. Parenthetical operators are not supported.
+
+The implementation of the and and or operators is incomplete and not mathematically correct. Any logical statement joined with an and will remove all objects not identified with that operation from the working set. Any logical statement joined with an or will add all objects that match that operation to the working set. There is no sense of operator precedence, and operators are processed from left to right.
+
+Date and time values must be fully qualified absolute date/time stamps using the appropriate timezone. Relative time can also be given using s, m, h, d, or w suffixes as desired, e.g., 1800s to indicate 30 minutes.
+
+
 
 ## Expansion
 

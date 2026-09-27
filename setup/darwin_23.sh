@@ -78,15 +78,6 @@ clang -v >/dev/null || error "you have not installed clang. Use 'xcode-select --
 # # update library paths
 # INSTALL ldconfig
 
-# install mysql
-if ! mysql_config --libs >/dev/null 2>&1 ; then
-    printf "Installing MySQL... "
-    brew install mysql
-    if ! mysql_config --libs >/dev/null 2>&1 ; then
-        error "Failed to install MySQL with Homebrew."
-    fi
-fi
-
 # make sure python version is available through /usr/local/bin
 ln -sf $(which python$PYTHON_VERSION) /usr/local/bin/python3
 ln -sf $(which python$PYTHON_VERSION-config) /usr/local/bin/python3-config
