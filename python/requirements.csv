@@ -22,7 +22,6 @@ scipy,,,1.12.0
 setuptools,1,--upgrade --no-cache-dir,
 simplekml,,,
 timezonefinder,,,
-webbrowser,,,
 wheel,3,--upgrade,
 xlrd,,,
 xlrd,2,,

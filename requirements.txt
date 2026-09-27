@@ -1,5 +1,7 @@
 PyGithub
 aiohttp==3.14.3
+folium
+geopandas
 haversine
 marimo
 matplotlib_inline
