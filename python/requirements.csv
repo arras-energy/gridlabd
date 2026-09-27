@@ -1,6 +1,7 @@
 module,priority,options,default
 aiohttp,,--upgrade,3.14.3
 folium,,,
+geocoder,,,
 geopandas,,,
 haversine,,,
 marimo,,,
