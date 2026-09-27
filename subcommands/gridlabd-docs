@@ -1,5 +1,5 @@
 #!/bin/bash
 ## Syntax: gridlabd docs
 
-test -d $GLD_ETC/docs || pdoc $GLD_ETC/glm.py $GLD_ETC/glm_*.py --logo "https://avatars.githubusercontent.com/u/118282969?s=200&v=4" --logo-link https://github.com/arras-energy/ --math --mermaid -o docs
+test -d $GLD_ETC/docs || (cd $GLD_ETC ; python$PYTHON_VER -m pdoc glm.py glm_*.py --logo "https://avatars.githubusercontent.com/u/118282969?s=200&v=4" --logo-link https://github.com/arras-energy/ --math --mermaid -o docs)
 open $GLD_ETC/docs/index.html
