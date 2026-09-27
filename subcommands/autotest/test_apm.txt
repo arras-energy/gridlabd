@@ -1,0 +1,26 @@
+GridLAB-D Arras package manager
+
+Syntax: gridlabd apm COMMAND [ARGUMENTS ...]
+
+Commands
+--------
+
+    - `install PACKAGE [...]`:  install package(s)
+
+Options
+-------
+
+    - `--verbose`:  enable verbose output
+
+Description
+-----------
+
+  The Arras package manager maintain Arras Energy packages used by gridlabd.
+
+Example
+-------
+
+The following command install the converters.
+
+    gridlabd apm install converters
+

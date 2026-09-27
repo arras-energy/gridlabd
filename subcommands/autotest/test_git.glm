@@ -4,7 +4,7 @@
 
 #option redirect output:${modelname/.glm/.txt}
 
-#contributors help
+#git help
 
 #ifexist "../${modelname/.glm/.txt}"
 #on_exit 0 diff -I '^#' ../${modelname/.glm/.txt} ${modelname/.glm/.txt} > gridlabd.diff

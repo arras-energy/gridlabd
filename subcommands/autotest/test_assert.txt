@@ -1,0 +1,7 @@
+Syntax: gridlabd assert [OPTIONS...] EXPRESSION
+OPTIONS:
+  --help|help   print this helpful information
+  --warn        errors are merely warnings
+  --quiet       output to stderr is suppressed
+  --verbose     output test before it is performed
+See 'man test' for EXPRESSION syntax.

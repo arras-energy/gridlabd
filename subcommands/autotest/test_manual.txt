@@ -1,0 +1,5 @@
+Syntax: gridlabd manual [options ...]
+Options:
+  -b|--branch name   open branch documentation
+  -h|--help          get this help
+  -l|--local         open local documentation

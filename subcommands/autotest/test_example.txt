@@ -1,0 +1,34 @@
+Syntax: gridlabd example [OPTIONS...] COMMAND [ARGS...]
+
+Options:
+
+* `-h|--help|help`: get this help output
+
+* `--verbose`: enable verbose output
+
+* `index`: get an index of available examples
+
+* `get NAME`: download an example
+
+* `open NAME`: open an example
+
+Description:
+
+Access gridlabd examples.
+
+To list the examples available:
+
+    gridlabd example index
+
+To download an example
+
+    gridlabd example get NAME
+
+To open an example
+
+    gridlabd example open NAME
+
+See also:
+
+* `gridlabd model`
+

@@ -1,0 +1,32 @@
+GridLAB-D contributors
+
+SYNTAX
+
+ gridlabd contributions [OPTIONS ...]
+
+OPTIONS
+
+ -c|--csv        Output result as CSV file
+ -h|--help|help  Get this help text
+
+ -k|--known      Limit result to users with known full names only
+                 (default False)
+
+ -l|--login      Display only github login id (usually faster, default is
+                 False)
+
+ -q|--quotes "None"|STRING
+                 Place quotes around full names (default is None)
+
+ -s|--separate "SPACE"|"NEWLINE"|STRING
+                 Separate output using the STRING delimiter (default is NEWLINE)
+
+ -t|--token TOKEN
+                 Use TOKEN as the github access token (default is content
+                 of ~/.github/access-token)
+
+DESCRIPTION
+
+Processes all repositories that contributed source code and extracts all the people
+from whom contributions were received.
+
