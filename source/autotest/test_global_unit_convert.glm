@@ -1,49 +1,7 @@
-// $Id: test_global_unit_convert.glm 4738 2014-07-03 00:55:39Z dchassin $
-
-#include "assert.glm"
+// test_global_unit_convert.glm
 
 global double test_double[degF] 0.0 degC;
+#assert "${test_double}" == "+32.002 degF"
 
-object assert 
-{
-	target "test_double";
-	relation EQ;
-	dtype float;
-	value 32.0;
-	within 0.01;
-}
-
-global complex test_complex[V] 12+1j kV; // default 0+0j unit kVA description "Test value";
-
-object assert 
-{
-	target "test_complex.real";
-	relation EQ;
-	dtype float;
-	value 12000;
-}
-
-object assert 
-{
-	target "test_complex.imag";
-	relation EQ;
-	dtype float;
-	value 1000;
-}
-
-object assert 
-{
-	target "test_complex.abs";
-	relation EQ;
-	dtype float;
-	value 1000;
-}
-
-object assert 
-{
-	target "test_complex.ang";
-	relation EQ;
-	dtype float;
-	value 1000;
-}
-
+global complex test_complex[V] 12+1j kV;
+#assert "${test_complex}" == "+12000+1000j V"
