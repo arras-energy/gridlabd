@@ -1,3 +1,4 @@
+#ifdef USER
 #ifexist "../${modelname/.glm/.txt}"
 #define DIR=..
 #endif
@@ -8,4 +9,5 @@
 
 #ifexist "../${modelname/.glm/.txt}"
 #on_exit 0 diff -I '^#' ../${modelname/.glm/.txt} ${modelname/.glm/.txt} > gridlabd.diff
+#endif
 #endif
