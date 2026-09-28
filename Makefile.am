@@ -289,9 +289,9 @@ docs: docs/index.html
 
 docs/index.html: $(wildcard runtime/glm*.py)
 	@echo Updating runtime docs...
-	@mkdir -p docs/$(VERSION)
+	@mkdir -p docs
 	@$(ENVPYTHON) -m pip install --upgrade pdoc
-	@$(ENVPYTHON) -m pdoc runtime/glm.py runtime/glm_*.py --logo "https://avatars.githubusercontent.com/u/118282969?s=200&v=4" --logo-link https://github.com/arras-energy/ --math --mermaid -o docs/$(VERSION)
+	@$(ENVPYTHON) -m pdoc runtime/glm.py runtime/glm_*.py --logo "https://avatars.githubusercontent.com/u/118282969?s=200&v=4" --logo-link https://github.com/arras-energy/ --math --mermaid -o docs
 
 index: weather library template
 	@echo Updating file index...

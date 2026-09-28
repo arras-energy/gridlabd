@@ -1,6 +1,6 @@
 r"""GridLAB-D GLM Language Syntax
 
-# Directives
+# **Directives**
 
 Directives are undecorated tokens in the GLM file that introduce
 a line or block of modeling code.
@@ -665,11 +665,13 @@ synchronization pass has been completed.
     script on_sync echo $clock; // linux/mac variable expansion syntax
 ```
 
-# General
+----
+
+# **General**
 
 ----
 
-## Collection
+## Collections
 
 ```
 <property><comparison><value> [{and|AND|;} ... ]
@@ -1074,7 +1076,9 @@ triangle(a,b)
 
 The PDF is $\phi(x;a,b) = \left\\{ \begin{array}{ll} \frac{4(x-a)}{(b-a)^2} & a \lt x \le (a+b)/2 \\\\ \frac{4(b-x)}{(b-a)^2} & (a+b)/2 < x \le b \\\\ 0 & x \le a\ |\ x \gt b \end{array}\right.$.
 
-# Globals
+----
+
+# **Globals**
 
 ----
 
@@ -1665,7 +1669,9 @@ Output:
 /tmp/gridlabd-pmap-4
 ```
 
-# Macros
+----
+
+# **Macros**
 
 ----
 
@@ -2630,7 +2636,9 @@ GLM files will omit any properties that are not defined for the given class.
 This implies that erroneous properties are not detected and will not result
 in an error or warning message.
 
-# Objects
+----
+
+# **Objects**
 
 ----
 
@@ -2718,7 +2726,9 @@ object house
 }
 ``` 
 
-# Properties
+----
+
+# **Properties**
 
 ----
 
