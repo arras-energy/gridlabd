@@ -33,7 +33,7 @@ jobs:
       run:  python3 -m pylint runtime/*.py || true
 
     - name: Analyse subcommands
-      run:  python3 -m pylint subcommands/gridlabd-*.py || true
+      run:  python3 -m pylint subcommands/gridlabd-* || true
 
   cppcheck:
 
