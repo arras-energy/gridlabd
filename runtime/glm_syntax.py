@@ -681,10 +681,14 @@ AND (can also be written as "and" or ";")
 Search criteria
 Object searches are usually expressed using a search criteria, such as
 
-object class { 
+```c
+object class 
+{ 
   group "<property> <comparison> <value>";  
   // ..  
 }
+```
+
 where class is the class of object that uses the group property (e.g., collector, histogram), property is the object property name to match against (e.g., name, class, parent), comparison is the comparison operator (e.g., ==, <, !~), and value the value to match against.
 
 Operators
@@ -696,11 +700,19 @@ Operators
 Caveats
 The OR operator is not supported at this time.
 
-Multiple search criteria can be indicated using and/or as appropriate. Parenthetical operators are not supported.
+Multiple search criteria can be indicated using and/or as appropriate.
+Parenthetical operators are not supported.
 
-The implementation of the and and or operators is incomplete and not mathematically correct. Any logical statement joined with an and will remove all objects not identified with that operation from the working set. Any logical statement joined with an or will add all objects that match that operation to the working set. There is no sense of operator precedence, and operators are processed from left to right.
+The implementation of the and and or operators is incomplete and not
+mathematically correct. Any logical statement joined with an and will remove
+all objects not identified with that operation from the working set. Any
+logical statement joined with an or will add all objects that match that
+operation to the working set. There is no sense of operator precedence, and
+operators are processed from left to right.
 
-Date and time values must be fully qualified absolute date/time stamps using the appropriate timezone. Relative time can also be given using s, m, h, d, or w suffixes as desired, e.g., 1800s to indicate 30 minutes.
+Date and time values must be fully qualified absolute date/time stamps using
+the appropriate timezone. Relative time can also be given using s, m, h, d,
+or w suffixes as desired, e.g., 1800s to indicate 30 minutes.
 
 
 
