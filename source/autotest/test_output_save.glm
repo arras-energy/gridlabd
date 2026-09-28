@@ -25,4 +25,4 @@ object house
 
 #output "test_output_save.png"
 
-#assert -f test_output_save.png
+#on_exit 0 test -f test_output_save.png
