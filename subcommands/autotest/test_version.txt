@@ -1,0 +1,14 @@
+Syntax: gridlabd version [--dryrun] COMMAND [ARGUMENTS ...]
+Commands:
+  help                    get this list of commands
+  check [-v|-q|-w|-f]     check for a newer version
+    -v                      enable verbose output
+    -q                      disable all output
+    -w                      only output warnings and errors and log check result
+    -f                      force check regardless of no-version-check 
+  list [<pattern>]        get a list of available versions
+  show                    show the current active version
+  set [<pattern>]         set the active version
+  source                  open source code of the active version
+  delete [-a|<pattern>]   delete versions
+    -a                      delete all version except current one

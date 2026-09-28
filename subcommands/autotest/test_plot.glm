@@ -1,7 +1,4 @@
-module tape
-{
-    csv_header_type NAME;
-}
+#include "pandas.glm"
 
 clock
 {
@@ -27,6 +24,9 @@ object test
         file ${modelname/glm/csv};
     };
 }
+
+#flush
+#system sync
 
 #on_exit 0 gridlabd plot --input=${modelname/glm/csv} --plot:x=timestamp --plot:y=x,y --plot:rot=vertical --plot:grid --plot:legend --figure:tight_layout=True
 #on_exit 0 test -f ${FILENAME $modelname}.png

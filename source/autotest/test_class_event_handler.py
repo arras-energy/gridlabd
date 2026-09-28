@@ -1,11 +1,14 @@
-import sys, gldcore
+import sys
 
 def on_init(t):
     return True
 
+def on_term(t):
+    return
+
 def test_init(obj,t):
     gldcore.set_value(obj,"n",gldcore.get_value(obj,"n")+"1")
-    return False
+    return gldcore.INIT_OK
 
 def test_precommit(obj,t):
     gldcore.set_value(obj,"n",gldcore.get_value(obj,"n")+"2")

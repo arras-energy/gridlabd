@@ -1,5 +1,9 @@
 #model get IEEE/13
+#system mv 13.glm ${modelname/.glm/.txt}
 
-#ifexist ../13.glm
-#on_exit 0 diff ../13.glm 13.glm > gridlabd.diff
+#flush
+#system sync
+
+#ifexist ../${modelname/.glm/.txt}
+#on_exit 0 diff ../${modelname/.glm/.txt} ${modelname/.glm/.txt} > gridlabd.diff
 #endif

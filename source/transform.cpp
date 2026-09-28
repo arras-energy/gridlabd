@@ -518,6 +518,29 @@ void cast_from_double(PROPERTYTYPE ptype, void *addr, double value)
 	}
 }
 
+static double constrain(double y, TRANSFERFUNCTION *f)
+{
+	if ( f->flags&FC_MINIMUM )
+ 	{
+		if ( y < f->minimum )
+		{
+	 		y = f->minimum;
+	 	}
+ 	}
+ 	else if ( f->flags&FC_MAXIMUM )
+ 	{
+		if ( y > f->maximum )
+		{
+	 		y = f->maximum;
+		}
+ 	}
+ 	if ( (f->flags&FC_RESOLUTION) && f->resolution > 0.0 )
+ 	{
+ 		y = floor((y - f->minimum)/f->resolution)*f->resolution + f->minimum;
+ 	}	
+ 	return y;
+}
+
 TIMESTAMP apply_filter(TRANSFERFUNCTION *f,	///< transfer function
 					   double *src,			///< next input value
 					   double *u,			///< input vector
@@ -557,9 +580,7 @@ TIMESTAMP apply_filter(TRANSFERFUNCTION *f,	///< transfer function
 	}
 
 	// update output
-	y[0] = x[0] / a[0];
-	IN_MYCONTEXT output_debug("apply_transform(f={name='%s'; domain='%s'}): y = %g",f->name,f->domain, *y);
-
+	y[0] = constrain(x[0] / a[0],f);
 	IN_MYCONTEXT
 	{
 		dump_vector(x,n,buffer,sizeof(buffer));
@@ -617,19 +638,8 @@ void transform_reset(TRANSFORM *xform, TIMESTAMP t1)
 			}
 
 			// update output
-			y[0] = x[0] / a[0];
-			if ( ((f->flags)&FC_MINIMUM) == FC_MINIMUM && y[0] < f->minimum && f->minimum < f->maximum )
-		 	{
-		 		y[0] = f->minimum;
-		 	}
-		 	else if ( ((f->flags)&FC_MAXIMUM) == FC_MAXIMUM && y[0] > f->maximum && f->minimum < f->maximum  )
-		 	{
-		 		y[0] = f->maximum;
-		 	}
-		 	if ( ((f->flags)&FC_RESOLUTION) == FC_RESOLUTION && f->resolution > 0.0 )
-		 	{
-		 		y[0] = floor((*y - f->minimum)/f->resolution)*f->resolution + f->minimum;
-		 	}	
+			y[0] = constrain(x[0] / a[0],f);
+
 			IN_MYCONTEXT output_debug("transform_reset(f={name='%s'; domain='%s'},t1=%ld): y = %.4g",f->name,f->domain, t1, y[0]);
 
 		}

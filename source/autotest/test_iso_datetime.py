@@ -1,10 +1,7 @@
 import json 
-with open('test_clock.json') as json_file:
+from datetime import datetime
+
+with open('test_iso_datetime.json') as json_file:
 	data = json.load(json_file)
-	for obj in data['globals'] :
-		if obj == "starttime" or obj == "stoptime": 
-			if "T" == data["globals"]["starttime"]["value"][10] : 
-				exit(0)
-			else : 
-				print("ISO format was not detected in the JSON")
-				exit(1)
+	assert str(datetime.fromisoformat(data["globals"]["starttime"]["value"])) == "2000-01-01 00:00:00-05:00"
+	assert str(datetime.fromisoformat(data["globals"]["stoptime"]["value"])) == "2000-01-02 02:00:00-05:00"

@@ -2,11 +2,9 @@
 #define DIR=..
 #endif
 
-#option verbose
-
 #include (cat ${DIR:-.}/test_include_subcommand.txt)
 
-module assert;
+#include "assert.glm"
 
 object test
 {
@@ -15,7 +13,20 @@ object test
     object assert {
         status TRUE;
         target x;
-        relation ==;
+        relation EQ;
         value 12;
     };
+    object assert {
+        status TRUE;
+        target z.real;
+        relation EQ;
+        value 12;
+    };
+    object assert {
+        status TRUE;
+        target z.imag;
+        relation EQ;
+        value 2;
+    };
 }
+

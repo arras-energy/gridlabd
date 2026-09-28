@@ -1,0 +1,12 @@
+// test the global GET pseudo-variable
+class test {
+	double x[MW];
+}
+
+object test
+{
+	name test;
+	x 1.23456 GW;
+}
+
+#assert "${GET test.x}" == "+1234.56 MW"

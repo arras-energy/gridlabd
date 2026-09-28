@@ -2,7 +2,7 @@ set -x
 alias INSTALL=''
 
 INSTALL error () { echo "ERROR [$(basename $0)]: $*" > /dev/stderr ; exit 1 ; }
-INSTALL PYTHON_VERSION=3.10
+INSTALL PYTHON_VERSION=3.12
 INSTALL PYTHON_VENV=${HOME:-/tmp}/.gridlabd
 INSTALL PYTHON_EXEC=$PYTHON_VENV/bin/python$PYTHON_VERSION
 INSTALL PYTHON_CONFIG=$PYTHON_VENV/bin/python${PYTHON_VERSION}-config
@@ -47,6 +47,9 @@ if ! "python$PYTHON_VERSION-config" --prefix 1>/dev/null 2>&1 ; then
 fi
 INSTALL "$PYTHON_EXEC" -m pip install --upgrade pip || error "pip update failed"
 
+# install setuptools
+INSTALL $PYTHON_EXEC -m pip install --upgrade setuptools
+
 # install required libraries
 INSTALL brew install autoconf libffi zlib pkg-config xz gdbm tcl-tk mdbtools
 
@@ -58,11 +61,6 @@ clang -v >/dev/null || error "you have not installed clang. Use 'xcode-select --
 # # update library paths
 # INSTALL ldconfig
 
-# install mysql
-if ! mysql_config --libs >/dev/null 2>&1 ; then
-    printf "Installing MySQL... "
-    brew install mysql
-    if ! mysql_config --libs >/dev/null 2>&1 ; then
-        error "Failed to install MySQL with Homebrew."
-    fi
-fi
+# make sure python version is available through /usr/local/bin
+ln -sf $(which python$PYTHON_VERSION) /usr/local/bin/python3
+ln -sf $(which python$PYTHON_VERSION-config) /usr/local/bin/python3-config

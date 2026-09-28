@@ -1,1 +1,12 @@
-#contributors -h
+#ifexist "../${modelname/.glm/.txt}"
+#define DIR=..
+#endif
+
+#option redirect output:${modelname/.glm/.txt}
+
+#contributors help
+
+#flush
+#system sync
+
+#on_exit 0 test -f ${modelname/.glm/.txt}

@@ -8,7 +8,7 @@
 # set -x # enable command echo
 
 # required versions
-PYTHONVER=3.10.18 
+PYTHONVER=3.12 
 M4VER=1.4.20
 AUTOCONFVER=2.72
 AUTOMAKEVER=1.18
@@ -239,3 +239,7 @@ fi
 notify "System ready to build gridlabd. Run 'cd $GRIDLABDIR; ./build.sh --system --parallel' next."
 
 exit 0
+
+# make sure python version is available through /usr/local/bin
+ln -sf $(which python$PYTHON_VERSION) /usr/local/bin/python3
+ln -sf $(which python$PYTHON_VERSION-config) /usr/local/bin/python3-config

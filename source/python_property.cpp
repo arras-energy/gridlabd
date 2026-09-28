@@ -164,6 +164,7 @@ int python_property_create (
     }
 
     const char *name = NULL;
+    GLOBALVAR *globalvar = NULL;
     if ( object_info != NULL && PyLong_Check(object_info) )
     {
         pyprop->obj = object_find_by_id(PyLong_AsLong(object_info));
@@ -172,9 +173,11 @@ int python_property_create (
     {
         name = PyUnicode_AsUTF8(object_info);
         pyprop->obj = object_find_name(name);
-        if ( pyprop->obj == NULL && global_find(name) != NULL )
+        globalvar = global_find(name);
+        if ( pyprop->obj != NULL && globalvar != NULL )
         {
-            pyprop->obj = NULL;
+            PyErr_SetString(PyExc_Exception,"global variable and object share the same name");
+            return -2;
         }
     }
     else
@@ -183,11 +186,11 @@ int python_property_create (
         return -2;
     }
 
-    if ( name != NULL && pyprop->obj == NULL )
+    if ( globalvar != NULL )
     {
-        pyprop->prop = global_find(name)->prop;
+        pyprop->prop = globalvar->prop;
     }
-    else
+    else if ( pyprop->obj != NULL )
     {
         if ( property_name == NULL )
         {
@@ -370,7 +373,23 @@ PyObject *python_property_set_value(PyObject *self, PyObject *args, PyObject *kw
         if ( count <= 0 )
         {
             char msg[1024];
-            snprintf(msg,1023,"unable to read property from string '%-.32s%s'",str,size>32?"...":"");
+            if ( pyprop->prop->name == NULL )
+            {
+                snprintf(msg,1023,"unable to read property '%s:%d.%s' from string '%-.32s%s'",
+                    pyprop->obj->oclass->name,
+                    pyprop->obj->id,
+                    pyprop->prop->name,
+                    str,
+                    size>32?"...":"");
+            }
+            else
+            {
+                snprintf(msg,1023,"unable to read property '%s.%s' from string '%-.32s%s'",
+                    pyprop->obj->name,
+                    pyprop->prop->name,
+                    str,
+                    size>32?"...":"");
+            }
             PyErr_SetString(PyExc_Exception,msg);
             return NULL;
         }

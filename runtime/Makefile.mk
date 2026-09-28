@@ -48,4 +48,18 @@ dist_pkgdata_DATA += runtime/triplex_meter_r.png
 dist_pkgdata_DATA += runtime/tzinfo.txt
 dist_pkgdata_DATA += runtime/unitfile.txt
 
+# GLM language support
+dist_pkgdata_DATA += runtime/glm.py
+dist_pkgdata_DATA += runtime/glm_syntax.py
 
+# runtime support
+dist_pkgdata_DATA += runtime/glm_command.py
+dist_pkgdata_DATA += runtime/glm_timestamp.py
+dist_pkgdata_DATA += runtime/glm_tzinfo.py
+dist_pkgdata_DATA += runtime/glm_utilities.py
+
+# runtime modules
+dist_pkgdata_DATA += runtime/glm_assert.py
+dist_pkgdata_DATA += runtime/assert.glm
+dist_pkgdata_DATA += runtime/glm_pandas.py
+dist_pkgdata_DATA += runtime/pandas.glm

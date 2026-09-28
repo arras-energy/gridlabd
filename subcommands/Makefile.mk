@@ -1,4 +1,5 @@
 bin_SCRIPTS += subcommands/gridlabd-assert
+bin_SCRIPTS += subcommands/gridlabd-apm
 bin_SCRIPTS += subcommands/gridlabd-aws
 bin_SCRIPTS += subcommands/gridlabd-building
 bin_SCRIPTS += subcommands/gridlabd-check
@@ -17,10 +18,8 @@ bin_SCRIPTS += subcommands/gridlabd-loaddata
 bin_SCRIPTS += subcommands/gridlabd-lock
 bin_SCRIPTS += subcommands/gridlabd-manual
 bin_SCRIPTS += subcommands/gridlabd-marimo
-bin_SCRIPTS += subcommands/gridlabd-matrix
 bin_SCRIPTS += subcommands/gridlabd-model
 bin_SCRIPTS += subcommands/gridlabd-notebook
-bin_SCRIPTS += subcommands/gridlabd-openfido
 bin_SCRIPTS += subcommands/gridlabd-pandas
 bin_SCRIPTS += subcommands/gridlabd-plot
 bin_SCRIPTS += subcommands/gridlabd-project
@@ -35,3 +34,5 @@ bin_SCRIPTS += subcommands/gridlabd-trace
 bin_SCRIPTS += subcommands/gridlabd-validate
 bin_SCRIPTS += subcommands/gridlabd-version
 bin_SCRIPTS += subcommands/gridlabd-weather
+
+bin_SCRIPTS += subcommands/gridlabd_subcommand.py

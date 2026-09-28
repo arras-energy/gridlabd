@@ -8386,6 +8386,12 @@ int GldLoader::process_macro(char *line, int size, char *_filename, int linenum)
 			return FALSE;
 		}
 	}
+	else if ( strncmp(line, "#flush", 6) == 0 )
+	{
+		output_flushall();
+		strcpy(line,"\n");
+		return TRUE;
+	}
 	int rc = my_instance->subcommand("%s/" PACKAGE "-%s",getenv("GLD_BIN"),strchr(line,'#')+1);
 	if ( rc != 127 )
 	{
@@ -8595,6 +8601,11 @@ bool GldLoader::load_import(const char *from, char *to, int len)
 	}
 	char converter_name[1024], converter_path[1024];
 	snprintf(converter_name,sizeof(converter_name)-1,"%s2glm.py",ext);
+	if ( find_file(converter_name, NULL, R_OK, converter_path, sizeof(converter_path)) == NULL )
+	{
+		// try installing the converters
+		system("gridlabd apm install converters");
+	}
 	if ( find_file(converter_name, NULL, R_OK, converter_path, sizeof(converter_path)) == NULL )
 	{
 		output_error("load_import(from='%s',...): converter %s2glm.py not found", from, ext);

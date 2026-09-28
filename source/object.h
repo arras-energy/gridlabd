@@ -25,6 +25,11 @@
 #include "transform.h"
 #include "enduse.h"
 
+// init event handler return values
+#define INIT_FAILED 0
+#define INIT_OK     1
+#define INIT_DEFER  2 // request deferred initialization
+
 /* this must match property_type list in object.c */
 typedef unsigned int OBJECTRANK; /**< Object rank number */
 typedef unsigned short OBJECTSIZE; /** Object data size */
@@ -387,7 +392,7 @@ OBJECT *object_create_array(CLASS *oclass, unsigned int n_objects);
 OBJECT *object_create_foreign(OBJECT *obj);
 OBJECT *object_remove_by_id(OBJECTNUM id);
 int object_init(OBJECT *obj);
-STATUS object_precommit(OBJECT *obj, TIMESTAMP t1);
+TIMESTAMP object_precommit(OBJECT *obj, TIMESTAMP t1);
 TIMESTAMP object_commit(OBJECT *obj, TIMESTAMP t1, TIMESTAMP t2);
 STATUS object_finalize(OBJECT *obj);
 int object_set_dependent(OBJECT *obj, OBJECT *dependent);

@@ -1,0 +1,4 @@
+// test_global_unit_convert.glm
+
+global double test_double[degF] 0.0 degC;
+#assert "${test_double}" == "32.002 degF"

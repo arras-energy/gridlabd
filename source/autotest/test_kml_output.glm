@@ -1,7 +1,7 @@
-//#set profiler=1 
-#set threadcount=1; 
-#set randomseed=1; 
-#set relax_naming_rules=1; 
+// test_kml_output.glm
+#set threadcount=1
+#set randomseed=1
+#set relax_naming_rules=1
 
 clock { 
 	timezone EST+5EDT; 
@@ -9,9 +9,18 @@ clock {
 	stoptime '2000-06-04 0:00:00'; 
 } 
 
-module powerflow;
+class node
+{
+	enumeration {SWING=0} bustype;
+	enumeration {ABCN=0} phases;
+	complex voltage_A;
+	complex voltage_B;
+	complex voltage_C;
+	double nominal_voltage;
+}
 
-object node {
+object node 
+{
 	name node1; 
 	bustype SWING; 
 	phases ABCN; 
@@ -21,4 +30,10 @@ object node {
 	nominal_voltage 7200; 
 	latitude 12N34.00056; 
 	longitude 12W34.00056; 
-} 
+}
+
+#option kml=test_kml_output.kml
+
+#ifexist "../test_kml_output.kml"
+#on_exit 0 diff -I '    <name>' ../test_kml_output.kml test_kml_output.kml > gridlabd.diff
+#endif

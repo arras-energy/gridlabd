@@ -1,0 +1,12 @@
+#ifexist "../${modelname/.glm/.txt}"
+#define DIR=..
+#endif
+
+#option redirect output:${modelname/.glm/.txt}
+
+#requirements help
+
+#flush
+#system sync
+
+#on_exit 0 test -f ${modelname/.glm/.txt}

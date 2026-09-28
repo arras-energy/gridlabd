@@ -588,7 +588,7 @@ public:
 		Returns:
 
 	*/
-	STATUS precommit_all(TIMESTAMP t0);
+	TIMESTAMP precommit_all(TIMESTAMP t0);
 
 	/*	Method: 
 			

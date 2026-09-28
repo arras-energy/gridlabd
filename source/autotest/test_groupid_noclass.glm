@@ -2,30 +2,43 @@
 // 
 // Test groupid function
 
-clock {
+#set randomseed=1
+
+clock 
+{
 	timezone PST+8PDT;
-	starttime '2000-01-01 0:00:00 PST';
-	stoptime '2000-01-02 0:00:00 PST';
+	starttime '2000-01-01 00:00:00 PST';
+	stoptime '2000-01-31 23:59:59 PST';
 }
 
-module residential {
-	implicit_enduses NONE;
+class test
+{
+	randomvar x;
 }
 
-object house:..10 {
+object test:..100
+{
 	groupid A;
+	x "type:uniform(0,1), refresh:1h";
 }
 
-object house:..12 {
+object test:..12 
+{
 	groupid B;
+	x "type:uniform(0,1), refresh:1h";
 }
 
-module tape;
+#include "pandas.glm"
 
-object collector {
-	group "groupid=A";
-	property "count(floor_area)";
+object collector 
+{
+	group "groupid == 'A' and class=='test'";
+	property "x.count,x.len,x.sum,x.prod,x.min,x.max,x.argmin,x.argmax,x.mean,x.avg,x.average,x.std,x.stdev,x.var,x.skew,x.kurt";
 	limit 10;
 	interval 3600;
-	file output.csv;
+	file "${modelname/.glm/.csv}";
 }
+
+#ifexists "../${modelname/.glm/.csv}"
+#on_exit 0 diff ../${modelname/.glm/.csv} ${modelname/.glm/.csv} > gridlabd.diff
+#endif

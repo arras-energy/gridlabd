@@ -30,8 +30,12 @@ script export clock;
 script export NRAND;
 script export URAND;
 script export GUID;
-script on_init ../save_randomseed;
-//script on_sync ../save_randomstate;
+
+#ifexist "../save_randomseed"
+#define DIR=..
+#endif
+
+script on_init ${DIR:-.}/save_randomseed;
 
 clock {
 	timezone "PST+8PDT";
@@ -39,17 +43,18 @@ clock {
 	stoptime "2010-01-01 01:00:00";
 }
 
-module tape {
-	csv_data_only 1;
-}
+#include "pandas.glm"
 
-class test {
+class test 
+{
 	randomvar value;
 }
 
-object test {
+object test 
+{
 	value "type: normal(0,1); refresh: 10min";
-	object recorder {
+	object recorder 
+	{
 		property value;
 		interval 300;
 		limit 10;
@@ -62,7 +67,8 @@ object test {
 }
 
 #ifexist randomseed.glm
-script on_term ../diff_randomseed;
+script on_term ${DIR:-.}/diff_randomseed;
+#on_exit 0 rm -f randomseed.glm
 #else
 script on_term ${execdir}/gridlabd test_random.glm;
 #endif

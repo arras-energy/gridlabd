@@ -1,0 +1,44 @@
+////////////////////////////////////////////////////////
+// BEGIN
+////////////////////////////////////////////////////////
+// filename... test_json_conversion_opt.glm
+// workdir.... /Users/david/GitHub/arras-energy/gridlabd/source/autotest
+// command.... /usr/local/opt/gridlabd/26.0.0-260924-fix_issue_400-darwin_23-x86_64/bin/gridlabd.bin -D check=TRUE test_json_conversion_opt.json -o test_json_conversion_opt.glm
+// created.... Thu Sep 24 18:53:03 2026
+// user....... david
+// host....... (null)
+// modules.... 0
+// classes.... 1
+// objects.... 1
+// options.... MINIMAL
+
+////////////////////////////////////////////////////////
+
+// CLOCK
+clock {
+	timezone "CST6CDT";
+	starttime "1999-12-31 18:00:00 CST";
+	stoptime "NEVER";
+}
+
+////////////////////////////////////////////////////////
+// modules
+
+////////////////////////////////////////////////////////
+// classes
+class test {
+	double x;
+}
+// schedules
+
+////////////////////////////////////////////////////////
+// objects
+object test {
+	name "test:0";
+	guid "7167B9C65CD19F71";
+	x "+1.23";
+}
+
+////////////////////////////////////////////////////////
+// END
+////////////////////////////////////////////////////////

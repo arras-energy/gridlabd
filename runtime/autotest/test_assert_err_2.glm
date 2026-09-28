@@ -1,0 +1,42 @@
+// test_assert_exc.glm
+
+#print NOTE: this test should raise an unintercepted exception from object 'exception-expected'
+
+#set suppress_repeat_messages=FALSE
+
+#include "assert.glm"
+
+class test
+{
+    bool b;
+    int16 i;
+    int32 j;
+    int64 k;
+    string s;
+    timestamp t;
+    double x;
+    complex z;
+}
+
+object test
+{
+    b TRUE;
+    i 1;
+    j 10;
+    k 100;
+    s "abc";
+    t "2020-01-01 00:00:00+00:00";
+    x 1.23;
+    z 4.56+7.89j;
+
+    // test bool
+    object assert
+    {
+        name "exception-expected";
+        target b;
+        relation NE;
+        value TRUE;
+        // this causes a Python exception, which bypasses the gridlabd output streams
+        on_failure EXCEPTION;
+    };
+}

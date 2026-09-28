@@ -9,46 +9,21 @@ class test
     int32 j;
     int64 k;
     bool b;
+}
+
+object test
+{
     on_init "python:test_fast_accessor.test_init";
 }
 
-module assert;
-object test
-{
-    object assert
-    {
-        target x;
-        value 1.0;
-        relation "==";
-    };
-    object assert
-    {
-        target z;
-        value 2+3j;
-        relation "==";
-    };
-    object assert
-    {
-        target i;
-        value 4;
-        relation "==";
-    };
-    object assert
-    {
-        target j;
-        value 5;
-        relation "==";
-    };
-    object assert
-    {
-        target k;
-        value 6;
-        relation "==";
-    };
-    object assert
-    {
-        target b;
-        value TRUE;
-        relation "==";
-    };
-}
+#set savefile=test_fast_accessor.json
+
+#flush
+#system sync
+
+#on_exit 0 test $(gridlabd json-get objects test:0 x < test_fast_accessor.json) = 1 > gridlabd.diff
+#on_exit 0 test $(gridlabd json-get objects test:0 z < test_fast_accessor.json) = "2+3j" > gridlabd.diff
+#on_exit 0 test $(gridlabd json-get objects test:0 i < test_fast_accessor.json) = "4" > gridlabd.diff
+#on_exit 0 test $(gridlabd json-get objects test:0 j < test_fast_accessor.json) = "5" > gridlabd.diff
+#on_exit 0 test $(gridlabd json-get objects test:0 k < test_fast_accessor.json) = "6" > gridlabd.diff
+#on_exit 0 test $(gridlabd json-get objects test:0 b < test_fast_accessor.json) = "TRUE" > gridlabd.diff

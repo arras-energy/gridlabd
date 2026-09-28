@@ -96,6 +96,8 @@ import warnings
 import datetime as dt
 import webbrowser as wb
 
+assert "USER" in os.environ, "USER not defined in environment"
+
 try:
     with open(os.path.join(os.environ["HOME"],".gridlabd","project-settings.json"),"r") as fh:
         settings = json.load(fh)

@@ -1785,7 +1785,7 @@ public:
 	// Constructor: gld_string(const char *s)
 	inline gld_string(const char *s) : buf(NULL) { init(); copy(s); };
 
-	// Constructor: gld_stdring(const char *, size_t n)
+	// Constructor: gld_string(const char *, size_t n)
 	inline gld_string(const char *s, size_t n) : buf(NULL) { init(); copy(s,n); };
 
 	// Destructor: ~gld_string

@@ -1,0 +1,43 @@
+// test_pandas.glm
+
+#include "pandas.glm"
+
+// #set debug=TRUE
+// #set verbose=TRUE
+
+#ifexists ../test_pandas_header_units.csv
+#define DIR=..
+#else
+#define DIR=.
+#endif
+
+clock
+{
+	starttime "2000-01-01 00:00:00 UTC";
+	stoptime "2000-01-02 00:00:00 UTC";
+}
+
+class test
+{
+	double x[s];
+	string y;
+	complex z[MVA];
+}
+
+object test
+{
+	object player
+	{
+		file "${DIR}/test_pandas_header_units.csv";
+	};
+	object recorder
+	{
+		file "test_pandas_header_units_out.csv";
+		property "x,z";
+		units HEADER;
+	};
+}
+
+#ifexists "../test_pandas_header_units_out.csv"
+#on_exit 0 diff "../test_pandas_header_units_out.csv" "test_pandas_header_units_out.csv" > gridlabd.diff
+#endif

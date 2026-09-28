@@ -59,12 +59,13 @@ class noise {
 }
 
 // record the output
-module tape;
+#include "pandas.glm"
+
 object noise {
 	signal noise(source);
 	object recorder {
-		property signal;
-		file noise_source.csv;
+		property "signal";
+		file test_external_noise_source.csv;
 		interval -1;
 	};
 }

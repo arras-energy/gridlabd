@@ -1,0 +1,46 @@
+GridLAB-D server control
+
+Syntax: gridlabd server COMMAND
+
+Commands:
+
+  start [-p|--port PORT] [-d|--detach] OPTIONS
+
+  stop|halt|shutdown|kill PORT|all
+
+  list [PORT|all]
+
+  log PORT
+
+  status [-c|--continuous] [PORT|all]
+
+The `gridlabd server` commands controls a server in the background. This is
+contrast to the `gridlabd --server` command which does not detach the
+process from the current process after it is launched.
+
+All servers are identified by their port number. The default port number is
+6267 and incremented automatically is already in use. The maximum number
+of server that can be started automatically is 10.
+
+The `start` command requires the GridLAB-D command line options to be
+provided.
+
+The `stop`, `halt`, `shutdown`, and `kill` commands correspond to the
+GridLAB-D server control commands. See [[GLM/Server]] for details.
+
+The `list` command outputs a list of active servers. The `status` command
+outputs the status of active servers.
+
+The server status can be one of the following:
+
+  INIT       initialization in progress
+  RUNNING    simulation running
+  PAUSED     simulation paused
+  DONE       simulation done
+  LOCKED     simulation locked for concurrency
+  NOREPLY    simulation server not responding to control commands
+
+See also:
+
+  [[GLM/Server]]
+

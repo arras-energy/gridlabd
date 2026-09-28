@@ -1,3 +1,0 @@
-#!/bin/sh
-
-$GLD_BIN/python3 elevation.py $*

@@ -5,7 +5,7 @@
 #set checkpoint_interval=86400
 #set randomseed=1
 
-module tape;
+#include "pandas.glm"
 
 clock {
 	starttime '2000-01-01 0:00:00';
@@ -17,12 +17,11 @@ class test {
 	complex y[kVA];
 };
 
-module tape;
 object test:..2 {
 	x "type:uniform(0,1); refresh:1min";
 	object recorder {
 		property x;
-		file "test.csv";
+		file "test_stream_out.csv";
 		interval -1;
 		flush 0;
 	};

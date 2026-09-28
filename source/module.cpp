@@ -266,26 +266,7 @@ MODULE *module_load(const char *file, /**< module filename, searches \p PATH */
 	if ( mod != NULL )
 	{
 		mod->hLib = NULL;
-
-		/* attach to list of known modules */
-		if (first_module==NULL)
-		{
-			mod->id = 0;
-			first_module = mod;
-		}
-		else
-		{
-			last_module->next = mod;
-			mod->id = last_module->id + 1;
-		}
-		last_module = mod;
-		module_count++;
-
-		/* register the module stream, if any */
-		if ( mod->stream!=NULL )
-			stream_register(mod->stream);
-
-		return mod;
+		return module_add(mod);
 	}
 
 	/* check for already loaded */

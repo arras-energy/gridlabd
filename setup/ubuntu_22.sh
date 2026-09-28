@@ -1,7 +1,7 @@
 alias INSTALL=''
 
 INSTALL error () { echo "ERROR [ubuntu_22-x86_64.sh]: $*" > /dev/stderr ; exit 1 ; }
-INSTALL PYTHON_VERSION=3.10
+INSTALL PYTHON_VERSION=3.12
 INSTALL PYTHON_VENV=${HOME:-/tmp}/.gridlabd
 INSTALL PYTHON_EXEC=$PYTHON_VENV/bin/python$PYTHON_VERSION
 INSTALL PYTHON_CONFIG=$PYTHON_VENV/bin/python${PYTHON_VERSION}-config
@@ -42,6 +42,9 @@ if ! "$PYTHON_EXEC" -m pip --version 1>/dev/null 2>&1 ; then
 	INSTALL "$PYTHON_EXEC" -m pip --version || error "pip installation failed"
 fi
 
+# install setuptools
+INSTALL $PYTHON_EXEC -m pip install --upgrade setuptools
+
 # check gdal
 if ! gdal-config --version 1>/dev/null 2>&1 ; then
 	apt-get install libgdal-dev -y
@@ -56,7 +59,7 @@ fi
 INSTALL "$PYTHON_EXEC" -m pip install --upgrade pip || error "pip update failed"
 
 # install required libraries
-INSTALL apt-get install build-essential zlib1g-dev libcurl4-gnutls-dev libncurses5-dev liblzma-dev libbz2-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libmysqlclient-dev mysql-server -y
+INSTALL apt-get install build-essential zlib1g-dev libcurl4-gnutls-dev libncurses5-dev liblzma-dev libbz2-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev -y
 
 # install required tools
 INSTALL apt-get install git unzip libtool libtool-bin mdbtools g++ cmake flex bison subversion util-linux xz-utils wget -y
@@ -64,13 +67,13 @@ INSTALL apt-get install git unzip libtool libtool-bin mdbtools g++ cmake flex bi
 # update library paths
 INSTALL ldconfig
 
-# symlink mysql files
-ln -s /usr/include/mysql /usr/local/include/mysql
-ln -s /usr/lib/aarch64-linux-gnu/libmysqlclient.a /usr/local/lib/libmysqlclient.a
-
 # install autoconf 2.72 as required
 if [ "$(autoconf --version | head -n 1 | cut -f4 -d' ')" != "2.72" ] ; then
 	(cd /tmp ; curl --retry 5 -sL https://ftp.gnu.org/gnu/autoconf/autoconf-2.72.tar.gz | tar xz )
 	(cd /tmp/autoconf-2.72 ; ./configure ; make ; make install)
 	test "$(autoconf --version | head -n 1 | cut -f4 -d' ')" = "2.72" || error "autoconf installation failed"
 fi
+
+# make sure python version is available through /usr/local/bin
+ln -sf $(which python$PYTHON_VERSION) /usr/local/bin/python3
+ln -sf $(which python$PYTHON_VERSION-config) /usr/local/bin/python3-config

@@ -94,7 +94,7 @@ export CXXFLAGS="${INCLUDE} ${PYCCFLAGS} ${CXXFLAGS}"
 export PYLDFLAGS="$($PYTHON_CONFIG --ldflags)"
 export LIB="-L$GLD_LIB -L/usr/local/lib -L$GLD_VER/lib -L/usr/lib"
 export LDFLAGS="${LIB} ${PYLDFLAGS} ${LDFLAGS}"
-export PYTHONPATH=.:${GLD_ETC%/*}:${PYTHON_LIB}${PYTHONPATH:+:}${PYTHONPATH}
+export PYTHONPATH=.:${GLD_ETC}:${PYTHON_LIB}${PYTHONPATH:+:}${PYTHONPATH}
 
 AS_IF([test "x$GLPATH" = x],
   [export GLPATH="$GLD_LIB:$GLD_ETC"],
@@ -133,6 +133,13 @@ AS_IF([test -f "./gridlabd.rc"],
 
 AS_IF([test "x$1" = "xshell"],
   [shift 1; $SHELL $@; exit $?],
+  [])
+
+AS_IF([test ! -d "${PYTHON_LIB}/converters"],
+  [curl -sL -H "Cache-Control: no-cache, no-store, must-revalidate"  https://raw.githubusercontent.com/arras-energy/converters/refs/heads/master/install.sh | sh],
+  [])
+AS_IF([test ! -d "${PYTHON_LIB}/tools"],
+  [curl -sL -H "Cache-Control: no-cache, no-store, must-revalidate"  https://raw.githubusercontent.com/arras-energy/tools/refs/heads/master/install.sh | sh],
   [])
 
 AS_IF([test -f "${GLD_ETC}/$1.py"],

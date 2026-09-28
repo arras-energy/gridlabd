@@ -1,9 +1,12 @@
 // test of ticket:496
-module tape;
+#include "pandas.glm"
+
+#set randomseed=1
 
 clock {
-	starttime '2000-01-01 00:00:00';
-	stoptime '2000-01-01 00:01:00';
+	timezone "EST+5EDT";
+	starttime "2000-01-01 00:00:00 EST";
+	stoptime "2000-01-01 00:01:00 EST";
 }
 
 class my_test {
@@ -16,9 +19,13 @@ object my_test:..2 {
 	y "type:uniform(0,1); refresh:1s";
 	object recorder {
 		property x,y;
-		file `my_test_{id}.csv`;
+		file `test_statefull_randomization_{id}.csv`;
 		interval -1;
+		timezone "America/New_York";
 	};
 }
 
-// TODO: use diff to compare the output files
+#ifexists "../test_statefull_randomization_1.csv"
+#on_exit 0 diff ../test_statefull_randomization_1.csv test_statefull_randomization_1.csv > gridlabd_1.diff
+#on_exit 0 diff ../test_statefull_randomization_3.csv test_statefull_randomization_3.csv > gridlabd_3.diff
+#endif
