@@ -11,7 +11,7 @@ numpy==1.26.4
 openpyxl
 pandas==2.1.4
 pandas_access
-pdocs
+pdoc
 plotly
 pytz
 scipy==1.12.0
