@@ -30,6 +30,7 @@ object test
 }
 
 #flush
+#system sync
 
 #ifexist ../${modelname/.glm/_out.csv}
 #on_exit 0 diff ../${modelname/.glm/.csv} ${modelname/.glm/.csv} > gridlabd.diff
