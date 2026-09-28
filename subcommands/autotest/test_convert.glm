@@ -9,6 +9,4 @@
 #flush
 #system sync
 
-#ifexist "../${modelname/.glm/.txt}"
-#on_exit 0 diff -I '^#' ../${modelname/.glm/.txt} ${modelname/.glm/.txt} > gridlabd.diff
-#endif
+#on_exit 0 test -f ${modelname/.glm/.txt}
