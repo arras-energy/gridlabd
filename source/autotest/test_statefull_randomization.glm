@@ -2,8 +2,9 @@
 #include "pandas.glm"
 
 clock {
-	starttime '2000-01-01 00:00:00';
-	stoptime '2000-01-01 00:01:00';
+	timezone "EST+5EDT";
+	starttime "2000-01-01 00:00:00 EST";
+	stoptime "2000-01-01 00:01:00 EST";
 }
 
 class my_test {
@@ -18,6 +19,7 @@ object my_test:..2 {
 		property x,y;
 		file `test_statefull_randomization_{id}.csv`;
 		interval -1;
+		timezone "America/New_York";
 	};
 }
 
