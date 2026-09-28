@@ -16,4 +16,4 @@ object test
 
 #set savefile=test_json.json
 
-#on_exit 0 test "$(gridlabd json-get objects test:0 x < test_json.json)" == "1.23"
+#on_exit 0 test "$(gridlabd json-get objects test:0 x < test_json.json)" = "1.23"

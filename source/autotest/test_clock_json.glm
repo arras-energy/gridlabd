@@ -16,4 +16,4 @@ object test {
 
 script on_term gridlabd:dump test_clock_json.json;
 
-#on_exit 0 test "$(gridlabd json-get globals clock value < test_clock_json.json)" == "$(gridlabd json-get globals starttime value < test_clock_json.json)"
+#on_exit 0 test "$(gridlabd json-get globals clock value < test_clock_json.json)" = "$(gridlabd json-get globals starttime value < test_clock_json.json)"

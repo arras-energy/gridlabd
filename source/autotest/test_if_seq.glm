@@ -12,4 +12,4 @@ object test:..10 {
 
 #set savefile=${modelname/.glm/.json}
 
-#on_exit 0 test $(grep '"seqid": "[0-9]"' < ${modelname/.glm/.json} | cut -f4 -d'"' | tr -d \\n) == "123456789"
+#on_exit 0 test $(grep '"seqid": "[0-9]"' < ${modelname/.glm/.json} | cut -f4 -d'"' | tr -d \\n) = "123456789"

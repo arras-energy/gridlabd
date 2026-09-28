@@ -21,4 +21,4 @@ object test
 
 #set savefile=${modelname/glm/json}
 
-#on_exit 0 test "$(gridlabd json-get objects test:0 n < ${modelname/glm/json})" == "01234567"
+#on_exit 0 test "$(gridlabd json-get objects test:0 n < ${modelname/glm/json})" = "01234567"
