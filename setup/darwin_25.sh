@@ -47,6 +47,9 @@ if ! "python$PYTHON_VERSION-config" --prefix 1>/dev/null 2>&1 ; then
 fi
 INSTALL "$PYTHON_EXEC" -m pip install --upgrade pip || error "pip update failed"
 
+# install setuptools
+INSTALL $PYTHON_EXEC -m pip install --upgrade setuptools
+
 # install required libraries
 INSTALL brew install autoconf libffi zlib pkg-config xz gdbm tcl-tk mdbtools
 
