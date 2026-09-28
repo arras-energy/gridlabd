@@ -14,6 +14,16 @@ build-aux/python3.sh
 build-aux/version.sh
 build.sh
 configure.ac
+docs/glm.html
+docs/glm_assert.html
+docs/glm_command.html
+docs/glm_pandas.html
+docs/glm_syntax.html
+docs/glm_timestamp.html
+docs/glm_tzinfo.html
+docs/glm_utilities.html
+docs/index.html
+docs/search.js
 gridlabd.spec.in
 image/README.md
 image/create.sh

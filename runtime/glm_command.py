@@ -1,4 +1,13 @@
 """GridLAB-D Command Line Processor
+
+Example
+-------
+
+The following example runs the GridLAB-D model `mymodel.glm`:
+
+    glm_command("mymodel.glm") 
+
+----
 """
 
 import subprocess

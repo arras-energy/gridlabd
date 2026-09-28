@@ -180,6 +180,7 @@ help:
 
 over: clean all
 
+VERSION=$(shell $(top_srcdir)/build-aux/version.sh --version)
 S3BUCKET=$(shell $(top_srcdir)/build-aux/version.sh --bucket)
 LONGNAME=$(shell $(top_srcdir)/build-aux/version.sh --name)
 SHORTNAME=$(shell $(top_srcdir)/build-aux/version.sh --sysspec)
@@ -288,9 +289,9 @@ docs: docs/index.html
 
 docs/index.html: $(wildcard runtime/glm*.py)
 	@echo Updating runtime docs...
-	@mkdir -p docs
+	@mkdir -p docs/$(VERSION)
 	@$(ENVPYTHON) -m pip install --upgrade pdoc
-	@$(ENVPYTHON) -m pdoc runtime/glm.py runtime/glm_*.py --logo "https://avatars.githubusercontent.com/u/118282969?s=200&v=4" --logo-link https://github.com/arras-energy/ --math --mermaid -o docs
+	@$(ENVPYTHON) -m pdoc runtime/glm.py runtime/glm_*.py --logo "https://avatars.githubusercontent.com/u/118282969?s=200&v=4" --logo-link https://github.com/arras-energy/ --math --mermaid -o docs/$(VERSION)
 
 index: weather library template
 	@echo Updating file index...

@@ -1,4 +1,4 @@
-"""GridLAB-D python data types"""
+"""GridLAB-D TIMESTAMP data type for Python"""
 
 import os
 import sys

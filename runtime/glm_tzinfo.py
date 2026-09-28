@@ -1,4 +1,4 @@
-"""Timezone information"""
+"""GridLAB-D timezone handler for Python"""
 
 import os
 import sys

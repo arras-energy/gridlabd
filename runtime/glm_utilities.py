@@ -1,4 +1,4 @@
-"""GridLAB-D utilities"""
+"""GridLAB-D utilities for Python"""
 
 import ast
 import io

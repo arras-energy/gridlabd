@@ -83,6 +83,8 @@ target value.
             within 0.01;
         };
     }
+
+----
 """
 
 import sys
@@ -349,7 +351,7 @@ def assert_init(obj,t):
 def assert_commit(obj,t):
     """Assert commit event handler
 
-        Arguments
+    Arguments
     ---------
     - `obj`: object name
     - `t`: current timestamp

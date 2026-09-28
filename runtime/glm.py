@@ -256,7 +256,7 @@ object recorder
 {
      parent "node_2";
      property "voltage_A";
-     file voltage_output.csv;
+     file "voltage_output.csv";
      interval 60;
 }
 ```
@@ -318,6 +318,8 @@ Where to Go Next
 - Explore modules like `residential` (houses, HVAC, appliances) and `climate`
   (weather-driven simulations) once you're comfortable with the core
   `powerflow` objects used in the taxonomy feeder models.
+
+----
 """
 
 import os
