@@ -8,7 +8,7 @@
 
 #geodata help
 
-#system sync
+#flush
 
 #ifexist "../test_geodata.txt"
 #on_exit 0 diff -I '^#' ../test_geodata.txt test_geodata.txt > gridlabd.diff

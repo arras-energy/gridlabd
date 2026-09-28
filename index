@@ -592,7 +592,6 @@ subcommands/autotest/test_manual.glm
 subcommands/autotest/test_manual.txt
 subcommands/autotest/test_model.glm
 subcommands/autotest/test_model.txt
-subcommands/autotest/test_openfido_opt.glm
 subcommands/autotest/test_pandas.glm
 subcommands/autotest/test_pandas.txt
 subcommands/autotest/test_plot.csv

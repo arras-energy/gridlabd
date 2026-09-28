@@ -8386,6 +8386,12 @@ int GldLoader::process_macro(char *line, int size, char *_filename, int linenum)
 			return FALSE;
 		}
 	}
+	else if ( strncmp(line, "#flush", 6) == 0 )
+	{
+		output_flushall();
+		strcpy(line,"\n");
+		return TRUE;
+	}
 	int rc = my_instance->subcommand("%s/" PACKAGE "-%s",getenv("GLD_BIN"),strchr(line,'#')+1);
 	if ( rc != 127 )
 	{

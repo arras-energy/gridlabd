@@ -18,7 +18,7 @@ object test
 
 #set savefile=test_fast_accessor.json
 
-#system sync
+#flush
 
 #on_exit 0 test $(gridlabd json-get objects test:0 x < test_fast_accessor.json) = 1 > gridlabd.diff
 #on_exit 0 test $(gridlabd json-get objects test:0 z < test_fast_accessor.json) = "2+3j" > gridlabd.diff
