@@ -1,4 +1,3 @@
-Token defined.
 Syntax: gridlabd template [options] <command> [...]
 Options:
     -b|--branch <branch>      Change branch from which template is downloaded

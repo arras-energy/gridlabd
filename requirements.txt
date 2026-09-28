@@ -13,7 +13,6 @@ pandas==2.1.4
 pandas_access
 pdocs
 plotly
-pypower
 pytz
 scipy==1.12.0
 simplekml

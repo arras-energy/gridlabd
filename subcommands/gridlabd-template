@@ -13,14 +13,6 @@ export GITHUB_TOKEN=$(gridlabd-git token $GITHUB_TOKEN)
 # NOTE: Validation won't properly display syntax or variable errors in curl calls. Manually call "gridlabd template config reset" or any other call to see script outputs, curl returned errors and warnings.
 # This is doubly true when identifying issues in the github actions runner.
 
-# check for github api token and set header if defined
-if [ ${GITHUB_TOKEN:-none} != none ]; then
-    echo "Token defined."
-else
-    echo "API token not provided."
-    echo "Use 'GITHUB_TOKEN=<your-token>' or write your token to a file in '~/.github/access-token' "
-fi
-
 # configurable parameters
 GITHUB="https://github.com"
 GITAPI="https://api.github.com"
@@ -515,6 +507,13 @@ if [ $# == 0 -o "$1" == "help" ]; then
     help $2
     exit 0
 elif [ "$(type -t $1)" == "function" ]; then
+    # check for github api token and set header if defined
+    if [ ${GITHUB_TOKEN:-none} != none ]; then
+        echo "Token defined."
+    else
+        echo "API token not provided."
+        echo "Use 'GITHUB_TOKEN=<your-token>' or write your token to a file in '~/.github/access-token' "
+    fi
     $*
     exit 0
 else
