@@ -17,3 +17,12 @@ object test
 }
 
 #set savefile=test_fast_accessor.json
+
+#system sync
+
+#on_exit 0 test $(gridlabd json-get objects test:0 x < test_fast_accessor.json) = 1 > gridlabd.diff
+#on_exit 0 test $(gridlabd json-get objects test:0 z < test_fast_accessor.json) = "2+3j" > gridlabd.diff
+#on_exit 0 test $(gridlabd json-get objects test:0 i < test_fast_accessor.json) = "4" > gridlabd.diff
+#on_exit 0 test $(gridlabd json-get objects test:0 j < test_fast_accessor.json) = "5" > gridlabd.diff
+#on_exit 0 test $(gridlabd json-get objects test:0 k < test_fast_accessor.json) = "6" > gridlabd.diff
+#on_exit 0 test $(gridlabd json-get objects test:0 b < test_fast_accessor.json) = "TRUE" > gridlabd.diff
