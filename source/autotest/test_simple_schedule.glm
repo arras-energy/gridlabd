@@ -2,6 +2,8 @@
 
 #include "pandas.glm"
 
+#set randomseed=1
+
 clock 
 {
 	timezone "PST+8PDT";
