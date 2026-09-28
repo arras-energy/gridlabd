@@ -128,8 +128,6 @@ Subcommands
   loaddata [OPTIONS ...]
   lock PIDFILE
   manual [OPTIONS ...]
-  matrix [OPTIONS ...] FUNCTION [ARGUMENTS ...]
-  openfido [OPTIONS ...] FUNCTION [ARGUMENTS ...]
   pandas [-i INPUTFILE] [-o OUTPUTFILE]
   plot [OPTIONS ...]
   plot [OPTIONS ...]
