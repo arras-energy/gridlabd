@@ -674,8 +674,8 @@ static BRANCHDATA branch_t;
 	DATA_C(B,#X "Cd",X,[2],D,ref_to_ang)
 #define THREEPHASE_N(B,X,D) \
 	DATA_X(B,#X "0",X,[0],D,NULL), \
-	DATA_X(B,#X "1",X,[0],D,NULL), \
-	DATA_X(B,#X "2",X,[1],D,NULL)
+	DATA_X(B,#X "1",X,[1],D,NULL), \
+	DATA_X(B,#X "2",X,[2],D,NULL)
 #define SYMMETRIC_C(B,X,D) \
 	DATA_X(B,#X "AAr",X,[0].r,D,NULL), \
 	DATA_X(B,#X "AAi",X,[0].i,D,NULL), \
@@ -731,8 +731,14 @@ static struct s_map
 	THREEPHASE_C(bus,I_dy,ED_OUT),
 	THREEPHASE_C(bus,PGenTotal,ED_OUT),
 	THREEPHASE_C(bus,DynCurrent,ED_OUT),
-	THREEPHASE_R(bus,PL,ED_OUT),
-	THREEPHASE_R(bus,QL,ED_OUT),
+	// THREEPHASE_R(bus,PL,ED_OUT),
+	DATA(bus,"PLA",PL[0],ED_OUT,NULL)
+	DATA(bus,"PLB",PL[1],ED_OUT,NULL)
+	DATA(bus,"PLC",PL[2],ED_OUT,NULL)
+	// THREEPHASE_R(bus,QL,ED_OUT),
+	DATA(bus,"QLA",QL[0],ED_OUT,NULL)
+	DATA(bus,"QLB",QL[1],ED_OUT,NULL)
+	DATA(bus,"QLC",QL[2],ED_OUT,NULL)
 	SYMMETRIC_C(bus,full_Y,ED_OUT),
 	SYMMETRIC_C(bus,full_Y_all,ED_OUT),
 	THREEPHASE_C(bus,full_Y_load,ED_OUT),
