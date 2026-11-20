@@ -1,0 +1,61 @@
+// Test created to check if fix to issue #404 is successful
+
+#define CARGA=10000
+
+clock {
+    timezone UTC0;
+    starttime '2000-01-01 00:00:00';
+    stoptime '2000-01-01 01:00:00';
+}
+module powerflow 
+{ 
+    solver_method NR;
+}
+
+object overhead_line_conductor 
+{ 
+    name cond; 
+    geometric_mean_radius 0.0313; 
+    resistance 0.1859; 
+}
+
+object line_spacing 
+{ 
+    name esp; 
+    distance_AN 5.0; 
+}
+
+object line_configuration 
+{ 
+    name cfg; 
+    conductor_A cond; 
+    conductor_N cond; 
+    spacing esp; 
+}
+
+object node 
+{ 
+    name fonte; 
+    phases AN; 
+    bustype SWING; 
+    nominal_voltage 7200; 
+    voltage_A 7200+0j; 
+}
+
+object overhead_line 
+{ 
+    name linha; 
+    phases AN; 
+    from fonte; 
+    to barra; 
+    length 1000; 
+    configuration cfg; 
+}
+
+object load 
+{ 
+    name barra; 
+    phases AN; 
+    nominal_voltage 7200; 
+    constant_power_A ${CARGA}+0j; 
+}
