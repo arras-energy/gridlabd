@@ -732,13 +732,13 @@ static struct s_map
 	THREEPHASE_C(bus,PGenTotal,ED_OUT),
 	THREEPHASE_C(bus,DynCurrent,ED_OUT),
 	// THREEPHASE_R(bus,PL,ED_OUT),
-	DATA(bus,"PLA",PL[0],ED_OUT,NULL)
-	DATA(bus,"PLB",PL[1],ED_OUT,NULL)
-	DATA(bus,"PLC",PL[2],ED_OUT,NULL)
+	DATA(bus,"PLA",PL[0],ED_OUT,NULL),
+	DATA(bus,"PLB",PL[1],ED_OUT,NULL),
+	DATA(bus,"PLC",PL[2],ED_OUT,NULL),
 	// THREEPHASE_R(bus,QL,ED_OUT),
-	DATA(bus,"QLA",QL[0],ED_OUT,NULL)
-	DATA(bus,"QLB",QL[1],ED_OUT,NULL)
-	DATA(bus,"QLC",QL[2],ED_OUT,NULL)
+	DATA(bus,"QLA",QL[0],ED_OUT,NULL),
+	DATA(bus,"QLB",QL[1],ED_OUT,NULL),
+	DATA(bus,"QLC",QL[2],ED_OUT,NULL),
 	SYMMETRIC_C(bus,full_Y,ED_OUT),
 	SYMMETRIC_C(bus,full_Y_all,ED_OUT),
 	THREEPHASE_C(bus,full_Y_load,ED_OUT),
