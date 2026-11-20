@@ -1,6 +1,8 @@
 // Test created to check if fix to issue #404 is successful
 
+#ifndef CARGA
 #define CARGA=10000
+#endif
 
 clock {
     timezone UTC0;
